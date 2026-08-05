@@ -1,0 +1,493 @@
+<script>
+	/**
+	 * HALAMAN — Baca & Amplifikasi Kabar.
+	 *
+	 * Tanggung jawab: menyajikan isi satu kabar, lalu menyediakan tiga jalur
+	 * amplifikasi beserta poinnya persis seperti tabel Hal 11.
+	 *
+	 * Ini mesin utama KPI Hal 6 ("50% awardee melakukan amplifikasi"), dan karena
+	 * itu tidak ada halaman "Amplifikasi" tersendiri — amplifikasi adalah aksi DI
+	 * ATAS konten, bukan destinasi (07-UX §1.2 butir 4). Menaruhnya di halaman
+	 * terpisah berarti menambah satu ketukan pada langkah yang paling ingin
+	 * dipermudah.
+	 *
+	 * Satu keputusan yang membentuk halaman ini: **bagikan ke media sosial publik
+	 * meminta tautan bukti LEBIH DULU, bukan sesudah poin diberikan.** Tanpa
+	 * tautan, mesin mencatat aksinya sebagai menunggu bukti dengan poin nol —
+	 * jujur, tetapi mengecewakan bila awardee baru mengetahuinya setelah menekan.
+	 * Meminta buktinya di muka membuat janji poin di tombol selalu benar.
+	 *
+	 * Dua aksi bersifat sekali per kabar (membaca dan menanggapi ajakan), dua
+	 * lainnya memang boleh berulang ke kanal yang berbeda. Perbedaan itu tercermin
+	 * pada `refId`: yang sekali-per-objek merujuk kabarnya sehingga dapat dikenali
+	 * sebagai sudah diklaim, yang berulang menyimpan konteksnya di catatan dan
+	 * bukti agar setiap kejadian tetap tercatat sebagai baris tersendiri.
+	 *
+	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 tabel skor, Hal 6 KPI amplifikasi
+	 * @see docs/03-GAMIFICATION-SPEC.md — §5.2 kunci idempotensi per aksi
+	 */
+	import { page } from '$app/state';
+	import {
+		Button,
+		Card,
+		EmptyState,
+		Icon,
+		Modal,
+		PageHeader,
+		PointsChip,
+		StatusBadge,
+		ICONS
+	} from '$lib/components';
+	import { ActivityType, aturanSkor } from '$lib/domain/constants/scoring-table.js';
+	import { catalog, CatalogKind } from '$lib/stores/catalog.svelte.js';
+	import { gamification } from '$lib/stores/gamification.svelte.js';
+	import { toast } from '$lib/stores/toast.svelte.js';
+	import { formatRelatif, formatTanggal, frasaHitung } from '$lib/utils/format.js';
+
+	/**
+	 * Panjang minimum tanggapan agar dianggap bermakna (docs/03 §5.2 — balasan
+	 * ≥ 20 karakter, bukan emoji atau satu kata). Ini ambang MUTU tanggapan, bukan
+	 * angka gamifikasi, sehingga tempatnya memang di halaman yang memungutnya.
+	 */
+	const MIN_KARAKTER_TANGGAPAN = 20;
+
+	const aturanBaca = aturanSkor(ActivityType.BROADCAST_VIEW);
+	const aturanTanggapi = aturanSkor(ActivityType.CTA_REACT);
+	const aturanBagikanPribadi = aturanSkor(ActivityType.SHARE_PRIVATE);
+	const aturanBagikanPublik = aturanSkor(ActivityType.SHARE_PUBLIC);
+
+	const idKabar = $derived(page.params.id ?? '');
+	const kabar = $derived(catalog.byId(CatalogKind.BROADCAST, idKabar));
+
+	/**
+	 * Seluruh entri buku besar yang menyangkut kabar ini.
+	 *
+	 * Dua jalur pencocokan karena dua jenis aksi menyimpan konteksnya secara
+	 * berbeda: yang sekali-per-kabar merujuk lewat `refId`, yang boleh berulang
+	 * menyimpan judul kabar di catatannya. Pencocokan judul hanya berjalan bila
+	 * judulnya memang ada — tanpa penjaga itu, judul kosong akan mencocoki
+	 * seluruh isi buku besar sekaligus.
+	 */
+	const kontribusiKabarIni = $derived.by(() => {
+		const judul = kabar?.title ?? '';
+		return gamification.ledger.filter((entri) => {
+			if (entri.refId === idKabar) return true;
+			return judul !== '' && (entri.note ?? '').includes(judul);
+		});
+	});
+
+	/** Sisa kuota harian dua aksi amplifikasi — dibaca sekali, dipakai di beberapa tempat. */
+	const kuotaBagikanPribadi = $derived(gamification.usageFor(ActivityType.SHARE_PRIVATE));
+	const kuotaBagikanPublik = $derived(gamification.usageFor(ActivityType.SHARE_PUBLIC));
+
+	/**
+	 * Apakah sebuah aksi sekali-per-kabar sudah pernah diklaim.
+	 * @param {string} activityType
+	 * @returns {boolean}
+	 */
+	function sudahDiklaim(activityType) {
+		return gamification.ledger.some(
+			(entri) => entri.activityType === activityType && entri.refId === idKabar
+		);
+	}
+
+	const bacaSelesai = $derived(sudahDiklaim(ActivityType.BROADCAST_VIEW));
+	const tanggapanSelesai = $derived(sudahDiklaim(ActivityType.CTA_REACT));
+
+	/** @type {string} Isi tanggapan atas ajakan ringan. */
+	let tanggapan = $state('');
+
+	/** @type {boolean} Dialog tautan bukti sedang terbuka. */
+	let dialogBuktiTerbuka = $state(false);
+
+	/** @type {string} Tautan unggahan media sosial yang dilampirkan awardee. */
+	let tautanBukti = $state('');
+
+	/** @type {string} Platform tujuan unggahan. */
+	let platformBukti = $state('Instagram');
+
+	/** @type {string} Pesan galat pada dialog bukti. */
+	let galatBukti = $state('');
+
+	const PLATFORM = ['Instagram', 'LinkedIn', 'X', 'Facebook', 'TikTok', 'YouTube'];
+
+	const tanggapanCukup = $derived(tanggapan.trim().length >= MIN_KARAKTER_TANGGAPAN);
+
+	/**
+	 * Teks siap salin untuk dibagikan awardee. Disusun dari isi kabar, bukan
+	 * dikarang di sini — awardee yang harus menulis ulang ringkasannya sendiri
+	 * adalah gesekan yang langsung menurunkan angka amplifikasi.
+	 */
+	const teksBagikan = $derived(
+		kabar
+			? `${kabar.title}\n\n${kabar.summary}\n\nSelengkapnya: ${kabar.ctaLink || 'https://pertaminafoundation.org/pfriends'}\n\n#Pfriends #PertaminaFoundation`
+			: ''
+	);
+
+	/**
+	 * Kalimat sisa kuota yang menyebut kapan kuotanya pulih.
+	 * @param {import('$lib/domain/services/GamificationEngine.js').DailyUsageRow|null} baris
+	 * @returns {string}
+	 */
+	function kalimatKuota(baris) {
+		if (!baris) return '';
+		if (baris.exhausted) return 'Kuota harian aksi ini sudah penuh. Poin kembali tersedia besok.';
+		return `Sisa ${frasaHitung(baris.remaining, 'kali')} hari ini.`;
+	}
+
+	/** Menandai kabar selesai dibaca. */
+	async function tandaiDibaca() {
+		if (!kabar || bacaSelesai) return;
+		await gamification.perform(ActivityType.BROADCAST_VIEW, {
+			refId: kabar.id,
+			note: kabar.title
+		});
+	}
+
+	/** Mengirim tanggapan atas ajakan ringan. */
+	async function kirimTanggapan() {
+		if (!kabar || !tanggapanCukup || tanggapanSelesai) return;
+		const hasil = await gamification.perform(ActivityType.CTA_REACT, {
+			refId: kabar.id,
+			note: tanggapan.trim()
+		});
+		if (hasil.accepted) tanggapan = '';
+	}
+
+	/**
+	 * Membagikan ke jaringan pribadi.
+	 *
+	 * Tanpa `refId`: membagikan kabar yang sama ke grup WhatsApp yang berbeda
+	 * adalah dua amplifikasi yang sah, dan keduanya berhak menjadi dua baris
+	 * terpisah di buku besar.
+	 */
+	async function bagikanKeWhatsApp() {
+		if (!kabar) return;
+		await gamification.perform(ActivityType.SHARE_PRIVATE, {
+			note: `Dibagikan ke jaringan pribadi — ${kabar.title}`
+		});
+	}
+
+	function bukaDialogBukti() {
+		galatBukti = '';
+		tautanBukti = '';
+		dialogBuktiTerbuka = true;
+	}
+
+	/** Membagikan ke media sosial publik, disertai tautan bukti unggahannya. */
+	async function kirimBuktiPublik() {
+		if (!kabar) return;
+		const tautan = tautanBukti.trim();
+
+		if (tautan === '') {
+			galatBukti = 'Tautan unggahan wajib diisi agar poin dapat dibukukan.';
+			return;
+		}
+		if (!/^https?:\/\/\S+\.\S+/.test(tautan)) {
+			galatBukti = 'Tautan harus berupa alamat lengkap, mis. https://instagram.com/p/...';
+			return;
+		}
+
+		galatBukti = '';
+		dialogBuktiTerbuka = false;
+
+		await gamification.perform(ActivityType.SHARE_PUBLIC, {
+			evidence: [`${platformBukti}: ${tautan}`],
+			note: `Diunggah ke ${platformBukti} — ${kabar.title}`
+		});
+	}
+
+	/** Menyalin teks bagikan ke papan klip. */
+	async function salinTeks() {
+		try {
+			await navigator.clipboard.writeText(teksBagikan);
+			toast.success('Teks tersalin', 'Tempel di WhatsApp atau media sosialmu, lalu catat aksinya di sini.');
+		} catch {
+			toast.warning(
+				'Peramban menolak akses papan klip',
+				'Pilih teksnya secara manual lalu salin dengan Ctrl+C.'
+			);
+		}
+	}
+</script>
+
+<svelte:head>
+	<title>{kabar ? kabar.title : 'Kabar tidak ditemukan'} · Pfriends</title>
+</svelte:head>
+
+{#if !kabar}
+	<EmptyState
+		title="Kabar tidak ditemukan"
+		message="Kabar yang kamu tuju mungkin sudah ditarik atau tautannya tidak lagi berlaku."
+		iconPath={ICONS.megaphone}
+		actionLabel="Kembali ke daftar kabar"
+		actionHref="/awardee/kabar"
+	/>
+{:else}
+	<PageHeader
+		title={kabar.title}
+		eyebrow="{kabar.channelLabel} · {formatTanggal(kabar.sentAt, 'pendek')}"
+		backHref="/awardee/kabar"
+		backLabel="Kabar Pfriends"
+	/>
+
+	<!-- `[&>*]:min-w-0`: butir grid berbaku `min-width: auto`. Kolom isi kabar memuat
+	     teks siap bagikan dan kartu amplifikasi yang lebar min-content-nya 372 px,
+	     jadi tanpa izin menyusut kolomnya menahan lebar itu dan halaman menggulir
+	     mendatar di 375 px. -->
+	<div class="grid gap-4 lg:grid-cols-3 [&>*]:min-w-0">
+		<!-- Isi kabar -->
+		<div class="space-y-4 lg:col-span-2">
+			<Card padding="lg">
+				<div class="flex flex-wrap items-center gap-2">
+					{#if bacaSelesai}
+						<StatusBadge label="Sudah dibaca" color="green" size="sm" iconPath={ICONS.check} />
+					{:else}
+						<StatusBadge label="Belum ditandai dibaca" color="amber" size="sm" withDot />
+					{/if}
+					{#if kabar.contentSource}
+						<span class="label-micro">{kabar.contentSource}</span>
+					{/if}
+					<span class="text-[11px] text-ink-600">{formatRelatif(kabar.sentAt)}</span>
+				</div>
+
+				<p class="mt-4 text-base leading-relaxed font-semibold text-ink-800">{kabar.summary}</p>
+
+				{#if kabar.body}
+					<div class="mt-4 space-y-3 text-sm leading-relaxed text-ink-700">
+						{#each kabar.body.split('\n').filter((baris) => baris.trim() !== '') as paragraf, i (i)}
+							<p>{paragraf}</p>
+						{/each}
+					</div>
+				{/if}
+
+				<div class="mt-6 border-t border-ink-100 pt-4">
+					<Button
+						variant={bacaSelesai ? 'ghost' : 'primary'}
+						size="md"
+						disabled={bacaSelesai}
+						loading={gamification.busy === ActivityType.BROADCAST_VIEW}
+						iconPath={bacaSelesai ? ICONS.checkCircle : ICONS.check}
+						onclick={tandaiDibaca}
+					>
+						{bacaSelesai
+							? 'Poin baca sudah diklaim'
+							: `Sudah dibaca · +${aturanBaca.points} poin`}
+					</Button>
+					{#if !bacaSelesai}
+						<p class="mt-2 text-xs text-ink-600">
+							Poin baca diberikan satu kali untuk setiap kabar, sepanjang keanggotaanmu.
+						</p>
+					{/if}
+				</div>
+			</Card>
+
+			<!-- Ajakan ringan -->
+			{#if kabar.hasCta}
+				<Card padding="lg">
+					<div class="flex items-center gap-2">
+						<Icon path={ICONS.sparkles} size={18} class="text-pertamina-navy" />
+						<h2 class="text-sm font-bold text-heading">Ajakan dari Pertamina Foundation</h2>
+						<PointsChip points={aturanTanggapi.points} currency="PK" size="sm" showLabel={false} />
+					</div>
+
+					<p class="mt-2 rounded-xl bg-surface-soft p-3 text-sm text-ink-700">{kabar.lightCta}</p>
+
+					{#if tanggapanSelesai}
+						<p class="mt-3 flex items-center gap-2 text-sm text-success">
+							<Icon path={ICONS.checkCircle} size={16} />
+							Tanggapanmu untuk kabar ini sudah tercatat.
+						</p>
+					{:else}
+						<label class="mt-4 block">
+							<span class="label-micro">Tanggapanmu</span>
+							<textarea
+								bind:value={tanggapan}
+								rows="3"
+								maxlength="400"
+								placeholder="Tulis tanggapan yang bermanfaat bagi awardee lain…"
+								class="mt-1.5 w-full rounded-control border border-ink-200 bg-surface p-3 text-sm text-ink-800 transition-colors outline-none placeholder:text-ink-450 focus:border-pertamina-blue"
+							></textarea>
+						</label>
+
+						<div class="mt-2 flex flex-wrap items-center justify-between gap-2">
+							<p class="numeric text-xs {tanggapanCukup ? 'text-success' : 'text-ink-600'}">
+								{tanggapan.trim().length} / {MIN_KARAKTER_TANGGAPAN} karakter minimum
+							</p>
+							<Button
+								variant="secondary"
+								size="sm"
+								disabled={!tanggapanCukup}
+								loading={gamification.busy === ActivityType.CTA_REACT}
+								onclick={kirimTanggapan}
+							>
+								Kirim tanggapan · +{aturanTanggapi.points} poin
+							</Button>
+						</div>
+						<p class="mt-2 text-xs leading-relaxed text-ink-600">
+							Tanggapan minimal {MIN_KARAKTER_TANGGAPAN} karakter agar poin diberikan — balasan satu
+							kata atau emoji saja tidak menambah apa pun bagi komunitas.
+						</p>
+					{/if}
+				</Card>
+			{/if}
+		</div>
+
+		<!-- Panel amplifikasi -->
+		<div class="space-y-4">
+			<Card padding="lg" variant="highlight">
+				<h2 class="text-sm font-bold text-heading">Sebarkan kabar ini</h2>
+				<p class="mt-1 text-xs leading-relaxed text-ink-600">
+					Satu awardee rata-rata memiliki 25–500 jaringan sosial. Amplifikasimu adalah jangkauan
+					organik Pertamina Foundation tanpa biaya iklan.
+				</p>
+
+				<div class="mt-4 space-y-3">
+					<!-- Bagikan ke WhatsApp -->
+					<div>
+						<Button
+							variant="primary"
+							size="md"
+							fullWidth
+							iconPath={ICONS.whatsapp}
+							disabled={Boolean(kuotaBagikanPribadi?.exhausted)}
+							loading={gamification.busy === ActivityType.SHARE_PRIVATE}
+							onclick={bagikanKeWhatsApp}
+						>
+							Bagikan ke WhatsApp · +{aturanBagikanPribadi.points}
+						</Button>
+						<p
+							class="mt-1.5 text-[11px] leading-relaxed {kuotaBagikanPribadi?.exhausted
+								? 'text-warning'
+								: 'text-ink-600'}"
+						>
+							{kalimatKuota(kuotaBagikanPribadi)}
+						</p>
+					</div>
+
+					<!-- Bagikan ke media sosial publik -->
+					<div>
+						<Button
+							variant="outline"
+							size="md"
+							fullWidth
+							iconPath={ICONS.share}
+							disabled={Boolean(kuotaBagikanPublik?.exhausted)}
+							loading={gamification.busy === ActivityType.SHARE_PUBLIC}
+							onclick={bukaDialogBukti}
+						>
+							Bagikan ke media sosial · +{aturanBagikanPublik.points}
+						</Button>
+						<p
+							class="mt-1.5 text-[11px] leading-relaxed {kuotaBagikanPublik?.exhausted
+								? 'text-warning'
+								: 'text-ink-600'}"
+						>
+							{#if kuotaBagikanPublik?.exhausted}
+								{kalimatKuota(kuotaBagikanPublik)}
+							{:else}
+								Butuh tautan unggahan sebagai bukti. {kalimatKuota(kuotaBagikanPublik)}
+							{/if}
+						</p>
+					</div>
+				</div>
+			</Card>
+
+			<!-- Teks siap bagikan -->
+			<Card padding="lg">
+				<div class="flex items-center justify-between gap-2">
+					<h2 class="text-sm font-bold text-heading">Teks siap bagikan</h2>
+					<Button variant="ghost" size="sm" iconPath={ICONS.document} onclick={salinTeks}>
+						Salin
+					</Button>
+				</div>
+				<pre
+					class="mt-2 max-h-56 overflow-auto rounded-xl bg-surface-soft p-3 text-xs leading-relaxed whitespace-pre-wrap text-ink-700">{teksBagikan}</pre>
+			</Card>
+
+			<!-- Kontribusi pada kabar ini -->
+			<Card padding="lg">
+				<h2 class="text-sm font-bold text-heading">Kontribusimu di kabar ini</h2>
+				{#if kontribusiKabarIni.length === 0}
+					<p class="mt-2 text-xs leading-relaxed text-ink-600">
+						Belum ada aksi tercatat untuk kabar ini. Mulai dari menandainya sudah dibaca.
+					</p>
+				{:else}
+					<ul class="mt-3 space-y-2.5">
+						{#each kontribusiKabarIni as entri (entri.id)}
+							<li class="flex items-start justify-between gap-3">
+								<span class="min-w-0">
+									<span class="block text-xs font-semibold text-ink-800">{entri.label}</span>
+									<span class="block text-[11px] text-ink-600">
+										{formatTanggal(entri.occurredAt, 'waktu')}
+									</span>
+								</span>
+								<span class="flex shrink-0 flex-col items-end gap-1">
+									<span class="numeric text-xs font-bold text-ink-900">+{entri.points}</span>
+									<StatusBadge
+										label={entri.statusMeta.label}
+										color={entri.statusMeta.badgeColor}
+										size="sm"
+									/>
+								</span>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			</Card>
+		</div>
+	</div>
+
+	<!-- Dialog tautan bukti unggahan publik -->
+	<Modal
+		open={dialogBuktiTerbuka}
+		title="Lampirkan tautan unggahan"
+		size="md"
+		onclose={() => (dialogBuktiTerbuka = false)}
+	>
+		<p class="text-sm leading-relaxed text-ink-600">
+			Poin amplifikasi publik diberikan setelah tautan unggahan dilampirkan. Tautan diperiksa ulang
+			oleh moderator chapter dan harus tetap dapat diakses minimal 72 jam.
+		</p>
+
+		<div class="mt-4 space-y-4">
+			<label class="block">
+				<span class="label-micro">Platform tujuan</span>
+				<select
+					bind:value={platformBukti}
+					class="mt-1.5 w-full rounded-control border border-ink-200 bg-surface p-2.5 text-sm text-ink-800 outline-none focus:border-pertamina-blue"
+				>
+					{#each PLATFORM as nama (nama)}
+						<option value={nama}>{nama}</option>
+					{/each}
+				</select>
+			</label>
+
+			<label class="block">
+				<span class="label-micro">Tautan unggahan</span>
+				<input
+					bind:value={tautanBukti}
+					type="url"
+					inputmode="url"
+					placeholder="https://instagram.com/p/…"
+					class="mt-1.5 w-full rounded-control border bg-surface p-2.5 text-sm text-ink-800 outline-none focus:border-pertamina-blue {galatBukti
+						? 'border-danger'
+						: 'border-ink-200'}"
+				/>
+				{#if galatBukti}
+					<span class="mt-1.5 flex items-start gap-1.5 text-xs text-danger">
+						<Icon path={ICONS.warning} size={14} />
+						{galatBukti}
+					</span>
+				{/if}
+			</label>
+		</div>
+
+		{#snippet footer()}
+			<Button variant="ghost" size="md" onclick={() => (dialogBuktiTerbuka = false)}>Batal</Button>
+			<Button variant="primary" size="md" iconPath={ICONS.check} onclick={kirimBuktiPublik}>
+				Kirim bukti · +{aturanBagikanPublik.points} poin
+			</Button>
+		{/snippet}
+	</Modal>
+{/if}

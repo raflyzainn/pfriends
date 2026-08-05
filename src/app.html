@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="id">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="%sveltekit.assets%/favicon.svg" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="theme-color" content="#0C4DA2" />
+		<meta
+			name="description"
+			content="Pfriends — rumah komunitas penerima manfaat Pertamina Foundation. Wadah alumni Beasiswa Sobat Bumi dan PFpreneur untuk tetap terhubung, berkarya, dan berdampak."
+		/>
+		<title>Pfriends · Community Connect Initiative</title>
+
+		<!--
+			FONT LOKAL. Tiga <link> Google Fonts dan dua <link rel="preconnect">
+			DIHAPUS: @font-face di src/app.css kini menunjuk /fonts/*.woff2 yang
+			disalin adapter-static dari static/. Peragaan tanpa internet tetap utuh,
+			dan dua handshake DNS+TLS hilang dari jalur render pertama.
+			[DAFTAR PUTIH 12-BUILD-CONTRACT-V2 §3.4 app.html butir (1) & (2)]
+
+			Hanya dua berkas yang di-preload — subset latin dari kedua keluarga yang
+			pasti tampil di layar pertama. JetBrains Mono tidak: ia hanya dipakai
+			kicker 11px, dan mem-preload berkas ketiga menyaingi anggaran unduh foto
+			hero yang justru menjadi LCP. Varian -ext juga tidak: teks Indonesia
+			tidak memuat glyph latin-ext, jadi peramban tidak akan memintanya.
+			Jalur ditulis absolut agar identik dengan URL yang diminta app.css —
+			preload yang jalurnya berbeda menghasilkan unduhan dobel, bukan cache hit.
+		-->
+		<link
+			rel="preload"
+			as="font"
+			type="font/woff2"
+			href="/fonts/Fraunces-Variable.woff2"
+			crossorigin
+		/>
+		<link
+			rel="preload"
+			as="font"
+			type="font/woff2"
+			href="/fonts/PlusJakartaSans-Variable.woff2"
+			crossorigin
+		/>
+
+		<!--
+			Kartu tautan untuk WhatsApp, LinkedIn, dan deck presentasi.
+			og:image menunjuk /img/og-pfriends.jpg (1200×630) yang ikut disalin
+			adapter-static. [DAFTAR PUTIH §3.4 app.html butir (3)]
+		-->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Pfriends" />
+		<meta property="og:locale" content="id_ID" />
+		<meta property="og:title" content="Pfriends · Community Connect Initiative" />
+		<meta
+			property="og:description"
+			content="Rumah komunitas penerima manfaat Pertamina Foundation. Wadah alumni Beasiswa Sobat Bumi dan PFpreneur untuk tetap terhubung, berkarya, dan berdampak."
+		/>
+		<meta property="og:image" content="/img/og-pfriends.jpg" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta
+			property="og:image:alt"
+			content="Puluhan orang berkumpul rapat dalam satu potret bersama seusai kegiatan komunitas"
+		/>
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="Pfriends · Community Connect Initiative" />
+		<meta
+			name="twitter:description"
+			content="Rumah komunitas penerima manfaat Pertamina Foundation. Wadah alumni Beasiswa Sobat Bumi dan PFpreneur untuk tetap terhubung, berkarya, dan berdampak."
+		/>
+		<meta name="twitter:image" content="/img/og-pfriends.jpg" />
+
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover" class="antialiased">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>
