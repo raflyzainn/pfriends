@@ -1,89 +1,99 @@
 <script>
 	/**
-	 * HALAMAN `/verifikator/kegiatan` — antrean usulan kegiatan dan pengusulan sendiri.
+	 * HALAMAN `/verifikator/kegiatan` — Konfigurasi Calendar of Event.
 	 *
-	 * Tanggung jawab: memutuskan usulan kegiatan yang menunggu, dan menyediakan
-	 * jalan bagi verifikator mengusulkan agendanya sendiri.
+	 * Tanggung jawab: menjadi satu tempat verifikator MENGATUR kalender komunitas —
+	 * memutuskan usulan yang menunggu, menambah event baru, menyunting detail event
+	 * yang sudah terjadwal, dan melihat bentuk kalender yang dihasilkannya.
 	 *
-	 * Enam keputusan yang tidak terbaca dari kode:
+	 * Delapan keputusan yang tidak terbaca dari kode:
 	 *
 	 * 1. **Usulan yang diajukan verifikator yang sedang masuk TIDAK dapat ia
 	 *    setujui atau tolak sendiri.** Tombolnya nonaktif beserta alasan tertulis,
 	 *    dan `ContentReviewService.approveEvent` tetap menolaknya bila permintaan
 	 *    dipaksakan lewat konsol peramban — penjagaan yang sesungguhnya hidup di
 	 *    domain, sedangkan halaman ini bertugas MENJELASKANNYA. Kegagalan yang
-	 *    senyap membuat verifikator menekan tombol yang sama berulang kali
-	 *    (`docs/12` §3.5 WP-06 butir 3, `docs/10` §5.5).
-	 * 2. **Formulir pengusulan sengaja ada di halaman yang sama dengan antreannya.**
-	 *    Justru karena verifikator boleh mengusulkan kegiatan, konflik kepentingan
-	 *    pada butir 1 bukan kasus tepi teoretis: usulan yang baru saja ia kirim
-	 *    langsung muncul di antrean di bawahnya dengan tombol keputusan nonaktif.
-	 *    Inilah alasan seed mewajibkan DUA akun verifikator.
-	 * 3. **Tombol keputusan dirender dari `allowedEventTransitions(status, role)`,**
+	 *    senyap membuat verifikator menekan tombol yang sama berulang kali.
+	 * 2. **Formulir berada di halaman yang sama dengan antreannya.** Justru karena
+	 *    verifikator boleh menambah event, konflik kepentingan pada butir 1 bukan
+	 *    kasus tepi teoretis: event yang baru saja ia kirim langsung muncul di
+	 *    antrean di bawahnya dengan tombol keputusan nonaktif.
+	 * 3. **SATU formulir melayani "tambah" dan "sunting".** Dua formulir kembar
+	 *    untuk satu bentuk data adalah dua tempat yang harus diingat ketika sebuah
+	 *    field ditambahkan — dan yang kedua selalu yang terlupa.
+	 * 4. **"Tambah" dan "sunting" menempuh jalur tulis yang BERBEDA, dan itu
+	 *    disengaja.** Event baru lahir sebagai USULAN lewat
+	 *    `editorial.proposeEvent()` sehingga tetap menempuh persetujuan; penyuntingan
+	 *    hanya menyentuh detail deskriptif lewat `simpanPerubahanEvent()` dan tidak
+	 *    pernah menyentuh `status`. Verifikator memperbaiki salah ketik tanpa
+	 *    memperoleh pintu belakang menuju "terjadwal".
+	 * 5. **Kalender hanya menampilkan event yang benar-benar punya tempat di
+	 *    kalender** — terjadwal, berlangsung, dan selesai. Usulan mentah sengaja
+	 *    tidak ikut: penanda tanggal yang tidak dapat membedakan "sudah pasti" dari
+	 *    "masih diusulkan" akan membuat orang menjadwalkan diri pada acara yang
+	 *    mungkin ditolak besok.
+	 * 6. **Tombol keputusan dirender dari `allowedEventTransitions(status, role)`,**
 	 *    termasuk pada agenda yang sudah terjadwal. Transisi sah yang belum punya
 	 *    jalur eksekusi di konsol ini tampil nonaktif beserta alasannya, bukan
-	 *    dihapus diam-diam — selisih antara peta transisi dan kemampuan konsol
-	 *    lebih baik terbaca daripada tersembunyi.
-	 * 4. **Penolakan usulan wajib disertai alasan.** Pengusul membaca alasan itu di
-	 *    `/awardee/kalender`; penolakan tanpa alasan memindahkan pertanyaan ke
-	 *    kanal yang tidak tercatat (`docs/12` §3.5 WP-06 butir 6).
-	 * 5. **Usulan dikirim sebagai objek polos, bukan entity yang dirakit halaman.**
-	 *    `ContentReviewService.proposeEvent` membangun `CommunityEvent` sendiri dan
-	 *    menimpa `proposedBy` dengan identitas aktor — nilai yang boleh dikirim dari
-	 *    formulir akan membuat pemeriksaan konflik kepentingan dapat dilewati hanya
-	 *    dengan mengetik id orang lain.
-	 * 6. **Nol angka poin dan nol pendaftar.** Halaman ini memutuskan agenda, bukan
-	 *    menghitung capaian; kuota diisi sebagai kapasitas ruangan, bukan sebagai
-	 *    perolehan.
-	 * 7. **Pembatalan agenda disambungkan DI HALAMAN INI, bukan di registri
-	 *    keputusan.** `ContentReviewService.cancelEvent` sudah lengkap sejak awal
-	 *    tetapi tidak pernah dipanggil dari mana pun, sehingga siklus hidup kegiatan
-	 *    PO-4 berhenti di "terjadwal" — agenda yang batal hanya bisa dicabut dengan
-	 *    menyunting basis data. `EVENT_DECISIONS` menandai transisi itu
-	 *    `jalankan: null` karena kontrak store editorial belum memuat jalurnya; kini
-	 *    store memuatnya, dan halaman ini yang memasangkannya lewat
-	 *    `lengkapiKeputusan()`. Registri keputusan tidak disunting dari sini —
-	 *    pemiliknya paket lain, dan dua paket yang menulis satu berkas tanpa git
-	 *    adalah cara tercepat kehilangan pekerjaan orang lain.
+	 *    dihapus diam-diam.
+	 * 7. **Penolakan usulan wajib disertai alasan.** Pengusul membacanya di
+	 *    `/awardee/kalender`; penolakan tanpa alasan memindahkan pertanyaan ke kanal
+	 *    yang tidak tercatat.
+	 * 8. **Pembatalan agenda disambungkan DI HALAMAN INI, bukan di registri
+	 *    keputusan.** `EVENT_DECISIONS` menandai transisi itu `jalankan: null` karena
+	 *    kontrak store belum memuat jalurnya saat registri ditulis; kini store
+	 *    memuatnya, dan halaman ini memasangkannya lewat `lengkapiKeputusan()`.
+	 *    Registri tidak disunting dari sini — pemiliknya paket lain.
 	 *
 	 * @see docs/10-REVISION-SPEC.md — US-R24 antrean usulan kegiatan, §5.5 konflik kepentingan
 	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 3 dan 6
 	 */
-	import { Button, EmptyState, PageHeader, StatusBadge, ICONS } from '$lib/components';
-	import { EventStatus, EventType, EVENT_TYPE_META } from '$lib/domain/entities/CommunityEvent.js';
+	import {
+		Button,
+		EmptyState,
+		Icon,
+		MonthCalendar,
+		PageHeader,
+		StatusBadge,
+		ICONS,
+		eventCardVM
+	} from '$lib/components';
+	import { EventStatus, EVENT_TYPE_META } from '$lib/domain/entities/CommunityEvent.js';
 	import { AccessPolicy } from '$lib/domain/policies/AccessPolicy.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast } from '$lib/stores/toast.svelte.js';
+	import { formatRentangTanggal, formatTanggal } from '$lib/utils/format.js';
 	import {
 		DecisionBar,
 		DecisionDialog,
 		PESAN_KONFLIK_KEGIATAN,
 		QueueRow,
+		formulirDariEvent,
+		formulirKosong,
 		keputusanKegiatan,
 		nomorAntrean,
+		periksaFormulirEvent,
+		simpanPerubahanEvent,
 		slaAntrean
 	} from '../_components/index.js';
 
 	/** Waktu acuan seluruh perhitungan usia di halaman ini. */
 	const sekarang = new Date();
 
+	/** Status yang benar-benar punya tempat di kalender. Lihat keputusan 5. */
+	const STATUS_DI_KALENDER = Object.freeze([
+		EventStatus.TERJADWAL,
+		EventStatus.BERLANGSUNG,
+		EventStatus.SELESAI
+	]);
+
 	/**
 	 * Memasang jalur eksekusi pembatalan pada daftar keputusan yang datang dari peta
-	 * transisi domain.
-	 *
-	 * Registri `EVENT_DECISIONS` menandai `DIBATALKAN` sebagai transisi sah yang
-	 * belum punya jalur eksekusi — itu benar pada saat registri ditulis, dan berhenti
-	 * benar begitu `editorial.cancelEvent()` ada. Alih-alih menyunting registri milik
-	 * paket lain, halaman ini menimpanya di sini: hasilnya satu entri yang `jalankan`
-	 * -nya terisi dan `alasanTidakTersedia`-nya kosong, sehingga tombolnya hidup dan
-	 * DecisionBar berhenti menjelaskan halangan yang sudah tidak ada.
-	 *
-	 * Isian wajibnya tidak diubah sama sekali: `input: DecisionInput.NOTE` dari
-	 * registri tetap berlaku, jadi `DecisionDialog` menuntut alasan pembatalan
-	 * sebelum permintaan dikirim, dan `ContentReviewService.cancelEvent` menolaknya
-	 * sekali lagi bila kosong.
+	 * transisi domain. Isian wajibnya tidak diubah: `input: DecisionInput.NOTE` dari
+	 * registri tetap berlaku, sehingga `DecisionDialog` menuntut alasan pembatalan
+	 * dan `ContentReviewService.cancelEvent` menolaknya sekali lagi bila kosong.
 	 *
 	 * @param {import('../_components/decisions.js').Decision[]} daftar
 	 * @returns {import('../_components/decisions.js').Decision[]}
@@ -103,36 +113,114 @@
 	/** @type {{decision: import('../_components/decisions.js').Decision, event: object}|null} */
 	let keputusanTerbuka = $state(null);
 
-	/** @type {boolean} Formulir pengusulan sedang terbuka. */
+	/** @type {boolean} Formulir event sedang terbuka. */
 	let formulirTerbuka = $state(false);
+
+	/**
+	 * @type {string} Identitas event yang sedang disunting; kosong berarti formulir
+	 * sedang dipakai untuk menambah event baru. Satu nilai ini yang membedakan kedua
+	 * mode — bukan dua flag terpisah yang dapat saling bertentangan.
+	 */
+	let idDisunting = $state('');
 
 	/** @type {string} Pesan penolakan formulir; kosong berarti belum ada. */
 	let galatFormulir = $state('');
 
-	/** Isian formulir usulan kegiatan. */
-	let form = $state({
-		title: '',
-		type: EventType.PERTEMUAN,
-		description: '',
-		location: '',
-		isOnline: true,
-		startsAt: '',
-		endsAt: '',
-		quota: 0
-	});
+	/** @type {boolean} Penyimpanan suntingan sedang berjalan. */
+	let menyimpan = $state(false);
 
-	/** Ketiga jenis kegiatan sebagai pasangan kode dan label. */
+	/** Isian formulir event. */
+	let form = $state(formulirKosong());
+
+	/** @type {Date} Bulan yang sedang ditampilkan kalender. */
+	let bulanTampil = $state(new Date());
+
+	/** @type {Date|null} Tanggal terpilih; `null` berarti daftar menampilkan sebulan penuh. */
+	let tanggalTerpilih = $state(null);
+
+	/** Ketiga jenis event sebagai pasangan kode dan label. */
 	const jenisKegiatan = Object.values(EVENT_TYPE_META);
 
-	/** Agenda yang sudah terbit dan masih dapat berubah statusnya. */
-	const agendaBerjalan = $derived(
+	const bolehMengusulkan = $derived(AccessPolicy.canProposeEvent(session.role));
+
+	/** Event yang punya tempat di kalender, urut waktu mulai. */
+	const agendaKalender = $derived(
 		catalog.events
-			.filter(
-				(event) =>
-					event.status === EventStatus.TERJADWAL || event.status === EventStatus.BERLANGSUNG
-			)
+			.filter((event) => STATUS_DI_KALENDER.includes(event.status))
 			.sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
 	);
+
+	/** Penanda tanggal untuk `MonthCalendar`; ia menyaring bulannya sendiri. */
+	const penandaKalender = $derived(agendaKalender.map(eventCardVM));
+
+	/**
+	 * Agenda yang ditampilkan di samping kalender.
+	 *
+	 * Menyempit ke satu hari begitu sebuah tanggal dipilih, dan kembali ke sebulan
+	 * penuh saat pilihan dilepas — supaya kalender dan daftarnya mustahil menunjuk
+	 * rentang yang berbeda.
+	 */
+	const agendaTerlihat = $derived(
+		agendaKalender.filter((event) => {
+			const mulai = event.startsAt;
+			if (tanggalTerpilih) {
+				return (
+					mulai.getFullYear() === tanggalTerpilih.getFullYear() &&
+					mulai.getMonth() === tanggalTerpilih.getMonth() &&
+					mulai.getDate() === tanggalTerpilih.getDate()
+				);
+			}
+			return (
+				mulai.getFullYear() === bulanTampil.getFullYear() &&
+				mulai.getMonth() === bulanTampil.getMonth()
+			);
+		})
+	);
+
+	/** Tiga angka ringkas kepala halaman, dihitung dari data yang sama dengan daftarnya. */
+	const ringkasan = $derived([
+		{
+			id: 'menunggu',
+			label: 'Usulan menunggu keputusan',
+			nilai: editorial.eventQueue.length,
+			tegas: false,
+			iconPath: ICONS.inbox
+		},
+		{
+			id: 'lewat',
+			label: 'Sudah lewat tenggat',
+			nilai: editorial.eventOverdueCount,
+			tegas: editorial.eventOverdueCount > 0,
+			iconPath: ICONS.warning
+		},
+		{
+			id: 'terjadwal',
+			label: 'Event di kalender',
+			nilai: agendaKalender.length,
+			tegas: false,
+			iconPath: ICONS.calendar
+		}
+	]);
+
+	/**
+	 * Waktu sebuah event sebagai satu kalimat.
+	 *
+	 * Jam ikut ditulis, tidak seperti `formatRentangTanggal` yang hanya mengenal
+	 * tanggal: peserta yang membaca "12 Maret 2026" tanpa jam tetap harus bertanya
+	 * ke kanal lain, dan pertanyaan itulah yang seharusnya dijawab kalender.
+	 *
+	 * @param {Date} mulai
+	 * @param {Date} selesai
+	 * @returns {string}
+	 */
+	function labelWaktuEvent(mulai, selesai) {
+		const hariSama =
+			mulai.getFullYear() === selesai.getFullYear() &&
+			mulai.getMonth() === selesai.getMonth() &&
+			mulai.getDate() === selesai.getDate();
+		if (hariSama) return `${formatTanggal(mulai, 'waktu')}–${formatTanggal(selesai, 'jam')}`;
+		return formatRentangTanggal(mulai, selesai);
+	}
 
 	/**
 	 * Alasan tertulis mengapa keputusan atas sebuah usulan dimatikan.
@@ -165,105 +253,127 @@
 		}
 	}
 
-	/**
-	 * Memeriksa kelengkapan formulir usulan sebelum dikirim ke domain.
-	 * @returns {string} Pesan penolakan; kosong berarti lengkap.
-	 */
-	function periksaFormulir() {
-		if (form.title.trim() === '') return 'Judul kegiatan wajib diisi.';
-		if (form.startsAt === '' || form.endsAt === '') {
-			return 'Waktu mulai dan waktu selesai wajib diisi.';
-		}
-		const mulai = new Date(form.startsAt);
-		const selesai = new Date(form.endsAt);
-		if (Number.isNaN(mulai.getTime()) || Number.isNaN(selesai.getTime())) {
-			return 'Waktu mulai atau waktu selesai tidak terbaca sebagai tanggal yang sah.';
-		}
-		if (selesai < mulai) return 'Waktu selesai tidak boleh mendahului waktu mulai.';
-		if (form.location.trim() === '') {
-			return 'Isi lokasi atau kanal daring agar peserta tahu harus ke mana.';
-		}
-		return '';
+	/** Membuka formulir dalam mode tambah. */
+	function bukaTambah() {
+		idDisunting = '';
+		galatFormulir = '';
+		form = formulirKosong();
+		formulirTerbuka = true;
 	}
 
 	/**
-	 * Mengirim usulan kegiatan atas nama akun yang sedang masuk.
+	 * Membuka formulir dalam mode sunting atas sebuah event yang sudah ada.
+	 * @param {object} event
+	 */
+	function bukaSunting(event) {
+		idDisunting = event.id;
+		galatFormulir = '';
+		form = formulirDariEvent(event);
+		formulirTerbuka = true;
+	}
+
+	function tutupFormulir() {
+		formulirTerbuka = false;
+		idDisunting = '';
+		galatFormulir = '';
+	}
+
+	/**
+	 * Menyimpan isi formulir lewat jalur yang sesuai modenya.
 	 *
-	 * `proposedBy` sengaja TIDAK diisi di sini — domain mengambilnya dari aktor.
+	 * Event baru dikirim sebagai objek polos, bukan entity yang dirakit halaman:
+	 * `ContentReviewService.proposeEvent` membangun `CommunityEvent` sendiri dan
+	 * menimpa `proposedBy` dengan identitas aktor — nilai yang boleh dikirim dari
+	 * formulir akan membuat pemeriksaan konflik kepentingan dapat dilewati hanya
+	 * dengan mengetik id orang lain.
+	 *
 	 * @returns {Promise<void>}
 	 */
-	async function usulkan() {
-		const salah = periksaFormulir();
+	async function simpan() {
+		const salah = periksaFormulirEvent(form);
 		if (salah !== '') {
 			galatFormulir = salah;
 			return;
 		}
 		galatFormulir = '';
+		menyimpan = true;
 
-		const hasil = await editorial.proposeEvent({
-			id: `EVT-${Date.now().toString(36).toUpperCase()}`,
-			title: form.title.trim(),
-			type: form.type,
-			status: EventStatus.DRAFT,
-			description: form.description.trim(),
-			location: form.location.trim(),
-			isOnline: form.isOnline,
-			startsAt: new Date(form.startsAt),
-			endsAt: new Date(form.endsAt),
-			quota: Number(form.quota) || 0
-		});
+		try {
+			if (idDisunting !== '') {
+				const hasil = await simpanPerubahanEvent(idDisunting, form);
+				if (!hasil.ok) {
+					galatFormulir = hasil.reason;
+					return;
+				}
+				toast.info('Perubahan tersimpan', 'Detail event diperbarui; statusnya tidak berubah.');
+			} else {
+				const hasil = await editorial.proposeEvent({
+					id: `EVT-${Date.now().toString(36).toUpperCase()}`,
+					title: form.title.trim(),
+					type: form.type,
+					status: EventStatus.DRAFT,
+					description: form.description.trim(),
+					location: form.location.trim(),
+					isOnline: form.isOnline,
+					startsAt: new Date(form.startsAt),
+					endsAt: new Date(form.endsAt),
+					quota: Number(form.quota) || 0
+				});
+				if (!hasil.ok) return;
+				toast.info(
+					'Event baru masuk antrean',
+					'Persetujuan atas event ini harus diambil verifikator lain — Anda pengusulnya.'
+				);
+			}
 
-		if (hasil.ok) {
-			formulirTerbuka = false;
-			form = {
-				title: '',
-				type: EventType.PERTEMUAN,
-				description: '',
-				location: '',
-				isOnline: true,
-				startsAt: '',
-				endsAt: '',
-				quota: 0
-			};
-			toast.info(
-				'Usulan Anda masuk antrean',
-				'Persetujuan atas usulan ini harus diambil verifikator lain — Anda pengusulnya.'
-			);
+			tutupFormulir();
 			await catalog.refresh();
+			await editorial.refresh();
+		} finally {
+			menyimpan = false;
 		}
 	}
 </script>
 
 <PageHeader
-	eyebrow="Antrean tinjauan"
-	title="Usulan kegiatan"
-	subtitle="Tertua lebih dahulu. Usulan yang Anda ajukan sendiri tetap tampil di sini, namun keputusannya harus diambil verifikator lain."
+	eyebrow="Ruang kerja verifikator"
+	title="Konfigurasi Calendar of Event"
+	subtitle="Putuskan usulan yang menunggu, tambahkan event baru, dan rapikan detail agenda yang sudah tayang di kalender komunitas."
 >
 	{#snippet actions()}
 		<Button
 			variant={formulirTerbuka ? 'secondary' : 'primary'}
 			size="md"
 			iconPath={formulirTerbuka ? ICONS.x : ICONS.plus}
-			onclick={() => (formulirTerbuka = !formulirTerbuka)}
+			disabled={!bolehMengusulkan && !formulirTerbuka}
+			onclick={() => (formulirTerbuka ? tutupFormulir() : bukaTambah())}
 		>
-			{formulirTerbuka ? 'Tutup formulir' : 'Usulkan kegiatan'}
+			{formulirTerbuka ? 'Tutup formulir' : 'Tambah event'}
 		</Button>
 	{/snippet}
 </PageHeader>
 
 {#if formulirTerbuka}
 	<section class="card mt-5 p-5" aria-labelledby="judul-formulir">
-		<h2 id="judul-formulir" class="text-base font-bold text-heading">Usulkan kegiatan baru</h2>
+		<h2 id="judul-formulir" class="text-base font-bold text-heading">
+			{idDisunting !== '' ? 'Sunting detail event' : 'Tambah event baru'}
+		</h2>
 		<p class="mt-1 text-sm leading-relaxed text-ink-600">
-			Usulan Anda masuk ke antrean yang sama dengan usulan awardee, dan akan diputuskan verifikator
-			lain. Pengusul tidak pernah menjadi pemutus atas usulannya sendiri.
+			{#if idDisunting !== ''}
+				Yang disunting hanya detail deskriptif: judul, jenis, waktu, lokasi, dan kapasitas. Status
+				event tidak ikut berubah — persetujuan, penolakan, dan pembatalan tetap hanya lewat tombol
+				keputusan di daftar agenda.
+			{:else}
+				Event yang Anda tambahkan masuk ke antrean yang sama dengan usulan awardee, dan akan
+				diputuskan verifikator lain. Pengusul tidak pernah menjadi pemutus atas usulannya sendiri.
+			{/if}
 		</p>
 
 		<div class="mt-4 grid gap-4 sm:grid-cols-2">
 			<div class="sm:col-span-2">
-				<label class="label-micro mb-1.5 block" for="usul-judul">Judul kegiatan</label>
+				<label class="label-micro mb-1.5 block" for="event-judul">Judul event</label>
 				<input
-					id="usul-judul"
+					id="event-judul"
 					type="text"
 					bind:value={form.title}
 					class="min-h-11 w-full rounded-control border border-ink-200 bg-white px-3 text-sm text-ink-800"
@@ -272,9 +382,9 @@
 			</div>
 
 			<div>
-				<label class="label-micro mb-1.5 block" for="usul-jenis">Jenis kegiatan</label>
+				<label class="label-micro mb-1.5 block" for="event-jenis">Jenis event</label>
 				<select
-					id="usul-jenis"
+					id="event-jenis"
 					bind:value={form.type}
 					class="min-h-11 w-full rounded-control border border-ink-200 bg-white px-3 text-sm text-ink-800"
 				>
@@ -285,9 +395,9 @@
 			</div>
 
 			<div>
-				<label class="label-micro mb-1.5 block" for="usul-kuota">Kapasitas peserta</label>
+				<label class="label-micro mb-1.5 block" for="event-kuota">Kapasitas peserta</label>
 				<input
-					id="usul-kuota"
+					id="event-kuota"
 					type="number"
 					min="0"
 					bind:value={form.quota}
@@ -297,9 +407,9 @@
 			</div>
 
 			<div>
-				<label class="label-micro mb-1.5 block" for="usul-mulai">Mulai</label>
+				<label class="label-micro mb-1.5 block" for="event-mulai">Mulai</label>
 				<input
-					id="usul-mulai"
+					id="event-mulai"
 					type="datetime-local"
 					bind:value={form.startsAt}
 					class="min-h-11 w-full rounded-control border border-ink-200 bg-white px-3 text-sm text-ink-800"
@@ -307,9 +417,9 @@
 			</div>
 
 			<div>
-				<label class="label-micro mb-1.5 block" for="usul-selesai">Selesai</label>
+				<label class="label-micro mb-1.5 block" for="event-selesai">Selesai</label>
 				<input
-					id="usul-selesai"
+					id="event-selesai"
 					type="datetime-local"
 					bind:value={form.endsAt}
 					class="min-h-11 w-full rounded-control border border-ink-200 bg-white px-3 text-sm text-ink-800"
@@ -317,13 +427,13 @@
 			</div>
 
 			<div class="sm:col-span-2">
-				<label class="label-micro mb-1.5 block" for="usul-lokasi">Lokasi atau kanal daring</label>
+				<label class="label-micro mb-1.5 block" for="event-lokasi">Lokasi atau kanal daring</label>
 				<input
-					id="usul-lokasi"
+					id="event-lokasi"
 					type="text"
 					bind:value={form.location}
 					class="min-h-11 w-full rounded-control border border-ink-200 bg-white px-3 text-sm text-ink-800"
-					placeholder="Misalnya: Zoom, atau Aula Chapter Jawa Barat"
+					placeholder="Misalnya: Zoom, atau Aula Chapter PF 11"
 				/>
 			</div>
 
@@ -332,16 +442,16 @@
 					<input
 						type="checkbox"
 						bind:checked={form.isOnline}
-						class="h-4 w-4 rounded border-ink-450 accent-pertamina-red-ink"
+						class="h-4 w-4 rounded border-ink-450 accent-pertamina-navy"
 					/>
-					Kegiatan dilaksanakan daring
+					Event dilaksanakan daring
 				</label>
 			</div>
 
 			<div class="sm:col-span-2">
-				<label class="label-micro mb-1.5 block" for="usul-deskripsi">Deskripsi singkat</label>
+				<label class="label-micro mb-1.5 block" for="event-deskripsi">Deskripsi singkat</label>
 				<textarea
-					id="usul-deskripsi"
+					id="event-deskripsi"
 					rows="3"
 					bind:value={form.description}
 					class="w-full rounded-control border border-ink-200 bg-white p-3 text-sm leading-relaxed text-ink-800"
@@ -357,33 +467,60 @@
 		{/if}
 
 		<div class="mt-4 flex justify-end gap-2">
-			<Button variant="ghost" size="md" onclick={() => (formulirTerbuka = false)}>Batal</Button>
-			<Button variant="primary" size="md" loading={editorial.working} onclick={usulkan}>
-				Kirim usulan
+			<Button variant="ghost" size="md" onclick={tutupFormulir}>Batal</Button>
+			<Button
+				variant="primary"
+				size="md"
+				loading={editorial.working || menyimpan}
+				onclick={simpan}
+			>
+				{idDisunting !== '' ? 'Simpan perubahan' : 'Kirim event baru'}
 			</Button>
 		</div>
 	</section>
 {/if}
 
-<section class="mt-6" aria-labelledby="judul-antrean">
-	<h2 id="judul-antrean" class="text-lg font-bold text-heading">Menunggu keputusan</h2>
+<section class="mt-5 grid gap-4 sm:grid-cols-3" aria-label="Ringkasan kalender">
+	{#each ringkasan as kartu (kartu.id)}
+		<div class="card p-4">
+			<span class="flex items-center gap-2 {kartu.tegas ? 'text-pertamina-red-ink' : 'text-ink-600'}">
+				<Icon path={kartu.iconPath} size={16} />
+				<span class="label-micro">{kartu.label}</span>
+			</span>
+			<span
+				class="numeric mt-2 block text-3xl leading-none {kartu.tegas
+					? 'text-pertamina-red-ink'
+					: 'text-ink-900'}"
+			>
+				{kartu.nilai}
+			</span>
+		</div>
+	{/each}
+</section>
+
+<section class="mt-8" aria-labelledby="judul-antrean">
+	<h2 id="judul-antrean" class="text-lg font-bold text-heading">Usulan menunggu keputusan</h2>
+	<p class="mt-1 text-sm leading-relaxed text-ink-600">
+		Tertua lebih dahulu. Usulan yang Anda ajukan sendiri tetap tampil di sini, namun keputusannya
+		harus diambil verifikator lain.
+	</p>
 
 	{#if editorial.loading && editorial.eventQueue.length === 0}
-		<div class="mt-3 space-y-3" aria-busy="true" aria-label="Memuat antrean usulan">
+		<div class="mt-4 space-y-3" aria-busy="true" aria-label="Memuat antrean usulan">
 			{#each ['a', 'b'] as kunci (kunci)}
 				<div class="skeleton h-28 w-full rounded-card"></div>
 			{/each}
 		</div>
 	{:else if editorial.eventQueue.length === 0}
-		<div class="mt-3">
+		<div class="mt-4">
 			<EmptyState
-				title="Tidak ada usulan kegiatan"
+				title="Tidak ada usulan menunggu"
 				message="Usulan dari awardee maupun sesama verifikator akan tampil di sini, tertua lebih dahulu."
 				iconPath={ICONS.calendar}
 			/>
 		</div>
 	{:else}
-		<ul class="mt-3 space-y-3">
+		<ul class="mt-4 space-y-3">
 			{#each editorial.eventQueue as usulan, indeks (usulan.id)}
 				{@const sebab = halangan(usulan)}
 				<li>
@@ -396,19 +533,33 @@
 						sla={slaAntrean(usulan, sekarang)}
 						meta={[
 							usulan.typeMeta.label,
+							labelWaktuEvent(usulan.startsAt, usulan.endsAt),
 							usulan.isOnline ? 'Daring' : 'Luring',
 							usulan.location || 'Lokasi belum diisi',
 							sebab !== '' ? 'Diusulkan oleh Anda' : `Pengusul: ${usulan.proposedBy || 'tidak tercatat'}`
 						]}
 					>
 						{#snippet actions()}
-							<DecisionBar
-								decisions={lengkapiKeputusan(keputusanKegiatan(usulan.status, session.role))}
-								blockedReason={sebab}
-								working={editorial.working}
-								emptyMessage="Usulan ini tidak lagi menunggu keputusan."
-								onpick={(decision) => (keputusanTerbuka = { decision, event: usulan })}
-							/>
+							<div class="flex flex-wrap items-start gap-x-3 gap-y-2">
+								<div class="min-w-0 flex-1">
+									<DecisionBar
+										decisions={lengkapiKeputusan(keputusanKegiatan(usulan.status, session.role))}
+										blockedReason={sebab}
+										working={editorial.working}
+										compact
+										emptyMessage="Usulan ini tidak lagi menunggu keputusan."
+										onpick={(decision) => (keputusanTerbuka = { decision, event: usulan })}
+									/>
+								</div>
+								<Button
+									variant="ghost"
+									size="sm"
+									iconPath={ICONS.edit}
+									onclick={() => bukaSunting(usulan)}
+								>
+									Sunting
+								</Button>
+							</div>
 						{/snippet}
 					</QueueRow>
 				</li>
@@ -417,51 +568,112 @@
 	{/if}
 </section>
 
-<section class="mt-8" aria-labelledby="judul-agenda">
-	<h2 id="judul-agenda" class="text-lg font-bold text-heading">Agenda yang sudah terbit</h2>
-	<p class="mt-1 text-sm leading-relaxed text-ink-600">
-		Daftar transisi di bawah tetap dirender dari peta transisi domain, sehingga terlihat persis apa
-		yang sah dilakukan seorang verifikator atas agenda berjalan.
-	</p>
-
-	{#if agendaBerjalan.length === 0}
+<!--
+	`min-w-0` pada kedua kolom: judul event yang panjang akan menaikkan lebar
+	`min-content` kolomnya dan membuat halaman menggulir mendatar di 375 px.
+-->
+<div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+	<section class="card min-w-0 p-5" aria-labelledby="judul-kalender">
+		<h2 id="judul-kalender" class="kicker">Kalender komunitas</h2>
 		<div class="mt-3">
-			<EmptyState
-				title="Belum ada agenda berjalan"
-				message="Kegiatan yang sudah disetujui akan muncul di sini beserta transisi yang sah atasnya."
-				iconPath={ICONS.calendar}
-				size="sm"
+			<MonthCalendar
+				month={bulanTampil}
+				events={penandaKalender}
+				selected={tanggalTerpilih ?? undefined}
+				onstep={(bulan) => {
+					bulanTampil = bulan;
+					tanggalTerpilih = null;
+				}}
+				onselect={(tanggal) => (tanggalTerpilih = tanggal)}
 			/>
 		</div>
-	{:else}
-		<ul class="mt-3 space-y-3">
-			{#each agendaBerjalan as agenda (agenda.id)}
-				<li class="card p-4">
-					<div class="flex flex-wrap items-center gap-2">
-						<h3 class="min-w-0 flex-1 text-[15px] leading-snug font-bold text-heading">
-							{agenda.title}
-						</h3>
-						<StatusBadge
-							label={agenda.statusMeta.label}
-							color={agenda.statusMeta.badgeColor}
-							size="sm"
-							variant="soft"
-						/>
-					</div>
+		<p class="mt-4 text-xs leading-relaxed text-ink-600">
+			Penanda hanya muncul untuk event yang benar-benar terjadwal, berlangsung, atau selesai. Usulan
+			yang belum diputuskan sengaja tidak ditandai — tanggal yang tampak pasti padahal masih mungkin
+			ditolak akan menyesatkan siapa pun yang menjadwalkan dirinya ke sana.
+		</p>
+	</section>
 
-					<div class="mt-3 border-t border-ink-100 pt-3">
-						<DecisionBar
-							decisions={lengkapiKeputusan(keputusanKegiatan(agenda.status, session.role))}
-							working={editorial.working}
-							emptyMessage="Agenda ini sudah berada pada keadaan akhir."
-							onpick={(decision) => (keputusanTerbuka = { decision, event: agenda })}
-						/>
-					</div>
-				</li>
-			{/each}
-		</ul>
-	{/if}
-</section>
+	<section class="min-w-0" aria-labelledby="judul-agenda">
+		<div class="flex flex-wrap items-baseline justify-between gap-2">
+			<h2 id="judul-agenda" class="text-lg font-bold text-heading">
+				{tanggalTerpilih ? 'Agenda tanggal terpilih' : 'Agenda bulan ini'}
+			</h2>
+			{#if tanggalTerpilih}
+				<button
+					type="button"
+					class="text-sm font-semibold text-pertamina-navy hover:underline"
+					onclick={() => (tanggalTerpilih = null)}
+				>
+					Tampilkan sebulan penuh
+				</button>
+			{/if}
+		</div>
+		<p class="mt-1 text-sm leading-relaxed text-ink-600">
+			Daftar transisi tiap event dirender dari peta transisi domain, sehingga terlihat persis apa
+			yang sah dilakukan seorang verifikator atas agenda berjalan.
+		</p>
+
+		{#if agendaTerlihat.length === 0}
+			<div class="mt-4">
+				<EmptyState
+					title="Belum ada event pada rentang ini"
+					message="Event yang sudah disetujui akan muncul di sini beserta transisi yang sah atasnya."
+					iconPath={ICONS.calendar}
+					size="sm"
+				/>
+			</div>
+		{:else}
+			<ul class="mt-4 space-y-3">
+				{#each agendaTerlihat as agenda (agenda.id)}
+					<li class="card p-4">
+						<div class="flex flex-wrap items-start gap-2">
+							<h3 class="min-w-0 flex-1 text-[15px] leading-snug font-bold text-heading">
+								{agenda.title}
+							</h3>
+							<StatusBadge
+								label={agenda.statusMeta.label}
+								color={agenda.statusMeta.badgeColor}
+								size="sm"
+								variant="soft"
+							/>
+						</div>
+
+						<div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-600">
+							<span>{agenda.typeMeta.label}</span>
+							<span>{labelWaktuEvent(agenda.startsAt, agenda.endsAt)}</span>
+							<span>{agenda.isOnline ? 'Daring' : 'Luring'}</span>
+							<span class="min-w-0 truncate">{agenda.location || 'Lokasi belum diisi'}</span>
+							<span class="numeric">
+								{agenda.quota > 0 ? `Kapasitas ${agenda.quota}` : 'Tanpa batas kapasitas'}
+							</span>
+						</div>
+
+						<div class="mt-3 flex flex-wrap items-start gap-x-3 gap-y-2 border-t border-ink-100 pt-3">
+							<div class="min-w-0 flex-1">
+								<DecisionBar
+									decisions={lengkapiKeputusan(keputusanKegiatan(agenda.status, session.role))}
+									working={editorial.working}
+									compact
+									emptyMessage="Event ini sudah berada pada keadaan akhir."
+									onpick={(decision) => (keputusanTerbuka = { decision, event: agenda })}
+								/>
+							</div>
+							<Button
+								variant="ghost"
+								size="sm"
+								iconPath={ICONS.edit}
+								onclick={() => bukaSunting(agenda)}
+							>
+								Sunting
+							</Button>
+						</div>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	</section>
+</div>
 
 <DecisionDialog
 	decision={keputusanTerbuka?.decision ?? null}

@@ -61,14 +61,14 @@ export const animasi = { animationDuration: 600, animationEasing: 'cubicOut' };
  * Dipakai bila kategorinya BUKAN tier, pilar, atau rarity.
  */
 export const series = [
-	'#0C4DA2', // 1 biru Pertamina
-	'#ED1C24', // 2 merah Pertamina
-	'#009B4C', // 3 hijau Pertamina
-	'#F0B429', // 4 kuning
-	'#6D4AA8', // 5 ungu
-	'#0284C7', // 6 cyan
-	'#DB2777', // 7 magenta
-	'#64748B' // 8 abu
+	'#34908B', // 1 teal utama
+	'#D9B81F', // 2 kuning aksen
+	'#6FBEB2', // 3 teal madya
+	'#8F7014', // 4 kuning tua
+	'#1E4B49', // 5 teal gelap
+	'#A5E9DD', // 6 teal muda
+	'#4AA79F', // 7 teal sedang
+	'#94A3B8' // 8 abu netral
 ];
 
 /**
@@ -86,20 +86,26 @@ export const tierColorByLevel = Object.freeze(
 );
 
 /** Palet pilar ESG — sama dengan token `esg-e/s/g` di app.css. */
-export const esgPalette = Object.freeze({ E: '#009B4C', S: '#0C4DA2', G: '#6D4AA8' });
+export const esgPalette = Object.freeze({ E: '#6FBEB2', S: '#34908B', G: '#D9B81F' });
 
 /** Palet kelangkaan badge: perunggu, perak, emas, platina. */
-export const rarityPalette = ['#B08D57', '#9AA5B1', '#F0B429', '#2E7CD6'];
+export const rarityPalette = ['#A5E9DD', '#6FBEB2', '#D9B81F', '#34908B'];
 
-/** Warna brand bernama, untuk chart satu seri. */
+/**
+ * Warna brand bernama, untuk chart satu seri.
+ *
+ * Kunci-kuncinya masih bernama warna lama (`red`, `navy`, `blue`, …) karena
+ * dipakai belasan komponen chart; yang dipetakan ulang adalah NILAI-nya ke palet
+ * teal/kuning. Mengganti kuncinya berarti menyunting setiap pemanggil sekaligus.
+ */
 export const palette = Object.freeze({
-	red: '#ED1C24',
-	navy: '#003E7E',
-	blue: '#0C4DA2',
-	green: '#009B4C',
-	amber: '#F0B429',
-	purple: '#6D4AA8',
-	cyan: '#0284C7',
+	red: '#D9B81F', // → kuning aksen
+	navy: '#1A3E3D', // → teal paling gelap
+	blue: '#34908B', // → teal utama
+	green: '#6FBEB2', // → teal madya
+	amber: '#D9B81F',
+	purple: '#8F7014', // → kuning tua
+	cyan: '#A5E9DD', // → teal muda
 	slate: '#94A3B8',
 	slateSoft: '#F1F5F9',
 	ink: '#0F1B2D',

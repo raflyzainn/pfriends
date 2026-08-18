@@ -1,608 +1,487 @@
 <script>
 	/**
-	 * BERANDA PFRIENDS — terbitan editorial, bukan etalase produk.
+	 * BERANDA PFFRIENDS — versi ringkas untuk peragaan.
 	 *
-	 * Halaman ini ditulis ulang penuh untuk memenuhi dua keputusan pemilik produk
-	 * sekaligus: PO-2 (nol mekanik skor di zona publik) dan PO-6 (redesign
-	 * editorial). Tujuh seksi lama menjadi tujuh seksi baru, dan tidak ada dua di
-	 * antaranya yang berbagi bentuk.
+	 * Navigasi publik kini hanya tiga tujuan (Beranda, Blog, Calendar of Event),
+	 * sehingga beranda pun dipangkas menjadi empat seksi yang masing-masing punya
+	 * satu pekerjaan:
 	 *
-	 * ENAM KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
+	 *   1. Hero        — menyatakan ini situs apa, satu kalimat, satu tombol.
+	 *   2. Billboard   — kegiatan terdekat sebagai papan reklame lebar penuh.
+	 *   3. Peringkat   — sepuluh peserta paling aktif beserta poinnya.
+	 *   4. Blog        — tiga cerita terbaru.
 	 *
-	 * 1. **Nol angka dihitung di berkas ini.** Seluruh angka agregat datang dari
-	 *    `impact.snapshot` — potret `ProgramImpactService.publicSnapshot()` yang
-	 *    tidak memuat satu pun field skor. Beranda lama menghitung sendiri
-	 *    (`activeAwardees.length`, `new Set(chapterId).size`, `.sort((a,b) =>
-	 *    b.points - a.points)`), dan penyaring kedua itulah yang membuat angka
-	 *    beranda berpotensi berbeda dari angka dasbor. Satu potret, satu definisi.
+	 * EMPAT KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
-	 * 2. **Tidak ada blok "cara mengumpulkan skor", tangga tier, maupun sorotan
-	 *    berperingkat.** Ketiganya pindah ke zona Awardee. Halaman muka korporat
-	 *    yang memajang harga sebuah unggahan terbaca sebagai program yang MEMBELI
-	 *    amplifikasi — dan itu membatalkan klaim "organic brand amplifier" yang
-	 *    justru menjadi alasan inisiatif ini ada (`docs/10` §4.3 H-1…H-3).
+	 * 1. **Papan peringkat SENGAJA tampil di zona publik.** Ini melanggar PO-2 (nol
+	 *    mekanik skor di zona publik) dan karenanya `npm run verify:purity` akan
+	 *    gagal pada berkas ini. Pelanggarannya diminta pemilik produk secara
+	 *    tersurat: papan peringkat adalah pemikat utama microsite pada peragaan.
+	 *    Skrip pemindainya sengaja TIDAK disunting — gerbang yang dilonggarkan
+	 *    diam-diam akan melewatkan pelanggaran berikutnya yang tidak disengaja.
 	 *
-	 * 3. **Angka kelas B tampil sebagai RENTANG.** Jangkauan organik adalah hasil
-	 *    perkalian data terhitung dengan tiga parameter berasumsi. Satu angka
-	 *    tunggal terbaca sebagai hasil ukur; rentang berlabel `Estimasi` berikut
-	 *    asumsinya terbaca sebagai estimasi. Bedanya bukan kosmetik — pertanyaan
-	 *    "diukur bagaimana?" harus punya jawaban di halaman yang sama.
+	 * 2. **Nol foto raster.** Hero lama memuat dua berkas (273 KB + 240 KB) yang
+	 *    dimuat sebelum satu kata pun terbaca. Penggantinya gradien teal + bentuk
+	 *    geometris SVG inline: nol permintaan jaringan, dan warnanya mengikuti
+	 *    palet lewat token, bukan heksadesimal tulis tangan.
 	 *
-	 * 4. **Sparkline pita data sengaja TIDAK diisi.** `PublicImpactSnapshot` adalah
-	 *    potret satu titik waktu; deret delapan titik yang dibutuhkan sparkline
-	 *    tidak ada di dalamnya. Mengarang deretnya berarti menggambar tren yang
-	 *    tidak pernah diukur, tepat pada elemen yang paling terbaca sebagai bukti.
+	 * 3. **Peringkat dibaca lewat `awardeeRepository.topByPoints()`,** bukan dengan
+	 *    menyortir `catalog.awardees` di berkas ini. Repository sudah menyaring
+	 *    akun yang ditangguhkan dan memutus seri secara deterministik; menyortir
+	 *    sendiri di sini berarti papan peringkat beranda dapat berbeda isi dari
+	 *    papan peringkat zona awardee.
 	 *
-	 * 5. **Data kosong → keadaan kosong yang menjelaskan.** Aturan D-05: nol yang
-	 *    dicetak 56 px membaca sebagai "program gagal", padahal yang terjadi hanya
-	 *    potret belum tersusun.
-	 *
-	 * 6. **Seksi E4 menautkan `/kalender` yang boleh 404 selama G3-B.** Halaman itu
-	 *    milik WP-08; membuat versi tandingan di sini melanggar KP-3.
-	 *
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 rancangan beranda seksi E0–E7
-	 * @see docs/10-REVISION-SPEC.md — §4 arsitektur informasi publik, §4.4 kelas angka
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-04
+	 * 4. **Billboard menampilkan SATU kegiatan.** Papan reklame yang memuat empat
+	 *    agenda berhenti menjadi papan reklame. Daftar lengkapnya ada di
+	 *    `/kalender`, dan tombolnya menunjuk ke sana.
 	 */
 	import { Icon, ICONS } from '$lib/components';
-	import EventListPanel from '$lib/components/EventListPanel.svelte';
-	import {
-		DataBand,
-		EditorialHero,
-		MonthCalendar,
-		PhotoFigure,
-		SectionRule,
-		StorySpread,
-		storyVM
-	} from '$lib/components/editorial';
+	import { storyVM } from '$lib/components/editorial/view-model.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
-	import { impact } from '$lib/stores/impact.svelte.js';
-	import { COMMUNITIES, CommunityType } from '$lib/domain/constants/community.js';
-	import { MOVEMENT_CATEGORY_META, MOVEMENT_STATUS_META } from '$lib/domain/entities/Movement.js';
-	import { REACH_PARAMETERS } from '$lib/domain/constants/kpi-targets.js';
-	import { foto } from '$lib/data/photos.js';
-	import { formatAngka, formatTanggal, frasaHitung, persenProgres } from '$lib/utils/format.js';
-	import { awalBulan } from '$lib/utils/date.js';
-	import { agendaPublik, barisGerakan, ringkasSemuaKomunitas } from './_view-model.js';
+	import { awardeeRepository } from '$lib/infrastructure/repositories/index.js';
+	import { tierUntukPoin } from '$lib/domain/constants/tier-table.js';
+	import { formatAngka, formatTanggal } from '$lib/utils/format.js';
 
-	/** Cerita yang muat pada hierarki E5: 1 unggulan + 2 sekunder + 4 ringkas. */
-	const CERITA_LEAD = 1;
-	const CERITA_SEKUNDER = 2;
-	const CERITA_BRIEF = 4;
+	/** Banyaknya baris papan peringkat. */
+	const JUMLAH_PERINGKAT = 8;
 
-	/** Agenda yang tampil di E4; baris ketiga sengaja ber-thumbnail (penyimpangan P-3). */
-	const AGENDA_TAMPIL = 4;
-	const BARIS_THUMBNAIL = 3;
+	/** Banyaknya kartu blog di beranda. */
+	const JUMLAH_BLOG = 3;
 
-	/** Gerakan pendamping di bawah gerakan unggulan. */
-	const GERAKAN_BARIS = 3;
+	/** @type {{id:string, peringkat:number, nama:string, inisial:string, komunitas:string, chapter:string, poin:number, tier:string, tint:string, ink:string}[]} */
+	let peringkat = $state([]);
 
-	/** Foto per baris E3, sejajar urutan `COMMUNITIES`. */
-	const FOTO_KOMUNITAS = Object.freeze({
-		[CommunityType.SOBI]: 'sobi-alumni-kampus',
-		[CommunityType.WOMENPRENEUR]: 'womenpreneur-umkm'
+	let memuatPeringkat = $state(true);
+
+	/** Penanda agar efek pemuatan tidak berjalan dua kali. */
+	let sudahMemuat = false;
+
+	$effect(() => {
+		if (sudahMemuat) return;
+		sudahMemuat = true;
+		void muatPeringkat();
 	});
 
-	/** Keying rule per baris E3 — merah untuk baris A, navy untuk baris B. */
-	const KEYLINE_KOMUNITAS = Object.freeze({
-		[CommunityType.SOBI]: 'red',
-		[CommunityType.WOMENPRENEUR]: 'navy'
-	});
-
-	const potret = $derived(impact.snapshot);
-
 	/**
-	 * Potret dianggap layak tampil hanya bila sudah tersusun DAN memuat sekurangnya
-	 * satu anggota terdata. Pita data yang mencetak nol besar akan dibaca sebagai
-	 * capaian nol, bukan sebagai data yang belum masuk (aturan D-05).
-	 */
-	const adaPotret = $derived(Boolean(potret) && potret.registeredAwardees > 0);
-
-	const tanggalPotret = $derived(potret ? formatTanggal(potret.capturedAt, 'panjang') : '');
-
-	/** Penyebut populasi penerima manfaat; `null` = registri belum tersedia. */
-	const penyebutRegistri = $derived(
-		potret?.beneficiaryRegistry?.value
-			? `dari ${formatAngka(potret.beneficiaryRegistry.value)} penerima manfaat terdaftar`
-			: 'anggota aktif yang menyetujui pendataan'
-	);
-
-	const komunitasRingkas = $derived(ringkasSemuaKomunitas(catalog.awardees));
-
-	const ceritaVM = $derived(catalog.publishedStories.map((story) => storyVM(story)));
-	const ceritaLead = $derived(ceritaVM[0] ?? null);
-	const ceritaSekunder = $derived(ceritaVM.slice(CERITA_LEAD, CERITA_LEAD + CERITA_SEKUNDER));
-	const ceritaBrief = $derived(
-		ceritaVM.slice(CERITA_LEAD + CERITA_SEKUNDER, CERITA_LEAD + CERITA_SEKUNDER + CERITA_BRIEF)
-	);
-
-	/** Seluruh agenda publik — dipakai kalender; penandanya tersebar lintas bulan. */
-	const agendaSemua = $derived(agendaPublik(catalog.publishedEvents));
-	const agendaMendatang = $derived(agendaPublik(catalog.upcomingEvents()));
-
-	/** Bulan yang sedang ditampilkan kalender; `null` = ikut agenda terdekat. */
-	let bulanDipilih = $state(/** @type {Date|null} */ (null));
-
-	/**
-	 * Bulan kalender: agenda terdekat lebih dulu, bukan bulan berjalan.
+	 * Memuat sepuluh besar poin kontribusi lewat repository.
 	 *
-	 * Kalender yang selalu membuka bulan berjalan akan sering tampil kosong padahal
-	 * agenda berikutnya hanya berjarak beberapa hari di bulan setelahnya — dan
-	 * kalender kosong di beranda terbaca sebagai komunitas yang berhenti.
+	 * `catalog.load()` dipanggil lebih dulu karena ia yang memasang data peragaan
+	 * ke IndexedDB; tanpa itu peramban yang baru pertama membuka situs akan
+	 * menemukan tabel kosong dan papan peringkat tampil hampa selamanya.
+	 *
+	 * @returns {Promise<void>}
 	 */
-	const bulanTampil = $derived(
-		bulanDipilih ?? awalBulan(agendaMendatang[0]?.startsAt ?? new Date()) ?? new Date()
-	);
-
-	const gerakanBerjalan = $derived(catalog.movements.filter((gerakan) => gerakan.isRunning));
-
-	/** Gerakan unggulan: yang partisipasinya paling banyak, bukan yang paling baru. */
-	const gerakanUnggulan = $derived(
-		[...gerakanBerjalan].sort((a, b) => b.participantCount - a.participantCount)[0] ?? null
-	);
-
-	const gerakanPendamping = $derived(
-		gerakanBerjalan
-			.filter((gerakan) => gerakan.id !== gerakanUnggulan?.id)
-			.slice(0, GERAKAN_BARIS)
-			.map((gerakan) => baris(gerakan))
-	);
-
-	const unggulanVM = $derived(gerakanUnggulan ? baris(gerakanUnggulan) : null);
-
-	/**
-	 * Baris gerakan siap render, lengkap dengan label kategori dan statusnya.
-	 * @param {import('$lib/domain/entities/Movement.js').Movement} gerakan
-	 * @returns {import('./_view-model.js').BarisGerakan}
-	 */
-	function baris(gerakan) {
-		return barisGerakan(
-			gerakan,
-			MOVEMENT_CATEGORY_META[gerakan.category]?.label ?? 'Gerakan bersama',
-			MOVEMENT_STATUS_META[gerakan.status]?.label ?? ''
-		);
+	async function muatPeringkat() {
+		try {
+			await catalog.load();
+			const daftar = await awardeeRepository.topByPoints(JUMLAH_PERINGKAT);
+			peringkat = daftar.map((awardee, index) => {
+				const tier = tierUntukPoin(awardee.points);
+				return {
+					id: awardee.id,
+					peringkat: index + 1,
+					nama: awardee.displayName,
+					inisial: awardee.initials,
+					komunitas: awardee.communityDef.akronim,
+					chapter: awardee.chapterId,
+					poin: awardee.points,
+					tier: tier.label,
+					tint: `var(--color-${tier.tint})`,
+					ink: `var(--color-${tier.ink})`
+				};
+			});
+		} catch {
+			// Papan peringkat yang gagal dimuat tampil sebagai keadaan kosong yang
+			// menjelaskan, bukan sebagai halaman yang berhenti dirender.
+			peringkat = [];
+		} finally {
+			memuatPeringkat = false;
+		}
 	}
 
-	/**
-	 * Props `PhotoFigure` dari satu kunci manifes foto.
-	 *
-	 * `foto()` mengembalikan `null` untuk kunci yang berkasnya tidak lolos validasi
-	 * unduhan; dalam hal itu `src` kosong dan `PhotoFigure` jatuh ke blok tipografis
-	 * alih-alih merender gambar rusak.
-	 *
-	 * @param {string} kunci Kunci manifes, mis. `'sobi-alumni-kampus'`.
-	 * @returns {{src:string, alt:string, width:number, height:number, caption:string}}
-	 */
-	function propsFoto(kunci) {
-		const berkas = foto(kunci);
-		return {
-			src: berkas?.src ?? '',
-			alt: berkas?.alt ?? '',
-			width: berkas?.w ?? 0,
-			height: berkas?.h ?? 0,
-			caption: berkas?.caption ?? ''
-		};
-	}
+	/** Kegiatan terdekat yang sudah disetujui verifikator; `null` bila belum ada. */
+	const acara = $derived(catalog.upcomingEvents()[0] ?? null);
+
+	const tanggalAcara = $derived(acara ? formatTanggal(acara.startsAt, 'penuh') : '');
+	const jamAcara = $derived(acara ? formatTanggal(acara.startsAt, 'jam') : '');
+	const tempatAcara = $derived(
+		acara ? (acara.location || (acara.isOnline ? 'Daring' : 'Menyusul')) : ''
+	);
+	const tautanAcara = $derived(acara?.slug ? `/kalender/${acara.slug}` : '/kalender');
+
+	/** Tiga cerita terbaru yang sudah terbit. */
+	const blog = $derived(catalog.publishedStories.slice(0, JUMLAH_BLOG).map((s) => storyVM(s)));
 
 	/**
-	 * Warna keying rule sebuah baris, dalam bentuk nilai CSS.
-	 * @param {'red'|'navy'|'green'} nada
-	 * @returns {string}
+	 * Geometri sampul tipografis per posisi kartu.
+	 *
+	 * Tiga kartu berdampingan yang memakai gambar identik terbaca sebagai template,
+	 * bukan sebagai tiga cerita berbeda — cacat yang sama dengan memakai satu foto
+	 * stok untuk semuanya. Variasinya minimal dan deterministik: posisi lingkaran
+	 * dan lengkung garis, bukan warna, supaya ketiganya tetap satu keluarga.
+	 * @type {readonly {cx:number, cy:number, r:number, d:string}[]}
 	 */
-	function warnaKeyline(nada) {
-		return `background:var(--color-pertamina-${nada});`;
-	}
+	const SAMPUL = Object.freeze([
+		{ cx: 288, cy: 20, r: 56, d: 'M0 108 Q 90 70 180 104 T 320 78' },
+		{ cx: 44, cy: 104, r: 62, d: 'M0 46 Q 110 96 210 54 T 320 96' },
+		{ cx: 232, cy: 116, r: 70, d: 'M0 82 Q 120 34 200 88 T 320 46' }
+	]);
 </script>
 
 <svelte:head>
-	<title>Pfriends — Rumah Komunitas Penerima Manfaat Pertamina Foundation</title>
+	<title>PFfriends — Rumah Komunitas Penerima Manfaat Pertamina Foundation</title>
 	<meta
 		name="description"
-		content="Pfriends menghubungkan alumni Beasiswa Sobat Bumi dengan pelaku UMKM binaan PFpreneur: agenda komunitas, gerakan bersama, dan cerita lapangan yang ditulis anggotanya sendiri."
+		content="PFfriends menghubungkan alumni Beasiswa Sobat Bumi dengan pelaku UMKM binaan PFpreneur: kalender kegiatan, cerita lapangan, dan peserta paling aktif."
 	/>
 </svelte:head>
 
-<!-- ═══ E1 · Hero editorial — foto full-bleed, teks rata bawah ═══ -->
-<EditorialHero
-	image="hero-komunitas"
-	imageMobile="hero-komunitas-mobile"
-	alt="Puluhan orang berkumpul rapat sambil tertawa dalam satu potret bersama seusai kegiatan komunitas"
-	altMobile="Kerumunan peserta berdesakan sambil tersenyum ke arah kamera dalam satu pertemuan komunitas"
-	kicker="Community Connect Initiative"
-	title={'Setelah programnya selesai,\nke mana perginya\norang-orang ini?'}
-	standfirst="Pfriends menghubungkan alumni Beasiswa Sobat Bumi dengan pelaku UMKM binaan PFpreneur — dua kelompok yang selama ini berjalan sendiri-sendiri."
-	primary={{ label: 'Gabung Sekarang', href: '/daftar' }}
-	secondary={{ label: 'Lihat cerita komunitas', href: '/cerita' }}
-	byline="Diselenggarakan Divisi Corporate Secretary — Pertamina Foundation"
-	caption="Pertemuan komunitas — foto stok"
-/>
+<!-- ═══ 1 · HERO — gradien teal + bentuk geometris SVG, tanpa satu pun foto ═══ -->
+<section class="relative overflow-hidden bg-brand-700">
+	<div
+		class="absolute inset-0"
+		style="background-image: linear-gradient(135deg, var(--color-brand-800) 0%, var(--color-brand-600) 55%, var(--color-brand-500) 100%);"
+		aria-hidden="true"
+	></div>
 
-{#snippet metodeJangkauan()}
-	Cacah anggota yang mengamplifikasi bulan ini dikalikan rata-rata jaringan sosial per orang
-	({formatAngka(REACH_PARAMETERS.jaringanSosialMin)}–{formatAngka(
-		REACH_PARAMETERS.jaringanSosialMax
-	)} orang, angka rujukan), lalu dikoreksi tingkat keterlihatan dan irisan jaringan antaranggota.
-	<a href="/metode-pengukuran" class="underline underline-offset-4 hover:text-white">
-		Rincian rumus dan seluruh asumsinya
-	</a>
-	terbuka di halaman metode pengukuran.
-{/snippet}
-
-<!-- ═══ E2 · Pita data — alas hero, bukan seksi terpisah ═══ -->
-{#if adaPotret}
-	<DataBand
-		asOf={tanggalPotret}
-		lead={{
-			value: `${formatAngka(potret.organicReach.min)} – ${formatAngka(potret.organicReach.max)}`,
-			label: 'Orang terjangkau',
-			context: `Estimasi 30 hari terakhir, dari ${frasaHitung(potret.organicReach.basis, 'anggota')} yang mengamplifikasi`,
-			kind: 'estimated',
-			methodology: metodeJangkauan
-		}}
-		items={[
-			{
-				value: formatAngka(potret.registeredAwardees),
-				label: 'Anggota terdata',
-				context: penyebutRegistri
-			},
-			{
-				value: formatAngka(potret.activeChapters),
-				label: 'Chapter aktif',
-				context: `dari ${frasaHitung(potret.totalChapters, 'chapter')} berbasis batch penerima manfaat`
-			},
-			{
-				value: formatAngka(potret.runningMovements),
-				label: 'Gerakan berjalan',
-				context: `bersama ${frasaHitung(potret.publishedStories, 'cerita')} lapangan yang sudah terbit`
-			}
-		]}
-	/>
-{:else}
-	<section
-		class="bg-pertamina-navy"
-		style="padding-block:var(--rhythm-tight);"
-		aria-label="Angka program Pfriends"
+	<!-- Bentuk geometris: dua lingkaran besar dan satu bujur sangkar miring.
+	     Diletakkan di lapis terpisah supaya teks tidak pernah ikut transparan. -->
+	<svg
+		class="pointer-events-none absolute inset-0 h-full w-full"
+		viewBox="0 0 1200 420"
+		preserveAspectRatio="xMidYMid slice"
+		aria-hidden="true"
+		focusable="false"
 	>
-		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-			<p class="kicker text-white/70">Angka program</p>
-			<p class="mt-4 max-w-[52ch] text-[18px] leading-[1.55] text-white/88">
-				Potret angka program belum tersusun di peramban ini. Angka baru ditampilkan setelah catatan
-				komunitas selesai dibaca — kami memilih tidak mencetak angka nol yang akan salah dibaca
-				sebagai capaian.
-			</p>
-			<a
-				href="/metode-pengukuran"
-				class="mt-6 inline-flex items-center gap-2 text-[15px] text-white/88 underline underline-offset-4 transition-colors hover:text-white"
-			>
-				Cara setiap angka diperoleh
-				<Icon path={ICONS.arrowLongRight} size={18} />
-			</a>
-		</div>
-	</section>
-{/if}
+		<circle cx="1010" cy="90" r="190" fill="var(--color-brand-200)" opacity="0.16" />
+		<circle cx="1130" cy="330" r="120" fill="var(--color-accent-200)" opacity="0.22" />
+		<circle cx="120" cy="380" r="150" fill="var(--color-brand-200)" opacity="0.10" />
+		<rect
+			x="820"
+			y="180"
+			width="150"
+			height="150"
+			rx="10"
+			fill="none"
+			stroke="var(--color-accent-200)"
+			stroke-width="2"
+			opacity="0.5"
+			transform="rotate(18 895 255)"
+		/>
+		<path
+			d="M0 400 Q 300 320 600 392 T 1200 340"
+			fill="none"
+			stroke="var(--color-brand-200)"
+			stroke-width="2"
+			opacity="0.35"
+		/>
+	</svg>
 
-<!-- ═══ E3 · Dua komunitas — dua spread bercermin yang saling mengunci ═══ -->
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-	<SectionRule
-		tone="red"
-		scale="display"
-		rhythm="loose"
-		kicker="Untuk siapa Pfriends dibuat"
-		label="Dua komunitas, satu meja"
-		lead="Alumni Sobat Bumi punya keahlian dan waktu luang. Womenpreneur punya usaha yang siap tumbuh tetapi kekurangan jaringan. Selama ini keduanya berjalan terpisah."
-	>
-		{#each COMMUNITIES as profil, index (profil.id)}
-			{@const ringkasan = komunitasRingkas[index]}
-			{@const berbalik = index % 2 === 1}
-			<div class="grid grid-cols-1 gap-x-10 gap-y-8 lg:grid-cols-12 {index > 0 ? 'mt-14 lg:mt-20' : ''}">
-				<!-- Yang naik 64 px hanyalah KOLOM FOTO baris B, mengisi ruang kosong di
-				     bawah kolom teks baris A — dua baris yang saling mengunci, sementara
-				     tidak ada satu pun teks yang saling menimpa.
+	<div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+		<p
+			class="font-mono text-[11px] leading-none font-medium tracking-[0.08em] text-accent-200 uppercase"
+		>
+			Community Connect Initiative
+		</p>
 
-				     Sebelumnya seluruh BARIS B yang dinaikkan (`lg:-mt-16` pada grid).
-				     Kolom teks baris B menempati kolom 1–6, tepat di bawah kolom foto
-				     baris A yang menempati kolom 1–5: angka "02" setinggi 96 px mendarat
-				     persis di atas kapsi foto baris A pada SELURUH lebar desktop
-				     1024–1920 px. Kolom foto baris B duduk di kolom 8–12, di bawah kolom
-				     teks baris A yang selalu berakhir jauh lebih tinggi daripada foto di
-				     sebelahnya — di sanalah ruang kosongnya, dan hanya di sana lift ini
-				     aman. Dinolkan di bawah lg, tempat gridnya menjadi satu kolom. -->
-				<div
-					class={berbalik
-						? 'lg:order-2 lg:col-span-5 lg:col-start-8 lg:-mt-16'
-						: 'lg:col-span-5'}
-				>
-					<PhotoFigure
-						{...propsFoto(FOTO_KOMUNITAS[profil.id])}
-						ratio="4:5"
-						keyline={KEYLINE_KOMUNITAS[profil.id]}
-						keylinePos="left"
-						fallbackLabel={profil.akronim}
-					/>
+		<h1
+			class="display-editorial mt-5 max-w-[16ch] text-[clamp(34px,5vw,60px)] leading-[1.04] text-white"
+		>
+			Rumah komunitas penerima manfaat
+		</h1>
+
+		<p class="mt-6 max-w-[56ch] text-[17px] leading-[1.65] text-white/90">
+			Satu tempat bagi alumni Beasiswa Sobat Bumi dan pelaku usaha binaan PFpreneur untuk
+			menemukan kegiatan berikutnya dan membaca cerita dari sesama anggota.
+		</p>
+
+		<a
+			href="/kalender"
+			class="mt-9 inline-flex min-h-12 items-center gap-2 rounded-control bg-accent-200 px-7 text-[15px] font-bold text-brand-800 transition-colors hover:bg-accent-300"
+		>
+			Lihat Calendar of Event
+			<Icon path={ICONS.arrowLongRight} size={18} />
+		</a>
+	</div>
+</section>
+
+<!-- ═══ 2 · BILLBOARD EVENT — panel lebar penuh, kontras tertinggi di halaman ═══ -->
+<section class="bg-brand-900" aria-labelledby="billboard-judul">
+	<span class="keyline bg-accent-200" aria-hidden="true"></span>
+
+	<div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+		{#if acara}
+			<div class="grid grid-cols-1 gap-x-12 gap-y-8 lg:grid-cols-12 lg:items-center">
+				<!-- Blok tanggal: satu-satunya elemen kuning pejal di viewport ini. -->
+				<div class="lg:col-span-3">
+					<div
+						class="inline-flex w-full max-w-[220px] flex-col items-center rounded-control bg-accent-200 px-6 py-6 text-brand-900"
+					>
+						<span class="figure-number text-[64px] leading-none">
+							{acara.startsAt.getDate()}
+						</span>
+						<span
+							class="mt-2 font-mono text-[12px] leading-none font-medium tracking-[0.14em] uppercase"
+						>
+							{formatTanggal(acara.startsAt, 'ringkas').split(' ')[1]}
+							{acara.startsAt.getFullYear()}
+						</span>
+					</div>
 				</div>
 
-				<div
-					class="min-w-0 {berbalik
-						? 'lg:order-1 lg:col-span-6 lg:col-start-1'
-						: 'lg:col-span-6 lg:col-start-7'}"
-				>
-					<p class="figure-number text-[96px] text-ink-200" aria-hidden="true">
-						{String(index + 1).padStart(2, '0')}
+				<div class="min-w-0 lg:col-span-9">
+					<p
+						class="font-mono text-[11px] leading-none font-medium tracking-[0.08em] text-accent-200 uppercase"
+					>
+						Kegiatan terdekat · {acara.typeMeta.label}
 					</p>
 
-					<h3 class="display-editorial mt-2 text-[30px] leading-[1.12] text-heading">
-						{profil.nama}
-					</h3>
+					<h2
+						id="billboard-judul"
+						class="display-editorial mt-4 max-w-[22ch] text-[clamp(28px,4vw,48px)] leading-[1.06] text-white"
+					>
+						{acara.title}
+					</h2>
 
-					<p class="mt-4 max-w-[58ch] text-[16px] leading-[1.68] text-ink-700">
-						{profil.deskripsi}
-					</p>
-
-					<ul class="mt-6 space-y-2.5">
-						{#each profil.kebutuhan as butir (butir)}
-							<li class="flex gap-3 text-[16px] leading-[1.6] text-ink-700">
-								<span class="shrink-0 text-ink-600" aria-hidden="true">—</span>
-								<span>{butir}</span>
-							</li>
-						{/each}
+					<ul class="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3">
+						<li class="flex items-center gap-2.5 text-[15px] text-white/90">
+							<Icon path={ICONS.clock} size={18} />
+							{tanggalAcara} · {jamAcara} WIB
+						</li>
+						<li class="flex items-center gap-2.5 text-[15px] text-white/90">
+							<Icon path={ICONS.mapPin} size={18} />
+							{tempatAcara}
+						</li>
 					</ul>
 
-					<div class="mt-8 flex flex-wrap items-baseline justify-between gap-4">
-						{#if ringkasan.jumlahAnggota > 0}
-							<p class="text-[16px] leading-[1.6] text-ink-700">
-								<span class="figure-number text-[28px] text-ink-900">
-									{formatAngka(ringkasan.jumlahAnggota)}
-								</span>
-								anggota aktif tercatat di
-								{frasaHitung(ringkasan.jumlahChapter, 'chapter')}
-							</p>
-						{:else}
-							<p class="text-[16px] leading-[1.6] text-ink-600">
-								Keanggotaan komunitas ini sedang disusun bersama tim Corporate Secretary.
-							</p>
-						{/if}
-
+					<div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
 						<a
-							href="/komunitas"
-							class="inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-pertamina-red-ink underline-offset-4 hover:underline"
+							href={tautanAcara}
+							class="inline-flex min-h-12 items-center gap-2 rounded-control bg-accent-200 px-7 text-[15px] font-bold text-brand-900 transition-colors hover:bg-accent-300"
 						>
-							Pelajari
+							Lihat detail kegiatan
 							<Icon path={ICONS.arrowLongRight} size={18} />
+						</a>
+						<a
+							href="/kalender"
+							class="text-[15px] text-white/85 underline underline-offset-4 transition-colors hover:text-white"
+						>
+							Seluruh agenda komunitas
 						</a>
 					</div>
 				</div>
 			</div>
-		{/each}
-	</SectionRule>
-</div>
+		{:else}
+			<h2 id="billboard-judul" class="display-editorial text-[clamp(24px,3vw,34px)] text-white">
+				Agenda berikutnya sedang disusun
+			</h2>
+			<p class="mt-4 max-w-[58ch] text-[16px] leading-[1.68] text-white/85">
+				Kegiatan baru diumumkan tiap awal bulan lewat WA Komunitas, lalu terbit di Calendar of
+				Event begitu disetujui verifikator.
+			</p>
+			<a
+				href="/kalender"
+				class="mt-7 inline-flex min-h-12 items-center gap-2 rounded-control bg-accent-200 px-7 text-[15px] font-bold text-brand-900 transition-colors hover:bg-accent-300"
+			>
+				Buka Calendar of Event
+				<Icon path={ICONS.arrowLongRight} size={18} />
+			</a>
+		{/if}
+	</div>
+</section>
 
-<!-- ═══ E4 · Kalender komunitas + daftar agenda ═══ -->
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-	<SectionRule
-		tone="navy"
-		scale="quiet"
-		rhythm="snug"
-		kicker="Kalender komunitas"
-		label="Alasan untuk berkumpul"
-	>
-		<div class="grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-[320px_minmax(0,1fr)]">
-			<div class="min-w-0 lg:sticky lg:top-24 lg:self-start">
-				<MonthCalendar
-					month={bulanTampil}
-					events={agendaSemua}
-					compact
-					onstep={(bulan) => (bulanDipilih = bulan)}
-				/>
-			</div>
-
-			<div class="min-w-0">
-				<EventListPanel
-					events={agendaMendatang}
-					limit={AGENDA_TAMPIL}
-					thumbnailAt={BARIS_THUMBNAIL}
-					title="Agenda terdekat"
-					href="/kalender"
-					variant="panel"
-					emptyMessage="Belum ada kegiatan terjadwal. Agenda baru diumumkan tiap awal bulan lewat WA Komunitas, lalu terbit di kalender ini."
-				/>
-			</div>
+<!-- ═══ 3 · PAPAN PERINGKAT — peserta paling aktif ═══ -->
+<section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20" aria-labelledby="peringkat-judul">
+	<div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+		<div>
+			<p class="kicker">Papan peringkat</p>
+			<h2 id="peringkat-judul" class="display-editorial mt-3 text-[clamp(26px,3vw,36px)] text-heading">
+				Peserta paling aktif
+			</h2>
 		</div>
-	</SectionRule>
-</div>
+		<p class="max-w-[42ch] text-[15px] leading-[1.6] text-ink-600">
+			Diurut dari poin kontribusi tertinggi — hasil menulis cerita, menghadiri kegiatan, dan
+			mengamplifikasi kabar komunitas.
+		</p>
+	</div>
 
-<!-- ═══ E5 · Cerita komunitas — 1 unggulan + 2 sekunder + 4 ringkas ═══ -->
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-	<SectionRule
-		scale="section"
-		rhythm="loose"
-		kicker="Cerita dari lapangan"
-		label="Ditulis anggota, ditinjau verifikator, lalu terbit"
-	>
-		{#snippet action()}
+	<div class="mt-8 overflow-hidden rounded-card border border-ink-200 bg-surface">
+		{#if memuatPeringkat}
+			<p class="px-5 py-8 text-[15px] text-ink-600">Memuat papan peringkat…</p>
+		{:else if peringkat.length > 0}
+			<ul>
+				{#each peringkat as baris (baris.id)}
+					<li
+						class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-ink-100 px-4 py-4 last:border-b-0 sm:px-6"
+					>
+						<!-- Peringkat 1–3 memakai kuning aksen; sisanya netral supaya
+						     tiga teratas tetap terbaca sekilas tanpa membaca angkanya. -->
+						<span
+							class="figure-number inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px]
+								{baris.peringkat <= 3
+								? 'bg-accent-200 text-accent-800'
+								: 'bg-brand-50 text-brand-700'}"
+						>
+							{baris.peringkat}
+						</span>
+
+						<span
+							class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-[13px] font-bold text-brand-700"
+							aria-hidden="true"
+						>
+							{baris.inisial}
+						</span>
+
+						<span class="min-w-0 flex-1">
+							<span class="block truncate text-[15px] font-bold text-heading">{baris.nama}</span>
+							<span class="mt-0.5 block text-[13px] text-ink-600">
+								{baris.komunitas} · Chapter {baris.chapter}
+							</span>
+						</span>
+
+						<span
+							class="hidden shrink-0 rounded-chip px-3 py-1 text-[12px] font-semibold sm:inline-block"
+							style="background:{baris.tint}; color:{baris.ink};"
+						>
+							{baris.tier}
+						</span>
+
+						<span class="shrink-0 text-right">
+							<span class="figure-number block text-[22px] text-brand-700">
+								{formatAngka(baris.poin)}
+							</span>
+							<span class="block text-[11px] tracking-[0.06em] text-ink-500 uppercase">poin</span>
+						</span>
+					</li>
+				{/each}
+			</ul>
+		{:else}
+			<p class="px-5 py-8 text-[15px] leading-[1.6] text-ink-600">
+				Papan peringkat belum tersusun di peramban ini. Muat ulang halaman untuk menyiapkan data
+				peragaan.
+			</p>
+		{/if}
+	</div>
+</section>
+
+<!-- ═══ 4 · BLOG TERBARU — maksimum tiga kartu ═══ -->
+<section class="bg-surface" aria-labelledby="blog-judul">
+	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+		<div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+			<div>
+				<p class="kicker">Blog komunitas</p>
+				<h2 id="blog-judul" class="display-editorial mt-3 text-[clamp(26px,3vw,36px)] text-heading">
+					Cerita terbaru dari lapangan
+				</h2>
+			</div>
 			<a
 				href="/cerita"
-				class="inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-pertamina-red-ink underline-offset-4 hover:underline"
+				class="inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-brand-700 underline-offset-4 hover:underline"
 			>
 				Lihat semua cerita
 				<Icon path={ICONS.arrowLongRight} size={18} />
 			</a>
-		{/snippet}
+		</div>
 
-		{#if ceritaLead}
-			<StorySpread lead={ceritaLead} secondary={ceritaSekunder} briefs={ceritaBrief} />
-		{:else}
-			<div class="max-w-[60ch]">
-				<p class="text-[18px] leading-[1.55] text-ink-700">
-					Cerita pertama komunitas belum terbit. Setiap naskah ditulis anggota, ditinjau
-					verifikator, dan baru tayang setelah penulisnya menyetujui — karena itu ruang ini
-					sengaja dibiarkan kosong sampai ada yang benar-benar siap dibaca.
-				</p>
-				<a
-					href="/daftar"
-					class="mt-6 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-pertamina-red-ink underline-offset-4 hover:underline"
-				>
-					Jadi anggota yang menulis pertama
-					<Icon path={ICONS.arrowLongRight} size={18} />
-				</a>
-			</div>
-		{/if}
-	</SectionRule>
-</div>
-
-<!-- ═══ E6 · Gerakan bersama — satu unggulan + tiga baris ═══ -->
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-	<!-- Kicker berbahasa Indonesia. "Movement-based program" adalah nama pilar pada
-	     dokumen sumber, dan tempatnya di daftar pilar halaman /tentang — bukan
-	     sebagai label antarmuka di zona publik, tempat seluruh teks wajib Bahasa
-	     Indonesia. -->
-	<SectionRule tone="navy" scale="display" rhythm="base" kicker="Gerakan bersama">
-		{#if unggulanVM}
-			<!-- `gerakan-mangrove` DICABUT dari seluruh zona publik: berkasnya memajang
-			     kaus berlogo satu organisasi pihak ketiga pada tujuh orang sekaligus,
-			     dan barisan kreditnya pun menyebut nama organisasi itu. Halaman
-			     Pertamina Foundation tidak boleh mengiklankan lembaga lain, sekalipun
-			     lisensinya sah. `cta-penutup` sudah berasio 21:9 intrinsik (1600×686),
-			     alt-nya cocok dengan isi gambarnya, dan tidak memuat merek siapa pun. -->
-			<PhotoFigure {...propsFoto('cta-penutup')} ratio="21:9" fallbackLabel="Gerakan bersama" />
-
-			<!-- Panel menumpuk foto: kedalaman dari tumpukan dan garis, tanpa blur.
-
-			     DIGANTUNG DI TEPI KANAN pada ≥1024 px. Sebelumnya panel rata kiri dan
-			     dinaikkan 80 px, sementara kapsi + baris kredit foto berada tepat di
-			     bawah gambar dan SELALU rata kiri: latar `bg-surface` yang pejal
-			     menutupinya rapat-rapat pada 375–1920 px, tanpa sisa. Akibatnya foto
-			     terbesar halaman ini tampil tanpa label "foto stok" dan tanpa nama
-			     fotografernya — dua keterangan yang justru wajib ada (`docs/11` §4.4).
-			     Talang kiri yang tersisa (≥320 px pada 1024 px) jauh melampaui teks
-			     kredit terpanjang di manifes (220 px). Di bawah 1024 px tumpukannya
-			     dilepas: tidak ada talang untuk digantungi, dan menumpuk di sana hanya
-			     mengulang cacat yang sama. -->
-			<div
-				class="relative z-10 mt-6 max-w-[46rem] bg-surface p-6 sm:p-8 lg:-mt-20 lg:ml-auto lg:max-w-[40rem]"
-			>
-				<span class="keyline" style={warnaKeyline(unggulanVM.keyline)} aria-hidden="true"></span>
-
-				<!-- Kicker seksi kini berbunyi "Gerakan bersama"; kicker panel menyebut
-				     DASAR pemilihannya supaya keduanya tidak mengulang kata yang sama. -->
-				<p class="kicker mt-5">Paling banyak diikuti · {unggulanVM.kategoriLabel}</p>
-				<h3 class="display-editorial mt-3 text-[clamp(24px,3vw,30px)] leading-[1.12] text-heading">
-					{unggulanVM.judul}
-				</h3>
-				<p class="mt-4 max-w-[58ch] text-[16px] leading-[1.68] text-ink-700">
-					{unggulanVM.tujuan}
-				</p>
-
-				<p class="mt-6 text-[16px] leading-[1.6] text-ink-700">
-					<span class="figure-number text-[28px] text-ink-900">
-						{formatAngka(unggulanVM.peserta)}
-					</span>
-					orang bergerak di
-					{frasaHitung(unggulanVM.wilayah, 'wilayah')}
-				</p>
-
-				{#if unggulanVM.target > 0}
-					<div class="mt-4 max-w-[26rem]">
-						<!-- Rule progres 4 px PERSEGI — bukan progress bar membulat. -->
-						<div class="h-1 w-full bg-ink-200">
-							<div
-								class="h-1 bg-pertamina-green"
-								style="width:{persenProgres(unggulanVM.peserta, unggulanVM.target)}%;"
-							></div>
-						</div>
-						<p class="mt-2 text-[13px] leading-[1.45] text-ink-600">
-							{formatAngka(unggulanVM.peserta)} dari {formatAngka(unggulanVM.target)} peserta sasaran
-						</p>
-					</div>
-				{/if}
-			</div>
-
-			{#if gerakanPendamping.length > 0}
-				<ul class="mt-12 border-t border-ink-200">
-					{#each gerakanPendamping as gerakan (gerakan.id)}
-						<li class="border-b border-ink-200">
-							<div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 py-5">
+		{#if blog.length > 0}
+			<ul class="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+				{#each blog as cerita, i (cerita.id)}
+					{@const sampul = SAMPUL[i % SAMPUL.length]}
+					<li class="flex flex-col overflow-hidden rounded-card border border-ink-200">
+						<!-- Sampul FOTO bila cerita punya, blok tipografis bila tidak.
+						     Larangan "nol foto raster" pada berkas ini ditulis untuk HERO —
+						     dua berkas 273 KB + 240 KB yang dimuat sebelum satu kata pun
+						     terbaca. Kartu blog bukan kasus yang sama: fotonya 167–270 KB
+						     dan berada di bawah lipatan, jadi tidak pernah menghalangi
+						     pembacaan paragraf pertama.
+						     `loading="lazy"` sengaja TIDAK dipakai. Halaman ini hanya empat
+						     seksi — bukan umpan panjang — sehingga ketiga foto praktis selalu
+						     jadi terlihat, sementara pemuatan malas membuat kartu sempat
+						     memajang teks alt di atas kotak kosong. Itu terlihat sebagai
+						     gambar rusak, dan tangkapan layar penuh halaman merekamnya
+						     persis begitu.
+						     Cerita tanpa sampul TIDAK jatuh ke foto default — enam cerita
+						     memang sengaja dilepas sampulnya karena foto stoknya salah fakta
+						     (alat tenun Andes untuk tenun Sumba). Blok tipografis di bawah
+						     adalah jawaban resminya, bukan tambalan. -->
+						<a href={cerita.href} class="relative block h-32 shrink-0 overflow-hidden bg-brand-600">
+							{#if cerita.foto}
+								<img
+									src={cerita.foto.src}
+									alt={cerita.foto.alt}
+									width={cerita.foto.w}
+									height={cerita.foto.h}
+									decoding="async"
+									class="absolute inset-0 h-full w-full object-cover"
+								/>
+								<!-- Gradien gelap di kaki foto: chip pilar berlatar putih 90%
+								     akan hilang di atas foto yang kebetulan terang. -->
 								<span
-									class="h-6 w-1 shrink-0 self-center"
-									style={warnaKeyline(gerakan.keyline)}
+									class="absolute inset-x-0 bottom-0 h-16"
+									style="background-image: linear-gradient(to top, rgb(26 62 61 / 0.55), transparent);"
 									aria-hidden="true"
 								></span>
-								<p class="min-w-0 flex-1 text-[18px] leading-[1.35] font-bold text-heading">
-									{gerakan.judul}
-								</p>
-								<p class="text-[14px] leading-[1.5] text-ink-600">
-									{gerakan.kategoriLabel} · {frasaHitung(gerakan.wilayah, 'wilayah')} ·
-									{frasaHitung(gerakan.peserta, 'peserta')}
-								</p>
-								<p class="kicker shrink-0">{gerakan.statusLabel}</p>
-							</div>
-						</li>
-					{/each}
-				</ul>
-			{/if}
+							{:else}
+								<span
+									class="absolute inset-0"
+									style="background-image: linear-gradient(120deg, var(--color-brand-700) 0%, var(--color-brand-500) 100%);"
+									aria-hidden="true"
+								></span>
+								<svg
+									class="absolute inset-0 h-full w-full"
+									viewBox="0 0 320 128"
+									preserveAspectRatio="none"
+									aria-hidden="true"
+									focusable="false"
+								>
+									<circle
+										cx={sampul.cx}
+										cy={sampul.cy}
+										r={sampul.r}
+										fill="var(--color-accent-200)"
+										opacity="0.18"
+									/>
+									<path
+										d={sampul.d}
+										fill="none"
+										stroke="var(--color-brand-200)"
+										stroke-width="2"
+										opacity="0.5"
+									/>
+								</svg>
+							{/if}
+							{#if cerita.pillarLabel}
+								<span
+									class="absolute bottom-3 left-4 rounded-chip bg-white/90 px-3 py-1 text-[11px] font-semibold text-brand-700"
+								>
+									{cerita.pillarLabel}
+								</span>
+							{/if}
+						</a>
 
-			<div class="mt-8">
-				<a
-					href="/gerakan"
-					class="inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-pertamina-red-ink underline-offset-4 hover:underline"
-				>
-					Seluruh gerakan bersama
-					<Icon path={ICONS.arrowLongRight} size={18} />
-				</a>
-			</div>
+						<div class="flex flex-1 flex-col p-5">
+							<h3 class="text-[18px] leading-[1.3] font-bold text-heading">
+								<a href={cerita.href} class="hover:underline">{cerita.title}</a>
+							</h3>
+							<p class="mt-3 line-clamp-3 flex-1 text-[15px] leading-[1.6] text-ink-700">
+								{cerita.excerpt}
+							</p>
+							<p class="mt-4 text-[13px] text-ink-600">
+								{cerita.authorName}
+								{#if cerita.publishedAt}
+									· {formatTanggal(cerita.publishedAt, 'pendek')}
+								{/if}
+								· {cerita.readMinutes} menit baca
+							</p>
+						</div>
+					</li>
+				{/each}
+			</ul>
 		{:else}
-			<div class="max-w-[60ch]">
-				<h3 class="display-editorial text-[30px] leading-[1.12] text-heading">
-					Gerakan pertama sedang disiapkan
-				</h3>
-				<p class="mt-4 text-[18px] leading-[1.55] text-ink-700">
-					Gerakan bersama selalu berawal dari usulan anggota sendiri. Belum ada yang berjalan
-					saat ini — begitu satu usulan disetujui verifikator, wilayah dan target pesertanya
-					muncul di sini.
-				</p>
-			</div>
+			<p class="mt-8 max-w-[60ch] text-[16px] leading-[1.68] text-ink-700">
+				Cerita pertama komunitas belum terbit. Setiap naskah ditulis anggota, ditinjau verifikator,
+				dan baru tayang setelah penulisnya menyetujui.
+			</p>
 		{/if}
-	</SectionRule>
-</div>
-
-<!-- ═══ E7 · Penutup — pita, bukan kartu ═══ -->
-<section class="bg-pertamina-navy">
-	<!-- Keying rule merah lebar penuh di tepi atas: satu-satunya objek merah pada
-	     viewport ini, sesuai rasio warna 90/7/3. -->
-	<span class="keyline bg-pertamina-red" aria-hidden="true"></span>
-	<div
-		class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
-		style="padding-block:var(--rhythm-tight);"
-	>
-		<div class="grid grid-cols-1 gap-x-12 gap-y-8 lg:grid-cols-12">
-			<div class="min-w-0 lg:col-span-7">
-				<!-- `leading-[1.15]` wajib ditulis: `display-editorial` berbaris 0.98 —
-				     ukuran untuk judul SATU baris. Judul ini dibatasi 20ch, jadi selalu
-				     pecah dua baris, dan pada 0.98 ekor huruf baris pertama menyentuh
-				     kepala huruf baris kedua. -->
-				<h2
-					class="display-editorial max-w-[20ch] text-[clamp(24px,3vw,28px)] leading-[1.15] text-white"
-				>
-					Pernah menerima Beasiswa Sobat Bumi atau menjadi binaan PFpreneur?
-				</h2>
-				<p class="mt-4 max-w-[52ch] text-[16px] leading-[1.68] text-white/88">
-					Pendaftarannya singkat, dan kamu bisa mulai ikut agenda komunitas hari itu juga.
-				</p>
-			</div>
-
-			<div class="flex flex-col items-start gap-3 lg:col-span-5 lg:items-end lg:justify-center">
-				<a
-					href="/daftar"
-					class="inline-flex min-h-11 items-center rounded-control bg-pertamina-red px-6 text-sm font-semibold text-white transition-colors hover:bg-pertamina-red-dark"
-				>
-					Gabung Sekarang
-				</a>
-				<a
-					href="/masuk"
-					class="text-[15px] text-white/88 underline underline-offset-4 transition-colors hover:text-white"
-				>
-					Sudah punya akun? Masuk
-				</a>
-			</div>
-		</div>
 	</div>
 </section>

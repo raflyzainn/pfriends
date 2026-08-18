@@ -8,9 +8,10 @@
 	 *   kosong berarti tidak ada halangan. Dipakai konflik kepentingan.
 	 * @prop {boolean} working       Ada keputusan lain yang sedang diproses.
 	 * @prop {string} emptyMessage   Kalimat ketika tidak ada transisi yang sah.
+	 * @prop {boolean} compact       Sembunyikan daftar penjelasan; dipakai di dalam daftar.
 	 * @prop {(decision: import('./decisions.js').Decision) => void} onpick
 	 *
-	 * Empat keputusan yang tidak terbaca dari kode:
+	 * Lima keputusan yang tidak terbaca dari kode:
 	 *
 	 * 1. **Komponen ini tidak tahu status apa pun.** Ia hanya merender daftar yang
 	 *    diberikan. Daftarnya selalu berasal dari `allowedStoryTransitions` /
@@ -28,6 +29,12 @@
 	 * 4. **Tidak ada keadaan "tidak ada tombol" yang senyap.** Entity terminal
 	 *    menampilkan kalimat penjelas, karena layar tanpa tombol dan tanpa kalimat
 	 *    tidak dapat dibedakan dari layar yang gagal memuat.
+	 * 5. **`compact` MENGGESER penjelasan, bukan membuangnya.** Di dalam daftar
+	 *    submission, tiga paragraf penjelasan per baris menenggelamkan judul naskah
+	 *    yang seharusnya dibaca lebih dulu; di sana penjelasan itu pindah ke atribut
+	 *    `title` tiap tombol. Banner `blockedReason` TIDAK ikut diringkas — alasan
+	 *    sebuah keputusan dimatikan harus terbaca tanpa menunggu kursor singgah,
+	 *    karena pengguna papan ketik dan layar sentuh tidak pernah memicu tooltip.
 	 */
 	import { Button, Icon, ICONS } from '$lib/components';
 
@@ -37,6 +44,7 @@
 	 *   blockedReason?: string,
 	 *   working?: boolean,
 	 *   emptyMessage?: string,
+	 *   compact?: boolean,
 	 *   onpick: (decision: import('./decisions.js').Decision) => void
 	 * }}
 	 */
@@ -45,6 +53,7 @@
 		blockedReason = '',
 		working = false,
 		emptyMessage = 'Tidak ada keputusan yang tersedia dari keadaan ini.',
+		compact = false,
 		onpick
 	} = $props();
 
@@ -79,14 +88,17 @@
 		<ul class="flex flex-wrap gap-2">
 			{#each decisions as decision (decision.to)}
 				{@const halangan = alasanNonaktif(decision)}
-				<li class="min-w-0">
+				<li
+					class="min-w-0"
+					title={halangan !== '' && blockedReason === '' ? halangan : decision.description}
+				>
 					<Button
 						variant={decision.tone === 'primary'
 							? 'primary'
 							: decision.tone === 'danger'
 								? 'danger'
 								: 'secondary'}
-						size="md"
+						size={compact ? 'sm' : 'md'}
 						disabled={halangan !== '' || working}
 						onclick={() => onpick(decision)}
 					>
@@ -96,16 +108,18 @@
 			{/each}
 		</ul>
 
-		<dl class="space-y-1.5">
-			{#each decisions as decision (decision.to)}
-				{@const halangan = alasanNonaktif(decision)}
-				<div class="text-[13px] leading-relaxed">
-					<dt class="inline font-semibold text-ink-800">{decision.label} —</dt>
-					<dd class="inline text-ink-600">
-						{halangan !== '' && blockedReason === '' ? halangan : decision.description}
-					</dd>
-				</div>
-			{/each}
-		</dl>
+		{#if !compact}
+			<dl class="space-y-1.5">
+				{#each decisions as decision (decision.to)}
+					{@const halangan = alasanNonaktif(decision)}
+					<div class="text-[13px] leading-relaxed">
+						<dt class="inline font-semibold text-ink-800">{decision.label} —</dt>
+						<dd class="inline text-ink-600">
+							{halangan !== '' && blockedReason === '' ? halangan : decision.description}
+						</dd>
+					</div>
+				{/each}
+			</dl>
+		{/if}
 	</div>
 {/if}

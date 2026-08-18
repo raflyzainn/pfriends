@@ -150,7 +150,7 @@
 				<span
 					class="block truncate font-sans text-[17px] leading-none font-extrabold tracking-[-0.02em] text-heading"
 				>
-					Pfriends
+					PFfriends
 				</span>
 				<span class="label-micro mt-1 hidden leading-tight sm:block">
 					{roleLabel || 'Pertamina Foundation'}
@@ -174,8 +174,8 @@
 				href={notificationHref}
 				class="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-800"
 				aria-label={notificationCount > 0
-					? `Kabar Pfriends, ${teksLencana} belum dibaca`
-					: 'Kabar Pfriends'}
+					? `Kabar PFfriends, ${teksLencana} belum dibaca`
+					: 'Kabar PFfriends'}
 			>
 				<Icon path={ICONS.bell} size={20} />
 				{#if notificationCount > 0}
@@ -203,7 +203,7 @@
 				type="button"
 				data-logout
 				class="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-control border border-ink-200 bg-surface px-2.5 text-sm font-semibold text-ink-700 transition-colors hover:border-ink-300 hover:bg-ink-50 hover:text-heading disabled:opacity-60"
-				aria-label="Keluar dari Pfriends"
+				aria-label="Keluar dari PFfriends"
 				disabled={sedangKeluar}
 				onclick={keluar}
 			>

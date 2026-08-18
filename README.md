@@ -1,8 +1,8 @@
-# Pfriends — Community Connect Initiative
+# PFfriends — Community Connect Initiative
 
 Mockup microsite untuk **Breakthrough Project Divisi Corporate Secretary — Pertamina Foundation**.
 
-Pfriends adalah wadah alumni **Beasiswa Sobat Bumi (SOBI)** dan pelaku usaha **PFpreneur /
+PFfriends adalah wadah alumni **Beasiswa Sobat Bumi (SOBI)** dan pelaku usaha **PFpreneur /
 Womenpreneur** agar tetap terhubung setelah masa program selesai. Ruang publiknya bercerita tentang
 program — dampak, cerita terpublikasi, kalender komunitas, dan gerakan bersama. Mekanik pengakuan
 kontribusi (poin, jenjang, papan peringkat, lencana) hidup **di dalam area ter-login Awardee**, dan
@@ -45,10 +45,10 @@ npm run verify:purity        #   6 aturan kemurnian zona publik (PO-2 & anti "te
 
 # Gerbang peramban — server dev harus berjalan lebih dulu:
 npm run dev -- --port 5177
-npm run verify:e2e           # 36 route dibuka di peramban sungguhan, lima fase (0-4)
+npm run verify:e2e           # seluruh route dibuka di peramban sungguhan, lima fase (0-4)
 npm run verify:gamification  # poin bertambah, tersimpan, dan tidak nol setelah muat ulang keras
 npm run verify:browser       # keduanya berurutan
-npm run screenshot           # regenerasi 27 tangkapan layar ke docs/screenshots/
+npm run screenshot           # regenerasi 15 tangkapan layar ke docs/screenshots/
 ```
 
 > `verify:public` adalah alias `verify:purity`, disediakan supaya nama yang tercantum di
@@ -62,8 +62,13 @@ WebSocket bawaan Node — tanpa Playwright, Puppeteer, atau dependensi uji apa p
 
 ## Tiga peran & kredensial demo
 
-Peran **melekat pada akun**, bukan dipilih dari daftar. Masuk lewat `/masuk` dengan surel dan kata
-sandi.
+Peran **melekat pada akun**, bukan dipilih dari daftar.
+
+Sejak revisi 4 Agustus 2026, **masuk cukup dengan mengklik kartu pengguna** di `/masuk` — tidak
+ada kolom sandi yang perlu diisi. Ini keringanan yang disengaja untuk tahap mockup: peragaan di
+ruang rapat sering harus berpindah peran beberapa kali dalam semenit, dan mengetik surel panjang
+setiap kali memakan waktu peragaan itu sendiri. Kata sandi demo tetap dipakai di balik layar
+lewat `AuthService`, sehingga alur sesi yang diuji tetap alur yang sesungguhnya.
 
 | Peran | Surel | Kewenangan |
 |---|---|---|
@@ -93,40 +98,63 @@ hidup di satu berkas — `src/lib/domain/policies/AccessPolicy.js` — dan diuji
 
 ---
 
-## Peta 36 route
+## Peta route
 
-### Zona publik — 11 route, tanpa sesi
+> Direvisi 4 Agustus 2026. Navigasi dipangkas tajam di seluruh zona; sejumlah
+> halaman dicabut dan isinya dilebur. Beberapa route publik tetap hidup meski tidak
+> lagi tercantum di navbar — masih ditautkan dari dalam halaman lain.
 
-| Route | Isi |
-|---|---|
-| `/` | Landing: dampak & angka agregat, cerita terpublikasi, kalender + agenda, gerakan & dua komunitas |
-| `/tentang` | Latar program, tata kelola, dan cara kerja komunitas |
-| `/komunitas` | Profil SOBI dan PFpreneur/Womenpreneur beserta chapter |
-| `/gerakan` | Gerakan bersama yang sedang berjalan |
-| `/cerita` | Blog cerita dampak; panel daftar event di sisi halaman |
-| `/cerita/[slug]` | Satu cerita terpublikasi |
-| `/kalender` | Kalender komunitas — dapat dibaca tanpa masuk |
-| `/kalender/[id]` | Detail kegiatan + unduh `.ics` |
-| `/metode-pengukuran` | Cara tiap angka dihitung; klasifikasi angka A/B/C |
-| `/masuk` | Formulir surel + kata sandi |
-| `/daftar` | Ajakan bergabung |
+### Zona publik — 10 route, tanpa sesi
+
+Navbar hanya memuat tiga: **Beranda**, **Blog**, **Calendar of Event**.
+
+| Route | Di navbar | Isi |
+|---|---|---|
+| `/` | ✓ Beranda | Hero, billboard event, papan peringkat peserta paling aktif, blog terbaru |
+| `/cerita` | ✓ Blog | Blog komunitas |
+| `/cerita/[slug]` | — | Satu tulisan terpublikasi |
+| `/kalender` | ✓ Calendar of Event | Kalender komunitas |
+| `/kalender/[id]` | — | Detail kegiatan + unduh `.ics` |
+| `/masuk` | — | Login satu klik: pilih kartu pengguna, tanpa mengetik sandi |
+| `/tentang` | — | Latar program dan tata kelola |
+| `/komunitas` | — | Profil SOBI dan PFpreneur/Womenpreneur |
+| `/gerakan` | — | Gerakan bersama yang sedang berjalan |
+| `/metode-pengukuran` | — | Cara tiap angka dihitung |
+
+`/daftar` **dicabut** — pendaftaran mandiri dihapus; alurnya kini Beranda → Login.
 
 ### Zona Awardee — 12 route
 
-`/awardee` · `/awardee/kabar` · `/awardee/kabar/[id]` · `/awardee/aksi` · `/awardee/kalender` ·
-`/awardee/gerakan` · `/awardee/cerita` · `/awardee/cerita/tulis` · `/awardee/papan-peringkat` ·
-`/awardee/penghargaan` · `/awardee/direktori` · `/awardee/profil`
+Navbar: Beranda · Blog Saya · Forum · Calendar of Event · Pencapaian · Kabar · Direktori
 
-### Zona Verifikator — 6 route
+`/awardee` · `/awardee/cerita` · `/awardee/cerita/tulis` · `/awardee/forum` (**baru** — forum
+bergaya kanal) · `/awardee/kalender` · `/awardee/penghargaan` · `/awardee/kabar` ·
+`/awardee/kabar/[id]` · `/awardee/direktori` · `/awardee/aksi` · `/awardee/gerakan` ·
+`/awardee/profil` (tiga terakhir hidup tetapi di luar navbar)
 
-`/verifikator` (papan antrean & SLA) · `/verifikator/cerita` (antrean naskah) ·
-`/verifikator/cerita/[id]` (tiga gerbang keputusan) · `/verifikator/kegiatan` (usulan kegiatan) ·
-`/verifikator/bukti` (pengesahan bukti ESG) · `/verifikator/profil`
+`/awardee/papan-peringkat` **dicabut**: peserta melihat capaiannya sebagai pencapaian
+pribadi, bukan sebagai peringkat antar-peserta. Papan peringkat hanya tampil di beranda
+publik dan dasbor verifikator.
 
-### Zona Admin — 7 route
+### Zona Verifikator — 4 route
 
-`/admin` (dasbor KPI) · `/admin/awardee` · `/admin/broadcast` · `/admin/moderasi` ·
-`/admin/gamifikasi` · `/admin/esg` · `/admin/laporan`
+Navbar: Dasbor · Submission Blog · Konfigurasi Calendar of Event
+
+`/verifikator` (dasbor performa awardee & dampaknya) · `/verifikator/cerita` (Submission
+Blog) · `/verifikator/cerita/[id]` (tiga gerbang keputusan) · `/verifikator/kegiatan`
+(Konfigurasi Calendar of Event)
+
+`/verifikator/bukti` dan `/verifikator/profil` **dicabut**.
+
+### Zona Admin — 3 route
+
+Navbar: Dasbor KPI · Kontrol Akun · Konfigurasi Gamifikasi
+
+`/admin` (dasbor KPI publikasi & performa sistem) · `/admin/awardee` (Kontrol Akun, 63 akun,
+dengan impersonate) · `/admin/gamifikasi` (nilai poin & ambang jenjang dapat disunting)
+
+`/admin/broadcast`, `/admin/moderasi`, `/admin/esg`, dan `/admin/laporan` **dicabut** —
+dua yang terakhir isinya melebur ke Dasbor KPI.
 
 ---
 
@@ -219,7 +247,7 @@ pemilik produk.
    otomatis yang menjaganya.
 2. **`/metode-pengukuran`** — Jawaban untuk pertanyaan "angka ini dari mana?". Tiga kelas angka:
    terhitung (A), estimasi berparameter yang wajib disajikan sebagai rentang (B), dan benchmark
-   industri yang bukan hasil ukur Pfriends (C).
+   industri yang bukan hasil ukur PFfriends (C).
 3. **`/kalender`** → klik satu kegiatan → **`/kalender/[id]`** → tombol unduh `.ics`. Kalender
    komunitas dapat dibaca siapa pun tanpa masuk.
 4. **`/cerita`** — Blog cerita dampak dengan panel daftar event di sisi halaman. Buka satu cerita.
@@ -286,7 +314,7 @@ pemilik produk.
 | **`12-BUILD-CONTRACT-V2.md`** | Kontrak build V2: kepemilikan berkas, kontrak export, rencana verifikasi |
 | **`13-SDLC-DELTA.md`** | Jejak proses revisi: latar, fase, 9 keputusan arsitektur beserta alasannya, tabel sebelum/sesudah, pelajaran |
 | **`14-TRACEABILITY.md`** | Matriks PO-1…PO-7 dan US-R01…US-R31 → berkas → gerbang yang membuktikannya |
-| `screenshots/` | 27 tangkapan layar empat zona |
+| `screenshots/` | 15 tangkapan layar empat zona |
 
 ---
 
@@ -302,9 +330,9 @@ npm run verify:seed            70 asersi  · 0 gagal            (9 bagian)
 npm run verify:purity          14 berkas dipindai · 0 pelanggaran (6 aturan)
 npm run build                 sukses · adapter-static · 0 error
 ────────────────────────────────────────────────────────────────────────────
-npm run verify:e2e             36 route · 0 bermasalah · 12 asersi guard lulus
+npm run verify:e2e             seluruh route · 0 bermasalah · 12 asersi guard lulus
 npm run verify:gamification    22 asersi · 0 gagal
-npm run screenshot             27 tangkapan layar · 0 berkas usang tersisa
+npm run screenshot             15 tangkapan layar · 0 berkas usang tersisa
 ```
 
 Yang sudah terbukti — bukan diklaim:
@@ -319,7 +347,7 @@ Yang sudah terbukti — bukan diklaim:
   usulan sendiri, dan bertindak dengan akun terkunci
 - Total poin tiap awardee seed **benar-benar** merupakan jumlah aktivitasnya, bukan angka tempelan;
   seed deterministik — tampilan demo identik setiap kali dibuka
-- 36 route benar-benar merender isi **sebagai peran yang berhak**, dan benar-benar tertutup bagi
+- Seluruh route benar-benar merender isi **sebagai peran yang berhak**, dan benar-benar tertutup bagi
   peran lain — keduanya diuji terpisah
 - Menekan aksi menambah poin sesuai nilai kanonik, tetap ada setelah muat ulang keras, dan **tidak
   jatuh ke nol** akibat balapan hidrasi (tiga putaran muat ulang, sembilan asersi)

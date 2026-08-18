@@ -217,7 +217,7 @@
 		toast.push({
 			type: ToastType.INFO,
 			title: 'Belum ada sesi awardee',
-			message: 'Masuk sebagai awardee Pfriends untuk ikut gerakan dan melaporkan aksi lapangan.'
+			message: 'Masuk sebagai awardee PFfriends untuk ikut gerakan dan melaporkan aksi lapangan.'
 		});
 		return false;
 	}
@@ -325,13 +325,13 @@
 </script>
 
 <svelte:head>
-	<title>Gerakan Bersama — Pfriends</title>
+	<title>Gerakan Bersama — PFfriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 03 · Movement-Based Program"
 	title="Gerakan Bersama"
-	subtitle="Aksi lingkungan, edukasi masyarakat, dan pemberdayaan ekonomi yang digerakkan awardee Pfriends. Ikut serta, jalankan di wilayahmu, lalu laporkan hasilnya sebagai bukti ESG."
+	subtitle="Aksi lingkungan, edukasi masyarakat, dan pemberdayaan ekonomi yang digerakkan awardee PFfriends. Ikut serta, jalankan di wilayahmu, lalu laporkan hasilnya sebagai bukti ESG."
 />
 
 <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">

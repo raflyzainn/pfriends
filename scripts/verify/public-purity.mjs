@@ -80,7 +80,9 @@ const KOMPONEN = join(ROOT, 'src', 'lib', 'components');
  * Lihat keputusan 2 — pengecualian ini tidak berlaku untuk aturan lain.
  * @type {readonly string[]}
  */
-const KECUALI_KATA = Object.freeze(['(public)/daftar/', '(public)/metode-pengukuran/']);
+/* `(public)/daftar/` dicabut 4 Agustus 2026 bersama fitur pendaftaran mandiri;
+   entri pengecualiannya ikut dihapus agar daftar ini tidak menyimpan jalur yatim. */
+const KECUALI_KATA = Object.freeze(['(public)/metode-pengukuran/']);
 
 /**
  * Satu-satunya berkas zona publik yang boleh menyentuh repository.

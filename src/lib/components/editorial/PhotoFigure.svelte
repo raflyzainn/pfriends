@@ -134,7 +134,7 @@
 			);
 		}
 		// Penegakan kejujuran stok: selama fotonya belum diganti dokumentasi asli,
-		// kapsi DILARANG mengklaim tempat & bulan kegiatan Pfriends yang sesungguhnya.
+		// kapsi DILARANG mengklaim tempat & bulan kegiatan PFfriends yang sesungguhnya.
 		// "Cangkringan, Sleman, Juni 2026" pada foto stok adalah keterangan palsu —
 		// masalah yang lebih besar daripada terlihat seperti AI (docs/11 §4.4).
 		if (entri?.isStock && caption && POLA_BULAN.test(caption)) {

@@ -1,12 +1,12 @@
 <script>
 	/**
-	 * HALAMAN `/verifikator/cerita` — antrean naskah, FIFO.
+	 * HALAMAN `/verifikator/cerita` — Submission Blog, antrean FIFO.
 	 *
-	 * Tanggung jawab: menampilkan naskah yang menunggu tindakan verifikator dengan
-	 * urutan tertua lebih dahulu, usia antrean dalam hari kerja, penanda pelanggaran
-	 * SLA, dan tombol keputusan yang sah untuk masing-masing baris.
+	 * Tanggung jawab: menampilkan submission blog yang menunggu tindakan verifikator
+	 * dengan urutan tertua lebih dahulu, usia antrean dalam hari kerja, penanda
+	 * pelanggaran SLA, dan tombol keputusan yang sah untuk masing-masing baris.
 	 *
-	 * Lima keputusan yang tidak terbaca dari kode:
+	 * Enam keputusan yang tidak terbaca dari kode:
 	 *
 	 * 1. **Urutan tidak disortir ulang di sini.** `editorial.storyQueue` sudah
 	 *    tertua-dahulu dari domain. Menyortir ulang berarti dua kebijakan urutan,
@@ -27,12 +27,17 @@
 	 *    kekeliruan migrasi kelak (`docs/12` §3.5 WP-06 butir 3).
 	 * 5. **Nol angka hari kerja tertulis di berkas ini.** Usia dan batas datang dari
 	 *    `slaAntrean()`, yang bersumber pada `SLA_HARI_KERJA`.
+	 * 6. **`DecisionBar` dirender `compact` di dalam daftar.** Penjelasan tiap
+	 *    keputusan tetap ada — ia pindah ke atribut `title` tombolnya — karena tiga
+	 *    paragraf penjelasan yang berulang pada setiap baris menenggelamkan judul
+	 *    submission yang justru harus dibaca lebih dulu. Penjelasan lengkapnya hidup
+	 *    di halaman detail, tempat keputusan sesungguhnya diambil.
 	 *
 	 * @see docs/10-REVISION-SPEC.md — US-R26 antrean tinjauan FIFO, §5.6 SLA
 	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 2, 4, dan 6
 	 */
 	import { goto } from '$app/navigation';
-	import { EmptyState, PageHeader, Tabs, ICONS } from '$lib/components';
+	import { EmptyState, Icon, PageHeader, Tabs, ICONS } from '$lib/components';
 	import { STORY_STATUS_META } from '$lib/domain/constants/community.js';
 	import { AccessPolicy } from '$lib/domain/policies/AccessPolicy.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
@@ -86,6 +91,37 @@
 	);
 
 	/**
+	 * Tiga angka ringkas di kepala halaman.
+	 *
+	 * Ketiganya dihitung dari antrean yang SAMA dengan daftar di bawahnya, bukan
+	 * dari sumber lain: ringkasan yang menyebut angka berbeda dari daftar yang
+	 * ditemaninya adalah cara tercepat membuat kedua-duanya tidak dipercaya.
+	 */
+	const ringkasan = $derived([
+		{
+			id: 'total',
+			label: 'Submission menunggu',
+			nilai: editorial.storyQueue.length,
+			tegas: false,
+			iconPath: ICONS.inbox
+		},
+		{
+			id: 'lewat',
+			label: 'Sudah lewat tenggat',
+			nilai: editorial.storyOverdueCount,
+			tegas: editorial.storyOverdueCount > 0,
+			iconPath: ICONS.warning
+		},
+		{
+			id: 'revisi',
+			label: 'Pernah dikembalikan',
+			nilai: editorial.storyQueue.filter((story) => story.revisionCount > 0).length,
+			tegas: false,
+			iconPath: ICONS.refresh
+		}
+	]);
+
+	/**
 	 * Alasan tertulis mengapa keputusan atas sebuah naskah dimatikan.
 	 * @param {object} story
 	 * @returns {string} Kosong berarti tidak ada halangan.
@@ -133,19 +169,37 @@
 </script>
 
 <PageHeader
-	eyebrow="Antrean tinjauan"
-	title="Naskah cerita"
-	subtitle="Tertua lebih dahulu. Tombol keputusan tiap baris berasal dari peta transisi domain, sehingga daftarnya tidak pernah berbeda dari aturan alur editorial."
+	eyebrow="Ruang kerja verifikator"
+	title="Submission Blog"
+	subtitle="Naskah yang dikirim awardee, tertua lebih dahulu. Tombol keputusan tiap baris berasal dari peta transisi domain, sehingga daftarnya tidak pernah berbeda dari aturan alur editorial."
 />
 
+<section class="mt-5 grid gap-4 sm:grid-cols-3" aria-label="Ringkasan submission">
+	{#each ringkasan as kartu (kartu.id)}
+		<div class="card p-4">
+			<span class="flex items-center gap-2 {kartu.tegas ? 'text-pertamina-red-ink' : 'text-ink-600'}">
+				<Icon path={kartu.iconPath} size={16} />
+				<span class="label-micro">{kartu.label}</span>
+			</span>
+			<span
+				class="numeric mt-2 block text-3xl leading-none {kartu.tegas
+					? 'text-pertamina-red-ink'
+					: 'text-ink-900'}"
+			>
+				{kartu.nilai}
+			</span>
+		</div>
+	{/each}
+</section>
+
 {#if editorial.storyQueue.length > 0}
-	<div class="mt-5">
+	<div class="mt-6">
 		<Tabs {tabs} bind:active={tabAktif} variant="pill" />
 	</div>
 {/if}
 
 {#if editorial.loading && editorial.storyQueue.length === 0}
-	<div class="mt-5 space-y-3" aria-busy="true" aria-label="Memuat antrean naskah">
+	<div class="mt-5 space-y-3" aria-busy="true" aria-label="Memuat Submission Blog">
 		{#each ['a', 'b', 'c'] as kunci (kunci)}
 			<div class="skeleton h-28 w-full rounded-card"></div>
 		{/each}
@@ -153,8 +207,8 @@
 {:else if antrean.length === 0}
 	<div class="mt-5">
 		<EmptyState
-			title="Tidak ada naskah pada penyaring ini"
-			message="Antrean tinjauan kosong. Naskah baru muncul di sini begitu penulis mengirimkannya dari zona awardee."
+			title="Tidak ada submission pada penyaring ini"
+			message="Submission Blog kosong. Naskah baru muncul di sini begitu penulis mengirimkannya dari zona awardee."
 			iconPath={ICONS.inbox}
 		/>
 	</div>
@@ -182,7 +236,8 @@
 							decisions={keputusanCerita(naskah.status, session.role)}
 							blockedReason={sebab}
 							working={editorial.working}
-							emptyMessage="Naskah ini tidak lagi menunggu keputusan Anda."
+							compact
+							emptyMessage="Submission ini tidak lagi menunggu keputusan Anda."
 							onpick={(decision) => pilih(decision, naskah)}
 						/>
 					{/snippet}
@@ -202,8 +257,9 @@
 />
 
 <p class="mt-6 text-xs leading-relaxed text-ink-600">
-	Persetujuan naskah menuntut checklist data sensitif {TOTAL_BUTIR_SENSITIF} butir dikonfirmasi lebih
-	dahulu. Buka
-	halaman detail naskah untuk menjalankannya — checklist itu harus dibaca berdampingan dengan
-	naskahnya, bukan dicentang dari daftar antrean.
+	Persetujuan submission menuntut checklist data sensitif {TOTAL_BUTIR_SENSITIF} butir dikonfirmasi
+	lebih dahulu. Buka halaman detail submission untuk menjalankannya — checklist itu harus dibaca
+	berdampingan dengan naskahnya, bukan dicentang dari daftar. Keterangan tiap tombol keputusan
+	tersedia sebagai penjelasan singkat saat kursor menyinggahinya, dan tertulis lengkap di halaman
+	detail.
 </p>

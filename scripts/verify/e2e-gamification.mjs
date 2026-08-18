@@ -198,9 +198,15 @@ async function poinDariDb() {
 async function poinDiLayar() {
 	// Bendera `i` wajib: label kartu ditulis "Poin Kontribusi" di sumber, tetapi
 	// `text-transform: uppercase` membuat `innerText` mengembalikannya kapital.
+	//
+	// `[^0-9]*` — bukan `\s*` — karena dasbor awardee yang dirombak 4 Agustus 2026
+	// menulis "Poin Kontribusi terkumpul" lalu angkanya di baris berikutnya. Pola
+	// lama menuntut angka menempel langsung sesudah label, sehingga cocoknya gagal
+	// dan seluruh asersi saldo membaca `null` — bukan karena poinnya salah,
+	// melainkan karena satu kata sisipan.
 	return cdp.evaluate(`(() => {
 		const teks = document.body.innerText || '';
-		const cocok = teks.match(/Poin Kontribusi\\s*([0-9.,]+)/i);
+		const cocok = teks.match(/Poin Kontribusi[^0-9]*([0-9.,]+)/i);
 		if (!cocok) return null;
 		return Number(cocok[1].replace(/[.,]/g, ''));
 	})()`);
@@ -226,23 +232,51 @@ await cdp.kirim('Storage.clearDataForOrigin', {
 await tidur(400);
 
 await cdp.kirim('Page.navigate', { url: BASE + '/masuk' });
-await tidur(1800);
-const terisi = await cdp.evaluate(`(() => {
-	const isi = (el, nilai) => {
-		if (!el) return false;
-		const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-		setter.call(el, nilai);
-		el.dispatchEvent(new Event('input', { bubbles: true }));
+await tidur(2200); // muat Dexie + jalankan seed sebelum kartu terender
+
+// Sejak revisi 4 Agustus 2026 halaman `/masuk` memajang kartu yang tinggal diklik,
+// bukan formulir surel + sandi. Kartu dicoba lebih dulu karena itulah jalur yang
+// dipakai manusia; formulir manual dipakai sebagai cadangan, sebab hanya enam dari
+// 60 awardee yang dipajang dan akun uji dipilih dari urutan seed.
+const lewatKartu = await cdp.evaluate(
+	`(() => {
+		const kartu = document.querySelector('[data-akun=' + ${JSON.stringify(JSON.stringify(akunUji.email))} + ']');
+		if (!kartu) return false;
+		kartu.click();
 		return true;
-	};
-	return (
-		isi(document.querySelector('#masuk-email'), ${JSON.stringify(akunUji.email)}) &&
-		isi(document.querySelector('#masuk-sandi'), ${JSON.stringify(SANDI_DEMO)})
+	})()`
+);
+
+let terisi = lewatKartu === true;
+if (!terisi) {
+	await cdp.evaluate(
+		`(() => {
+			const pemicu = [...document.querySelectorAll('button')].find((b) =>
+				/masuk manual/i.test(b.textContent || '')
+			);
+			pemicu?.click();
+			return !!pemicu;
+		})()`
 	);
-})()`);
-cek('formulir masuk tersedia dan terisi', terisi === true);
-await tidur(300);
-await cdp.evaluate(`document.querySelector('form')?.requestSubmit()`);
+	await tidur(500);
+
+	terisi = await cdp.evaluate(`(() => {
+		const isi = (el, nilai) => {
+			if (!el) return false;
+			const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+			setter.call(el, nilai);
+			el.dispatchEvent(new Event('input', { bubbles: true }));
+			return true;
+		};
+		return (
+			isi(document.querySelector('#masuk-email'), ${JSON.stringify(akunUji.email)}) &&
+			isi(document.querySelector('#masuk-sandi'), ${JSON.stringify(SANDI_DEMO)})
+		);
+	})()`);
+	await tidur(300);
+	await cdp.evaluate(`document.querySelector('form')?.requestSubmit()`);
+}
+cek('jalan masuk tersedia dan dijalankan (kartu atau formulir manual)', terisi === true);
 await tidur(3200);
 
 cek('berhasil masuk ke /awardee', (await cdp.evaluate('location.pathname')) === '/awardee');
@@ -267,15 +301,42 @@ cek(
 	`layar=${layarAwal} seed=${anggotaUji.points}`
 );
 
-// Aksi cepat yang benar-benar membukukan poin ada di dasbor ("Lakukan sekarang").
-// /awardee/aksi bersifat informatif: kuota, status, dan pengajuan bukti.
-console.log('\n── 2. Melakukan aksi cepat di dasbor /awardee ──');
-await cdp.kirim('Page.navigate', { url: BASE + '/awardee' });
+// Aksi berpoin PINDAH dari dasbor pada revisi 4 Agustus 2026. Dasbor sengaja tidak
+// lagi memajangnya: susunannya dibalik supaya halaman terbaca sebagai sambutan dan
+// agenda, bukan sebagai papan skor dengan empat tombol poin.
+//
+// Sasarannya adalah klaim baca di detail kabar, BUKAN tombol di /awardee/aksi.
+// Seluruh tombol di halaman itu berlabel sama ("Ajukan untuk verifikasi") padahal
+// akibatnya berbeda — aksi yang menuntut bukti dibukukan PENDING dengan 0 poin —
+// dan tiga aksi yang `needsEvidence: false` justru tampil sebagai tautan ke
+// halaman lain, tanpa tombol yang dapat ditekan. Yang tersisa di sana karena itu
+// hanya aksi bernilai 0 poin saat ditekan: benar menurut domain, tetapi tidak
+// membuktikan apa pun tentang pembukuan poin.
+console.log('\n── 2. Mengklaim poin baca di detail kabar ──');
+await cdp.kirim('Page.navigate', { url: BASE + '/awardee/kabar' });
 await tidur(2400);
 
+const dibuka = await cdp.evaluate(`(() => {
+	const tautan = [...document.querySelectorAll('a[href*="/awardee/kabar/"]')];
+	if (tautan.length === 0) return false;
+	tautan[0].click();
+	return true;
+})()`);
+console.log(`     detail kabar dibuka: ${dibuka}`);
+await tidur(2200);
+
+// Sasaran dipilih dari LABELNYA yang mencantumkan nilai poin ("· +5"), bukan dari
+// satu kalimat tetap. Klaim baca hanya berlaku sekali per kabar sepanjang
+// keanggotaan, jadi pada kabar yang poinnya sudah pernah diklaim tombol itu
+// nonaktif — sementara tombol berbagi di halaman yang sama tetap membukukan poin.
+// Mengikat uji ke satu kalimat membuatnya bergantung pada kabar mana yang kebetulan
+// berada di urutan teratas.
 const ditekan = await cdp.evaluate(`(() => {
+	const BERPOIN = /·\\s*\\+\\s*\\d+/;
 	const tombol = [...document.querySelectorAll('button')].filter((b) => !b.disabled);
-	const sasaran = tombol.find((b) => /lakukan sekarang|\\+\\s*\\d+|tandai|bagikan|hadir/i.test(b.innerText||''));
+	const sasaran =
+		tombol.find((b) => /sudah dibaca/i.test(b.innerText || '') && BERPOIN.test(b.innerText || '')) ??
+		tombol.find((b) => BERPOIN.test(b.innerText || ''));
 	if (!sasaran) return { ok:false, tersedia: tombol.map(b=>(b.innerText||'').trim()).slice(0,15) };
 	sasaran.click();
 	return { ok:true, teks:(sasaran.innerText||'').trim().replace(/\\s+/g,' ').slice(0,60) };
@@ -284,6 +345,14 @@ console.log(`     ditekan: ${JSON.stringify(ditekan)}`);
 cek('menemukan tombol aksi yang bisa ditekan', ditekan.ok === true, JSON.stringify(ditekan.tersedia ?? []));
 
 await tidur(2500);
+
+// Kembali ke dasbor sebelum fase muat ulang: hanya di sanalah saldo poin tercetak
+// sebagai TEKS. Di halaman lain saldo hidup di `PointsChip`, yang menaruh kata
+// "Poin Kontribusi" pada atribut `title` — tidak terjangkau `innerText`, sehingga
+// `poinDiLayar()` akan mengembalikan `null` dan setiap putaran gagal tanpa sebab
+// yang ada hubungannya dengan hidrasi.
+await cdp.kirim('Page.navigate', { url: BASE + '/awardee' });
+await tidur(2400);
 const sesudah = await poinDariDb();
 console.log(`     poin sesudah aksi: ${JSON.stringify(sesudah)}`);
 

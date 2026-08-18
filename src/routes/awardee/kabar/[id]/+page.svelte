@@ -120,7 +120,7 @@
 	 */
 	const teksBagikan = $derived(
 		kabar
-			? `${kabar.title}\n\n${kabar.summary}\n\nSelengkapnya: ${kabar.ctaLink || 'https://pertaminafoundation.org/pfriends'}\n\n#Pfriends #PertaminaFoundation`
+			? `${kabar.title}\n\n${kabar.summary}\n\nSelengkapnya: ${kabar.ctaLink || 'https://pertaminafoundation.org/pfriends'}\n\n#PFfriends #PertaminaFoundation`
 			: ''
 	);
 
@@ -212,7 +212,7 @@
 </script>
 
 <svelte:head>
-	<title>{kabar ? kabar.title : 'Kabar tidak ditemukan'} · Pfriends</title>
+	<title>{kabar ? kabar.title : 'Kabar tidak ditemukan'} · PFfriends</title>
 </svelte:head>
 
 {#if !kabar}
@@ -228,7 +228,7 @@
 		title={kabar.title}
 		eyebrow="{kabar.channelLabel} · {formatTanggal(kabar.sentAt, 'pendek')}"
 		backHref="/awardee/kabar"
-		backLabel="Kabar Pfriends"
+		backLabel="Kabar PFfriends"
 	/>
 
 	<!-- `[&>*]:min-w-0`: butir grid berbaku `min-width: auto`. Kolom isi kabar memuat

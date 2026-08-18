@@ -43,14 +43,14 @@
 
 	/** Tiga tujuan publik yang paling sering dicari orang yang tersesat. */
 	const TUJUAN = [
-		{ label: 'Beranda Pfriends', href: '/', iconPath: ICONS.home },
+		{ label: 'Beranda PFfriends', href: '/', iconPath: ICONS.home },
 		{ label: 'Cerita komunitas', href: '/cerita', iconPath: ICONS.book },
 		{ label: 'Masuk ke akun', href: '/masuk', iconPath: ICONS.lock }
 	];
 </script>
 
 <svelte:head>
-	<title>{JUDUL} — Pfriends</title>
+	<title>{JUDUL} — PFfriends</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -76,7 +76,7 @@
 		</div>
 	{:else}
 		<p class="mt-3 text-sm leading-relaxed text-ink-600">
-			Alamat <span class="font-medium text-ink-800">{jalurKini}</span> tidak ada di Pfriends. Mungkin
+			Alamat <span class="font-medium text-ink-800">{jalurKini}</span> tidak ada di PFfriends. Mungkin
 			tautannya salah ketik, atau halamannya sudah dipindahkan.
 		</p>
 	{/if}

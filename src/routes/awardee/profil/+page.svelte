@@ -216,7 +216,7 @@
 				(entri) => entri.consentType === CONSENT_DASAR_CERITA && entri.isAktif()
 			);
 
-			let akibat = 'Naskahmu tidak terpengaruh — dasar publikasi ceritamu masih aktif.';
+			let akibat = 'Tulisanmu tidak terpengaruh — dasar publikasi Blog-mu masih aktif.';
 			if (!dasarCeritaAktif) {
 				const kaskade = await editorial.applyConsentRevocation(id);
 				if (!kaskade.ok) {
@@ -249,7 +249,7 @@
 </script>
 
 <svelte:head>
-	<title>Profil Saya · Pfriends</title>
+	<title>Profil Saya · PFfriends</title>
 </svelte:head>
 
 {#if !awardee}
@@ -403,10 +403,10 @@
 				</p>
 				<p class="mt-1 text-[11px] leading-relaxed text-ink-600">
 					{#if poinFiturPublikTerpenuhi}
-						Ambang {formatAngka(AMBANG_FITUR_PUBLIK)} poin sudah terpenuhi. Syarat lainnya — cerita
+						Ambang {formatAngka(AMBANG_FITUR_PUBLIK)} poin sudah terpenuhi. Syarat lainnya — Blog
 						terverifikasi, consent aktif, validasi PF, dan bebas data sensitif — dinilai tim Corsec.
 					{:else}
-						Butuh {frasaHitung(AMBANG_FITUR_PUBLIK - gamification.points, 'poin')} lagi, ditambah cerita
+						Butuh {frasaHitung(AMBANG_FITUR_PUBLIK - gamification.points, 'poin')} lagi, ditambah Blog
 						terverifikasi, consent aktif, validasi PF, dan bebas data sensitif.
 					{/if}
 				</p>
@@ -425,9 +425,9 @@
 			</h2>
 			<a
 				href="/awardee/penghargaan"
-				class="text-sm font-semibold text-pertamina-red-ink transition-colors hover:text-pertamina-red"
+				class="text-sm font-semibold text-brand-700 transition-colors hover:text-brand-600"
 			>
-				Katalog penghargaan
+				Buka halaman Pencapaian
 			</a>
 		</div>
 
@@ -457,7 +457,7 @@
 		{#if ringkasanEsg.total === 0}
 			<EmptyState
 				title="Belum ada kontribusi berbukti ESG"
-				message="Mengirim cerita, menghadiri sesi upskilling, menjadi narasumber, atau memimpin aksi lokal akan mengisi bagian ini."
+				message="Menulis Blog, menghadiri sesi upskilling, menjadi narasumber, atau memimpin aksi lokal akan mengisi bagian ini."
 				iconPath={ICONS.leaf}
 				size="sm"
 				actionLabel="Lihat jenis aksinya"
@@ -496,7 +496,7 @@
 		<p class="mb-4 text-sm leading-relaxed text-ink-600">
 			Setiap persetujuan berlaku terpisah dan dapat kamu cabut kapan saja. Mencabut persetujuan
 			<span class="font-semibold text-ink-800">tidak mengurangi poin maupun menurunkan tier</span>.
-			Begitu persetujuan publikasi ceritamu dicabut, naskah yang sudah terbit ditarik dari kanal
+			Begitu persetujuan publikasi Blog-mu dicabut, tulisan yang sudah terbit ditarik dari kanal
 			publik saat itu juga dan diarsipkan sebagai jejak audit — bukan dihapus — sedangkan naskah
 			yang masih di antrean berhenti dapat disetujui siapa pun.
 		</p>
@@ -510,7 +510,7 @@
 		{:else if rekamanConsent.length === 0}
 			<EmptyState
 				title="Belum ada rekaman persetujuan"
-				message="Persetujuan tercatat saat kamu mendaftar atau saat pertama kali mengirim cerita untuk dipublikasikan."
+				message="Persetujuan tercatat saat kamu mendaftar atau saat pertama kali mengirim Blog untuk dipublikasikan."
 				iconPath={ICONS.shield}
 				size="sm"
 			/>
@@ -607,7 +607,7 @@
 				</li>
 				<li class="flex items-start gap-2">
 					<span class="mt-0.5 shrink-0 text-success"><Icon path={ICONS.check} size={14} /></span>
-					Bila ini persetujuan terakhir yang mendasari publikasi ceritamu: naskah yang sudah terbit
+					Bila ini persetujuan terakhir yang mendasari publikasi Blog-mu: tulisan yang sudah terbit
 					langsung ditarik dari kanal publik dan diarsipkan, dan naskah yang masih ditinjau berhenti
 					dapat disetujui.
 				</li>

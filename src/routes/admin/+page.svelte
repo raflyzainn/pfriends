@@ -1,170 +1,353 @@
 <script>
 	/**
-	 * HALAMAN — Dasbor Statistik Konsol Pertamina Foundation (Apache ECharts).
+	 * HALAMAN — Dasbor KPI Konsol Corporate Secretary.
 	 *
-	 * Tanggung jawab: menjadi tuan rumah katalog chart wajib, terbagi ke empat tab
-	 * yang masing-masing menjawab satu pertanyaan pengelola program.
+	 * Tanggung jawab: satu layar yang menjawab dua pertanyaan pengelola program —
+	 * **apakah aplikasinya berjalan sehat** dan **apakah publikasinya mencapai
+	 * target**. Performa per-awardee sengaja TIDAK ada di sini; itu wilayah
+	 * verifikator, dan mencampurnya membuat halaman ini berhenti menjadi dasbor
+	 * program lalu berubah menjadi papan peringkat.
 	 *
-	 * ── Tiga aturan tata letak yang bukan selera ─────────────────────────────
+	 * ── Empat aturan tata letak yang bukan selera ────────────────────────────
 	 *
-	 * 1. **Chart pada tab non-aktif DILEPAS dari DOM**, bukan disembunyikan dengan
-	 *    `display:none`. Instans ECharts yang tersembunyi tetap memegang canvas dan
-	 *    listener, dan `ResizeObserver` pada wadah berlebar nol memicu penggambaran
-	 *    ulang ke ukuran nol yang tidak dipulihkan ECharts dengan sendirinya —
-	 *    chart tampil kosong saat tabnya dibuka kembali.
-	 * 2. **Setiap chart dibungkus panel berjudul + satu kalimat pertanyaan yang
-	 *    dijawabnya.** Kalimat itu bagian dari spesifikasi, bukan hiasan: chart
-	 *    tanpa pertanyaan dibaca sebagai dekorasi, dan dekorasi tidak pernah
+	 * 1. **Satu baris kartu, empat chart, satu tabel — tidak lebih.** Versi
+	 *    sebelumnya memakai empat tab berisi tiga belas chart. Dasbor yang perlu
+	 *    diklik dulu sebelum menjawab apa pun bukan dasbor; ia katalog. Tab
+	 *    dicabut, dan chart yang tersisa dipilih karena pertanyaannya, bukan
+	 *    karena tersedia komponennya.
+	 * 2. **Tidak ada satu angka pun yang lahir di berkas ini.** Seluruh deret
+	 *    datang dari store `admin` (yang memanggil service domain) dan `catalog`.
+	 *    Halaman hanya menyusun ulang dan memberi konteks.
+	 * 3. **Setiap panel membawa satu kalimat pertanyaan yang dijawabnya.**
+	 *    Kalimat itu bagian dari spesifikasi, bukan hiasan: chart tanpa
+	 *    pertanyaan dibaca sebagai dekorasi, dan dekorasi tidak pernah
 	 *    ditindaklanjuti siapa pun.
-	 * 3. **Tidak ada satu angka pun yang lahir di berkas ini.** Seluruh deret
-	 *    datang dari store `admin` (yang memanggil service domain) dan store
-	 *    `editorial` (corong pipeline). Halaman hanya menyusun dan memberi konteks.
+	 * 4. **Angka jangkauan selalu ditandai sebagai estimasi.** Ia hasil model,
+	 *    bukan hasil pengukuran, dan satu-satunya tempat ia muncul adalah garis
+	 *    putus-putus pada chart tren — bukan kartu angka besar yang mengundang
+	 *    dikutip apa adanya di materi presentasi.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 katalog chart, §7.3 tata letak, §7.4 responsif
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-07
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 6 KPI dan Keluaran, Hal 7 timeline, Hal 10
+	 * Halaman ini MENYERAP inti dua halaman yang dicabut pada revisi 5 Agustus
+	 * 2026: kesiapan bukti ESG (dulu `/admin/esg`) menjadi kartu angka kunci, dan
+	 * rekap bulanan program (dulu `/admin/laporan`) menjadi tabel penutup. Yang
+	 * hilang bersama kedua halaman itu hanyalah lapis rinciannya — pemetaan SDG,
+	 * checklist bukti per naskah, dan perhitungan SROI — dan ketiganya memang
+	 * bukan bahan yang dibaca sekali lihat di dasbor.
+	 *
+	 * @see docs/00-SOURCE-BRIEF.md — Hal 6 KPI dan Keluaran, Hal 10 ESG
 	 */
-	import { Button, Card, EmptyState, Icon, KpiCard, PageHeader, Tabs, ICONS } from '$lib/components';
-	import AmplificationBarChart from '$lib/charts/AmplificationBarChart.svelte';
-	import AmplificationTrendLine from '$lib/charts/AmplificationTrendLine.svelte';
-	import CommunityPieChart from '$lib/charts/CommunityPieChart.svelte';
-	import CoverageGaugeChart from '$lib/charts/CoverageGaugeChart.svelte';
-	import CoverageSegmentBar from '$lib/charts/CoverageSegmentBar.svelte';
-	import DisseminationComboChart from '$lib/charts/DisseminationComboChart.svelte';
-	import EditorialPipelineFunnel from '$lib/charts/EditorialPipelineFunnel.svelte';
+	import { Card, EmptyState, PageHeader, StatTile, StatusBadge, ICONS } from '$lib/components';
+	import AdminPublikasiTrend from '$lib/charts/AdminPublikasiTrend.svelte';
+	import AdminSebaranChapter from '$lib/charts/AdminSebaranChapter.svelte';
 	import EngagementFunnelArea from '$lib/charts/EngagementFunnelArea.svelte';
-	import EsgEvidenceGateBar from '$lib/charts/EsgEvidenceGateBar.svelte';
-	import EsgRadarChart from '$lib/charts/EsgRadarChart.svelte';
-	import KpiGaugeChart from '$lib/charts/KpiGaugeChart.svelte';
 	import KpiRadarChart from '$lib/charts/KpiRadarChart.svelte';
-	import PointSourceStackedBar from '$lib/charts/PointSourceStackedBar.svelte';
-	import ReachEstimateBand from '$lib/charts/ReachEstimateBand.svelte';
-	import TierDistributionChart from '$lib/charts/TierDistributionChart.svelte';
-	import TrendLineChart from '$lib/charts/TrendLineChart.svelte';
-	import VerifierSlaBar from '$lib/charts/VerifierSlaBar.svelte';
-	import { COMMUNITIES } from '$lib/domain/constants/community.js';
+	import { palette } from '$lib/charts/_chartTheme.js';
+	import { CHAPTERS, COMMUNITIES } from '$lib/domain/constants/community.js';
 	import { KPI_PARAMETERS, targetKpi } from '$lib/domain/constants/kpi-targets.js';
+	import { accountRepository } from '$lib/infrastructure/repositories/index.js';
+	import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
 	import { admin } from '$lib/stores/admin.svelte.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
-	import { editorial } from '$lib/stores/editorial.svelte.js';
-	import { formatAngka, formatRingkas } from '$lib/utils/format.js';
-
-	/** Ikon per metrik, semata-mata penanda visual. */
-	const IKON_KPI = {
-		'M-01': ICONS.users,
-		'M-02': ICONS.book,
-		'M-03': ICONS.megaphone,
-		'M-04': ICONS.share,
-		'M-05': ICONS.calendar
-	};
+	import { formatAngka, formatPersen, formatRingkas } from '$lib/utils/format.js';
 
 	/**
-	 * Empat tab dasbor. Setiap tab adalah satu pertanyaan pengelola, bukan satu
-	 * kumpulan chart yang kebetulan sejenis.
+	 * Warna komunitas untuk chart, disamakan dengan donat komunitas di zona lain.
+	 * Heksadesimalnya tidak ditulis di sini — hanya dirujuk lewat tema chart.
 	 */
-	const TAB = Object.freeze({
-		RINGKASAN: 'ringkasan',
-		AMPLIFIKASI: 'amplifikasi',
-		KOMUNITAS: 'komunitas',
-		ESG: 'esg'
+	const WARNA_KOMUNITAS = Object.freeze({
+		SOBI: palette.green,
+		WOMENPRENEUR: palette.red
 	});
 
-	const DAFTAR_TAB = Object.freeze([
-		Object.freeze({ id: TAB.RINGKASAN, label: 'Ringkasan' }),
-		Object.freeze({ id: TAB.AMPLIFIKASI, label: 'Amplifikasi' }),
-		Object.freeze({ id: TAB.KOMUNITAS, label: 'Komunitas' }),
-		Object.freeze({ id: TAB.ESG, label: 'ESG & Dampak' })
-	]);
+	/** @type {import('$lib/domain/entities/UserAccount.js').UserAccount[]} */
+	let akun = $state.raw([]);
 
-	let tabAktif = $state(TAB.RINGKASAN);
-
-	// Corong pipeline datang dari store editorial — satu-satunya sumber kebenaran
-	// atas antrean naskah. Dasbor hanya MEMBACA: keputusan editorial bukan
-	// kewenangan Admin.
+	// Cacah akun dibaca langsung dari tabel `accounts`, bukan diturunkan dari
+	// jumlah awardee ditambah angka tetap. Verifikator dan admin adalah baris akun
+	// yang bisa bertambah, dan angka tetap yang ditulis di halaman akan diam-diam
+	// salah pada hari pertama seseorang menambahkannya.
 	$effect(() => {
-		editorial.load();
+		let dibatalkan = false;
+
+		(async () => {
+			await bootstrapDatabase();
+			const baris = await accountRepository.getAll();
+			if (!dibatalkan) akun = baris;
+		})();
+
+		return () => {
+			dibatalkan = true;
+		};
 	});
 
-	const kpiById = $derived(new Map(admin.kpi.map((baris) => [baris.id, baris])));
+	// ── Kartu angka kunci ────────────────────────────────────────────────────
 
-	const kartuKpi = $derived(
-		admin.kpi.map((baris) => ({ ...baris, iconPath: IKON_KPI[baris.id] ?? ICONS.chart }))
+	const naskahMasuk = $derived(catalog.stories.length);
+
+	const akunAktif = $derived(akun.filter((baris) => baris.isActive).length);
+
+	const rincianPeran = $derived(
+		[
+			{ jumlah: akun.filter((baris) => baris.isAwardee).length, label: 'awardee' },
+			{ jumlah: akun.filter((baris) => baris.isVerifier).length, label: 'verifikator' },
+			{ jumlah: akun.filter((baris) => baris.isAdmin).length, label: 'admin' }
+		]
+			.filter((baris) => baris.jumlah > 0)
+			.map((baris) => `${formatAngka(baris.jumlah)} ${baris.label}`)
+			.join(' · ')
 	);
 
-	const kpiCoverage = $derived(kpiById.get('M-01') ?? null);
+	/** Total konten unik dan hari diseminasi sepanjang tujuh bulan program. */
+	const totalDiseminasi = $derived(
+		admin.dissemination.reduce(
+			(rekap, bulan) => ({
+				konten: rekap.konten + bulan.contents,
+				hari: rekap.hari + bulan.days
+			}),
+			{ konten: 0, hari: 0 }
+		)
+	);
 
-	/** Empat KPI selain coverage — dibaca berdampingan sebagai deret meteran ringkas. */
-	const kpiPendamping = $derived(admin.kpi.filter((baris) => baris.id !== 'M-01'));
-
-	const kpiTercapai = $derived(admin.kpi.filter((baris) => baris.percent >= 100).length);
-
-	/** Rekap bulanan yang sudah dipetakan ke seluruh bulan program. */
-	const trenBulanan = $derived.by(() => {
-		const rekap = new Map(admin.monthlyTrend.map((baris) => [baris.monthKey, baris]));
-		return admin.programMonths.map((bulan) => ({
-			monthKey: bulan.monthKey,
-			label: bulan.label,
-			points: rekap.get(bulan.monthKey)?.points ?? 0,
-			count: rekap.get(bulan.monthKey)?.count ?? 0
-		}));
+	/**
+	 * Kepatuhan SLA seluruh antrean tinjauan digabung. Median dihitung sebagai
+	 * median terburuk antar-antrean, bukan rata-rata dari median: rata-rata dari
+	 * median tidak bermakna secara statistik, dan yang perlu diketahui pengelola
+	 * memang antrean yang paling lambat.
+	 */
+	const sla = $derived.by(() => {
+		const dalam = admin.slaCompliance.reduce((jumlah, baris) => jumlah + baris.withinSla, 0);
+		const lewat = admin.slaCompliance.reduce((jumlah, baris) => jumlah + baris.breachedSla, 0);
+		const total = dalam + lewat;
+		return {
+			dalam,
+			lewat,
+			total,
+			persen: total > 0 ? Math.round((dalam / total) * 100) : 0,
+			medianTerburuk: admin.slaCompliance.reduce(
+				(puncak, baris) => Math.max(puncak, baris.medianDays ?? 0),
+				0
+			)
+		};
 	});
 
-	const seriTren = $derived([
-		{ name: 'Poin kontribusi', data: trenBulanan.map((b) => b.points) },
-		{ name: 'Aksi tercatat', data: trenBulanan.map((b) => b.count) }
-	]);
+	/** Rata-rata kesiapan bukti tiga pilar ESG — serapan dari halaman Bukti ESG. */
+	const kesiapanEsg = $derived(
+		admin.esgReadiness.length > 0
+			? Math.round(
+					admin.esgReadiness.reduce((jumlah, pilar) => jumlah + pilar.readinessRate, 0) /
+						admin.esgReadiness.length
+				)
+			: 0
+	);
 
-	const adaTren = $derived(trenBulanan.some((bulan) => bulan.points > 0 || bulan.count > 0));
+	const pilarTerlemah = $derived(
+		admin.esgReadiness.length > 0
+			? [...admin.esgReadiness].sort((a, b) => a.readinessRate - b.readinessRate)[0]
+			: null
+	);
 
-	/** Sebaran anggota per komunitas — pemasok chart donat tab Komunitas. */
-	const sebaranKomunitas = $derived(
-		COMMUNITIES.map((k) => ({
-			id: k.id,
-			label: k.akronim,
-			value: catalog.awardees.filter((awardee) => awardee.community === k.id).length
+	// ── Deret chart ──────────────────────────────────────────────────────────
+
+	/** Cacah naskah terbit per bulan program, dibaca dari tanggal terbitnya. */
+	const terbitPerBulan = $derived.by(() => {
+		/** @type {Map<string, number>} */
+		const rekap = new Map(admin.programMonths.map((bulan) => [bulan.monthKey, 0]));
+		for (const cerita of admin.publishedStories) {
+			const pada = cerita.publishedAt;
+			if (!(pada instanceof Date) || Number.isNaN(pada.getTime())) continue;
+			const kunci = `${pada.getFullYear()}-${String(pada.getMonth() + 1).padStart(2, '0')}`;
+			if (rekap.has(kunci)) rekap.set(kunci, (rekap.get(kunci) ?? 0) + 1);
+		}
+		return rekap;
+	});
+
+	/** Deret dicocokkan lewat `monthKey`, bukan lewat indeks larik. */
+	const diseminasiPerBulan = $derived(
+		new Map(admin.dissemination.map((bulan) => [bulan.monthKey, bulan]))
+	);
+
+	const jangkauanPerBulan = $derived(new Map(admin.reachBand.map((bulan) => [bulan.monthKey, bulan])));
+
+	const amplifikasiPerBulan = $derived(
+		new Map(admin.amplification.map((bulan) => [bulan.monthKey, bulan]))
+	);
+
+	const poinPerBulan = $derived(new Map(admin.monthlyTrend.map((bulan) => [bulan.monthKey, bulan])));
+
+	/** Satu baris per bulan program — pemasok chart tren sekaligus tabel penutup. */
+	const rekapBulanan = $derived(
+		admin.programMonths.map((bulan) => ({
+			id: bulan.monthKey,
+			label: bulan.label,
+			terbit: terbitPerBulan.get(bulan.monthKey) ?? 0,
+			konten: diseminasiPerBulan.get(bulan.monthKey)?.contents ?? 0,
+			hari: diseminasiPerBulan.get(bulan.monthKey)?.days ?? 0,
+			amplifikasi: amplifikasiPerBulan.get(bulan.monthKey)?.activeRate ?? 0,
+			poin: poinPerBulan.get(bulan.monthKey)?.points ?? 0,
+			jangkauan: jangkauanPerBulan.get(bulan.monthKey)?.mid ?? 0
 		}))
 	);
 
-	/** Radar kesiapan bukti ESG, disusun dari matriks pilar di store. */
-	const seriRadarEsg = $derived([
-		{
-			name: 'Kesiapan bukti aktual',
-			values: admin.esgReadiness.map((pilar) => pilar.readinessRate)
-		}
-	]);
+	/** Sebaran anggota per chapter, dipecah per komunitas. */
+	const sebaranChapter = $derived({
+		kategori: CHAPTERS.map((chapter) => chapter.label),
+		seri: COMMUNITIES.map((komunitas) => ({
+			name: komunitas.akronim,
+			color: WARNA_KOMUNITAS[komunitas.id],
+			data: CHAPTERS.map(
+				(chapter) =>
+					catalog.awardees.filter(
+						(awardee) => awardee.chapterId === chapter.id && awardee.community === komunitas.id
+					).length
+			)
+		}))
+	});
 
-	const indikatorRadarEsg = $derived(
-		admin.esgReadiness.map((pilar) => ({ name: pilar.label, max: 100 }))
-	);
+	const kpiTercapai = $derived(admin.kpi.filter((baris) => baris.percent >= 100).length);
+
+	const KOLOM_REKAP = Object.freeze([
+		{ key: 'label', label: 'Bulan' },
+		{ key: 'terbit', label: 'Blog terbit', numeric: true },
+		{ key: 'konten', label: 'Konten diseminasi', numeric: true },
+		{ key: 'hari', label: 'Hari diseminasi', numeric: true },
+		{ key: 'amplifikasi', label: 'Amplifikasi', numeric: true },
+		{ key: 'poin', label: 'Poin kontribusi', numeric: true },
+		{ key: 'jangkauan', label: 'Estimasi jangkauan', numeric: true }
+	]);
 </script>
 
 <PageHeader
 	eyebrow="Konsol Corporate Secretary"
-	title="Dasbor statistik program"
-	subtitle="Empat tab, empat pertanyaan: apakah program berjalan, apakah komunitas benar-benar menyebarkannya, siapa yang tumbuh dan siapa tertinggal, dan apakah bukti dampaknya layak dilaporkan. Seluruh angka dihitung dari data komunitas yang tercatat — tidak satu pun lahir di halaman ini."
->
-	{#snippet actions()}
-		<Button variant="secondary" size="sm" iconPath={ICONS.leaf} href="/admin/esg">Bukti ESG</Button>
-		<Button variant="primary" size="sm" iconPath={ICONS.document} href="/admin/laporan">
-			Susun laporan
-		</Button>
-	{/snippet}
-</PageHeader>
+	title="Dasbor KPI"
+	subtitle="Kesehatan aplikasi dan capaian publikasi PFfriends untuk periode program Januari–Juli 2026. Seluruh angka dihitung dari data komunitas yang tercatat — tidak satu pun lahir di halaman ini. Performa per-awardee tidak ditampilkan di sini; itu wilayah verifikator."
+/>
 
-<!-- ── Lima KPI inti Hal 6 ─────────────────────────────────────────────── -->
-<section aria-labelledby="judul-kpi" class="mb-6">
-	<div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-		<h2 id="judul-kpi" class="text-base font-bold text-heading">Lima Key Objective</h2>
-		<p class="text-xs text-ink-600">
-			<span class="numeric font-semibold text-ink-700">{kpiTercapai}</span> dari
-			<span class="numeric font-semibold text-ink-700">{admin.kpi.length}</span> metrik mencapai target
+<!-- ── Baris kartu angka kunci ─────────────────────────────────────────── -->
+<section aria-label="Angka kunci program" class="mb-6">
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+		<StatTile
+			label="Blog terpublikasi"
+			value={admin.publishedStories.length}
+			unit="naskah"
+			hint="{formatAngka(admin.pendingCount)} menunggu tinjauan · {formatAngka(naskahMasuk)} naskah masuk"
+			iconPath={ICONS.book}
+			color="var(--color-pertamina-blue)"
+		/>
+		<StatTile
+			label="Konten terdiseminasi"
+			value={totalDiseminasi.konten}
+			unit="konten"
+			hint="{formatAngka(totalDiseminasi.hari)} hari diseminasi sepanjang program"
+			iconPath={ICONS.megaphone}
+			color="var(--color-pertamina-green)"
+		/>
+		<StatTile
+			label="Akun terdaftar"
+			value={akun.length}
+			unit="akun"
+			hint={rincianPeran || 'Membaca tabel akun'}
+			iconPath={ICONS.users}
+			color="var(--color-pertamina-navy)"
+		/>
+		<StatTile
+			label="Kepatuhan SLA tinjauan"
+			value={sla.total > 0 ? formatPersen(sla.persen) : '—'}
+			hint={sla.total > 0
+				? `${formatAngka(sla.lewat)} butir lewat batas · median terlama ${formatAngka(sla.medianTerburuk)} hari`
+				: 'Belum ada butir tinjauan yang selesai'}
+			iconPath={ICONS.clock}
+			color="var(--color-tier-champion)"
+		/>
+		<StatTile
+			label="Kesiapan bukti ESG"
+			value={admin.esgReadiness.length > 0 ? formatPersen(kesiapanEsg) : '—'}
+			hint={pilarTerlemah
+				? `Rata-rata tiga pilar · terlemah ${pilarTerlemah.label}`
+				: 'Menunggu matriks bukti tiga pilar'}
+			iconPath={ICONS.leaf}
+			color="var(--color-pertamina-red)"
+		/>
+	</div>
+</section>
+
+<!-- ── Chart 1 · ritme publikasi ───────────────────────────────────────── -->
+<Card class="mb-4">
+	<div class="mb-3 flex flex-wrap items-start justify-between gap-3">
+		<div class="min-w-0">
+			<h2 class="text-base font-bold text-heading">Ritme publikasi per bulan</h2>
+			<p class="mt-1 max-w-3xl text-sm text-ink-600">
+				Apakah blog terbit dan kabar terdiseminasi mengalir setiap bulan, atau menumpuk di
+				beberapa bulan saja?
+			</p>
+		</div>
+		<StatusBadge label="Jangkauan = estimasi" color="amber" size="sm" iconPath={ICONS.info} />
+	</div>
+
+	<AdminPublikasiTrend
+		data={rekapBulanan}
+		targetKonten={targetKpi('M-02').target}
+		loading={admin.loading}
+	/>
+</Card>
+
+<!-- ── Chart 2 & 3 ─────────────────────────────────────────────────────── -->
+<div class="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
+	<Card>
+		<div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+			<h2 class="text-base font-bold text-heading">Capaian KPI terhadap target</h2>
+			<p class="text-xs text-ink-600">
+				<span class="numeric font-semibold text-ink-700">{kpiTercapai}</span>
+				dari
+				<span class="numeric font-semibold text-ink-700">{admin.kpi.length}</span> metrik tercapai
+			</p>
+		</div>
+		<p class="mb-3 text-sm text-ink-600">Sisi mana dari lima Key Objective yang penyok?</p>
+
+		<KpiRadarChart kpi={admin.kpi} loading={admin.loading} />
+	</Card>
+
+	<Card>
+		<h2 class="text-base font-bold text-heading">Corong keterlibatan</h2>
+		<p class="mb-3 text-sm text-ink-600">
+			Berapa yang terdaftar berubah menjadi aktif, lalu menjadi pengamplifikasi?
+		</p>
+
+		<EngagementFunnelArea
+			data={admin.engagement}
+			windowHari={KPI_PARAMETERS.windowAnggotaAktifHari}
+			loading={admin.loading}
+		/>
+	</Card>
+</div>
+
+<!-- ── Chart 4 · sebaran chapter ───────────────────────────────────────── -->
+<Card class="mb-6">
+	<h2 class="text-base font-bold text-heading">Sebaran anggota per chapter</h2>
+	<p class="mb-3 text-sm text-ink-600">
+		Chapter mana yang paling besar, dan bagaimana komposisi kedua komunitas di dalamnya?
+	</p>
+
+	<AdminSebaranChapter
+		categories={sebaranChapter.kategori}
+		series={sebaranChapter.seri}
+		loading={catalog.loading}
+	/>
+</Card>
+
+<!-- ── Tabel penutup · rekap bulanan ───────────────────────────────────── -->
+<section aria-labelledby="judul-rekap">
+	<div class="mb-3">
+		<h2 id="judul-rekap" class="text-base font-bold text-heading">Rekap bulanan program</h2>
+		<p class="mt-1 max-w-3xl text-sm text-ink-600">
+			Angka yang sama dengan chart di atas, dalam bentuk yang dapat disalin ke laporan bulanan.
+			Kolom estimasi jangkauan memakai angka neto — sudah didiskon tumpang tindih audiens.
 		</p>
 	</div>
 
-	{#if admin.kpi.length === 0}
+	{#if rekapBulanan.length === 0}
 		<Card>
 			<EmptyState
-				title={admin.loading ? 'Menghitung capaian KPI' : 'Potret KPI belum tersedia'}
+				title={admin.loading ? 'Menyusun rekap bulanan' : 'Rekap bulanan belum tersedia'}
 				message={admin.loading
 					? 'Membaca registry anggota, kabar terkirim, dan riwayat aksi komunitas.'
 					: 'Muat ulang data demo dari bilah atas untuk memasang kembali basis data komunitas.'}
@@ -173,301 +356,63 @@
 			/>
 		</Card>
 	{:else}
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-			{#each kartuKpi as kpi (kpi.id)}
-				<KpiCard {kpi} />
-			{/each}
+		<div class="overflow-hidden rounded-card border border-ink-100 bg-surface shadow-card">
+			<div class="overflow-x-auto">
+				<table class="w-full min-w-max border-collapse text-left">
+					<caption class="sr-only">
+						Rekap bulanan program Januari–Juli 2026: blog terbit, konten terdiseminasi, hari
+						diseminasi, amplification rate, poin kontribusi, dan estimasi jangkauan organik.
+					</caption>
+
+					<thead>
+						<tr class="bg-ink-50">
+							{#each KOLOM_REKAP as kolom (kolom.key)}
+								<th
+									scope="col"
+									class="label-micro px-4 py-3 whitespace-nowrap {kolom.numeric
+										? 'text-right'
+										: 'text-left'}"
+								>
+									{kolom.label}
+								</th>
+							{/each}
+						</tr>
+					</thead>
+
+					<tbody>
+						{#each rekapBulanan as baris (baris.id)}
+							<tr class="border-b border-ink-100 transition-colors last:border-b-0 hover:bg-ink-50">
+								<th scope="row" class="px-4 py-2.5 text-sm font-semibold text-ink-900">
+									{baris.label}
+								</th>
+								<td class="numeric h-12 px-4 py-2.5 text-right text-sm tabular-nums text-ink-700">
+									{formatAngka(baris.terbit)}
+								</td>
+								<td class="numeric h-12 px-4 py-2.5 text-right text-sm tabular-nums text-ink-700">
+									{formatAngka(baris.konten)}
+								</td>
+								<td class="numeric h-12 px-4 py-2.5 text-right text-sm tabular-nums text-ink-700">
+									{formatAngka(baris.hari)}
+								</td>
+								<td class="numeric h-12 px-4 py-2.5 text-right text-sm tabular-nums text-ink-700">
+									{formatPersen(baris.amplifikasi)}
+								</td>
+								<td class="numeric h-12 px-4 py-2.5 text-right text-sm tabular-nums text-ink-700">
+									{formatAngka(baris.poin)}
+								</td>
+								<td class="numeric h-12 px-4 py-2.5 text-right text-sm tabular-nums text-ink-500">
+									± {formatRingkas(baris.jangkauan)}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	{/if}
+
+	<p class="mt-3 text-xs leading-relaxed text-ink-600">
+		KPI Aktivitas membuktikan bahwa program berjalan; kesiapan bukti ESG membuktikan bahwa program
+		menciptakan nilai. Keduanya dilaporkan berdampingan dan tidak pernah dijumlahkan.
+	</p>
 </section>
-
-<!-- ── Bilah tab ───────────────────────────────────────────────────────── -->
-<Tabs tabs={DAFTAR_TAB} bind:active={tabAktif} class="mb-5" />
-
-{#if tabAktif === TAB.RINGKASAN}
-	<!-- ── Tab 1 · Ringkasan ───────────────────────────────────────────── -->
-	<section aria-label="Ringkasan program" class="space-y-4">
-		<Card>
-			<h3 class="text-base font-bold text-heading">Ritme diseminasi konten</h3>
-			<p class="mb-3 text-sm text-ink-600">
-				Apakah ritme satu sampai dua konten dan minimal dua hari diseminasi per bulan terpenuhi?
-			</p>
-			<DisseminationComboChart
-				data={admin.dissemination}
-				targetKonten={targetKpi('M-02').target}
-				targetHari={targetKpi('M-03').target}
-				loading={admin.loading}
-			/>
-		</Card>
-
-		<div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-			<Card>
-				<h3 class="text-base font-bold text-heading">Coverage registrasi penerima manfaat</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Berapa persen penerima manfaat sudah terdata dan memberi consent?
-				</p>
-				<CoverageGaugeChart kpi={kpiCoverage} loading={admin.loading} />
-			</Card>
-
-			<Card>
-				<h3 class="text-base font-bold text-heading">Bentuk capaian lima Key Objective</h3>
-				<p class="mb-3 text-sm text-ink-600">Sisi mana dari program yang penyok?</p>
-				<KpiRadarChart kpi={admin.kpi} loading={admin.loading} />
-			</Card>
-
-			<Card>
-				<h3 class="text-base font-bold text-heading">Corong editorial</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Dari naskah yang masuk, berapa yang benar-benar terbit — dan di tahap mana penyusutan
-					terbesar?
-				</p>
-				<EditorialPipelineFunnel data={editorial.pipeline} loading={editorial.loading} />
-			</Card>
-
-			<Card>
-				<h3 class="text-base font-bold text-heading">Kepatuhan SLA antrean tinjauan</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Berapa butir antrean yang masih berada di dalam batas SLA verifikator?
-				</p>
-				<VerifierSlaBar data={admin.slaCompliance} loading={admin.loading} />
-			</Card>
-		</div>
-
-		{#if kpiPendamping.length > 0}
-			<Card>
-				<h3 class="text-base font-bold text-heading">Meteran empat metrik pendamping</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Metrik mana yang sudah menyentuh targetnya, dan seberapa jauh sisanya?
-				</p>
-				<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-					{#each kpiPendamping as baris (baris.id)}
-						<div class="rounded-card border border-ink-100 p-2">
-							<KpiGaugeChart
-								value={baris.actual}
-								target={baris.target}
-								label={baris.shortLabel}
-								unit={baris.unit}
-								status={baris.status}
-								height="170px"
-								loading={admin.loading}
-							/>
-						</div>
-					{/each}
-				</div>
-			</Card>
-		{/if}
-	</section>
-{:else if tabAktif === TAB.AMPLIFIKASI}
-	<!-- ── Tab 2 · Amplifikasi ─────────────────────────────────────────── -->
-	<section aria-label="Amplifikasi komunitas" class="space-y-4">
-		<Card>
-			<h3 class="text-base font-bold text-heading">Tren amplification rate</h3>
-			<p class="mb-3 text-sm text-ink-600">
-				Apakah separuh anggota ikut mengamplifikasi, dan apakah jaraknya terhadap seluruh anggota
-				terdaftar melebar?
-			</p>
-			<AmplificationTrendLine
-				data={admin.amplification}
-				target={targetKpi('M-04').target}
-				loading={admin.loading}
-			/>
-		</Card>
-
-		<div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-			<Card>
-				<h3 class="text-base font-bold text-heading">Amplifikasi per chapter</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Chapter mana yang paling menggerakkan penyebaran konten pada bulan terakhir program?
-				</p>
-				<AmplificationBarChart
-					data={admin.amplificationByChapter}
-					unit="%"
-					target={targetKpi('M-04').target}
-					loading={admin.loading}
-				/>
-			</Card>
-
-			<Card>
-				<h3 class="text-base font-bold text-heading">Tren kontribusi sepanjang program</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Apakah volume aksi komunitas ikut naik, atau hanya nilai poinnya yang membesar?
-				</p>
-				{#if adaTren}
-					<TrendLineChart
-						categories={trenBulanan.map((b) => b.label)}
-						series={seriTren}
-						height="300px"
-						loading={admin.loading}
-					/>
-				{:else}
-					<EmptyState
-						title="Belum ada aksi berpoin tercatat"
-						message="Tren muncul setelah anggota pertama membaca kabar, membagikan konten, atau menghadiri kegiatan komunitas."
-						iconPath={ICONS.trend}
-						size="sm"
-					/>
-				{/if}
-			</Card>
-		</div>
-	</section>
-{:else if tabAktif === TAB.KOMUNITAS}
-	<!-- ── Tab 3 · Komunitas ───────────────────────────────────────────── -->
-	<section aria-label="Pertumbuhan komunitas" class="space-y-4">
-		<Card>
-			<h3 class="text-base font-bold text-heading">Sumber poin per bulan</h3>
-			<p class="mb-3 text-sm text-ink-600">
-				Poin datang dari jenis kontribusi apa — aksi ringan, atau kontribusi bermakna?
-			</p>
-			<PointSourceStackedBar
-				months={admin.programMonths}
-				series={admin.pointSources}
-				loading={admin.loading}
-			/>
-		</Card>
-
-		<div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-			<Card>
-				<h3 class="text-base font-bold text-heading">Cakupan registrasi per segmen</h3>
-				<p class="mb-3 text-sm text-ink-600">Segmen mana yang tertinggal dari target cakupan?</p>
-				<CoverageSegmentBar
-					data={admin.coverageSegments}
-					target={targetKpi('M-01').target}
-					loading={admin.loading}
-				/>
-			</Card>
-
-			<Card>
-				<h3 class="text-base font-bold text-heading">Sebaran tier</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Komunitas mengerucut sehat, atau menumpuk di ambang paling bawah?
-				</p>
-				<TierDistributionChart data={admin.tierDistribution} height="280px" loading={admin.loading} />
-			</Card>
-
-			<Card>
-				<h3 class="text-base font-bold text-heading">Corong keterlibatan</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Berapa yang terdaftar berubah menjadi aktif, lalu menjadi pengamplifikasi?
-				</p>
-				<EngagementFunnelArea
-					data={admin.engagement}
-					windowHari={KPI_PARAMETERS.windowAnggotaAktifHari}
-					loading={admin.loading}
-				/>
-			</Card>
-
-			<Card>
-				<h3 class="text-base font-bold text-heading">Komposisi dua komunitas</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Seberapa berimbang keanggotaan SOBI dan Womenpreneur di dalam Pfriends?
-				</p>
-				<CommunityPieChart
-					data={sebaranKomunitas}
-					centerLabel="Awardee"
-					height="280px"
-					loading={catalog.loading}
-				/>
-			</Card>
-		</div>
-	</section>
-{:else}
-	<!-- ── Tab 4 · ESG & Dampak ────────────────────────────────────────── -->
-	<section aria-label="Bukti ESG dan dampak" class="space-y-4">
-		<Card>
-			<h3 class="text-base font-bold text-heading">Estimasi jangkauan organik</h3>
-			<p class="mb-3 text-sm text-ink-600">
-				Berapa jangkauan organik yang masuk akal — dan seberapa lebar ketidakpastiannya?
-			</p>
-			<ReachEstimateBand data={admin.reachBand} loading={admin.loading} />
-		</Card>
-
-		<div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-			<Card>
-				<h3 class="text-base font-bold text-heading">Gerbang bukti ESG</h3>
-				<p class="mb-3 text-sm text-ink-600">Di gerbang mana bukti ESG paling banyak gugur?</p>
-				<EsgEvidenceGateBar data={admin.esgGate} loading={admin.loading} />
-			</Card>
-
-			<Card>
-				<h3 class="text-base font-bold text-heading">Profil kesiapan tiga pilar</h3>
-				<p class="mb-3 text-sm text-ink-600">
-					Pilar mana yang buktinya paling siap dilaporkan, dan mana yang belum boleh diklaim?
-				</p>
-				<EsgRadarChart series={seriRadarEsg} indicators={indikatorRadarEsg} loading={admin.loading} />
-			</Card>
-		</div>
-
-		{#if admin.reach}
-			<Card>
-				<div class="mb-3 flex flex-wrap items-start justify-between gap-3">
-					<div class="min-w-0">
-						<h3 class="text-base font-bold text-heading">Angka komunikasi dan angka perencanaan</h3>
-						<p class="mt-1 max-w-3xl text-sm text-ink-600">
-							Keduanya ditampilkan berdampingan supaya tidak perlu ada yang memilih diam-diam.
-							Angka bruto identik dengan cara Hal 6 menyajikannya; angka neto sudah didiskon
-							tumpang tindih audiens, dan itulah yang dipakai untuk perencanaan.
-						</p>
-					</div>
-					<span
-						class="inline-flex shrink-0 items-center gap-1.5 rounded-chip bg-warning-tint px-2.5 py-1 text-xs font-semibold text-warning"
-					>
-						<Icon path={ICONS.info} size={14} />
-						Estimasi bermodel
-					</span>
-				</div>
-
-				<div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-					<div class="rounded-card border border-ink-100 bg-ink-50 p-4">
-						<p class="label-micro">Anggota mengamplifikasi</p>
-						<p class="numeric mt-1.5 text-3xl text-ink-900">
-							{formatAngka(admin.reach.amplifiers)}
-						</p>
-						<p class="mt-1 text-xs text-ink-600">
-							Basis perhitungan — anggota unik dengan minimal satu amplifikasi terhitung bulan ini.
-						</p>
-					</div>
-
-					<div class="rounded-card border border-pertamina-blue/25 bg-info-tint/40 p-4">
-						<p class="label-micro">Angka komunikasi (bruto)</p>
-						<p class="numeric mt-1.5 text-2xl text-ink-900">
-							{formatRingkas(admin.reach.pesimis.bruto)} – {formatRingkas(admin.reach.optimis.bruto)}
-						</p>
-						<p class="mt-1 text-xs text-ink-600">
-							{formatAngka(admin.reach.pesimis.bruto)} sampai {formatAngka(admin.reach.optimis.bruto)}
-							orang. Dipakai untuk materi presentasi.
-						</p>
-					</div>
-
-					<div class="rounded-card border border-pertamina-green/25 bg-pertamina-green-tint/40 p-4">
-						<p class="label-micro">Angka perencanaan (neto)</p>
-						<p class="numeric mt-1.5 text-2xl text-ink-900">
-							{formatRingkas(admin.reach.pesimis.neto)} – {formatRingkas(admin.reach.optimis.neto)}
-						</p>
-						<p class="mt-1 text-xs text-ink-600">
-							Inilah angka yang dipakai untuk perencanaan dan klaim penghematan paid media.
-						</p>
-					</div>
-				</div>
-
-				<div class="mt-4 rounded-card border border-ink-100 p-4">
-					<p class="text-sm font-semibold text-heading">Asumsi yang menopang angka di atas</p>
-					<ul class="mt-2 space-y-1.5">
-						{#each admin.reach.asumsi as asumsi (asumsi)}
-							<li class="flex items-start gap-2 text-xs leading-relaxed text-ink-600">
-								<Icon path={ICONS.info} size={14} class="mt-0.5 shrink-0 text-ink-400" />
-								<span>{asumsi}</span>
-							</li>
-						{/each}
-					</ul>
-				</div>
-			</Card>
-		{/if}
-	</section>
-{/if}
-
-<p class="mt-6 text-xs leading-relaxed text-ink-600">
-	KPI Aktivitas membuktikan bahwa program berjalan. KPI ESG membuktikan bahwa program menciptakan
-	nilai (Hal 10). Keduanya dilaporkan berdampingan namun tidak pernah dijumlahkan —
-	<a class="font-semibold text-pertamina-red-ink underline" href="/admin/esg">buka Bukti ESG</a>
-	untuk lapisan kedua.
-</p>

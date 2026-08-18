@@ -6,31 +6,45 @@
 	 * setiap halaman zona ini (katalog isi komunitas + keadaan gamifikasi), lalu
 	 * menyediakan navigasi yang sesuai dengan perangkat.
 	 *
-	 * Penjagaan akses sudah TIDAK ditulis di sini. Sejak V2 ia milik `ZoneGuard`,
-	 * yang membedakan tiga keadaan — belum siap, tamu, dan peran keliru — dengan
-	 * tiga perlakuan berbeda. Layout yang menulis penjaganya sendiri berarti empat
-	 * zona dengan empat penjaga yang perlahan berbeda perilaku.
+	 * ── PERUBAHAN: KERANGKA DISAMAKAN DENGAN ADMIN & VERIFIKATOR ────────────────
 	 *
-	 * Karena `ZoneGuard` tidak merender isinya sebelum peran terbukti berhak,
-	 * seluruh efek penyiapan di bawah baru berjalan setelah sesi sah — tidak perlu
-	 * lagi ada pemeriksaan `isAuthenticated` di dalam fungsi penyiapan.
+	 * Sebelumnya zona ini memakai `Header` + bilah tab mendatar, sementara dua zona
+	 * ter-login lainnya memakai `Sidebar` + bilah atas. Tiga kerangka untuk tiga
+	 * zona berarti tiga tempat yang perlahan berbeda perilaku — dan peraga yang
+	 * berpindah dari layar admin ke layar awardee melihat dua aplikasi berbeda.
+	 * Kini polanya satu: `Sidebar` bersama untuk desktop, laci yang sama untuk
+	 * ponsel, `BottomNav` sebagai pelengkap sentuh.
+	 *
+	 * `BottomNav` DIPERTAHANKAN meski Sidebar sudah punya laci. Awardee membuka
+	 * microsite ini terutama dari tautan WhatsApp di ponsel, dan navigasi utamanya
+	 * harus terjangkau ibu jari tanpa membuka laci lebih dulu — itu perbedaan nyata
+	 * dengan admin/verifikator yang bekerja di depan laptop.
+	 *
+	 * Penjagaan akses TIDAK ditulis di sini. Sejak V2 ia milik `ZoneGuard`, yang
+	 * membedakan tiga keadaan — belum siap, tamu, dan peran keliru — dengan tiga
+	 * perlakuan berbeda. Layout yang menulis penjaganya sendiri berarti empat zona
+	 * dengan empat penjaga yang perlahan berbeda perilaku.
 	 *
 	 * Penyiapan data dikerjakan SEKALI di sini, bukan di tiap halaman. Awardee
 	 * berpindah antar halaman berkali-kali dalam satu sesi; memuat ulang katalog di
 	 * setiap halaman berarti membuka transaksi IndexedDB yang sama berulang kali
 	 * untuk hasil yang identik, dan setiap perpindahan akan berkedip.
 	 *
-	 * Daftar navigasi datang dari `$lib/data/navigation.js`. Zona ini punya sepuluh
-	 * tujuan; lima yang bertanda `primary` adalah yang muat di bilah ponsel. Awardee
-	 * membuka microsite ini terutama dari ponsel lewat tautan WhatsApp, sehingga
-	 * `BottomNav` adalah navigasi utama mereka — bukan pelengkap.
-	 *
 	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 ZoneGuard & navigation.js, §2.14 route zona awardee
 	 * @see docs/07-UX-SITEMAP.md — §1.2 poin dan tier sebagai lapisan persisten
 	 */
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
-	import { BottomNav, Header, Icon, TierBadge, ToastHost, ZoneGuard } from '$lib/components';
+	import {
+		BottomNav,
+		Icon,
+		PointsChip,
+		Sidebar,
+		TierBadge,
+		ToastHost,
+		ZoneGuard,
+		ICONS
+	} from '$lib/components';
 	import { isNavActive, navForZone, withBadges } from '$lib/data/navigation.js';
 	import { ActivityType } from '$lib/domain/constants/scoring-table.js';
 	import { Zone } from '$lib/domain/policies/AccessPolicy.js';
@@ -43,6 +57,9 @@
 
 	/** Banyaknya butir yang muat di bilah navigasi ponsel. */
 	const BATAS_NAV_PONSEL = 5;
+
+	/** Laci navigasi; hanya berpengaruh di bawah breakpoint lg. */
+	let navTerbuka = $state(false);
 
 	/** @type {boolean} Data zona sudah siap ditampilkan. */
 	let siap = $state(false);
@@ -70,7 +87,7 @@
 		void siapkanZona();
 	});
 
-	const jalurKini = $derived(page.url?.pathname ?? '');
+	const jalurKini = $derived(page.url?.pathname ?? '/awardee');
 
 	/**
 	 * Kabar yang poin bacanya belum pernah diklaim awardee ini.
@@ -96,7 +113,7 @@
 		return catalog.storiesByAwardee(awardeeId).filter((cerita) => cerita.needsRevision).length;
 	});
 
-	/** Sepuluh tujuan zona awardee, sudah bertanda lencana. */
+	/** Tujuh tujuan zona awardee, sudah bertanda lencana. */
 	const navZona = $derived(
 		withBadges(navForZone(Zone.AWARDEE), {
 			unreadBroadcasts: kabarBelumDiklaim,
@@ -109,73 +126,115 @@
 		navZona.filter((item) => item.primary === true).slice(0, BATAS_NAV_PONSEL)
 	);
 
-	/** Potret pengguna untuk header — poin dan koin dibaca langsung dari store. */
-	const penggunaHeader = $derived(
-		session.user
-			? {
-					name: session.user.name,
-					tier: gamification.tier.level,
-					activePk: gamification.points,
-					balanceKt: gamification.coins
-				}
-			: null
+	/**
+	 * Label bagian yang sedang dibuka, untuk bilah atas.
+	 *
+	 * Butir dengan `href` terpanjang menang supaya `/awardee/cerita/tulis` tidak
+	 * dilabeli keliru hanya karena butir lain diperiksa lebih dulu.
+	 */
+	const bagianKini = $derived(
+		[...navZona]
+			.sort((a, b) => b.href.length - a.href.length)
+			.find((item) => isNavActive(item.href, jalurKini))?.label ?? 'Ruang anggota'
 	);
 </script>
 
+<!-- Judul dokumen sengaja TIDAK ditulis di sini. Berbeda dengan zona admin dan
+     verifikator, setiap halaman zona ini sudah punya `<svelte:head><title>`
+     sendiri yang lebih spesifik daripada label navigasinya ("Perbaiki tulisan"
+     vs "Blog Saya"). Menambahkan judul layout hanya akan menyisipkan elemen
+     `<title>` kedua di dalam `<head>` yang sama. -->
 <ZoneGuard zone={Zone.AWARDEE} label="Zona awardee">
-	<div class="min-h-screen bg-canvas">
-		<Header user={penggunaHeader} notificationCount={kabarBelumDiklaim} homeHref="/awardee">
-			{#snippet actions()}
-				<TierBadge tier={gamification.tier.level} size="sm" />
-			{/snippet}
-		</Header>
+	<div class="flex min-h-screen bg-canvas">
+		<Sidebar
+			bind:open={navTerbuka}
+			nav={navZona}
+			zone={Zone.AWARDEE}
+			homeHref="/awardee"
+			title="Ruang anggota"
+		/>
 
-		<!-- Navigasi desktop. Di ponsel tempatnya diambil alih BottomNav. -->
-		<nav
-			class="sticky top-14 z-20 hidden border-b border-ink-100 bg-white/85 backdrop-blur-md lg:block"
-			aria-label="Navigasi zona awardee"
-		>
-			<ul class="mx-auto flex max-w-7xl items-stretch gap-1 overflow-x-auto px-4 sm:px-6 lg:px-8">
-				{#each navZona as item (item.id)}
-					{@const nyala = isNavActive(item.href, jalurKini)}
-					<li class="shrink-0">
-						<a
-							href={item.href}
-							aria-current={nyala ? 'page' : undefined}
-							class="flex min-h-11 items-center gap-1.5 border-b-2 px-3 text-sm transition-colors {nyala
-								? 'border-pertamina-red font-semibold text-pertamina-red-ink'
-								: 'border-transparent font-medium text-ink-600 hover:text-ink-900'}"
-						>
-							<Icon path={item.iconPath} size={16} />
-							{item.label}
-							{#if item.badge}
-								<span
-									class="numeric ml-0.5 inline-flex min-w-4 items-center justify-center rounded-full bg-pertamina-red px-1 text-[10px] leading-4 font-bold text-white"
-								>
-									{item.badge}
-								</span>
-							{/if}
-						</a>
-					</li>
-				{/each}
-			</ul>
-		</nav>
+		<div class="flex min-w-0 flex-1 flex-col">
+			<header
+				class="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-ink-100 bg-surface/90 px-4 backdrop-blur"
+			>
+				<button
+					type="button"
+					class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-600 hover:bg-ink-100 hover:text-ink-900 lg:hidden"
+					aria-label="Buka menu navigasi"
+					onclick={() => (navTerbuka = true)}
+				>
+					<Icon path={ICONS.menu} size={20} />
+				</button>
 
-		<main class="mx-auto w-full max-w-7xl px-4 pt-5 pb-24 sm:px-6 lg:px-8 lg:pb-12">
-			{#if siap}
-				{@render children()}
-			{:else}
-				<div class="space-y-4" aria-busy="true" aria-label="Menyiapkan data komunitas">
-					<div class="skeleton h-8 w-56 rounded-control"></div>
-					<div class="skeleton h-44 w-full rounded-card"></div>
-					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-						{#each ['a', 'b', 'c', 'd'] as kunci (kunci)}
-							<div class="skeleton h-28 rounded-card"></div>
-						{/each}
-					</div>
+				<div class="min-w-0 flex-1">
+					<p class="label-micro leading-tight">Pertamina Foundation</p>
+					<p class="truncate text-sm leading-tight font-semibold text-heading">{bagianKini}</p>
 				</div>
-			{/if}
-		</main>
+
+				<!-- Poin dan jenjang menetap di bilah atas: keduanya konteks yang membuat
+				     setiap halaman zona ini masuk akal, bukan isi satu halaman tertentu. -->
+				<div class="hidden items-center gap-2 sm:flex">
+					<PointsChip points={gamification.points} currency="PK" size="sm" showLabel={false} />
+					<TierBadge tier={gamification.tier.level} size="sm" />
+				</div>
+
+				<a
+					href="/awardee/kabar"
+					class="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900"
+					aria-label="Kabar komunitas"
+				>
+					<Icon path={ICONS.bell} size={20} />
+					{#if kabarBelumDiklaim > 0}
+						<span
+							class="numeric absolute top-1.5 right-1.5 inline-flex min-w-4 items-center justify-center rounded-full bg-pertamina-red-ink px-1 text-[10px] leading-4 text-white"
+						>
+							{kabarBelumDiklaim}
+						</span>
+					{/if}
+				</a>
+
+				<!-- Kartu nama menjadi satu-satunya jalan menuju `/awardee/profil` sejak butir
+				     itu dicabut dari navigasi. Routenya tetap hidup dan tetap dirujuk komposer
+				     Blog ("Buka pengaturan consent"); tanpa tautan ini, satu-satunya jalan ke
+				     sana adalah mengetik alamatnya sendiri. -->
+				<a
+					href="/awardee/profil"
+					class="hidden min-w-0 items-center gap-2 rounded-control border-l border-ink-100 py-1 pr-1 pl-3 transition-colors hover:bg-ink-50 md:flex"
+				>
+					<span
+						class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-chip bg-pertamina-navy-tint text-xs font-bold text-pertamina-navy"
+						aria-hidden="true"
+					>
+						{session.user?.initials ?? 'PF'}
+					</span>
+					<span class="min-w-0">
+						<span class="block truncate text-xs leading-tight font-semibold text-heading">
+							{session.displayName}
+						</span>
+						<span class="label-micro leading-tight">Profil saya</span>
+					</span>
+				</a>
+			</header>
+
+			<main class="min-w-0 flex-1 px-4 pt-5 pb-24 sm:px-6 lg:px-8 lg:pb-10">
+				<div class="mx-auto w-full max-w-6xl">
+					{#if siap}
+						{@render children()}
+					{:else}
+						<div class="space-y-4" aria-busy="true" aria-label="Menyiapkan data komunitas">
+							<div class="skeleton h-8 w-56 rounded-control"></div>
+							<div class="skeleton h-44 w-full rounded-card"></div>
+							<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+								{#each ['a', 'b', 'c', 'd'] as kunci (kunci)}
+									<div class="skeleton h-28 rounded-card"></div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				</div>
+			</main>
+		</div>
 
 		<BottomNav items={navPonsel} zone={Zone.AWARDEE} ariaLabel="Navigasi zona awardee" />
 		<ToastHost toasts={toast.items} ondismiss={(id) => toast.dismiss(id)} />

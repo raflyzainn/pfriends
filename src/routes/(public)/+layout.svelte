@@ -70,46 +70,36 @@
 </script>
 
 <div class="flex min-h-dvh flex-col bg-canvas">
-	<!-- E0 baris 1 — pita institusi. Fakta penyelenggara, bukan slogan. -->
-	<div class="bg-pertamina-navy">
-		<div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 sm:px-6 lg:px-8">
-			<p
-				class="min-w-0 truncate font-mono text-[11px] leading-none tracking-[0.08em] text-white/75 uppercase"
-			>
-				Divisi Corporate Secretary · Pertamina Foundation
-			</p>
-			<a
-				href="/masuk"
-				class="shrink-0 font-mono text-[11px] leading-none tracking-[0.08em] text-white/75 uppercase underline-offset-4 transition-colors hover:text-white hover:underline"
-			>
-				Masuk
-			</a>
-		</div>
-	</div>
-
-	<!-- E0 baris 2 — wordmark + navigasi teks polos. Tanpa blur, tanpa pil ber-tint. -->
-	<header class="border-b border-ink-200 bg-canvas">
-		<div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-			<a href="/" class="min-w-0 shrink-0" aria-label="Pfriends — beranda">
-				<span class="display-editorial block text-[26px] text-heading">Pfriends</span>
-				<!-- Three-band tick: turunan tiga pita panah logo Pertamina. Muncul tepat
-				     dua kali per halaman — di sini dan di atas footer. -->
-				<span class="mt-1.5 flex h-1 w-[72px] overflow-hidden" aria-hidden="true">
-					<span class="h-full basis-[40%] bg-pertamina-red"></span>
-					<span class="h-full basis-[30%] bg-pertamina-green"></span>
-					<span class="h-full basis-[30%] bg-pertamina-navy"></span>
+	<!-- E0 — SATU bilah teal, bukan dua.
+	     Pita institusi dan bilah wordmark digabung: logo Pertamina Foundation versi
+	     PUTIH menuntut latar gelap, dan dua bilah bertumpuk hanya memakan tinggi
+	     layar tanpa menambah informasi. Logo dibuat putih lewat `brightness(0)
+	     invert(1)` — berkasnya PNG berwarna dengan latar transparan, dan filter
+	     menghindari menyimpan aset kedua hanya demi satu perbedaan warna. -->
+	<header class="bg-pertamina-blue">
+		<div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3.5 sm:px-6 lg:px-8">
+			<a href="/" class="flex min-w-0 shrink-0 items-center gap-3" aria-label="PFfriends — beranda">
+				<img
+					src="/img/pf-logo.png"
+					alt=""
+					class="h-8 w-auto shrink-0"
+					style="filter: brightness(0) invert(1);"
+				/>
+				<span class="h-7 w-px shrink-0 bg-white/30" aria-hidden="true"></span>
+				<span class="display-editorial block truncate text-[24px] leading-none text-white">
+					PFfriends
 				</span>
 			</a>
 
-			<nav class="hidden min-w-0 items-center gap-6 lg:flex" aria-label="Navigasi microsite">
+			<nav class="hidden min-w-0 items-center gap-7 lg:flex" aria-label="Navigasi microsite">
 				{#each NAV as item (item.id)}
 					<a
 						href={item.href}
 						aria-current={aktif(item.href) ? 'page' : undefined}
 						class="border-b-2 py-1 text-[15px] transition-colors
 							{aktif(item.href)
-							? 'border-pertamina-red font-semibold text-heading'
-							: 'border-transparent text-ink-700 hover:border-ink-300 hover:text-heading'}"
+							? 'border-accent-200 font-semibold text-white'
+							: 'border-transparent text-white/80 hover:border-white/40 hover:text-white'}"
 					>
 						{item.label}
 					</a>
@@ -118,14 +108,14 @@
 
 			<div class="flex shrink-0 items-center gap-2">
 				<a
-					href="/daftar"
-					class="hidden min-h-11 items-center rounded-control bg-pertamina-red-ink px-5 text-sm font-semibold text-white transition-colors hover:bg-pertamina-red-dark sm:inline-flex"
+					href="/masuk"
+					class="hidden min-h-10 items-center rounded-control bg-accent-200 px-5 text-sm font-bold text-brand-800 transition-colors hover:bg-accent-300 sm:inline-flex"
 				>
-					Gabung
+					Login
 				</a>
 				<button
 					type="button"
-					class="inline-flex h-11 w-11 items-center justify-center rounded-control text-ink-700 transition-colors hover:bg-ink-100 lg:hidden"
+					class="inline-flex h-11 w-11 items-center justify-center rounded-control text-white transition-colors hover:bg-white/15 lg:hidden"
 					aria-label="Buka menu navigasi"
 					onclick={() => (menuTerbuka = true)}
 				>
@@ -146,7 +136,7 @@
 
 			<div class="relative ml-auto flex h-full w-72 max-w-[85vw] flex-col bg-canvas shadow-xl">
 				<div class="flex h-16 shrink-0 items-center justify-between border-b border-ink-200 px-4">
-					<span class="display-editorial text-[20px] text-heading">Pfriends</span>
+					<span class="display-editorial text-[20px] text-heading">PFfriends</span>
 					<button
 						type="button"
 						class="inline-flex h-11 w-11 items-center justify-center rounded-control text-ink-700 transition-colors hover:bg-ink-100"
@@ -177,20 +167,13 @@
 					</ul>
 				</nav>
 
-				<div class="shrink-0 space-y-2 border-t border-ink-200 p-4">
-					<a
-						href="/daftar"
-						onclick={() => (menuTerbuka = false)}
-						class="flex min-h-11 w-full items-center justify-center rounded-control bg-pertamina-red-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-pertamina-red-dark"
-					>
-						Gabung Sekarang
-					</a>
+				<div class="shrink-0 border-t border-ink-200 p-4">
 					<a
 						href="/masuk"
 						onclick={() => (menuTerbuka = false)}
-						class="flex min-h-11 w-full items-center justify-center px-4 text-sm font-semibold text-ink-700 underline underline-offset-4 transition-colors hover:text-heading"
+						class="flex min-h-11 w-full items-center justify-center rounded-control bg-pertamina-blue px-4 text-sm font-bold text-white transition-colors hover:bg-brand-600"
 					>
-						Sudah punya akun? Masuk
+						Login
 					</a>
 				</div>
 			</div>

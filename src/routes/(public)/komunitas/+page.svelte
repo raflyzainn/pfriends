@@ -95,7 +95,7 @@
 </script>
 
 <svelte:head>
-	<title>Dua Komunitas — Pfriends</title>
+	<title>Dua Komunitas — PFfriends</title>
 	<meta
 		name="description"
 		content="Profil Sobat Bumi Indonesia dan Womenpreneur Pertamina Foundation, pembagian chapter berbasis batch, serta agenda komunitas terdekat."
@@ -109,7 +109,7 @@
 	kicker="Open community ecosystem"
 	title={'Dua kelompok berbeda\nyang saling melengkapi'}
 	standfirst="Alumni Beasiswa Sobat Bumi dan pelaku usaha Womenpreneur binaan Pertamina Foundation, dipertemukan di satu meja."
-	primary={{ label: 'Gabung Sekarang', href: '/daftar' }}
+	primary={{ label: 'Masuk ke ruang anggota', href: '/masuk' }}
 	secondary={{ label: 'Lihat agenda komunitas', href: '/kalender' }}
 	overlay="flat"
 	height="short"
@@ -320,15 +320,15 @@
 					Komunitasmu sudah menunggu
 				</h2>
 				<p class="mt-4 max-w-[52ch] text-[16px] leading-[1.68] text-white/88">
-					Pilih komunitas asalmu saat mendaftar, dan kami tautkan ke chapter yang tepat.
+					Setiap anggota sudah tertaut ke chapter asalnya begitu masuk ke ruang anggota.
 				</p>
 			</div>
 			<div class="flex flex-col items-start gap-3 lg:col-span-5 lg:items-end lg:justify-center">
 				<a
-					href="/daftar"
-					class="inline-flex min-h-11 items-center rounded-control bg-pertamina-red px-6 text-sm font-semibold text-white transition-colors hover:bg-pertamina-red-dark"
+					href="/masuk"
+					class="inline-flex min-h-11 items-center rounded-control bg-accent-200 px-6 text-sm font-bold text-brand-800 transition-colors hover:bg-accent-300"
 				>
-					Gabung Sekarang
+					Masuk ke ruang anggota
 				</a>
 				<a
 					href="/cerita"

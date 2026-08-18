@@ -2,8 +2,8 @@
 	/**
 	 * LAYOUT — Zona Admin Pertamina Foundation.
 	 *
-	 * Tanggung jawab: kerangka konsol pengelola — `ZoneGuard`, navigasi tujuh route
-	 * admin, dan pemuatan satu kali seluruh potret konsol.
+	 * Tanggung jawab: kerangka konsol pengelola — `ZoneGuard`, navigasi zona admin,
+	 * dan pemuatan satu kali seluruh potret konsol.
 	 *
 	 * Penjaga peran sudah TIDAK ditulis di berkas ini. Panel penolakan yang dahulu
 	 * tinggal di sini kini milik `ZoneGuard`, dipakai seluruh zona, dan
@@ -11,23 +11,25 @@
 	 * "terlempar keluar" bagi skrip e2e. Panel per zona berarti empat salinan yang
 	 * perlahan berbeda kalimat — dan tiga di antaranya akan lupa memasang atribut itu.
 	 *
-	 * Tombol "Masuk sebagai Admin PF" pada panel lama juga dicabut: sejak V2 tidak
-	 * ada lagi pemilih peran, dan satu-satunya jalan berganti peran adalah keluar
-	 * lalu masuk dengan akun lain di `/masuk`.
+	 * Daftar tujuan dibaca apa adanya dari `navigation.js`, tanpa lencana. Sejak
+	 * konsol dipangkas menjadi tiga tujuan (revisi 5 Agustus 2026) tidak satu pun
+	 * butir memiliki `badgeKey`, dan memanggil `withBadges()` atas daftar yang tidak
+	 * punya kunci lencana hanya menyalin larik tanpa mengubah apa pun — pekerjaan
+	 * yang tampak berarti padahal tidak.
 	 *
-	 * Pemuatan data dilakukan di layout, bukan di masing-masing halaman. Ketujuh
+	 * Pemuatan data dilakukan di layout, bukan di masing-masing halaman. Ketiga
 	 * route membaca potret yang sama, dan `admin.load()` bersifat idempoten —
-	 * memindahkannya ke tiap halaman hanya menambah tujuh tempat yang bisa lupa
+	 * memindahkannya ke tiap halaman hanya menambah tempat yang bisa lupa
 	 * memanggilnya. Efek pemuatan menunggu peran terbukti admin — bukan sebagai
 	 * penjagaan akses (itu tugas `ZoneGuard`), melainkan supaya konsol tidak membaca
 	 * seluruh tabel untuk seseorang yang tidak akan pernah melihat hasilnya.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 ZoneGuard & navigation.js, §2.14 route zona admin
+	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 ZoneGuard & navigation.js
 	 * @see docs/04-ESG-GOVERNANCE.md — §3.1 pemisahan peran aktor
 	 */
 	import { page } from '$app/state';
 	import { Button, Icon, Sidebar, ToastHost, ZoneGuard, ICONS } from '$lib/components';
-	import { navForZone, withBadges } from '$lib/data/navigation.js';
+	import { navForZone } from '$lib/data/navigation.js';
 	import { Zone } from '$lib/domain/policies/AccessPolicy.js';
 	import { admin } from '$lib/stores/admin.svelte.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
@@ -38,16 +40,8 @@
 	/** Laci navigasi; hanya berpengaruh di bawah breakpoint lg. */
 	let navTerbuka = $state(false);
 
-	/**
-	 * Tujuh tujuan zona admin, sudah bertanda lencana antrean.
-	 *
-	 * Lencana moderasi menempel di navigasi dengan sengaja: banyaknya naskah yang
-	 * menunggu keputusan adalah hal pertama yang perlu diketahui pengelola begitu
-	 * konsol dibuka, bukan sesuatu yang baru terlihat setelah membuka halamannya.
-	 */
-	const navZona = $derived(
-		withBadges(navForZone(Zone.ADMIN), { moderationQueue: admin.pendingCount })
-	);
+	/** Tiga tujuan zona admin: Dasbor KPI, Kontrol Akun, Konfigurasi Gamifikasi. */
+	const navZona = navForZone(Zone.ADMIN);
 
 	const jalurKini = $derived(page.url?.pathname ?? '/admin');
 
@@ -67,7 +61,7 @@
 </script>
 
 <svelte:head>
-	<title>{bagianKini} · Konsol Pfriends</title>
+	<title>{bagianKini} · Konsol PFfriends</title>
 </svelte:head>
 
 <ToastHost />
@@ -113,7 +107,7 @@
 
 				<div class="hidden items-center gap-2 border-l border-ink-100 pl-3 md:flex">
 					<span
-						class="inline-flex h-9 w-9 items-center justify-center rounded-chip bg-pertamina-navy-tint text-xs font-bold text-pertamina-navy"
+						class="inline-flex h-9 w-9 items-center justify-center rounded-chip bg-brand-50 text-xs font-bold text-brand-700"
 						aria-hidden="true"
 					>
 						{session.user?.initials ?? 'CS'}

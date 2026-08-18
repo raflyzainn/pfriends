@@ -117,7 +117,7 @@
 	/**
 	 * Penjelasan aturan inklusif penyaring chapter & komunitas.
 	 *
-	 * Tanpa kalimat ini penyaring terbaca rusak: sebagian besar agenda Pfriends
+	 * Tanpa kalimat ini penyaring terbaca rusak: sebagian besar agenda PFfriends
 	 * terbuka untuk seluruh chapter dan kedua komunitas, sehingga memilih satu
 	 * chapter sering tidak mengurangi daftar sama sekali. Yang salah bukan
 	 * penyaringnya, melainkan asumsi pembaca bahwa "Chapter PF 11" berarti "hanya
@@ -193,10 +193,10 @@
 </script>
 
 <svelte:head>
-	<title>Kalender Komunitas · Pfriends</title>
+	<title>Kalender Komunitas · PFfriends</title>
 	<meta
 		name="description"
-		content="Agenda upskilling, pertemuan komunitas, dan sharing session Pfriends yang terbuka untuk umum."
+		content="Agenda upskilling, pertemuan komunitas, dan sharing session PFfriends yang terbuka untuk umum."
 	/>
 </svelte:head>
 
@@ -204,14 +204,14 @@
 	<!-- ── Masthead halaman ────────────────────────────────────────────────── -->
 	<header class="grid gap-8 pt-14 pb-10 lg:grid-cols-12 lg:gap-12 lg:pt-20">
 		<div class="lg:col-span-7">
-			<p class="kicker">Pilar 02 · Agenda bersama</p>
+			<p class="kicker">Calendar of Event</p>
 			<h1
 				class="display-editorial mt-4 max-w-[16ch] text-[clamp(34px,6vw,60px)] leading-[1.04] text-heading"
 			>
 				Kalender Komunitas
 			</h1>
 			<p class="mt-6 max-w-[52ch] text-[18px] leading-[1.6] text-ink-600">
-				Upskilling, pertemuan chapter, dan sharing session yang dijalankan anggota Pfriends. Terbuka
+				Upskilling, pertemuan chapter, dan sharing session yang dijalankan anggota PFfriends. Terbuka
 				untuk siapa pun yang ingin menyimak — tanpa akun, tanpa pendaftaran di halaman ini.
 			</p>
 		</div>
@@ -324,7 +324,7 @@
 						<button
 							type="button"
 							onclick={aturUlang}
-							class="ml-1 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-pertamina-red-ink transition-opacity hover:opacity-80"
+							class="ml-1 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-brand-700 transition-opacity hover:opacity-80"
 						>
 							<Icon path={ICONS.x} size={14} />
 							Atur ulang {banyakFilter} penyaring
@@ -391,7 +391,7 @@
 			<button
 				type="button"
 				onclick={aturUlang}
-				class="mt-6 inline-flex min-h-11 items-center gap-2 rounded-control bg-pertamina-red-ink px-5 text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
+				class="mt-6 inline-flex min-h-11 items-center gap-2 rounded-control bg-brand-600 px-5 text-[14px] font-semibold text-white transition-colors hover:bg-brand-700"
 			>
 				Tampilkan seluruh agenda
 			</button>
@@ -431,7 +431,7 @@
 								<button
 									type="button"
 									onclick={() => (tanggalDipilih = null)}
-									class="inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-pertamina-red-ink transition-opacity hover:opacity-80"
+									class="inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-brand-700 transition-opacity hover:opacity-80"
 								>
 									<Icon path={ICONS.x} size={14} />
 									Tampilkan seluruh {labelBulan}
@@ -490,10 +490,10 @@
 			</p>
 			<p class="lg:col-span-4 lg:justify-self-end">
 				<a
-					href="/daftar"
-					class="inline-flex min-h-11 items-center gap-2 rounded-control bg-pertamina-red-ink px-5 text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
+					href="/masuk"
+					class="inline-flex min-h-11 items-center gap-2 rounded-control bg-brand-600 px-5 text-[14px] font-semibold text-white transition-colors hover:bg-brand-700"
 				>
-					Gabung Pfriends
+					Masuk ke ruang anggota
 					<Icon path={ICONS.arrowLongRight} size={16} />
 				</a>
 			</p>

@@ -15,7 +15,7 @@
 	 *
 	 * 1. **Bagian "dampak yang diharapkan" tidak lagi memakai angka besar.** Ketiga
 	 *    angkanya berkelas C — rujukan industri yang dikutip dokumen sumber, bukan
-	 *    hasil pengukuran Pfriends. Dicetak sebagai angka 24 px di dalam kartu, ia
+	 *    hasil pengukuran PFfriends. Dicetak sebagai angka 24 px di dalam kartu, ia
 	 *    menyatakan "capaian" tanpa satu kata pun (aturan D-02). Yang dipakai
 	 *    sekarang adalah kalimat `BENCHMARK_RUJUKAN` dari domain, apa adanya.
 	 *
@@ -34,7 +34,7 @@
 	 *    pilar, label bagian dampak, dan paragraf penutupnya — lima kali pada satu
 	 *    halaman, dan justru pengulangannya yang membuat teks terbaca seperti
 	 *    keluaran mesin. Yang bertahan hanyalah kalimat yang menanggung beban:
-	 *    penegasan bahwa angka rujukan bukan hasil pengukuran Pfriends.
+	 *    penegasan bahwa angka rujukan bukan hasil pengukuran PFfriends.
 	 *    Menghapusnya berarti menghapus peringatannya sekalian.
 	 *
 	 * @see docs/00-SOURCE-BRIEF.md — Hal 2 Background, Hal 4 Objective, Hal 5, Hal 6, Hal 7
@@ -138,9 +138,9 @@
 		},
 		{
 			id: 'mar-2026',
-			title: 'Maret — Pfriends home dan sosialisasi',
+			title: 'Maret — PFfriends home dan sosialisasi',
 			description:
-				'Pembuatan "Pfriends home" beserta konsep microsite, dibarengi sosialisasi kepada penerima manfaat untuk bergabung.',
+				'Pembuatan "PFfriends home" beserta konsep microsite, dibarengi sosialisasi kepada penerima manfaat untuk bergabung.',
 			at: '2026-03-15T09:00:00+07:00',
 			iconPath: ICONS.home,
 			color: 'var(--color-pertamina-blue)'
@@ -158,7 +158,7 @@
 			id: 'mei-2026',
 			title: 'Mei — Microsite dan onboarding',
 			description:
-				'Pembuatan microsite Pfriends dan proses onboarding penerima manfaat ke dalamnya.',
+				'Pembuatan microsite PFfriends dan proses onboarding penerima manfaat ke dalamnya.',
 			at: '2026-05-15T09:00:00+07:00',
 			iconPath: ICONS.globe,
 			color: 'var(--color-pertamina-green)'
@@ -205,7 +205,7 @@
 </script>
 
 <svelte:head>
-	<title>Tentang Inisiatif — Pfriends</title>
+	<title>Tentang Inisiatif — PFfriends</title>
 	<meta
 		name="description"
 		content="Latar belakang, tujuan, enam pilar aktivitas, dan lini masa 2026 Community Connect Initiative Pertamina Foundation."
@@ -355,7 +355,7 @@
 				</ul>
 
 				<p class="mt-6 max-w-[62ch] text-[15px] leading-[1.6] text-ink-600">
-					Kedua kalimat itu adalah acuan perencanaan, bukan hasil pengukuran Pfriends. Angka yang
+					Kedua kalimat itu adalah acuan perencanaan, bukan hasil pengukuran PFfriends. Angka yang
 					benar-benar terhitung dari catatan komunitas ditampilkan di beranda, lengkap dengan
 					tanggal potretnya.
 				</p>
@@ -397,15 +397,16 @@
 					Kamu bagian dari cerita ini
 				</h2>
 				<p class="mt-4 max-w-[52ch] text-[16px] leading-[1.68] text-white/88">
-					Alumni Beasiswa Sobat Bumi dan binaan PFpreneur dapat bergabung hari ini juga.
+					Alumni Beasiswa Sobat Bumi dan binaan PFpreneur dapat masuk ke ruang anggotanya hari ini
+					juga.
 				</p>
 			</div>
 			<div class="flex flex-col items-start gap-3 lg:col-span-5 lg:items-end lg:justify-center">
 				<a
-					href="/daftar"
-					class="inline-flex min-h-11 items-center rounded-control bg-pertamina-red px-6 text-sm font-semibold text-white transition-colors hover:bg-pertamina-red-dark"
+					href="/masuk"
+					class="inline-flex min-h-11 items-center rounded-control bg-accent-200 px-6 text-sm font-bold text-brand-800 transition-colors hover:bg-accent-300"
 				>
-					Gabung Sekarang
+					Masuk ke ruang anggota
 				</a>
 				<a
 					href="/komunitas"

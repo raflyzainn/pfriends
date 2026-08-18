@@ -70,7 +70,7 @@ export const TIER_TABLE = Object.freeze([
 		deskripsi: 'Anggota baru yang sudah terdaftar dan sedang mengumpulkan kontribusi pertamanya.',
 		benefit: 'Akses penuh kanal komunitas, kalender kegiatan, dan pusat aksi poin',
 		benefitSumber: null,
-		color: '#94A3B8',
+		color: '#CBD5E1',
 		token: 'ink-400',
 		ink: 'ink-600',
 		tint: 'ink-100'
@@ -83,7 +83,7 @@ export const TIER_TABLE = Object.freeze([
 		deskripsi: 'Anggota yang rutin membaca dan menanggapi kabar komunitas.',
 		benefit: 'Berhak disebut dalam ringkasan bulanan komunitas',
 		benefitSumber: 'eligible for monthly digest mention',
-		color: '#2E7CD6',
+		color: '#6FBEB2',
 		token: 'tier-active',
 		ink: 'tier-active-ink',
 		tint: 'tier-active-tint'
@@ -96,7 +96,7 @@ export const TIER_TABLE = Object.freeze([
 		deskripsi: 'Anggota yang aktif berbagi konten dan ikut menghidupkan diskusi komunitas.',
 		benefit: 'Berhak menerima pengakuan komunitas',
 		benefitSumber: 'eligible for community recognition',
-		color: '#7CB342',
+		color: '#34908B',
 		token: 'tier-contributor',
 		ink: 'tier-contributor-ink',
 		tint: 'tier-contributor-tint'
@@ -110,7 +110,7 @@ export const TIER_TABLE = Object.freeze([
 			'Anggota yang layak diangkat profilnya — ambang poin untuk gate fitur publik terpenuhi.',
 		benefit: 'Berhak ditampilkan di situs web atau media sosial',
 		benefitSumber: 'eligible for website or social media feature',
-		color: '#E53935',
+		color: '#1E4B49',
 		token: 'tier-featured',
 		ink: 'tier-featured-ink',
 		tint: 'tier-featured-tint'
@@ -123,7 +123,7 @@ export const TIER_TABLE = Object.freeze([
 		deskripsi: 'Penggerak komunitas yang memimpin aksi dan membimbing anggota lain.',
 		benefit: 'Berhak diundang sebagai mentor / narasumber / champion regional',
 		benefitSumber: 'eligible for mentor / speaker / regional champion invitation',
-		color: '#F0B429',
+		color: '#D9B81F',
 		token: 'tier-champion',
 		ink: 'tier-champion-ink',
 		tint: 'tier-champion-tint'

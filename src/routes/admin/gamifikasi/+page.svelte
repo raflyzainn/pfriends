@@ -2,88 +2,139 @@
 	/**
 	 * HALAMAN — Konfigurasi Gamifikasi.
 	 *
-	 * Tanggung jawab: memperlihatkan aturan skor yang berlaku, sebaran tier yang
-	 * dihasilkannya, dan sinyal anomali yang perlu ditinjau manusia.
+	 * Tanggung jawab: satu tempat untuk MENYETEL sistem poin — nilai poin tiap
+	 * aksi, batas hariannya, dan ambang tiap jenjang — lalu memperlihatkan akibat
+	 * setelan itu sebelum disimpan.
 	 *
-	 * Tabel skor di halaman ini BACA SAJA dengan sengaja. Sembilan nilai poin dan
-	 * empat ambang tier adalah angka kanonik Hal 11 dan Hal 12; mengubahnya lewat
-	 * antarmuka akan membuat poin yang sudah dibukukan tidak lagi dapat
-	 * dijelaskan asalnya. Perubahan aturan skor adalah keputusan program, bukan
-	 * pengaturan aplikasi — tempatnya di `domain/constants/scoring-table.js`.
+	 * ── Perubahan sikap dibanding versi sebelumnya ───────────────────────────
 	 *
-	 * Daftar anomali menerjemahkan satu kalimat Hal 11 — *"Points should reward
-	 * meaningful contribution, not spammy activity"* — menjadi pemeriksaan
-	 * konkret. Yang ditampilkan adalah SINYAL, bukan vonis: tidak ada akun yang
-	 * dibekukan otomatis di sini. Sistem yang menghukum berdasarkan heuristik akan
-	 * salah menghukum anggota paling aktif, yaitu orang yang paling tidak layak
-	 * dihukum.
+	 * Versi sebelumnya menyatakan tabel skor "baca saja": nilai poin adalah angka
+	 * kanonik dokumen sumber, dan mengubahnya lewat antarmuka dianggap membuat
+	 * poin yang sudah dibukukan tidak lagi dapat dijelaskan asalnya. Kekhawatiran
+	 * itu benar, tetapi jalan keluarnya keliru — ia menutup seluruh penyetelan,
+	 * padahal yang perlu dijaga hanyalah poin yang SUDAH tercatat.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 tabel skor, Hal 12 ambang tier
-	 * @see docs/02-KPI-MODEL.md — §5.3 aturan anti-manipulasi
+	 * Karena itu tiga penjagaan dipasang menggantikan larangan tadi:
+	 *
+	 * 1. **Poin yang sudah dibukukan tidak pernah dihitung ulang.** Setiap entri
+	 *    buku besar menyimpan nilai poinnya sendiri pada saat kejadian, sehingga
+	 *    setelan baru hanya berlaku untuk perolehan berikutnya. Konfigurasi yang
+	 *    berlaku surut akan mengubah saldo orang yang sudah menerima haknya —
+	 *    dan itu, bukan penyetelannya, yang mustahil dijelaskan.
+	 * 2. **Nilai kanonik selalu terlihat di sebelah nilai setelan.** Kolom
+	 *    "Kanonik" tidak pernah hilang, dan satu tombol mengembalikan seluruhnya.
+	 *    Setelan yang menghapus jejak nilai asalnya berhenti dapat diaudit.
+	 * 3. **Akibatnya ditampilkan sebelum disimpan.** Sebaran jenjang dihitung
+	 *    ulang atas anggota yang benar-benar ada, dan satu contoh perhitungan
+	 *    bulanan ditunjukkan berdampingan. Menyetel ambang tanpa melihat berapa
+	 *    orang yang berpindah jenjang adalah menebak.
+	 *
+	 * Setelan disimpan ke tabel `meta` lewat `setMeta`, bukan ke `localStorage`:
+	 * ia konfigurasi program, bukan preferensi peramban seseorang, dan tempatnya
+	 * memang bersama data demo yang lain supaya ikut bersih ketika data dimuat
+	 * ulang.
+	 *
+	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 tabel skor, Hal 12 ambang jenjang
+	 * @see src/lib/domain/constants/scoring-table.js — nilai kanonik
+	 * @see src/lib/domain/constants/tier-table.js — ambang kanonik
 	 */
-	import {
-		Button,
-		Card,
-		DataTable,
-		EmptyState,
-		Icon,
-		PageHeader,
-		StatTile,
-		StatusBadge,
-		ICONS
-	} from '$lib/components';
-	import AmplificationBarChart from '$lib/charts/AmplificationBarChart.svelte';
+	import { Button, Card, Icon, PageHeader, StatTile, StatusBadge, ICONS } from '$lib/components';
 	import TierDistributionChart from '$lib/charts/TierDistributionChart.svelte';
-	import { KPI_PARAMETERS } from '$lib/domain/constants/kpi-targets.js';
 	import { ActionClass, ActivityType, SCORING_TABLE } from '$lib/domain/constants/scoring-table.js';
 	import { TIER_TABLE } from '$lib/domain/constants/tier-table.js';
-	import { ActivityStatus, CapReason } from '$lib/domain/entities/PointActivity.js';
-	import { activityRepository } from '$lib/infrastructure/repositories/index.js';
+	import { getMeta, setMeta } from '$lib/infrastructure/db.js';
 	import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
-	import { admin } from '$lib/stores/admin.svelte.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
-	import { formatAngka, formatPersen } from '$lib/utils/format.js';
+	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
+	import { formatAngka, formatBertanda } from '$lib/utils/format.js';
 
-	/**
-	 * Batas peristiwa terhitung per anggota per bulan yang memicu peninjauan.
-	 * Nilai dari docs/02 §5.3 ("event/anggota/bulan > 30 → tandai untuk
-	 * peninjauan") dan berstatus [ASUMSI] sampai dikonfirmasi Corsec.
-	 */
-	const BATAS_AKSI_BULANAN = 30;
-
-	/**
-	 * Porsi poin dari aksi kelas A yang dianggap tidak wajar. Kelas A adalah aksi
-	 * yang terverifikasi otomatis — membaca kabar dan menanggapi ajakan ringan.
-	 * Poin yang hampir seluruhnya berasal dari sana menandakan kehadiran tanpa
-	 * kontribusi. [ASUMSI], turunan catatan anti-spam Hal 11.
-	 */
-	const AMBANG_DOMINASI_KELAS_A = 0.8;
-
-	/** Aksi yang dihitung sebagai amplifikasi (Hal 11 aksi 5 dan 8 poin). */
-	const AKSI_AMPLIFIKASI = Object.freeze([ActivityType.SHARE_PRIVATE, ActivityType.SHARE_PUBLIC]);
+	/** Kunci baris `meta` tempat setelan disimpan. */
+	const KUNCI_META = 'gamifikasi_konfigurasi';
 
 	/** Label kelas verifikasi aksi. */
 	const LABEL_KELAS = Object.freeze({
-		[ActionClass.A]: 'A — terverifikasi otomatis',
+		[ActionClass.A]: 'A — otomatis',
 		[ActionClass.B]: 'B — bukti ringan',
 		[ActionClass.C]: 'C — perlu bukti',
-		[ActionClass.D]: 'D — perlu validasi PF'
+		[ActionClass.D]: 'D — validasi PF'
 	});
 
-	/** @type {import('$lib/domain/entities/PointActivity.js').PointActivity[]} */
-	let aktivitas = $state.raw([]);
-	let memuatAktivitas = $state(true);
+	/**
+	 * Satu bulan khas seorang anggota aktif, dipakai sebagai contoh perhitungan.
+	 *
+	 * Bauran ini dipilih supaya menyentuh keempat kelas verifikasi sekaligus —
+	 * contoh yang hanya berisi aksi ringan tidak akan pernah memperlihatkan akibat
+	 * perubahan nilai poin kontribusi bermakna, dan justru di situlah setelan
+	 * paling sering digeser.
+	 * @type {readonly {type: string, jumlah: number}[]}
+	 */
+	const CONTOH_BULAN = Object.freeze([
+		Object.freeze({ type: ActivityType.BROADCAST_VIEW, jumlah: 4 }),
+		Object.freeze({ type: ActivityType.CTA_REACT, jumlah: 3 }),
+		Object.freeze({ type: ActivityType.SHARE_PRIVATE, jumlah: 3 }),
+		Object.freeze({ type: ActivityType.SHARE_PUBLIC, jumlah: 2 }),
+		Object.freeze({ type: ActivityType.STORY_SUBMIT, jumlah: 1 }),
+		Object.freeze({ type: ActivityType.SESSION_ATTEND, jumlah: 1 })
+	]);
 
+	/** Setelan bawaan — salinan nilai kanonik Hal 11 dan Hal 12. */
+	function konfigurasiKanonik() {
+		return {
+			poin: Object.fromEntries(SCORING_TABLE.map((aturan) => [aturan.type, aturan.points])),
+			cap: Object.fromEntries(SCORING_TABLE.map((aturan) => [aturan.type, aturan.dailyCap])),
+			ambang: Object.fromEntries(TIER_TABLE.map((tier) => [tier.level, tier.threshold]))
+		};
+	}
+
+	/**
+	 * Membaca satu angka setelan dengan cadangan nilai kanonik. Kolom yang
+	 * dikosongkan penggunanya menghasilkan `null` dari `bind:value`, dan
+	 * membiarkannya mengalir ke perhitungan membuat seluruh pratinjau berubah
+	 * menjadi `NaN` sementara ia mengetik.
+	 * @param {Record<string, number>} sumber
+	 * @param {string} kunci
+	 * @param {number} cadangan
+	 * @returns {number}
+	 */
+	function angkaSetelan(sumber, kunci, cadangan) {
+		const nilai = sumber[kunci];
+		return typeof nilai === 'number' && Number.isFinite(nilai) ? nilai : cadangan;
+	}
+
+	const BAWAAN = konfigurasiKanonik();
+
+	let poin = $state({ ...BAWAAN.poin });
+	let cap = $state({ ...BAWAAN.cap });
+	let ambang = $state({ ...BAWAAN.ambang });
+
+	/** @type {{poin: Record<string, number>, cap: Record<string, number>, ambang: Record<string, number>}} */
+	let tersimpan = $state.raw(konfigurasiKanonik());
+
+	/** @type {Date|null} */
+	let disimpanPada = $state.raw(null);
+	let memuat = $state(true);
+	let menyimpan = $state(false);
+
+	// Setelan tersimpan dibaca sekali saat halaman dibuka. Bila belum pernah ada,
+	// nilai kanonik yang sudah terpasang di atas tetap berlaku — halaman tidak
+	// perlu menunggu apa pun untuk dapat dibaca.
 	$effect(() => {
 		let dibatalkan = false;
 
 		(async () => {
 			try {
 				await bootstrapDatabase();
-				const rows = await activityRepository.getAll();
-				if (!dibatalkan) aktivitas = rows;
+				const baris = await getMeta(KUNCI_META);
+				if (dibatalkan || !baris || typeof baris !== 'object') return;
+
+				const config = /** @type {any} */ (baris);
+				poin = { ...BAWAAN.poin, ...(config.poin ?? {}) };
+				cap = { ...BAWAAN.cap, ...(config.cap ?? {}) };
+				ambang = { ...BAWAAN.ambang, ...(config.ambang ?? {}) };
+				tersimpan = { poin: { ...poin }, cap: { ...cap }, ambang: { ...ambang } };
+				disimpanPada = config.disimpanPada ? new Date(config.disimpanPada) : null;
 			} finally {
-				if (!dibatalkan) memuatAktivitas = false;
+				if (!dibatalkan) memuat = false;
 			}
 		})();
 
@@ -92,440 +143,553 @@
 		};
 	});
 
-	const namaAnggota = $derived(
-		new Map(catalog.awardees.map((awardee) => [awardee.id, awardee.fullName]))
-	);
+	// ── Turunan setelan ──────────────────────────────────────────────────────
 
 	const barisSkor = $derived(
-		SCORING_TABLE.map((aturan) => ({ id: aturan.type, aturan }))
+		SCORING_TABLE.map((aturan) => ({
+			id: aturan.type,
+			aturan,
+			poin: angkaSetelan(poin, aturan.type, aturan.points),
+			cap: angkaSetelan(cap, aturan.type, aturan.dailyCap)
+		}))
 	);
 
-	const KOLOM_SKOR = Object.freeze([
-		{ key: 'aksi', label: 'Aksi berpoin' },
-		{ key: 'points', label: 'Poin', numeric: true },
-		{ key: 'kelas', label: 'Kelas verifikasi' },
-		{ key: 'cap', label: 'Batas harian', numeric: true },
-		{ key: 'bukti', label: 'Wajib bukti' },
-		{ key: 'pilar', label: 'Pilar aktivitas' }
-	]);
+	/** Ambang setelan, lengkap dengan rank supaya urutannya tidak bergantung objek. */
+	const ambangDraf = $derived(
+		TIER_TABLE.map((tier) => ({
+			level: tier.level,
+			label: tier.label,
+			color: tier.color,
+			rank: tier.rank,
+			kanonik: tier.threshold,
+			benefit: tier.benefit,
+			nilai: tier.rank === 0 ? 0 : angkaSetelan(ambang, tier.level, tier.threshold)
+		}))
+	);
 
-	/** Poin komunitas per kelas verifikasi — konteks utama menilai mutu kontribusi. */
-	const poinPerKelas = $derived.by(() => {
-		/** @type {Map<string, number>} */
-		const rekap = new Map();
-		for (const entri of aktivitas) {
-			if (!entri.isAwarded) continue;
-			rekap.set(entri.actionClass, (rekap.get(entri.actionClass) ?? 0) + entri.points);
+	const ambangKanonik = TIER_TABLE.map((tier) => ({
+		level: tier.level,
+		label: tier.label,
+		nilai: tier.threshold
+	}));
+
+	/**
+	 * Jenjang yang dipegang sejumlah poin pada sebuah daftar ambang.
+	 * @param {number} nilai
+	 * @param {readonly {level: string, label: string, nilai: number}[]} daftar
+	 * @returns {{level: string, label: string, nilai: number}}
+	 */
+	function jenjangUntuk(nilai, daftar) {
+		let hasil = daftar[0];
+		for (const tier of daftar) if (nilai >= tier.nilai) hasil = tier;
+		return hasil;
+	}
+
+	const konfigurasiKini = $derived({
+		poin: Object.fromEntries(barisSkor.map((baris) => [baris.id, baris.poin])),
+		cap: Object.fromEntries(barisSkor.map((baris) => [baris.id, baris.cap])),
+		ambang: Object.fromEntries(ambangDraf.map((tier) => [tier.level, tier.nilai]))
+	});
+
+	const belumDisimpan = $derived(JSON.stringify(konfigurasiKini) !== JSON.stringify(tersimpan));
+
+	const jumlahPerubahan = $derived(
+		barisSkor.filter((baris) => baris.poin !== baris.aturan.points).length +
+			barisSkor.filter((baris) => baris.cap !== baris.aturan.dailyCap).length +
+			ambangDraf.filter((tier) => tier.nilai !== tier.kanonik).length
+	);
+
+	/** Pesan galat pertama yang menghalangi penyimpanan; `''` bila setelan sah. */
+	const galat = $derived.by(() => {
+		for (const baris of barisSkor) {
+			if (baris.poin < 1) return `Nilai poin “${baris.aturan.label}” harus minimal 1.`;
+			if (baris.poin > 999) return `Nilai poin “${baris.aturan.label}” terlalu besar; batas wajar 999.`;
+			if (baris.cap < 0) return `Batas harian “${baris.aturan.label}” tidak boleh negatif.`;
 		}
-		return Object.values(ActionClass).map((kelas) => ({
-			label: LABEL_KELAS[kelas] ?? kelas,
-			value: rekap.get(kelas) ?? 0
+
+		let sebelumnya = -1;
+		for (const tier of ambangDraf) {
+			if (tier.nilai < 0) return `Ambang “${tier.label}” tidak boleh negatif.`;
+			if (tier.nilai <= sebelumnya) {
+				return `Ambang “${tier.label}” harus lebih besar daripada jenjang di bawahnya.`;
+			}
+			sebelumnya = tier.nilai;
+		}
+		return '';
+	});
+
+	const rentangPoin = $derived.by(() => {
+		const nilai = barisSkor.map((baris) => baris.poin);
+		return nilai.length > 0 ? { min: Math.min(...nilai), maks: Math.max(...nilai) } : { min: 0, maks: 0 };
+	});
+
+	const ambangPuncak = $derived(ambangDraf[ambangDraf.length - 1]?.nilai ?? 0);
+
+	// ── Pratinjau dampak ─────────────────────────────────────────────────────
+
+	/** Sebaran jenjang anggota nyata di bawah ambang setelan, dan di bawah ambang kanonik. */
+	const sebaran = $derived.by(() => {
+		/** @type {Map<string, number>} */
+		const draf = new Map(ambangDraf.map((tier) => [tier.level, 0]));
+		/** @type {Map<string, number>} */
+		const kanonik = new Map(ambangDraf.map((tier) => [tier.level, 0]));
+
+		for (const awardee of catalog.awardees) {
+			const levelDraf = jenjangUntuk(awardee.points, ambangDraf).level;
+			const levelKanonik = jenjangUntuk(awardee.points, ambangKanonik).level;
+			draf.set(levelDraf, (draf.get(levelDraf) ?? 0) + 1);
+			kanonik.set(levelKanonik, (kanonik.get(levelKanonik) ?? 0) + 1);
+		}
+
+		return ambangDraf.map((tier) => ({
+			level: tier.level,
+			label: tier.label,
+			color: tier.color,
+			nilai: tier.nilai,
+			benefit: tier.benefit,
+			count: draf.get(tier.level) ?? 0,
+			selisih: (draf.get(tier.level) ?? 0) - (kanonik.get(tier.level) ?? 0)
 		}));
 	});
 
-	const totalPoinDibukukan = $derived(
-		poinPerKelas.reduce((jumlah, baris) => jumlah + baris.value, 0)
+	const anggotaBerpindah = $derived(
+		Math.round(sebaran.reduce((jumlah, tier) => jumlah + Math.abs(tier.selisih), 0) / 2)
 	);
 
-	const poinKelasTinggi = $derived(
-		poinPerKelas
-			.filter((baris) => baris.label.startsWith('C') || baris.label.startsWith('D'))
-			.reduce((jumlah, baris) => jumlah + baris.value, 0)
+	const contoh = $derived(
+		CONTOH_BULAN.map((entri) => {
+			const aturan = SCORING_TABLE.find((baris) => baris.type === entri.type);
+			const satuanDraf = angkaSetelan(poin, entri.type, aturan?.points ?? 0);
+			return {
+				id: entri.type,
+				label: aturan?.label ?? entri.type,
+				jumlah: entri.jumlah,
+				satuanKanonik: aturan?.points ?? 0,
+				satuanDraf,
+				subtotalKanonik: (aturan?.points ?? 0) * entri.jumlah,
+				subtotalDraf: satuanDraf * entri.jumlah
+			};
+		})
 	);
 
-	const entriTertahanCap = $derived(
-		aktivitas.filter((entri) => entri.capReason === CapReason.DAILY_CAP).length
-	);
+	const totalContohKanonik = $derived(contoh.reduce((jumlah, baris) => jumlah + baris.subtotalKanonik, 0));
+	const totalContohDraf = $derived(contoh.reduce((jumlah, baris) => jumlah + baris.subtotalDraf, 0));
+	const jenjangContohKanonik = $derived(jenjangUntuk(totalContohKanonik, ambangKanonik));
+	const jenjangContohDraf = $derived(jenjangUntuk(totalContohDraf, ambangDraf));
 
-	const entriMenungguBukti = $derived(
-		aktivitas.filter((entri) => entri.status === ActivityStatus.PENDING).length
-	);
+	// ── Tindakan ─────────────────────────────────────────────────────────────
 
-	/**
-	 * Rekap per anggota yang menjadi bahan seluruh aturan deteksi.
-	 * Dihitung sekali dalam satu lintasan; menghitungnya ulang di tiap aturan akan
-	 * menelusuri seluruh buku besar lima kali untuk pertanyaan yang mirip.
-	 */
-	const rekapAnggota = $derived.by(() => {
-		/** @type {Map<string, {total: number, poin: number, poinKelasA: number, puncakAmplifikasiHarian: number, puncakAksiBulanan: number, tertahanCap: number, menungguBukti: number}>} */
-		const rekap = new Map();
-		/** @type {Map<string, number>} */
-		const amplifikasiHarian = new Map();
-		/** @type {Map<string, number>} */
-		const aksiBulanan = new Map();
+	/** Mengembalikan seluruh kolom ke nilai kanonik; penyimpanan tetap terpisah. */
+	function kembalikanKanonik() {
+		poin = { ...BAWAAN.poin };
+		cap = { ...BAWAAN.cap };
+		ambang = { ...BAWAAN.ambang };
+		toast.push({
+			type: ToastType.INFO,
+			title: 'Nilai kanonik dipulihkan pada formulir',
+			message: 'Tekan “Simpan konfigurasi” bila pemulihan ini memang hendak diberlakukan.'
+		});
+	}
 
-		const ambil = (awardeeId) => {
-			if (!rekap.has(awardeeId)) {
-				rekap.set(awardeeId, {
-					total: 0,
-					poin: 0,
-					poinKelasA: 0,
-					puncakAmplifikasiHarian: 0,
-					puncakAksiBulanan: 0,
-					tertahanCap: 0,
-					menungguBukti: 0
-				});
-			}
-			return rekap.get(awardeeId);
-		};
-
-		for (const entri of aktivitas) {
-			const baris = ambil(entri.awardeeId);
-			baris.total += 1;
-			if (entri.isAwarded) {
-				baris.poin += entri.points;
-				if (entri.actionClass === ActionClass.A) baris.poinKelasA += entri.points;
-			}
-			if (entri.capReason === CapReason.DAILY_CAP) baris.tertahanCap += 1;
-			if (entri.status === ActivityStatus.PENDING) baris.menungguBukti += 1;
-
-			if (AKSI_AMPLIFIKASI.includes(entri.activityType)) {
-				const kunci = `${entri.awardeeId}|${entri.dayKey}`;
-				amplifikasiHarian.set(kunci, (amplifikasiHarian.get(kunci) ?? 0) + 1);
-			}
-			const kunciBulan = `${entri.awardeeId}|${entri.monthKey}`;
-			aksiBulanan.set(kunciBulan, (aksiBulanan.get(kunciBulan) ?? 0) + 1);
+	/** Menyimpan setelan ke tabel `meta` supaya bertahan setelah halaman dimuat ulang. */
+	async function simpan() {
+		if (galat !== '' || menyimpan) return;
+		menyimpan = true;
+		try {
+			const pada = new Date();
+			await setMeta(KUNCI_META, { ...$state.snapshot(konfigurasiKini), disimpanPada: pada.toISOString() });
+			tersimpan = $state.snapshot(konfigurasiKini);
+			disimpanPada = pada;
+			toast.push({
+				type: ToastType.SUCCESS,
+				title: 'Konfigurasi gamifikasi tersimpan',
+				message:
+					jumlahPerubahan > 0
+						? `${formatAngka(jumlahPerubahan)} setelan berbeda dari nilai kanonik dan berlaku untuk perolehan poin berikutnya.`
+						: 'Seluruh setelan kembali sama dengan nilai kanonik Hal 11 dan Hal 12.'
+			});
+		} catch {
+			toast.error(
+				'Konfigurasi gagal disimpan',
+				'Basis data peramban menolak penulisan. Muat ulang halaman, lalu coba sekali lagi.'
+			);
+		} finally {
+			menyimpan = false;
 		}
-
-		for (const [kunci, jumlah] of amplifikasiHarian) {
-			const awardeeId = kunci.slice(0, kunci.indexOf('|'));
-			const baris = ambil(awardeeId);
-			baris.puncakAmplifikasiHarian = Math.max(baris.puncakAmplifikasiHarian, jumlah);
-		}
-		for (const [kunci, jumlah] of aksiBulanan) {
-			const awardeeId = kunci.slice(0, kunci.indexOf('|'));
-			const baris = ambil(awardeeId);
-			baris.puncakAksiBulanan = Math.max(baris.puncakAksiBulanan, jumlah);
-		}
-
-		return rekap;
-	});
-
-	/**
-	 * Sinyal anomali. Setiap baris menyebut aturan yang memicunya beserta angka
-	 * pemicunya, supaya peninjau dapat menilai sendiri apakah temuan ini wajar —
-	 * bukan sekadar menerima label "mencurigakan" tanpa dasar.
-	 */
-	const anomali = $derived.by(() => {
-		/** @type {{id: string, awardeeId: string, nama: string, sinyal: string, rincian: string, tingkat: string, warna: string}[]} */
-		const temuan = [];
-
-		for (const [awardeeId, baris] of rekapAnggota) {
-			const nama = namaAnggota.get(awardeeId) ?? awardeeId;
-
-			if (baris.puncakAmplifikasiHarian > KPI_PARAMETERS.capAmplifikasiHarian) {
-				temuan.push({
-					id: `${awardeeId}-amplifikasi`,
-					awardeeId,
-					nama,
-					sinyal: 'Lonjakan amplifikasi harian',
-					rincian: `${baris.puncakAmplifikasiHarian} amplifikasi pada satu hari, melewati plafon ${KPI_PARAMETERS.capAmplifikasiHarian} per anggota per hari.`,
-					tingkat: 'Tinggi',
-					warna: 'red'
-				});
-			}
-
-			if (baris.puncakAksiBulanan > BATAS_AKSI_BULANAN) {
-				temuan.push({
-					id: `${awardeeId}-volume`,
-					awardeeId,
-					nama,
-					sinyal: 'Volume aksi bulanan tak wajar',
-					rincian: `${baris.puncakAksiBulanan} aksi pada satu bulan, melewati batas rasio ${BATAS_AKSI_BULANAN} aksi per anggota per bulan.`,
-					tingkat: 'Sedang',
-					warna: 'amber'
-				});
-			}
-
-			if (
-				baris.poin > 0 &&
-				baris.poinKelasA / baris.poin >= AMBANG_DOMINASI_KELAS_A &&
-				baris.poin >= TIER_TABLE[1].threshold
-			) {
-				temuan.push({
-					id: `${awardeeId}-kelas-a`,
-					awardeeId,
-					nama,
-					sinyal: 'Poin didominasi aksi kelas rendah',
-					rincian: `${formatPersen((baris.poinKelasA / baris.poin) * 100)} dari ${formatAngka(baris.poin)} poin berasal dari aksi kelas A yang terverifikasi otomatis.`,
-					tingkat: 'Sedang',
-					warna: 'amber'
-				});
-			}
-
-			if (baris.tertahanCap > 0) {
-				temuan.push({
-					id: `${awardeeId}-cap`,
-					awardeeId,
-					nama,
-					sinyal: 'Entri tertahan plafon harian',
-					rincian: `${baris.tertahanCap} entri tidak memperoleh poin penuh karena batas harian aksi sejenis sudah terpakai.`,
-					tingkat: 'Rendah',
-					warna: 'slate'
-				});
-			}
-
-			if (baris.menungguBukti > 0) {
-				temuan.push({
-					id: `${awardeeId}-bukti`,
-					awardeeId,
-					nama,
-					sinyal: 'Poin menunggu bukti',
-					rincian: `${baris.menungguBukti} entri berstatus menunggu bukti dan belum dibukukan ke saldo kontribusi.`,
-					tingkat: 'Rendah',
-					warna: 'slate'
-				});
-			}
-		}
-
-		const urutan = { Tinggi: 0, Sedang: 1, Rendah: 2 };
-		return temuan.sort(
-			(a, b) => (urutan[a.tingkat] ?? 9) - (urutan[b.tingkat] ?? 9) || a.nama.localeCompare(b.nama)
-		);
-	});
-
-	const anomaliTinggi = $derived(anomali.filter((baris) => baris.tingkat === 'Tinggi').length);
-
-	const KOLOM_ANOMALI = Object.freeze([
-		{ key: 'nama', label: 'Anggota' },
-		{ key: 'sinyal', label: 'Sinyal terdeteksi' },
-		{ key: 'rincian', label: 'Dasar temuan' },
-		{ key: 'tingkat', label: 'Tingkat', align: 'right' }
-	]);
+	}
 </script>
 
 <PageHeader
-	eyebrow="Konfigurasi Gamifikasi"
-	title="Aturan skor dan sinyal integritas"
-	subtitle="Sembilan aksi berpoin Hal 11 dan empat ambang tier Hal 12 berlaku apa adanya dan tidak dapat diubah dari antarmuka. Yang dapat ditindaklanjuti di sini adalah sinyal anomali — bahan pertimbangan manusia, bukan keputusan otomatis."
+	eyebrow="Konsol Corporate Secretary"
+	title="Konfigurasi Gamifikasi"
+	subtitle="Nilai poin tiap aksi, batas hariannya, dan ambang tiap jenjang dapat disetel di sini. Setelan berlaku untuk perolehan poin berikutnya — poin yang sudah dibukukan menyimpan nilainya sendiri dan tidak pernah dihitung ulang."
 >
 	{#snippet actions()}
-		<Button variant="secondary" size="sm" iconPath={ICONS.users} href="/admin/awardee">
-			Kelola anggota
+		<Button variant="secondary" size="sm" iconPath={ICONS.refresh} onclick={kembalikanKanonik}>
+			Nilai kanonik
+		</Button>
+		<Button
+			variant="primary"
+			size="sm"
+			iconPath={ICONS.check}
+			loading={menyimpan}
+			disabled={galat !== '' || !belumDisimpan}
+			onclick={simpan}
+		>
+			Simpan konfigurasi
 		</Button>
 	{/snippet}
 </PageHeader>
 
+{#if galat !== ''}
+	<div
+		class="mb-4 flex items-start gap-2.5 rounded-card border border-pertamina-red/25 bg-pertamina-red-tint/50 p-3.5"
+		role="alert"
+	>
+		<Icon path={ICONS.warning} size={18} class="mt-0.5 shrink-0 text-pertamina-red-ink" />
+		<p class="text-sm leading-relaxed text-pertamina-red-ink">
+			<span class="font-semibold">Setelan belum dapat disimpan.</span>
+			{galat}
+		</p>
+	</div>
+{:else if belumDisimpan}
+	<div
+		class="mb-4 flex items-start gap-2.5 rounded-card border border-warning/25 bg-warning-tint/50 p-3.5"
+		role="status"
+	>
+		<Icon path={ICONS.info} size={18} class="mt-0.5 shrink-0 text-warning" />
+		<p class="text-sm leading-relaxed text-ink-700">
+			<span class="font-semibold text-heading">Ada perubahan yang belum disimpan.</span>
+			Pratinjau di bawah sudah memakai setelan baru; anggota belum terpengaruh sampai konfigurasi disimpan.
+		</p>
+	</div>
+{/if}
+
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 	<StatTile
-		label="Poin dibukukan"
-		value={totalPoinDibukukan}
-		unit="poin"
-		hint="Seluruh entri berstatus diberikan"
-		iconPath={ICONS.coin}
+		label="Jenis aksi berpoin"
+		value={barisSkor.length}
+		unit="aksi"
+		hint="Seluruhnya dapat disetel nilai poin dan batas hariannya"
+		iconPath={ICONS.bolt}
 		color="var(--color-pertamina-blue)"
 	/>
 	<StatTile
-		label="Porsi kontribusi bermakna"
-		value={totalPoinDibukukan > 0
-			? formatPersen((poinKelasTinggi / totalPoinDibukukan) * 100)
-			: '—'}
-		hint="Poin dari aksi kelas C dan D yang menuntut bukti"
-		iconPath={ICONS.sparkles}
+		label="Rentang nilai poin"
+		value="{formatAngka(rentangPoin.min)}–{formatAngka(rentangPoin.maks)}"
+		unit="poin"
+		hint="Dari aksi paling ringan sampai kontribusi paling bermakna"
+		iconPath={ICONS.coin}
 		color="var(--color-pertamina-green)"
 	/>
 	<StatTile
-		label="Entri tertahan plafon"
-		value={entriTertahanCap}
-		unit="entri"
-		hint="Batas harian bekerja sebagaimana mestinya"
-		iconPath={ICONS.shield}
+		label="Ambang jenjang puncak"
+		value={ambangPuncak}
+		unit="poin"
+		hint="Ambang Champion pada setelan yang sedang berlaku di formulir"
+		iconPath={ICONS.trophy}
 		color="var(--color-tier-champion)"
 	/>
 	<StatTile
-		label="Sinyal keparahan tinggi"
-		value={anomaliTinggi}
-		unit="temuan"
-		hint="{formatAngka(anomali.length)} sinyal keseluruhan · {formatAngka(entriMenungguBukti)} entri menunggu bukti"
-		iconPath={ICONS.warning}
+		label="Berbeda dari kanonik"
+		value={jumlahPerubahan}
+		unit="setelan"
+		hint={disimpanPada
+			? `Terakhir disimpan ${disimpanPada.toLocaleString('id-ID')}`
+			: 'Belum pernah disimpan; nilai kanonik Hal 11 dan Hal 12 berlaku'}
+		iconPath={ICONS.edit}
 		color="var(--color-pertamina-red)"
 	/>
 </div>
 
-<!-- ── Tabel skor kanonik ──────────────────────────────────────────────── -->
-<section aria-labelledby="judul-skor" class="mb-8">
-	<div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-		<h2 id="judul-skor" class="text-base font-bold text-heading">
-			Tabel skor — sembilan aksi berpoin
-		</h2>
-		<StatusBadge label="Baca saja" color="slate" size="sm" iconPath={ICONS.lock} />
+<!-- ── Nilai poin per aksi ─────────────────────────────────────────────── -->
+<Card class="mb-4" variant="flush" padding="none">
+	<div class="flex flex-wrap items-start justify-between gap-3 p-4">
+		<div class="min-w-0">
+			<h2 class="text-base font-bold text-heading">Nilai poin per aksi</h2>
+			<p class="mt-1 max-w-3xl text-sm text-ink-600">
+				Kolom kanonik adalah angka Hal 11 dan tidak pernah ikut berubah — ia acuan untuk menilai
+				seberapa jauh setelan sudah bergeser.
+			</p>
+		</div>
+		<StatusBadge
+			label={belumDisimpan
+				? 'Draf belum disimpan'
+				: disimpanPada
+					? 'Setelan tersimpan'
+					: 'Nilai kanonik'}
+			color={belumDisimpan ? 'amber' : disimpanPada ? 'green' : 'slate'}
+			size="sm"
+			withDot
+		/>
 	</div>
 
-	<DataTable
-		columns={KOLOM_SKOR}
-		rows={barisSkor}
-		caption="Sembilan aksi berpoin Pfriends beserta nilai poin, kelas verifikasi, batas harian, kewajiban bukti, dan pilar aktivitas yang diwakilinya"
-	>
-		{#snippet cell(row, kolom)}
-			{@const aturan = row.aturan}
+	<div class="overflow-x-auto">
+		<table class="w-full min-w-max border-collapse text-left">
+			<caption class="sr-only">
+				Setelan nilai poin dan batas harian untuk sembilan aksi berpoin PFfriends, berdampingan
+				dengan nilai kanonik dokumen sumber.
+			</caption>
 
-			{#if kolom.key === 'aksi'}
-				<span class="block min-w-0">
-					<span class="block font-semibold text-ink-900">{aturan.label}</span>
-					<span class="block text-xs text-ink-500">{aturan.labelSumber}</span>
-				</span>
-			{:else if kolom.key === 'points'}
-				<span class="numeric font-bold text-ink-900">{aturan.points}</span>
-			{:else if kolom.key === 'kelas'}
-				<span class="whitespace-nowrap text-xs">{LABEL_KELAS[aturan.actionClass] ?? aturan.actionClass}</span>
-			{:else if kolom.key === 'cap'}
-				{aturan.dailyCap > 0 ? `${aturan.dailyCap}/hari` : 'Tanpa batas'}
-			{:else if kolom.key === 'bukti'}
-				{#if aturan.needsEvidence}
-					<StatusBadge label="Wajib" color="amber" size="sm" iconPath={ICONS.camera} />
-				{:else}
-					<StatusBadge label="Otomatis" color="slate" size="sm" />
-				{/if}
-			{:else if kolom.key === 'pilar'}
-				<span class="whitespace-nowrap text-xs">{aturan.pillar}</span>
-			{:else}
-				—
-			{/if}
-		{/snippet}
-	</DataTable>
+			<thead>
+				<tr class="bg-ink-50">
+					<th scope="col" class="label-micro px-4 py-3">Aksi berpoin</th>
+					<th scope="col" class="label-micro px-4 py-3 text-right">Kanonik</th>
+					<th scope="col" class="label-micro px-4 py-3 text-right">Nilai poin</th>
+					<th scope="col" class="label-micro px-4 py-3 text-right">Batas harian</th>
+					<th scope="col" class="label-micro px-4 py-3">Kelas verifikasi</th>
+				</tr>
+			</thead>
 
-	<p class="mt-2 text-xs leading-relaxed text-ink-500">
-		Batas harian bukan angka dokumen sumber melainkan turunan sah dari catatan Hal 11: poin harus
-		menghargai kontribusi bermakna, bukan aktivitas spam. Tanpa batas itu, tier tertinggi dapat
-		dicapai hanya dengan menekan tombol bagikan ratusan kali dalam semalam.
+			<tbody>
+				{#each barisSkor as baris (baris.id)}
+					{@const berubah = baris.poin !== baris.aturan.points}
+					<tr class="border-b border-ink-100 last:border-b-0">
+						<th scope="row" class="px-4 py-2.5">
+							<span class="block min-w-0">
+								<span class="block text-sm font-semibold text-ink-900">{baris.aturan.label}</span>
+								<span class="block text-xs text-ink-500">{baris.aturan.pillar}</span>
+							</span>
+						</th>
+
+						<td class="numeric px-4 py-2.5 text-right text-sm text-ink-500 tabular-nums">
+							{formatAngka(baris.aturan.points)}
+						</td>
+
+						<td class="px-4 py-2.5 text-right">
+							<span class="inline-flex items-center justify-end gap-2">
+								{#if berubah}
+									<span class="numeric text-xs font-semibold text-brand-700">
+										{formatBertanda(baris.poin - baris.aturan.points)}
+									</span>
+								{/if}
+								<input
+									type="number"
+									min="1"
+									max="999"
+									step="1"
+									aria-label="Nilai poin untuk {baris.aturan.label}"
+									bind:value={poin[baris.id]}
+									class="numeric min-h-11 w-24 rounded-control border bg-white px-3 text-right text-sm text-ink-800 tabular-nums {berubah
+										? 'border-brand-300'
+										: 'border-ink-200'}"
+								/>
+							</span>
+						</td>
+
+						<td class="px-4 py-2.5 text-right">
+							<input
+								type="number"
+								min="0"
+								max="99"
+								step="1"
+								aria-label="Batas harian untuk {baris.aturan.label}"
+								bind:value={cap[baris.id]}
+								class="numeric min-h-11 w-20 rounded-control border border-ink-200 bg-white px-3 text-right text-sm text-ink-800 tabular-nums"
+							/>
+						</td>
+
+						<td class="px-4 py-2.5">
+							<span class="whitespace-nowrap text-xs text-ink-600">
+								{LABEL_KELAS[baris.aturan.actionClass] ?? baris.aturan.actionClass}
+							</span>
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+
+	<p class="border-t border-ink-100 px-4 py-3 text-xs leading-relaxed text-ink-500">
+		Batas harian bernilai 0 berarti tanpa batas. Batas ini bukan angka dokumen sumber melainkan
+		turunan sah dari catatan Hal 11: poin harus menghargai kontribusi bermakna, bukan aktivitas spam.
+		Tanpa batas itu, jenjang tertinggi dapat dicapai hanya dengan menekan tombol bagikan ratusan kali
+		dalam semalam.
 	</p>
-</section>
+</Card>
 
-<!-- ── Tier dan komposisi poin ─────────────────────────────────────────── -->
-<section aria-labelledby="judul-tier" class="mb-8 grid grid-cols-1 gap-4 xl:grid-cols-2">
+<!-- ── Ambang jenjang dan pratinjau dampaknya ──────────────────────────── -->
+<div class="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
 	<Card>
-		<h2 id="judul-tier" class="mb-3 text-base font-bold text-heading">Sebaran tier komunitas</h2>
+		<h2 class="text-base font-bold text-heading">Ambang tiap jenjang</h2>
+		<p class="mb-3 text-sm text-ink-600">
+			Ambang wajib menaik. Jenjang awal terkunci di 0 poin supaya setiap anggota selalu punya
+			jenjang yang dapat ditampilkan.
+		</p>
 
-		<TierDistributionChart data={admin.tierDistribution} height="260px" loading={admin.loading} />
-
-		<ul class="mt-4 space-y-2">
-			{#each TIER_TABLE as tier (tier.level)}
-				{@const baris = admin.tierDistribution.find((row) => row.level === tier.level)}
-				<li class="flex items-start gap-2.5 rounded-card border border-ink-100 p-2.5">
+		<ul class="space-y-2">
+			{#each ambangDraf as tier (tier.level)}
+				<li class="flex items-center gap-3 rounded-card border border-ink-100 p-2.5">
 					<span
-						class="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
+						class="h-2.5 w-2.5 shrink-0 rounded-full"
 						style="background:{tier.color};"
 						aria-hidden="true"
 					></span>
+
 					<span class="min-w-0 flex-1">
-						<span class="flex flex-wrap items-baseline gap-x-2">
-							<span class="text-sm font-semibold text-ink-900">{tier.label}</span>
-							<span class="numeric text-xs text-ink-500">ambang {tier.threshold} poin</span>
+						<span class="block text-sm font-semibold text-ink-900">{tier.label}</span>
+						<span class="block truncate text-xs text-ink-500" title={tier.benefit}>{tier.benefit}</span>
+					</span>
+
+					{#if tier.nilai !== tier.kanonik}
+						<span class="numeric shrink-0 text-xs font-semibold text-brand-700">
+							{formatBertanda(tier.nilai - tier.kanonik)}
 						</span>
-						<span class="block text-xs leading-relaxed text-ink-600">{tier.benefit}</span>
-					</span>
-					<span class="numeric shrink-0 text-sm font-bold text-ink-800">
-						{formatAngka(baris?.count ?? 0)}
-					</span>
+					{/if}
+
+					{#if tier.rank === 0}
+						<span class="numeric shrink-0 w-24 text-right text-sm text-ink-400 tabular-nums">
+							0 poin
+						</span>
+					{:else}
+						<input
+							type="number"
+							min="1"
+							step="1"
+							aria-label="Ambang poin jenjang {tier.label}"
+							bind:value={ambang[tier.level]}
+							class="numeric min-h-11 w-24 shrink-0 rounded-control border bg-white px-3 text-right text-sm text-ink-800 tabular-nums {tier.nilai !==
+							tier.kanonik
+								? 'border-brand-300'
+								: 'border-ink-200'}"
+						/>
+					{/if}
 				</li>
 			{/each}
 		</ul>
 	</Card>
 
 	<Card>
-		<h2 class="mb-1 text-base font-bold text-heading">Komposisi poin per kelas verifikasi</h2>
-		<p class="mb-3 text-sm text-ink-600">
-			Ini indikator mutu gamifikasi yang paling jujur. Komunitas yang sehat mengumpulkan sebagian
-			besar poinnya dari aksi kelas C dan D — aksi yang menuntut bukti dan validasi.
-		</p>
-
-		{#if totalPoinDibukukan > 0}
-			<AmplificationBarChart data={poinPerKelas} unit="poin" loading={memuatAktivitas} />
-		{:else}
-			<EmptyState
-				title={memuatAktivitas ? 'Membaca buku besar poin' : 'Belum ada poin dibukukan'}
-				message="Komposisi muncul setelah anggota pertama memperoleh poin dari aksi komunitas."
-				iconPath={ICONS.coin}
+		<div class="mb-3 flex flex-wrap items-start justify-between gap-3">
+			<div class="min-w-0">
+				<h2 class="text-base font-bold text-heading">Pratinjau sebaran jenjang</h2>
+				<p class="mt-1 text-sm text-ink-600">
+					Berapa anggota berpindah jenjang bila ambang ini diberlakukan?
+				</p>
+			</div>
+			<StatusBadge
+				label="{formatAngka(anggotaBerpindah)} berpindah"
+				color={anggotaBerpindah > 0 ? 'amber' : 'slate'}
 				size="sm"
+				withDot
 			/>
-		{/if}
-	</Card>
-</section>
-
-<!-- ── Sinyal anomali ──────────────────────────────────────────────────── -->
-<section aria-labelledby="judul-anomali">
-	<div class="mb-3 flex flex-wrap items-start justify-between gap-3">
-		<div class="min-w-0">
-			<h2 id="judul-anomali" class="text-base font-bold text-heading">
-				Sinyal anti-gaming ({formatAngka(anomali.length)})
-			</h2>
-			<p class="mt-1 max-w-3xl text-sm text-ink-600">
-				Lima aturan deteksi berjalan atas seluruh buku besar poin. Setiap baris menyebut angka
-				pemicunya agar peninjau dapat menilai sendiri — anggota paling aktif memang akan sering
-				muncul di sini, dan itu bukan pelanggaran.
-			</p>
 		</div>
-	</div>
 
-	{#if anomali.length === 0}
-		<Card>
-			<EmptyState
-				title={memuatAktivitas ? 'Memeriksa buku besar poin' : 'Tidak ada sinyal anomali'}
-				message={memuatAktivitas
-					? 'Menelusuri seluruh entri poin terhadap lima aturan deteksi.'
-					: 'Seluruh entri poin berada dalam batas wajar. Nilai nol yang bertahan lama justru layak dicurigai — periksa apakah aturan deteksi masih relevan dengan pola aktivitas sekarang.'}
-				iconPath={ICONS.checkCircle}
-				size="sm"
-			/>
-		</Card>
-	{:else}
-		<DataTable
-			columns={KOLOM_ANOMALI}
-			rows={anomali}
-			loading={memuatAktivitas}
-			caption="Sinyal anomali gamifikasi beserta anggota terkait, dasar temuan, dan tingkat keparahannya"
-			empty="Tidak ada sinyal anomali pada periode ini."
-		>
-			{#snippet cell(row, kolom)}
-				{#if kolom.key === 'nama'}
-					<span class="block min-w-0">
-						<span class="block font-semibold text-ink-900">{row.nama}</span>
-						<span class="numeric block text-xs text-ink-500">{row.awardeeId}</span>
+		<TierDistributionChart data={sebaran} height="220px" loading={catalog.loading} />
+
+		<ul class="mt-3 space-y-1.5">
+			{#each sebaran as tier (tier.level)}
+				<li class="flex items-baseline gap-2 text-xs">
+					<span class="h-2 w-2 shrink-0 rounded-full" style="background:{tier.color};" aria-hidden="true"
+					></span>
+					<span class="min-w-0 flex-1 truncate text-ink-700">
+						{tier.label}
+						<span class="numeric text-ink-400">· ≥ {formatAngka(tier.nilai)} poin</span>
 					</span>
-				{:else if kolom.key === 'sinyal'}
-					<span class="whitespace-nowrap font-medium text-ink-800">{row.sinyal}</span>
-				{:else if kolom.key === 'rincian'}
-					<span class="block max-w-lg text-xs leading-relaxed text-ink-600">{row.rincian}</span>
-				{:else if kolom.key === 'tingkat'}
-					<StatusBadge label={row.tingkat} color={row.warna} size="sm" withDot />
-				{:else}
-					—
-				{/if}
-			{/snippet}
-		</DataTable>
-	{/if}
-
-	<div class="card mt-3 p-4">
-		<p class="flex items-center gap-2 text-sm font-semibold text-heading">
-			<Icon path={ICONS.info} size={16} />
-			Aturan deteksi yang sedang berjalan
-		</p>
-		<ul class="mt-2 space-y-1.5 text-xs leading-relaxed text-ink-600">
-			<li>
-				<span class="font-semibold text-ink-800">Lonjakan amplifikasi harian</span> — lebih dari
-				{KPI_PARAMETERS.capAmplifikasiHarian} amplifikasi terhitung per anggota per hari.
-			</li>
-			<li>
-				<span class="font-semibold text-ink-800">Volume aksi bulanan</span> — lebih dari
-				{BATAS_AKSI_BULANAN} aksi per anggota per bulan.
-			</li>
-			<li>
-				<span class="font-semibold text-ink-800">Dominasi aksi kelas rendah</span> — minimal
-				{formatPersen(AMBANG_DOMINASI_KELAS_A * 100)} poin berasal dari aksi kelas A.
-			</li>
-			<li>
-				<span class="font-semibold text-ink-800">Entri tertahan plafon harian</span> — bukti langsung
-				bahwa batas harian pada tabel skor sedang bekerja.
-			</li>
-			<li>
-				<span class="font-semibold text-ink-800">Poin menunggu bukti</span> — aksi wajib bukti yang
-				belum dilengkapi lampirannya.
-			</li>
+					<span class="numeric shrink-0 font-semibold text-ink-800">{formatAngka(tier.count)}</span>
+					{#if tier.selisih !== 0}
+						<span
+							class="numeric shrink-0 w-10 text-right font-semibold {tier.selisih > 0
+								? 'text-brand-700'
+								: 'text-pertamina-red-ink'}"
+						>
+							{formatBertanda(tier.selisih)}
+						</span>
+					{:else}
+						<span class="w-10 shrink-0" aria-hidden="true"></span>
+					{/if}
+				</li>
+			{/each}
 		</ul>
-		<p class="mt-3 text-xs leading-relaxed text-ink-500">
-			Ketiga ambang pertama berstatus asumsi dan menunggu konfirmasi Corsec. Ambang yang terlalu
-			ketat akan menandai anggota paling produktif sebagai pelaku manipulasi — kesalahan yang jauh
-			lebih mahal daripada melewatkan satu kasus.
+	</Card>
+</div>
+
+<!-- ── Contoh perhitungan ──────────────────────────────────────────────── -->
+<Card variant="flush" padding="none">
+	<div class="p-4">
+		<h2 class="text-base font-bold text-heading">Contoh perhitungan satu bulan</h2>
+		<p class="mt-1 max-w-3xl text-sm text-ink-600">
+			Bauran aksi seorang anggota aktif dalam sebulan, dihitung dua kali: dengan nilai kanonik dan
+			dengan setelan yang sedang di formulir. Contoh ini mengabaikan batas harian — bauran di bawah
+			tersebar sepanjang bulan sehingga tidak satu pun batasnya tersentuh.
 		</p>
 	</div>
-</section>
+
+	<div class="overflow-x-auto">
+		<table class="w-full min-w-max border-collapse text-left">
+			<caption class="sr-only">
+				Contoh perhitungan poin satu bulan seorang anggota aktif, membandingkan nilai kanonik
+				dengan setelan yang sedang disunting.
+			</caption>
+
+			<thead>
+				<tr class="bg-ink-50">
+					<th scope="col" class="label-micro px-4 py-3">Aksi</th>
+					<th scope="col" class="label-micro px-4 py-3 text-right">Kejadian</th>
+					<th scope="col" class="label-micro px-4 py-3 text-right">Kanonik</th>
+					<th scope="col" class="label-micro px-4 py-3 text-right">Setelan</th>
+					<th scope="col" class="label-micro px-4 py-3 text-right">Selisih</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				{#each contoh as baris (baris.id)}
+					<tr class="border-b border-ink-100">
+						<th scope="row" class="px-4 py-2.5 text-sm font-medium text-ink-800">{baris.label}</th>
+						<td class="numeric px-4 py-2.5 text-right text-sm text-ink-600 tabular-nums">
+							{formatAngka(baris.jumlah)}×
+						</td>
+						<td class="numeric px-4 py-2.5 text-right text-sm text-ink-500 tabular-nums">
+							{formatAngka(baris.subtotalKanonik)}
+						</td>
+						<td class="numeric px-4 py-2.5 text-right text-sm font-semibold text-ink-900 tabular-nums">
+							{formatAngka(baris.subtotalDraf)}
+						</td>
+						<td
+							class="numeric px-4 py-2.5 text-right text-sm tabular-nums {baris.subtotalDraf ===
+							baris.subtotalKanonik
+								? 'text-ink-400'
+								: 'text-brand-700'}"
+						>
+							{baris.subtotalDraf === baris.subtotalKanonik
+								? '—'
+								: formatBertanda(baris.subtotalDraf - baris.subtotalKanonik)}
+						</td>
+					</tr>
+				{/each}
+
+				<tr class="bg-ink-50">
+					<th scope="row" class="px-4 py-3 text-sm font-bold text-heading">
+						Total sebulan
+						<span class="block text-xs font-normal text-ink-500">
+							Jenjang: {jenjangContohKanonik.label} → {jenjangContohDraf.label}
+						</span>
+					</th>
+					<td class="px-4 py-3"></td>
+					<td class="numeric px-4 py-3 text-right text-sm font-semibold text-ink-600 tabular-nums">
+						{formatAngka(totalContohKanonik)}
+					</td>
+					<td class="numeric px-4 py-3 text-right text-base font-bold text-ink-900 tabular-nums">
+						{formatAngka(totalContohDraf)}
+					</td>
+					<td
+						class="numeric px-4 py-3 text-right text-sm font-bold tabular-nums {totalContohDraf ===
+						totalContohKanonik
+							? 'text-ink-400'
+							: 'text-brand-700'}"
+					>
+						{totalContohDraf === totalContohKanonik
+							? '—'
+							: formatBertanda(totalContohDraf - totalContohKanonik)}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	{#if memuat}
+		<p class="border-t border-ink-100 px-4 py-3 text-xs text-ink-500">
+			Membaca setelan tersimpan dari basis data demo…
+		</p>
+	{/if}
+</Card>

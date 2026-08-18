@@ -57,29 +57,25 @@ const HALAMAN = [
 	{ path: '/masuk', nama: '09-publik-masuk', zona: 'publik' },
 
 	{ path: '/awardee', nama: '10-awardee-dasbor', zona: 'AWARDEE' },
-	{ path: '/awardee/aksi', nama: '11-awardee-pusat-aksi', zona: 'AWARDEE' },
-	{ path: '/awardee/cerita/tulis', nama: '12-awardee-tulis-cerita', zona: 'AWARDEE' },
-	{ path: '/awardee/kalender', nama: '13-awardee-kalender', zona: 'AWARDEE' },
-	{ path: '/awardee/papan-peringkat', nama: '14-awardee-papan-peringkat', zona: 'AWARDEE' },
-	{ path: '/awardee/penghargaan', nama: '15-awardee-penghargaan', zona: 'AWARDEE' },
+	{ path: '/awardee/forum', nama: '11-awardee-forum', zona: 'AWARDEE' },
+	{ path: '/awardee/cerita', nama: '12-awardee-blog-saya', zona: 'AWARDEE' },
+	{ path: '/awardee/cerita/tulis', nama: '13-awardee-tulis-blog', zona: 'AWARDEE' },
+	{ path: '/awardee/kalender', nama: '14-awardee-kalender', zona: 'AWARDEE' },
+	{ path: '/awardee/penghargaan', nama: '15-awardee-pencapaian', zona: 'AWARDEE' },
 	{ path: '/awardee/direktori', nama: '16-awardee-direktori', zona: 'AWARDEE' },
 
-	{ path: '/verifikator', nama: '17-verifikator-beranda', zona: 'VERIFIER' },
-	{ path: '/verifikator/cerita', nama: '18-verifikator-antrean-cerita', zona: 'VERIFIER' },
+	{ path: '/verifikator', nama: '17-verifikator-dasbor', zona: 'VERIFIER' },
+	{ path: '/verifikator/cerita', nama: '18-verifikator-submission-blog', zona: 'VERIFIER' },
 	{
 		path: `/verifikator/cerita/${naskahAntrean.id}`,
 		nama: '19-verifikator-naskah-detail',
 		zona: 'VERIFIER'
 	},
-	{ path: '/verifikator/kegiatan', nama: '20-verifikator-usulan-kegiatan', zona: 'VERIFIER' },
-	{ path: '/verifikator/bukti', nama: '21-verifikator-bukti-esg', zona: 'VERIFIER' },
+	{ path: '/verifikator/kegiatan', nama: '20-verifikator-konfigurasi-event', zona: 'VERIFIER' },
 
-	{ path: '/admin', nama: '22-admin-dasbor-kpi', zona: 'ADMIN' },
-	{ path: '/admin/moderasi', nama: '23-admin-moderasi', zona: 'ADMIN' },
-	{ path: '/admin/esg', nama: '24-admin-esg', zona: 'ADMIN' },
-	{ path: '/admin/gamifikasi', nama: '25-admin-gamifikasi', zona: 'ADMIN' },
-	{ path: '/admin/laporan', nama: '26-admin-laporan', zona: 'ADMIN' },
-	{ path: '/admin/awardee', nama: '27-admin-kelola-awardee', zona: 'ADMIN' }
+	{ path: '/admin', nama: '21-admin-dasbor-kpi', zona: 'ADMIN' },
+	{ path: '/admin/awardee', nama: '22-admin-kontrol-akun', zona: 'ADMIN' },
+	{ path: '/admin/gamifikasi', nama: '23-admin-gamifikasi', zona: 'ADMIN' }
 ];
 
 /** Surel akun demo per zona; kata sandinya satu untuk semua (`SANDI_DEMO`). */
@@ -210,20 +206,45 @@ async function bersihkanOrigin() {
  */
 async function login(email) {
 	await cdp.kirim('Page.navigate', { url: BASE + '/masuk' });
-	await tidur(1800);
-	await cdp.ev(`(() => {
-		const isi = (el, nilai) => {
-			if (!el) return false;
-			const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-			setter.call(el, nilai);
-			el.dispatchEvent(new Event('input', { bubbles: true }));
+	await tidur(2200); // muat Dexie + jalankan seed sebelum kartu terender
+
+	// Sejak revisi 4 Agustus 2026 `/masuk` memajang kartu yang tinggal diklik.
+	// Kartu dicoba lebih dulu; formulir manual jadi cadangan, sebab hanya enam dari
+	// 60 awardee yang dipajang sedangkan akun potret dipilih dari urutan seed.
+	const lewatKartu = await cdp.ev(
+		`(() => {
+			const kartu = document.querySelector('[data-akun=' + ${JSON.stringify(JSON.stringify(email))} + ']');
+			if (!kartu) return false;
+			kartu.click();
 			return true;
-		};
-		return isi(document.querySelector('#masuk-email'), ${JSON.stringify(email)}) &&
-			isi(document.querySelector('#masuk-sandi'), ${JSON.stringify(SANDI_DEMO)});
-	})()`);
-	await tidur(300);
-	await cdp.ev(`document.querySelector('form')?.requestSubmit()`);
+		})()`
+	);
+
+	if (lewatKartu !== true) {
+		await cdp.ev(
+			`(() => {
+				const pemicu = [...document.querySelectorAll('button')].find((b) =>
+					/masuk manual/i.test(b.textContent || '')
+				);
+				pemicu?.click();
+				return !!pemicu;
+			})()`
+		);
+		await tidur(500);
+		await cdp.ev(`(() => {
+			const isi = (el, nilai) => {
+				if (!el) return false;
+				const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+				setter.call(el, nilai);
+				el.dispatchEvent(new Event('input', { bubbles: true }));
+				return true;
+			};
+			return isi(document.querySelector('#masuk-email'), ${JSON.stringify(email)}) &&
+				isi(document.querySelector('#masuk-sandi'), ${JSON.stringify(SANDI_DEMO)});
+		})()`);
+		await tidur(300);
+		await cdp.ev(`document.querySelector('form')?.requestSubmit()`);
+	}
 	await tidur(3200);
 }
 

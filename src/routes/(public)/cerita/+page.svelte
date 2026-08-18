@@ -113,19 +113,19 @@
 </script>
 
 <svelte:head>
-	<title>Cerita Komunitas — Pfriends</title>
+	<title>Cerita Komunitas — PFfriends</title>
 	<meta
 		name="description"
-		content="Cerita lapangan yang ditulis sendiri oleh anggota Pfriends: aksi lingkungan, pemberdayaan ekonomi, dan edukasi masyarakat di berbagai daerah."
+		content="Cerita lapangan yang ditulis sendiri oleh anggota PFfriends: aksi lingkungan, pemberdayaan ekonomi, dan edukasi masyarakat di berbagai daerah."
 	/>
 </svelte:head>
 
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 	<!-- Kepala halaman lebar penuh, tanpa foto: sampul cerita yang menjadi gambarnya. -->
 	<header style="padding-block:var(--rhythm-tight) 0;">
-		<!-- "Community journalism" adalah nama pilar pada dokumen sumber; sebagai
-		     label antarmuka di zona publik ia wajib Bahasa Indonesia. -->
-		<p class="kicker">Jurnalisme komunitas</p>
+		<!-- Kicker menyebut "Blog" — label yang dipakai bilah navigasi — supaya
+		     pengunjung yang menekan menu itu langsung mengenali halaman tujuannya. -->
+		<p class="kicker">Blog komunitas</p>
 		<h1
 			class="display-editorial mt-4 max-w-[18ch] text-[clamp(30px,3.2vw,44px)] leading-[1.06] text-heading"
 		>
@@ -198,7 +198,7 @@
 					</p>
 					<button
 						type="button"
-						class="mt-5 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-pertamina-red-ink underline-offset-4 hover:underline"
+						class="mt-5 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-brand-700 underline-offset-4 hover:underline"
 						onclick={hapusSaringan}
 					>
 						Tampilkan semua cerita
@@ -216,10 +216,10 @@
 						cerita yang benar-benar terjadi.
 					</p>
 					<a
-						href="/daftar"
-						class="mt-5 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-pertamina-red-ink underline-offset-4 hover:underline"
+						href="/masuk?next=/awardee/cerita/tulis"
+						class="mt-5 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-brand-700 underline-offset-4 hover:underline"
 					>
-						Jadi anggota yang menulis pertama
+						Masuk dan tulis cerita pertama
 						<Icon path={ICONS.arrowLongRight} size={18} />
 					</a>
 				</div>
@@ -241,7 +241,7 @@
 				<p class="text-[16px] leading-[1.68] text-ink-700">Punya cerita dari lapangan?</p>
 				<a
 					href="/masuk?next=/awardee/cerita/tulis"
-					class="mt-3 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-pertamina-red-ink underline-offset-4 hover:underline"
+					class="mt-3 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-brand-700 underline-offset-4 hover:underline"
 				>
 					Masuk untuk menulis
 					<Icon path={ICONS.arrowLongRight} size={18} />

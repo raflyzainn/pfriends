@@ -68,7 +68,14 @@ const naskahAntrean =
 	seed.stories.find((s) => s.status === STORY_STATUS.DIAJUKAN);
 if (!naskahAntrean) wajibAda('naskah di antrean verifikator');
 
-/** Sebelas route zona publik (§2.14). */
+/**
+ * Sepuluh route zona publik.
+ *
+ * `/daftar` dicabut pada revisi 4 Agustus 2026 bersama fitur pendaftaran mandiri.
+ * Empat route yang tidak lagi tercantum di navbar (`/tentang`, `/komunitas`,
+ * `/gerakan`, `/metode-pengukuran`) tetap DIUJI: halamannya masih hidup dan masih
+ * ditautkan dari dalam halaman lain, jadi kerusakannya tetap harus tertangkap.
+ */
 const RUTE_PUBLIK = [
 	'/',
 	'/tentang',
@@ -79,46 +86,52 @@ const RUTE_PUBLIK = [
 	'/kalender',
 	`/kalender/${kegiatanTerjadwal.id}`,
 	'/metode-pengukuran',
-	'/masuk',
-	'/daftar'
+	'/masuk'
 ];
 
-/** Dua belas route zona awardee (§2.14). */
+/**
+ * Dua belas route zona awardee.
+ *
+ * `/awardee/papan-peringkat` dicabut: peserta kini melihat capaiannya sebagai
+ * pencapaian pribadi di `/awardee/penghargaan`, bukan sebagai peringkat.
+ * `/awardee/forum` ditambahkan pada revisi yang sama.
+ */
 const RUTE_AWARDEE = [
 	'/awardee',
 	'/awardee/kabar',
 	`/awardee/kabar/${kabarTerkirim.id}`,
+	'/awardee/forum',
 	'/awardee/aksi',
 	'/awardee/kalender',
 	'/awardee/gerakan',
 	'/awardee/cerita',
 	'/awardee/cerita/tulis',
-	'/awardee/papan-peringkat',
 	'/awardee/penghargaan',
 	'/awardee/direktori',
 	'/awardee/profil'
 ];
 
-/** Enam route zona verifikator (§2.14). */
+/**
+ * Empat route zona verifikator.
+ *
+ * `/verifikator/bukti` dan `/verifikator/profil` dicabut pada revisi 4 Agustus 2026:
+ * navbar dipangkas jadi Dasbor · Submission Blog · Konfigurasi Calendar of Event,
+ * dan profil tidak lagi berdiri sebagai butir navigasi tersendiri.
+ */
 const RUTE_VERIFIKATOR = [
 	'/verifikator',
 	'/verifikator/cerita',
 	`/verifikator/cerita/${naskahAntrean.id}`,
-	'/verifikator/kegiatan',
-	'/verifikator/bukti',
-	'/verifikator/profil'
+	'/verifikator/kegiatan'
 ];
 
-/** Tujuh route zona admin (§2.14). */
-const RUTE_ADMIN = [
-	'/admin',
-	'/admin/awardee',
-	'/admin/broadcast',
-	'/admin/moderasi',
-	'/admin/gamifikasi',
-	'/admin/esg',
-	'/admin/laporan'
-];
+/**
+ * Tiga route zona admin.
+ *
+ * Diseminasi, Moderasi & Consent, Bukti ESG, dan Laporan dicabut pada revisi
+ * 4 Agustus 2026; dua yang terakhir isinya melebur ke Dasbor KPI.
+ */
+const RUTE_ADMIN = ['/admin', '/admin/awardee', '/admin/gamifikasi'];
 
 /**
  * Kredensial demo per peran. Kata sandinya satu untuk semua akun dan berasal dari
@@ -278,34 +291,71 @@ async function periksa(path, jeda = 1400) {
 }
 
 /**
- * Masuk lewat formulir surel + kata sandi sungguhan.
+ * Masuk dengan MENGKLIK KARTU PENGGUNA — jalur yang sesungguhnya dipakai manusia.
  *
- * Nilai diisi lewat setter asli `HTMLInputElement.value` lalu dibarengi event
- * `input`: menetapkan `el.value` saja tidak pernah terlihat oleh `bind:value`
- * Svelte, sehingga formulir akan terkirim dengan kolom kosong.
+ * Sejak revisi 4 Agustus 2026 halaman `/masuk` tidak lagi menampilkan kolom surel
+ * dan sandi; keduanya diganti daftar kartu yang tinggal diklik, dan sandi demo
+ * dipakai di balik layar oleh komponen. Versi lama fungsi ini mengisi
+ * `#masuk-email` + `#masuk-sandi` lalu menekan submit — sesudah revisi, kedua
+ * selektor itu tidak pernah ada di DOM kecuali panel "masuk manual" dibuka, maka
+ * `querySelector` mengembalikan `null`, pengisian gagal diam-diam, dan SELURUH
+ * fase ter-login berjalan sebagai tamu. Route tetap dilaporkan "✓" karena memang
+ * merender sesuatu — yang dirender halaman masuk, bukan halaman yang diuji.
+ *
+ * Kartu dicari lewat `[data-akun="surel"]`, bukan lewat urutan DOM: urutan kartu
+ * berubah setiap kali seed disusun ulang.
  *
  * @param {string} email
  * @returns {Promise<{lokasi: string, sesiTersimpan: boolean, galat: string}>}
  */
 async function masuk(email) {
 	await cdp.kirim('Page.navigate', { url: BASE + '/masuk' });
-	await tidur(1800);
+	await tidur(2200); // muat Dexie + jalankan seed sebelum kartu terender
 
-	await cdp.evaluate(`(() => {
-		const isi = (el, nilai) => {
-			const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-			setter.call(el, nilai);
-			el.dispatchEvent(new Event('input', { bubbles: true }));
-		};
-		isi(document.querySelector('#masuk-email'), ${JSON.stringify(email)});
-		isi(document.querySelector('#masuk-sandi'), ${JSON.stringify(SANDI_DEMO)});
-		return true;
-	})()`);
-	await tidur(300);
-
-	await cdp.evaluate(
-		`document.querySelector('form')?.requestSubmit?.() ?? document.querySelector('button[type=submit]')?.click()`
+	const diklik = await cdp.evaluate(
+		`(() => {
+			const kartu = document.querySelector('[data-akun=' + ${JSON.stringify(JSON.stringify(email))} + ']');
+			if (!kartu) return false;
+			kartu.click();
+			return true;
+		})()`
 	);
+
+	// Halaman masuk hanya memajang SEBAGIAN akun demo — seluruh staf, tetapi cuma
+	// enam dari 60 awardee. Akun uji dipilih dari urutan seed, jadi kartunya sering
+	// tidak termasuk yang dipajang. Untuk kasus itu panel "masuk manual" dibuka dan
+	// formulirnya diisi: jalur itu memang masih ada di antarmuka, dan memakainya
+	// membuat gerbang tidak bergantung pada awardee mana yang kebetulan dipajang.
+	if (diklik !== true) {
+		await cdp.evaluate(
+			`(() => {
+				const pemicu = [...document.querySelectorAll('button')].find((b) =>
+					/masuk manual/i.test(b.textContent || '')
+				);
+				pemicu?.click();
+				return !!pemicu;
+			})()`
+		);
+		await tidur(500);
+
+		await cdp.evaluate(`(() => {
+			const isi = (el, nilai) => {
+				if (!el) return false;
+				const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+				setter.call(el, nilai);
+				el.dispatchEvent(new Event('input', { bubbles: true }));
+				return true;
+			};
+			isi(document.querySelector('#masuk-email'), ${JSON.stringify(email)});
+			isi(document.querySelector('#masuk-sandi'), ${JSON.stringify(SANDI_DEMO)});
+			return true;
+		})()`);
+		await tidur(300);
+
+		await cdp.evaluate(
+			`document.querySelector('form')?.requestSubmit?.() ?? document.querySelector('button[type=submit]')?.click()`
+		);
+	}
 	await tidur(3000); // pemanggilan pertama memuat Dexie + menjalankan seed
 
 	return cdp.evaluate(`(() => ({

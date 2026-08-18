@@ -134,10 +134,10 @@
 </script>
 
 <svelte:head>
-	<title>Gerakan Bersama — Pfriends</title>
+	<title>Gerakan Bersama — PFfriends</title>
 	<meta
 		name="description"
-		content="Gerakan bersama komunitas Pfriends: aksi lingkungan, edukasi masyarakat, dan pemberdayaan ekonomi yang dijalankan anggota di berbagai daerah."
+		content="Gerakan bersama komunitas PFfriends: aksi lingkungan, edukasi masyarakat, dan pemberdayaan ekonomi yang dijalankan anggota di berbagai daerah."
 	/>
 </svelte:head>
 
@@ -329,10 +329,10 @@
 					muncul di halaman ini.
 				</p>
 				<a
-					href="/daftar"
-					class="mt-5 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-pertamina-red-ink underline-offset-4 hover:underline"
+					href="/masuk?next=/awardee/gerakan"
+					class="mt-5 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-brand-700 underline-offset-4 hover:underline"
 				>
-					Gabung dan usulkan yang pertama
+					Masuk dan usulkan yang pertama
 					<Icon path={ICONS.arrowLongRight} size={18} />
 				</a>
 			</div>
@@ -355,22 +355,22 @@
 					Ingin menggerakkan sesuatu di daerahmu?
 				</h2>
 				<p class="mt-4 max-w-[52ch] text-[16px] leading-[1.68] text-white/88">
-					Anggota Pfriends dapat mengusulkan gerakan sendiri dan memimpinnya sampai laporannya
+					Anggota PFfriends dapat mengusulkan gerakan sendiri dan memimpinnya sampai laporannya
 					selesai.
 				</p>
 			</div>
 			<div class="flex flex-col items-start gap-3 lg:col-span-5 lg:items-end lg:justify-center">
 				<a
-					href="/daftar"
-					class="inline-flex min-h-11 items-center rounded-control bg-pertamina-red px-6 text-sm font-semibold text-white transition-colors hover:bg-pertamina-red-dark"
+					href="/masuk"
+					class="inline-flex min-h-11 items-center rounded-control bg-accent-200 px-6 text-sm font-bold text-brand-800 transition-colors hover:bg-accent-300"
 				>
-					Gabung Sekarang
+					Masuk ke ruang anggota
 				</a>
 				<a
-					href="/masuk"
+					href="/kalender"
 					class="text-[15px] text-white/88 underline underline-offset-4 transition-colors hover:text-white"
 				>
-					Sudah punya akun? Masuk
+					Lihat Calendar of Event
 				</a>
 			</div>
 		</div>

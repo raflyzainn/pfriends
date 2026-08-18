@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN — Kabar Pfriends.
+	 * HALAMAN — Kabar PFfriends.
 	 *
 	 * Tanggung jawab: menampilkan seluruh diseminasi yang sudah dikirim ke
 	 * komunitas, dan menunjukkan dengan jelas mana yang poinnya masih menunggu.
@@ -97,17 +97,17 @@
 		}
 		return {
 			judul: 'Belum ada kabar baru',
-			pesan: 'Kabar mingguan Pfriends terbit setiap Selasa pagi.'
+			pesan: 'Kabar mingguan PFfriends terbit setiap Selasa pagi.'
 		};
 	});
 </script>
 
 <svelte:head>
-	<title>Kabar Pfriends · Pfriends</title>
+	<title>Kabar PFfriends · PFfriends</title>
 </svelte:head>
 
 <PageHeader
-	title="Kabar Pfriends"
+	title="Kabar"
 	subtitle="Informasi Pertamina dan Pertamina Foundation yang disebarkan ke komunitas."
 	eyebrow="Diseminasi & Amplifikasi"
 />

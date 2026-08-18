@@ -245,7 +245,7 @@
 		toast.push({
 			type: ToastType.INFO,
 			title: 'Belum ada sesi awardee',
-			message: 'Masuk sebagai awardee Pfriends untuk mendaftar dan mencatat kehadiran.'
+			message: 'Masuk sebagai awardee PFfriends untuk mendaftar dan mencatat kehadiran.'
 		});
 		return false;
 	}
@@ -331,13 +331,13 @@
 </script>
 
 <svelte:head>
-	<title>Kalender Komunitas — Pfriends</title>
+	<title>Calendar of Event — PFfriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 02 · Kalender Komunitas"
-	title="Kalender Komunitas"
-	subtitle="Upskilling, pertemuan chapter, dan sharing session Pfriends. Daftar untuk mengamankan kursi, catat kehadiranmu setelah sesi berjalan — dan usulkan sendiri kegiatan yang belum ada."
+	title="Calendar of Event"
+	subtitle="Upskilling, pertemuan chapter, dan sharing session PFfriends. Daftar untuk mengamankan kursi, catat kehadiranmu setelah sesi berjalan — dan usulkan sendiri kegiatan yang belum ada."
 />
 
 <div class="mt-5 flex flex-wrap items-center gap-3">
@@ -439,7 +439,7 @@
 			<EmptyState
 				icon={ICONS.calendar}
 				title="Belum ada kegiatan terjadwal"
-				message="Agenda baru biasanya diumumkan awal bulan lewat Kabar Pfriends. Sementara menunggu, kamu bisa menelusuri kegiatan yang sudah berlangsung."
+				message="Agenda baru biasanya diumumkan awal bulan lewat Kabar PFfriends. Sementara menunggu, kamu bisa menelusuri kegiatan yang sudah berlangsung."
 				actionLabel="Lihat kegiatan lampau"
 				onAction={() => (tabAktif = TAB_LAMPAU)}
 			/>
@@ -493,7 +493,7 @@
 					<EmptyState
 						icon={ICONS.user}
 						title="Sesi awardee belum termuat"
-						message="Masuk sebagai awardee Pfriends untuk mengusulkan kegiatan dan melihat status usulanmu."
+						message="Masuk sebagai awardee PFfriends untuk mengusulkan kegiatan dan melihat status usulanmu."
 						actionLabel="Ke halaman Masuk"
 						actionHref="/masuk"
 					/>

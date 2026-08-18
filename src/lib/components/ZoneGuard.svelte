@@ -77,7 +77,7 @@
 			>
 				<Icon path={ICONS.shield} size={24} />
 			</span>
-			<p class="mt-3 text-sm font-semibold text-heading">Menyiapkan Pfriends</p>
+			<p class="mt-3 text-sm font-semibold text-heading">Menyiapkan PFfriends</p>
 			<p class="mt-1 text-xs text-ink-500">Memulihkan sesi Anda.</p>
 		</div>
 	</div>
@@ -126,7 +126,7 @@
 					href="/"
 					class="inline-flex min-h-11 items-center justify-center rounded-control border border-ink-200 px-4 text-sm font-semibold text-ink-700 transition-colors hover:bg-ink-50"
 				>
-					Buka halaman publik Pfriends
+					Buka halaman publik PFfriends
 				</a>
 			</div>
 

@@ -1,6 +1,10 @@
 <script>
 	/**
-	 * HALAMAN — Direktori Alumni (`/awardee/direktori`).
+	 * HALAMAN — Jejaring Komunitas (`/awardee/direktori`).
+	 *
+	 * Labelnya "Jejaring", routenya tetap `/direktori`: mengganti route hanya demi
+	 * kecocokan label akan menyentuh tautan silang di forum, profil, dan seed
+	 * sekaligus — lihat catatan yang sama pada `data/navigation.js`.
 	 *
 	 * Pilar 01 Hal 5 dan inti Strategic Initiative Hal 4: mempertemukan **alumni
 	 * Beasiswa Sobat Bumi sebagai mitra muda/mentor** dengan **PFpreneur sebagai
@@ -238,20 +242,20 @@
 </script>
 
 <svelte:head>
-	<title>Direktori Alumni — Pfriends</title>
+	<title>Jejaring Komunitas — PFfriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 01 · Open Community Ecosystem"
-	title="Direktori Alumni"
-	subtitle="Tempat alumni Sobat Bumi dan pelaku usaha Womenpreneur saling menemukan. Cari berdasarkan keahlian, kota, atau chapter — lalu mulai percakapan lewat kanal resmi komunitas."
+	title="Jejaring"
+	subtitle="Temukan orang yang tepat di komunitas PFfriends. Alumni Sobat Bumi dan pelaku usaha Womenpreneur saling mencari berdasarkan keahlian, kota, atau chapter — lalu membuka percakapan lewat kanal resmi komunitas."
 />
 
 <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
 	<StatTile
-		label="Awardee aktif"
+		label="Anggota aktif"
 		value={anggotaAktif.length}
-		hint="Terdata di komunitas Pfriends"
+		hint="Terdata di komunitas PFfriends"
 		iconPath={ICONS.users}
 		color="var(--color-pertamina-navy)"
 	/>
@@ -547,7 +551,7 @@
 					<Icon path={ICONS.heart} size={16} class="mt-px shrink-0 text-pertamina-red-ink" />
 					<span>
 						<span class="font-semibold text-ink-800">Bersedia menjadi mentor.</span>
-						Ajukan sesi pendampingan lewat kategori “Slot mentoring” di halaman Penghargaan, atau temui
+						Ajukan sesi pendampingan lewat kategori “Slot mentoring” di halaman Pencapaian, atau temui
 						langsung pada sharing session chapter terdekat.
 					</span>
 				</p>
@@ -566,8 +570,8 @@
 				</p>
 			{/if}
 			<p class="mt-3 text-xs leading-relaxed text-ink-600">
-				Nomor WhatsApp dan surel pribadi tidak ditampilkan di direktori. Perkenalan difasilitasi lewat
-				kanal resmi komunitas Pfriends.
+				Nomor WhatsApp dan surel pribadi tidak ditampilkan di Jejaring. Perkenalan difasilitasi lewat
+				kanal resmi komunitas PFfriends.
 			</p>
 		</div>
 	{/if}

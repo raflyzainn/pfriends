@@ -4,7 +4,6 @@
 	 *
 	 * Props (seluruhnya opsional):
 	 * @prop {boolean} compact  Versi satu baris untuk zona awardee/admin.
-	 * @prop {string}  version
 	 *
 	 * Jarak bawah `mb-16` pada mobile bukan hiasan: `BottomNav` menempel di dasar
 	 * viewport dan akan menutupi baris terakhir kaki halaman tanpa jarak itu.
@@ -29,7 +28,7 @@
 	import { CHAPTERS, COMMUNITIES } from '$lib/domain/constants/community.js';
 	import { kelas } from './_visual.js';
 
-	let { compact = false, version = '0.1.0' } = $props();
+	let { compact = false } = $props();
 
 	const TAHUN = 2026;
 
@@ -52,7 +51,7 @@
 	<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 		<div class="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
 			<div class="min-w-0">
-				<p class="text-base font-extrabold text-heading">Pfriends</p>
+				<p class="text-base font-extrabold text-heading">PFfriends</p>
 				<p class="mt-1 text-sm text-ink-600">
 					Community Connect Initiative · Pertamina Foundation
 				</p>
@@ -97,13 +96,8 @@
 			</div>
 		</div>
 
-		<div
-			class="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-ink-100 pt-5"
-		>
-			<p class="text-xs text-ink-600">
-				© {TAHUN} Pertamina Foundation. Mockup internal untuk keperluan presentasi.
-			</p>
-			<p class="numeric text-xs text-ink-600">v{version}</p>
+		<div class="mt-8 border-t border-ink-100 pt-5">
+			<p class="text-xs text-ink-600">© {TAHUN} Pertamina Foundation</p>
 		</div>
 	</div>
 </footer>

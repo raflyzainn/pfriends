@@ -2,9 +2,9 @@
 	/**
 	 * LAYOUT ZONA VERIFIKATOR — kerangka ruang kerja peninjauan konten.
 	 *
-	 * Tanggung jawab: memasang `ZoneGuard`, menyediakan navigasi kelima tujuan zona
+	 * Tanggung jawab: memasang `ZoneGuard`, menyediakan navigasi ketiga tujuan zona
 	 * dari `navigation.js`, dan memuat sekali antrean editorial beserta katalog yang
-	 * dibaca hampir seluruh halamannya.
+	 * dibaca seluruh halamannya.
 	 *
 	 * Lima keputusan yang tidak terbaca dari kode:
 	 *
@@ -15,22 +15,23 @@
 	 *    sendiri berarti empat zona dengan empat penjaga yang perlahan berbeda.
 	 * 2. **Daftar navigasi TIDAK ditulis tangan.** Ia datang dari
 	 *    `navForZone(Zone.VERIFIER)`, dan angka lencananya ditempelkan `withBadges`
-	 *    dari store — bukan disimpan di daftar menu. Kelima tujuan zona ini
+	 *    dari store — bukan disimpan di daftar menu. Ketiga tujuan zona ini
 	 *    seluruhnya `primary`: verifikator bekerja di dalam antrean, dan tidak ada
 	 *    tujuan yang hanya dapat dicapai dari desktop (`docs/10` §6.4).
 	 * 3. **`Header` bersama sengaja TIDAK dipakai.** Komponen itu merender
-	 *    `PointsChip` PK dan KT begitu prop `user` terisi, sedangkan
-	 *    `AccessPolicy.canSeeScoring(VERIFIER) === false`: verifikator dinilai pada
-	 *    mutu keputusan, bukan pada capaian angka. Bilah atas zona ini ditulis di
-	 *    sini justru supaya tidak ada jalur bagi angka gamifikasi untuk sampai ke
-	 *    layar ini (PO-2).
-	 * 4. **Pemuatan dikerjakan sekali di layout.** Keenam halaman membaca antrean
+	 *    `PointsChip` PK dan KT begitu prop `user` terisi — angka gamifikasi milik
+	 *    akun yang sedang masuk. Verifikator dinilai pada mutu keputusan, bukan pada
+	 *    capaian angka, sehingga bilah atas zona ini ditulis di sini supaya tidak ada
+	 *    jalur bagi poin PRIBADI untuk sampai ke layar ini. Poin AWARDEE pada papan
+	 *    peringkat dasbor adalah hal berbeda: itu data yang ditinjau, bukan capaian
+	 *    peninjaunya.
+	 * 4. **Pemuatan dikerjakan sekali di layout.** Seluruh halaman membaca antrean
 	 *    yang sama, dan `editorial.load()` maupun `catalog.load()` idempoten —
-	 *    memindahkannya ke tiap halaman hanya menambah enam tempat yang bisa lupa
-	 *    memanggilnya, dan enam kali kedipan saat berpindah antrean.
+	 *    memindahkannya ke tiap halaman hanya menambah tempat yang bisa lupa
+	 *    memanggilnya, dan satu kedipan tiap kali berpindah antrean.
 	 * 5. **Efek pemuatan berjalan di dalam `ZoneGuard`.** Karena guard tidak
 	 *    merender isinya sebelum peran terbukti verifikator, tidak perlu ada
-	 *    pemeriksaan peran kedua di sini — dan konsol tidak membaca seluruh tabel
+	 *    pemeriksaan peran kedua di sini — dan aplikasi tidak membaca seluruh tabel
 	 *    untuk seseorang yang tidak akan pernah melihat hasilnya.
 	 *
 	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 1, §2.13 ZoneGuard & navigation.js
@@ -66,7 +67,7 @@
 		void editorial.load();
 	});
 
-	/** Lima tujuan zona verifikator, sudah bertanda lencana antrean. */
+	/** Ketiga tujuan zona verifikator, sudah bertanda lencana antrean. */
 	const navZona = $derived(
 		withBadges(navForZone(Zone.VERIFIER), {
 			storyQueue: editorial.storyQueue.length,
@@ -74,7 +75,7 @@
 		})
 	);
 
-	/** Kelima tujuan seluruhnya `primary`, jadi bilah ponsel memuat daftar yang sama. */
+	/** Ketiga tujuan seluruhnya `primary`, jadi bilah ponsel memuat daftar yang sama. */
 	const navPonsel = $derived(navZona.filter((item) => item.primary === true));
 
 	const jalurKini = $derived(page.url?.pathname ?? '/verifikator');
@@ -86,7 +87,7 @@
 </script>
 
 <svelte:head>
-	<title>{bagianKini} · Verifikator Pfriends</title>
+	<title>{bagianKini} · Verifikator PFfriends</title>
 </svelte:head>
 
 <ZoneGuard zone={Zone.VERIFIER} label="ruang kerja verifikator">
@@ -113,12 +114,18 @@
 				</button>
 
 				<div class="min-w-0 flex-1">
-					<p class="label-micro leading-tight">Pertamina Foundation</p>
+					<p class="label-micro leading-tight">Pertamina Foundation · PFfriends</p>
 					<p class="truncate text-sm leading-tight font-semibold text-heading">{bagianKini}</p>
 				</div>
 
-				<!-- Nol lencana poin dan nol tier: canSeeScoring(VERIFIER) === false. -->
-				<div class="hidden min-w-0 items-center gap-2 border-l border-ink-100 pl-3 sm:flex">
+				<!--
+					Nol lencana poin dan nol tier untuk akun yang sedang masuk.
+					Blok identitas ini disembunyikan pada `lg`: di lebar itu sidebar sudah
+					berdiri permanen dan menampilkan identitas yang sama di kakinya, dan dua
+					salinan nama pengguna dalam satu layar hanyalah dua kali kesempatan bagi
+					keduanya untuk berselisih.
+				-->
+				<div class="hidden min-w-0 items-center gap-2 border-l border-ink-100 pl-3 sm:flex lg:hidden">
 					<span
 						class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-chip bg-pertamina-navy-tint text-xs font-bold text-pertamina-navy"
 						aria-hidden="true"

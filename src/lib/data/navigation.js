@@ -57,7 +57,18 @@ const BATAS_NAV_PONSEL = 5;
 const BERANDA_ZONA = Object.freeze(['/', '/awardee', '/verifikator', '/admin']);
 
 /**
- * Tujuh tujuan zona publik.
+ * Tiga tujuan zona publik.
+ *
+ * Dipangkas dari tujuh menjadi tiga (revisi 4 Agustus 2026). Halaman `/gerakan`,
+ * `/komunitas`, `/tentang`, dan `/metode-pengukuran` MASIH ADA dan tetap dapat
+ * dibuka lewat tautan di dalam halaman — yang dicabut hanya tempatnya di bilah
+ * navigasi. Menghapus routenya sekalian akan mematikan tautan yang tersebar di
+ * beranda dan footer, jauh melebihi yang diminta.
+ *
+ * Label "Blog" menunjuk ke `/cerita`. Routenya sengaja tidak ikut diganti nama:
+ * slug cerita, data seed, dan halaman `[slug]` seluruhnya menautkan `/cerita`,
+ * dan mengganti route hanya demi kecocokan label akan menyentuh berkas jauh lebih
+ * banyak daripada nilainya pada tahap mockup.
  *
  * Nol butir bermuatan mekanik skor — tidak ada "Papan Peringkat", tidak ada
  * "Poin". Larangan PO-2 ditegakkan pada bentuk data navigasi, bukan pada disiplin
@@ -68,38 +79,17 @@ const NAV_PUBLIC = Object.freeze([
 	Object.freeze({ id: 'home', label: 'Beranda', href: '/', iconPath: ICONS.home, primary: true }),
 	Object.freeze({
 		id: 'stories',
-		label: 'Cerita',
+		label: 'Blog',
 		href: '/cerita',
 		iconPath: ICONS.book,
 		primary: true
 	}),
 	Object.freeze({
 		id: 'calendar',
-		label: 'Kalender',
+		label: 'Calendar of Event',
 		href: '/kalender',
 		iconPath: ICONS.calendar,
 		primary: true
-	}),
-	Object.freeze({
-		id: 'movements',
-		label: 'Gerakan',
-		href: '/gerakan',
-		iconPath: ICONS.flag,
-		primary: true
-	}),
-	Object.freeze({
-		id: 'community',
-		label: 'Komunitas',
-		href: '/komunitas',
-		iconPath: ICONS.users,
-		primary: true
-	}),
-	Object.freeze({ id: 'about', label: 'Tentang', href: '/tentang', iconPath: ICONS.info }),
-	Object.freeze({
-		id: 'method',
-		label: 'Metode Pengukuran',
-		href: '/metode-pengukuran',
-		iconPath: ICONS.chart
 	})
 ]);
 
@@ -120,59 +110,50 @@ const NAV_AWARDEE = Object.freeze([
 		primary: true
 	}),
 	Object.freeze({
-		id: 'news',
-		label: 'Kabar',
-		href: '/awardee/kabar',
-		iconPath: ICONS.megaphone,
+		id: 'stories',
+		label: 'Blog Saya',
+		href: '/awardee/cerita',
+		iconPath: ICONS.book,
 		primary: true,
-		badgeKey: 'unreadBroadcasts'
+		badgeKey: 'myStoriesNeedingRevision'
 	}),
 	Object.freeze({
-		id: 'actions',
-		label: 'Aksi',
-		href: '/awardee/aksi',
-		iconPath: ICONS.bolt,
+		id: 'forum',
+		label: 'Forum',
+		href: '/awardee/forum',
+		iconPath: ICONS.chat,
 		primary: true
 	}),
 	Object.freeze({
 		id: 'calendar',
-		label: 'Kalender',
+		label: 'Calendar of Event',
 		href: '/awardee/kalender',
-		iconPath: ICONS.calendar
-	}),
-	Object.freeze({ id: 'movements', label: 'Gerakan', href: '/awardee/gerakan', iconPath: ICONS.flag }),
-	Object.freeze({
-		id: 'stories',
-		label: 'Cerita',
-		href: '/awardee/cerita',
-		iconPath: ICONS.book,
-		badgeKey: 'myStoriesNeedingRevision'
-	}),
-	Object.freeze({
-		id: 'leaderboard',
-		label: 'Peringkat',
-		href: '/awardee/papan-peringkat',
-		iconPath: ICONS.trophy,
+		iconPath: ICONS.calendar,
 		primary: true
 	}),
 	Object.freeze({
 		id: 'rewards',
-		label: 'Penghargaan',
+		label: 'Pencapaian',
 		href: '/awardee/penghargaan',
-		iconPath: ICONS.gift
+		iconPath: ICONS.trophy,
+		primary: true
 	}),
+	Object.freeze({
+		id: 'news',
+		label: 'Kabar',
+		href: '/awardee/kabar',
+		iconPath: ICONS.megaphone,
+		badgeKey: 'unreadBroadcasts'
+	}),
+	// Label "Jejaring" menunjuk ke `/awardee/direktori`. Routenya sengaja TIDAK ikut
+	// diganti nama, mengikuti keputusan yang sama pada butir "Blog" → `/cerita`:
+	// mengganti route hanya demi kecocokan label akan menyentuh tautan silang di
+	// forum, profil, dan seed sekaligus — jauh melebihi nilainya pada tahap mockup.
 	Object.freeze({
 		id: 'directory',
-		label: 'Direktori',
+		label: 'Jejaring',
 		href: '/awardee/direktori',
 		iconPath: ICONS.users
-	}),
-	Object.freeze({
-		id: 'profile',
-		label: 'Profil',
-		href: '/awardee/profil',
-		iconPath: ICONS.user,
-		primary: true
 	})
 ]);
 
@@ -186,14 +167,14 @@ const NAV_AWARDEE = Object.freeze([
 const NAV_VERIFIER = Object.freeze([
 	Object.freeze({
 		id: 'dashboard',
-		label: 'Beranda',
+		label: 'Dasbor',
 		href: '/verifikator',
-		iconPath: ICONS.home,
+		iconPath: ICONS.chart,
 		primary: true
 	}),
 	Object.freeze({
 		id: 'stories',
-		label: 'Antrean Cerita',
+		label: 'Submission Blog',
 		href: '/verifikator/cerita',
 		iconPath: ICONS.book,
 		primary: true,
@@ -201,25 +182,11 @@ const NAV_VERIFIER = Object.freeze([
 	}),
 	Object.freeze({
 		id: 'events',
-		label: 'Usulan Kegiatan',
+		label: 'Konfigurasi Calendar of Event',
 		href: '/verifikator/kegiatan',
 		iconPath: ICONS.calendar,
 		primary: true,
 		badgeKey: 'eventQueue'
-	}),
-	Object.freeze({
-		id: 'evidence',
-		label: 'Bukti',
-		href: '/verifikator/bukti',
-		iconPath: ICONS.camera,
-		primary: true
-	}),
-	Object.freeze({
-		id: 'profile',
-		label: 'Profil',
-		href: '/verifikator/profil',
-		iconPath: ICONS.user,
-		primary: true
 	})
 ]);
 
@@ -237,38 +204,16 @@ const NAV_ADMIN = Object.freeze([
 	}),
 	Object.freeze({
 		id: 'awardees',
-		label: 'Kelola Awardee',
+		label: 'Kontrol Akun',
 		href: '/admin/awardee',
 		iconPath: ICONS.users,
 		primary: true
 	}),
 	Object.freeze({
-		id: 'broadcast',
-		label: 'Diseminasi',
-		href: '/admin/broadcast',
-		iconPath: ICONS.megaphone,
-		primary: true
-	}),
-	Object.freeze({
-		id: 'moderation',
-		label: 'Moderasi & Consent',
-		href: '/admin/moderasi',
-		iconPath: ICONS.shield,
-		primary: true,
-		badgeKey: 'moderationQueue'
-	}),
-	Object.freeze({
 		id: 'gamification',
 		label: 'Konfigurasi Gamifikasi',
 		href: '/admin/gamifikasi',
-		iconPath: ICONS.trophy
-	}),
-	Object.freeze({ id: 'esg', label: 'Bukti ESG', href: '/admin/esg', iconPath: ICONS.leaf }),
-	Object.freeze({
-		id: 'reports',
-		label: 'Laporan',
-		href: '/admin/laporan',
-		iconPath: ICONS.document,
+		iconPath: ICONS.trophy,
 		primary: true
 	})
 ]);

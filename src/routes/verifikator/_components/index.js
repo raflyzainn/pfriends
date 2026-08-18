@@ -1,7 +1,7 @@
 /**
  * BARREL KOMPONEN LOKAL ZONA VERIFIKATOR.
  *
- * Berkas ini melayani ENAM halaman `/verifikator/**` saja. Ia sengaja TIDAK
+ * Berkas ini melayani KEEMPAT halaman `/verifikator/**` saja. Ia sengaja TIDAK
  * di-reexport dari `$lib/components`: komponen di dalamnya mengenal registri
  * keputusan editorial dan checklist data sensitif — pengetahuan yang hanya berlaku
  * di ruang kerja verifikator, dan yang bila dibagikan ke barrel bersama akan
@@ -35,6 +35,14 @@ export {
 } from './decisions.js';
 
 export { ANTREAN_SLA, nomorAntrean, slaAntrean, usiaAntreanTeks } from './queue.js';
+
+export {
+	formulirDariEvent,
+	formulirKosong,
+	keNilaiInput,
+	periksaFormulirEvent,
+	simpanPerubahanEvent
+} from './event-config.js';
 
 export {
 	antreanBuktiBelumLengkap,

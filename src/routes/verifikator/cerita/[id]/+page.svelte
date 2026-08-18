@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN `/verifikator/cerita/[id]` — meja peninjauan satu naskah.
+	 * HALAMAN `/verifikator/cerita/[id]` — meja peninjauan satu submission blog.
 	 *
 	 * Tanggung jawab: menempatkan naskah utuh berdampingan dengan KETIGA gerbang
 	 * keputusan, lalu menawarkan tepat keputusan yang sah dari keadaan naskah itu.
@@ -143,27 +143,27 @@
 
 {#if !naskah}
 	<PageHeader
-		eyebrow="Antrean tinjauan"
-		title="Naskah tidak ditemukan"
+		eyebrow="Submission Blog"
+		title="Submission tidak ditemukan"
 		backHref="/verifikator/cerita"
-		backLabel="Kembali ke antrean"
+		backLabel="Kembali ke Submission Blog"
 	/>
 	<div class="mt-5">
 		<EmptyState
-			title="Naskah tidak ditemukan"
+			title="Submission tidak ditemukan"
 			message="Identitas naskah pada tautan ini tidak ada di katalog. Naskah mungkin sudah diarsipkan, atau tautannya keliru disalin."
 			iconPath={ICONS.warning}
-			actionLabel="Kembali ke antrean cerita"
+			actionLabel="Kembali ke Submission Blog"
 			actionHref="/verifikator/cerita"
 		/>
 	</div>
 {:else}
 	<PageHeader
-		eyebrow="Meja peninjauan"
+		eyebrow="Submission Blog · meja peninjauan"
 		title={naskah.title}
 		subtitle="Ditulis {naskah.authorName} · {naskah.wordCount} kata · perkiraan baca {naskah.readMinutes} menit"
 		backHref="/verifikator/cerita"
-		backLabel="Kembali ke antrean"
+		backLabel="Kembali ke Submission Blog"
 	/>
 
 	<div class="mt-4 flex flex-wrap items-center gap-2">

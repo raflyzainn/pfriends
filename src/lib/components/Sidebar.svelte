@@ -6,7 +6,6 @@
 	 * @prop {boolean} open      Dapat di-`bind`; mengendalikan laci di mobile.
 	 * @prop {{id:string,label:string,href:string,iconPath:string,badge?:string|number,
 	 *         children?:any[]}[]} nav  Kosong → memakai `navForZone(zone)`.
-	 * @prop {string} version
 	 * @prop {string} title
 	 * @prop {string} zone      Salah satu `Zone`; menentukan daftar bawaan.
 	 * @prop {string} homeHref  Tujuan logo di kepala sidebar.
@@ -50,7 +49,6 @@
 	let {
 		open = $bindable(false),
 		nav = [],
-		version = '0.1.0',
 		title = 'Konsol Admin',
 		zone = Zone.ADMIN,
 		homeHref = '/admin',
@@ -156,19 +154,16 @@
 		'fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-ink-100 transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0',
 		open ? 'translate-x-0' : '-translate-x-full'
 	)}
-	style="background:linear-gradient(180deg, var(--color-surface) 0%, #fdfbf9 100%);"
+	style="background:linear-gradient(180deg, var(--color-surface) 0%, #eefaf7 100%);"
 	aria-label="Navigasi {title}"
 >
 	<div class="flex h-14 shrink-0 items-center justify-between gap-2 px-4">
-		<a href={homeHref} class="flex min-w-0 items-center gap-2">
-			<span
-				class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-pertamina-red text-white"
-				aria-hidden="true"
-			>
-				<Icon path={ICONS.shield} size={18} />
-			</span>
+		<a href={homeHref} class="flex min-w-0 items-center gap-2.5">
+			<!-- Logo asli, bukan ikon perisai generik. Latar sidebar terang, jadi logo
+			     dipakai apa adanya tanpa filter pemutih seperti di navbar publik. -->
+			<img src="/img/pf-logo.png" alt="" class="h-7 w-auto shrink-0" />
 			<span class="min-w-0">
-				<span class="block truncate text-sm leading-tight font-extrabold text-heading">Pfriends</span>
+				<span class="block truncate text-sm leading-tight font-extrabold text-heading">PFfriends</span>
 				<span class="label-micro leading-tight">{title}</span>
 			</span>
 		</a>
@@ -243,13 +238,8 @@
 				>
 					<Icon path={ICONS.logout} size={18} />
 				</span>
-				<span class="min-w-0 flex-1 truncate text-left">Keluar dari Pfriends</span>
+				<span class="min-w-0 flex-1 truncate text-left">Keluar dari PFfriends</span>
 			</button>
 		{/if}
-
-		<p class="label-micro mt-3 px-1.5">Pfriends Console</p>
-		<p class="numeric mt-1 px-1.5 text-xs text-ink-500">
-			v{version} · © 2026 Pertamina Foundation
-		</p>
 	</div>
 </aside>

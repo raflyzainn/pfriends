@@ -566,11 +566,11 @@ const NASKAH_KABAR = Object.freeze([
 	},
 	{
 		day: 191, contentId: 'KNT-2026-07-B', channel: BroadcastChannel.WA_KOMUNITAS,
-		title: 'Papan Peringkat Musim Pertama dan Cara Membacanya',
-		summary: 'Papan peringkat kini tersedia per komunitas dan per chapter, bukan hanya satu daftar global.',
-		body: 'Satu daftar global akan membuat anggota baru selalu berada di dasar tanpa harapan mengejar. Karena itu papan peringkat dipecah: global, per komunitas, dan per chapter, dengan pilihan periode bulanan maupun sepanjang program.\n\nAnggota yang memilih tampil anonim tetap dihitung kontribusinya, hanya namanya yang diganti inisial. Pilihan itu ada di pengaturan profil dan dapat diubah kapan saja.',
-		lightCta: 'Lihat posisi Anda di chapter masing-masing.',
-		ctaLink: 'https://pertaminafoundation.org/pfriends/papan-peringkat'
+		title: 'Halaman Pencapaian Musim Pertama dan Cara Membacanya',
+		summary: 'Capaian kini ditampilkan sebagai perjalanan pribadi — jenjang, lencana, dan jarak menuju jenjang berikutnya.',
+		body: 'Membandingkan diri dengan daftar panjang berisi nama orang lain membuat anggota baru selalu berada di dasar tanpa harapan mengejar. Karena itu yang Anda lihat bukan peringkat antar-anggota, melainkan perjalanan Anda sendiri: jenjang saat ini, lencana yang sudah diraih, dan berapa lagi yang dibutuhkan untuk naik.\n\nKontribusi anggota yang memilih tampil anonim tetap dihitung penuh; hanya namanya yang diganti inisial pada tampilan agregat. Pilihan itu ada di pengaturan profil dan dapat diubah kapan saja.',
+		lightCta: 'Lihat perjalanan pencapaian Anda.',
+		ctaLink: 'https://pertaminafoundation.org/pffriends/pencapaian'
 	},
 	{
 		day: 198, contentId: 'KNT-2026-07-C', channel: BroadcastChannel.SEMUA,

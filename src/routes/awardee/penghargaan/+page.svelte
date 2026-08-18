@@ -1,30 +1,38 @@
 <script>
 	/**
-	 * HALAMAN — Penghargaan (`/awardee/penghargaan`).
+	 * HALAMAN — Pencapaian (`/awardee/penghargaan`).
 	 *
-	 * Pilar 05 Hal 5: *"Peningkatan poin yang dapat ditukar"*, dan tangga manfaat
-	 * tier Hal 12.
+	 * Pilar 05 Hal 5 (*"Peningkatan poin yang dapat ditukar"*) dan tangga manfaat
+	 * jenjang Hal 12.
 	 *
-	 * Halaman ini menutup lingkaran gamifikasi: poin yang dikumpulkan di halaman lain
-	 * berubah menjadi sesuatu yang nyata. Dua keputusan menjaga agar lingkarannya
-	 * tidak merusak dirinya sendiri.
+	 * ── DARI "PENGHARGAAN" MENJADI "PENCAPAIAN" ────────────────────────────────
 	 *
-	 * Pertama, **yang dibelanjakan adalah Koin Tukar, bukan Poin Kontribusi.** Bila
-	 * keduanya disatukan, seorang Champion yang menukar hadiah akan turun menjadi
-	 * Contributor, dan tier berhenti berarti sebagai pengakuan. Karena itu saldo yang
-	 * berkurang saat penukaran hanya `coins`; `points` tidak pernah disentuh.
+	 * Judul lama menempatkan anggota sebagai penerima: sesuatu diberikan kepadanya
+	 * oleh pihak lain. Judul baru menempatkannya sebagai pelaku — yang ditampilkan
+	 * di sini adalah apa yang SUDAH IA KERJAKAN. Perbedaannya bukan sekadar kata:
+	 * seluruh susunan halaman ikut berubah. Yang pertama terlihat kini jenjang yang
+	 * sedang dipegang dan seberapa dekat jenjang berikutnya, bukan empat ubin angka
+	 * yang berdiri sendiri tanpa cerita.
 	 *
-	 * Kedua, **lencana yang belum diraih tetap terlihat beserta kriterianya.**
-	 * Katalog yang terlihat adalah pendorong utama rasa ingin melengkapi;
-	 * menyembunyikannya menghapus seluruh daya tariknya dan menyisakan kejutan yang
-	 * tidak dapat dikejar siapa pun.
+	 * TIGA KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
-	 * BATAS TANGGUNG JAWAB. Halaman ini TIDAK merakit penukaran. Dahulu ia memanggil
-	 * pemotongan koin dan pencatatan baris sebagai dua langkah terpisah, menyusun
-	 * nomor pesanan dari panjang daftar yang sedang tampil, dan sama sekali tidak
-	 * menyentuh pencacah kuota bulanan. Kini seluruhnya menjadi satu pemanggilan
-	 * `rewardRepository.redeem()` yang atomik; yang tersisa di sini hanyalah membuka
-	 * dialog, menampilkan hasilnya, dan memuat ulang tampilan.
+	 * 1. **NOL perbandingan antar-anggota.** Halaman ini tidak mengimpor store
+	 *    papan peringkat maupun `LeaderboardRow`. Satu-satunya angka pembanding
+	 *    yang muncul adalah jarak menuju jenjang BERIKUTNYA — perbandingan anggota
+	 *    dengan dirinya sendiri, bukan dengan orang lain.
+	 * 2. **Yang dibelanjakan adalah Koin Tukar, bukan Poin Kontribusi.** Bila
+	 *    keduanya disatukan, seorang Champion yang menukar hadiah akan turun
+	 *    menjadi Contributor, dan jenjang berhenti berarti sebagai pengakuan.
+	 *    Karena itu saldo yang berkurang saat penukaran hanya `coins`; `points`
+	 *    tidak pernah disentuh.
+	 * 3. **Lencana yang belum diraih tetap terlihat beserta kriterianya.** Katalog
+	 *    yang terlihat adalah pendorong utama rasa ingin melengkapi;
+	 *    menyembunyikannya menghapus daya tariknya dan menyisakan kejutan yang
+	 *    tidak dapat dikejar siapa pun.
+	 *
+	 * BATAS TANGGUNG JAWAB. Halaman ini TIDAK merakit penukaran — seluruhnya satu
+	 * pemanggilan `rewardRepository.redeem()` yang atomik; yang tersisa di sini
+	 * hanyalah membuka dialog, menampilkan hasilnya, dan memuat ulang tampilan.
 	 *
 	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 05, Hal 12 tier & benefit
 	 * @see docs/03-GAMIFICATION-SPEC.md — §2.2 dua mata uang, §6 badge, §10 katalog penukaran
@@ -40,10 +48,9 @@
 		Icon,
 		ICONS,
 		Modal,
-		PageHeader,
 		PointsChip,
+		ProgressBar,
 		RewardCard,
-		StatTile,
 		StatusBadge,
 		Tabs,
 		TierBadge,
@@ -60,9 +67,9 @@
 	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast, ToastCurrency, ToastType } from '$lib/stores/toast.svelte.js';
-	import { formatAngka, formatTanggal } from '$lib/utils/format.js';
+	import { formatAngka, formatRelatif, formatTanggal, frasaHitung } from '$lib/utils/format.js';
 
-	const TAB_TIER = 'tier';
+	const TAB_PERJALANAN = 'perjalanan';
 	const TAB_LENCANA = 'lencana';
 	const TAB_TUKAR = 'tukar';
 	const TAB_PESANAN = 'pesanan';
@@ -70,8 +77,11 @@
 	/** Nilai pil filter untuk "tanpa penyaringan kategori". */
 	const SEMUA_KATEGORI = 'SEMUA';
 
+	/** Banyaknya baris riwayat poin yang ditampilkan sekaligus. */
+	const BATAS_RIWAYAT = 12;
+
 	/** @type {string} */
-	let tabAktif = $state(TAB_TIER);
+	let tabAktif = $state(TAB_PERJALANAN);
 
 	/** @type {string} */
 	let kategori = $state(SEMUA_KATEGORI);
@@ -82,7 +92,7 @@
 	/** @type {{badge: import('$lib/domain/entities/Badge.js').Badge, unlocked: boolean}|null} */
 	let lencanaDipilih = $state.raw(null);
 
-	/** @type {Record<string, any>[]} Riwayat penukaran awardee, terbaru lebih dulu. */
+	/** @type {Record<string, any>[]} Riwayat penukaran anggota, terbaru lebih dulu. */
 	let pesanan = $state.raw([]);
 
 	/** @type {boolean} */
@@ -93,9 +103,39 @@
 	const lencanaTerkumpul = $derived(gamification.badges.filter((entri) => entri.unlocked).length);
 	const lencanaTerkunci = $derived(gamification.badges.length - lencanaTerkumpul);
 
+	/** Jenjang berikutnya beserta jarak yang tersisa; `null` bila sudah di puncak. */
+	const jenjangBerikut = $derived.by(() => {
+		const berikutnya = TIER_TABLE.find((tier) => tier.threshold > gamification.points);
+		if (!berikutnya) return null;
+		return { tier: berikutnya, kurang: berikutnya.threshold - gamification.points };
+	});
+
+	/**
+	 * Riwayat poin terbaru, terbaru lebih dulu.
+	 *
+	 * Entri yang poinnya nol tetap ditampilkan. Aksi yang tercatat tanpa poin —
+	 * karena kuota harian penuh atau karena buktinya belum lengkap — adalah bagian
+	 * jujur dari perjalanan, dan menyembunyikannya membuat anggota mengira aksinya
+	 * hilang.
+	 */
+	const riwayatPoin = $derived(gamification.ledger.slice(0, BATAS_RIWAYAT));
+
+	/**
+	 * Berapa aksi yang tercatat bulan ini — konteks hangat untuk kepala riwayat.
+	 *
+	 * Kunci bulan disusun dari komponen tanggal LOKAL, bukan dari `toISOString()`:
+	 * entity menghitung `monthKey`-nya dengan waktu lokal (WIB), dan versi UTC akan
+	 * meleset satu bulan penuh pada tujuh jam pertama tiap tanggal 1.
+	 */
+	const aksiBulanIni = $derived.by(() => {
+		const kini = new Date();
+		const kunci = `${kini.getFullYear()}-${String(kini.getMonth() + 1).padStart(2, '0')}`;
+		return gamification.ledger.filter((entri) => entri.monthKey === kunci).length;
+	});
+
 	/**
 	 * Katalog lencana dikelompokkan per keluarga, tiap kelompok diurutkan dari
-	 * kelangkaan terendah. Urutan itu membuat awardee melihat lencana yang paling
+	 * kelangkaan terendah. Urutan itu membuat anggota melihat lencana yang paling
 	 * mungkin diraih lebih dulu, bukan yang paling mustahil.
 	 */
 	const keluargaLencana = $derived.by(() => {
@@ -113,7 +153,7 @@
 		}));
 	});
 
-	/** Item katalog yang terbuka bagi komunitas awardee. */
+	/** Item katalog yang terbuka bagi komunitas anggota ini. */
 	const rewardTerbuka = $derived(
 		awardee ? catalog.rewards.filter((reward) => reward.isOpenTo(awardee.community)) : []
 	);
@@ -141,8 +181,8 @@
 	);
 
 	const tabs = $derived([
-		{ id: TAB_TIER, label: 'Manfaat tier' },
-		{ id: TAB_LENCANA, label: 'Lencana', count: lencanaTerkumpul },
+		{ id: TAB_PERJALANAN, label: 'Perjalananku' },
+		{ id: TAB_LENCANA, label: 'Lencana saya', count: lencanaTerkumpul },
 		{ id: TAB_TUKAR, label: 'Tukar koin', count: rewardTerbuka.length },
 		{ id: TAB_PESANAN, label: 'Pesanan saya', count: pesanan.length }
 	]);
@@ -159,7 +199,7 @@
 	});
 
 	/**
-	 * Membaca ulang riwayat penukaran awardee dari basis data.
+	 * Membaca ulang riwayat penukaran anggota dari basis data.
 	 * @returns {Promise<void>}
 	 */
 	async function muatPesanan() {
@@ -171,7 +211,7 @@
 	 *
 	 * `FilterChips` melepaskan pilihan menjadi string kosong ketika pil aktif ditekan
 	 * lagi. Penyaring ini sudah punya opsi "Semua kategori", sehingga string kosong
-	 * hanya akan mengosongkan katalog tanpa sebab yang terlihat awardee.
+	 * hanya akan mengosongkan katalog tanpa sebab yang terlihat anggota.
 	 *
 	 * @param {string|string[]} nilai
 	 * @returns {void}
@@ -214,8 +254,8 @@
 		if (!awardee) {
 			toast.push({
 				type: ToastType.INFO,
-				title: 'Belum ada sesi awardee',
-				message: 'Masuk sebagai awardee Pfriends untuk menukarkan Koin Tukar.'
+				title: 'Belum ada sesi anggota',
+				message: 'Masuk sebagai anggota PFfriends untuk menukarkan Koin Tukar.'
 			});
 			return;
 		}
@@ -283,119 +323,251 @@
 </script>
 
 <svelte:head>
-	<title>Penghargaan — Pfriends</title>
+	<title>Pencapaian — PFfriends</title>
 </svelte:head>
 
-<PageHeader
-	eyebrow="Pilar 05 · Recognition & Gamifikasi"
-	title="Penghargaan"
-	subtitle="Manfaat tier, koleksi lencana, dan katalog penukaran. Poin Kontribusi menentukan tier dan tidak pernah berkurang; yang dibelanjakan adalah Koin Tukar."
-/>
-
-<div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-	<StatTile
-		label="Poin Kontribusi"
-		value={gamification.points}
-		unit="PK"
-		hint="Penentu tier — tidak pernah berkurang"
-		iconPath={ICONS.bolt}
-		color="var(--color-pertamina-navy)"
-	/>
-	<StatTile
-		label="Koin Tukar"
-		value={gamification.coins}
-		unit="KT"
-		hint="Saldo yang dapat dibelanjakan"
-		iconPath={ICONS.coin}
-		color="var(--color-tier-champion-ink)"
-	/>
-	<StatTile
-		label="Lencana terkumpul"
-		value={lencanaTerkumpul}
-		unit={`dari ${gamification.badges.length}`}
-		hint="Kriteria yang belum terbuka tetap terlihat"
-		iconPath={ICONS.badge}
-		color="var(--color-rarity-epik-ink)"
-	/>
-	<StatTile
-		label="Penukaran saya"
-		value={pesanan.length}
-		hint="Seluruh riwayat pesanan"
-		iconPath={ICONS.gift}
-		color="var(--color-pertamina-red-ink)"
-	/>
+<div class="mb-5">
+	<p class="label-micro">Perjalanan kontribusimu</p>
+	<h1 class="mt-1 font-sans text-2xl font-bold tracking-[-0.02em] text-heading md:text-[28px]">
+		Pencapaian
+	</h1>
+	<p class="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-600">
+		Semua yang kamu kumpulkan sejauh ini — jenjang, lencana, dan poin — beserta hadiah yang bisa
+		kamu tukar. Halaman ini hanya membandingkanmu dengan dirimu sendiri.
+	</p>
 </div>
+
+<!-- ══ Kartu jenjang · pembuka yang hangat ═══════════════════════════════════
+     Menggantikan empat ubin angka yang dulu berdiri sendiri tanpa cerita. Yang
+     pertama dibaca anggota kini adalah "kamu di mana" dan "berapa jauh lagi". -->
+<section
+	class="rounded-card border border-brand-200 bg-brand-50 px-5 py-5 sm:px-6"
+	aria-labelledby="judul-jenjang"
+>
+	<div class="flex flex-wrap items-start justify-between gap-5">
+		<div class="min-w-0">
+			<p class="label-micro">Jenjang kamu sekarang</p>
+			<div class="mt-2 flex flex-wrap items-center gap-3">
+				<TierBadge tier={gamification.tier.level} size="lg" />
+				<span class="numeric text-3xl leading-none text-heading">
+					{formatAngka(gamification.points)}
+					<span class="text-sm font-semibold text-ink-600">poin</span>
+				</span>
+			</div>
+			<h2 id="judul-jenjang" class="mt-3 max-w-xl text-sm leading-relaxed text-ink-700">
+				{gamification.tier.deskripsi}
+			</h2>
+			<p class="mt-1.5 max-w-xl text-[13px] leading-relaxed text-ink-600">
+				<span class="font-semibold text-brand-700">Yang terbuka untukmu:</span>
+				{gamification.tier.benefit}
+			</p>
+		</div>
+
+		<div class="w-full max-w-xs shrink-0 rounded-xl border border-brand-200 bg-surface p-4">
+			{#if jenjangBerikut}
+				<p class="label-micro">Menuju {jenjangBerikut.tier.label}</p>
+				<p class="numeric mt-1.5 text-2xl leading-none text-heading">
+					{formatAngka(jenjangBerikut.kurang)}
+					<span class="text-xs font-semibold text-ink-600">poin lagi</span>
+				</p>
+				<div class="mt-3">
+					<ProgressBar
+						value={gamification.points}
+						max={jenjangBerikut.tier.threshold}
+						color={jenjangBerikut.tier.color}
+						label="Progres menuju {jenjangBerikut.tier.label}"
+					/>
+				</div>
+				<p class="mt-2 text-[11px] leading-relaxed text-ink-600">
+					Kira-kira {frasaHitung(Math.max(1, Math.ceil(jenjangBerikut.kurang / 5)), 'aksi')} lagi. Kamu
+					lebih dekat daripada yang kamu kira.
+				</p>
+			{:else}
+				<p class="label-micro">Jenjang tertinggi</p>
+				<p class="mt-1.5 text-sm leading-relaxed font-semibold text-brand-700">
+					Kamu sudah di puncak tangga jenjang PFfriends. 🎉
+				</p>
+				<p class="mt-2 text-[11px] leading-relaxed text-ink-600">
+					Poin yang kamu kumpulkan sekarang menjadi Koin Tukar dan bahan pertimbangan undangan
+					sebagai narasumber.
+				</p>
+			{/if}
+		</div>
+	</div>
+
+	<div class="mt-5 grid grid-cols-2 gap-3 border-t border-brand-200 pt-4 sm:grid-cols-4">
+		<div>
+			<p class="numeric text-xl text-heading">{formatAngka(gamification.coins)}</p>
+			<p class="label-micro mt-1">Koin Tukar</p>
+		</div>
+		<div>
+			<p class="numeric text-xl text-heading">{formatAngka(lencanaTerkumpul)}</p>
+			<p class="label-micro mt-1">Lencana diraih</p>
+		</div>
+		<div>
+			<p class="numeric text-xl text-heading">{formatAngka(gamification.ledger.length)}</p>
+			<p class="label-micro mt-1">Aksi tercatat</p>
+		</div>
+		<div>
+			<p class="numeric text-xl text-heading">{formatAngka(pesanan.length)}</p>
+			<p class="label-micro mt-1">Hadiah ditukar</p>
+		</div>
+	</div>
+</section>
 
 <div class="mt-6">
 	<Tabs {tabs} bind:active={tabAktif} />
 </div>
 
-{#if tabAktif === TAB_TIER}
-	<!-- Skala tier dibungkus Card yang berpadding, sama seperti pemakaiannya di
-	     dasbor. Label ambang pada `TierProgress` diletakkan absolut dan berpusat
-	     pada titiknya, sehingga label terakhir menjulur setengah lebarnya melewati
-	     100%. Tanpa padding pembungkus, julurannya melebarkan dokumen dan halaman
-	     ikut menggulir mendatar di 375 px. -->
+{#if tabAktif === TAB_PERJALANAN}
+	<!-- Skala jenjang dibungkus Card berpadding: label ambang pada `TierProgress`
+	     diletakkan absolut dan berpusat pada titiknya, sehingga label terakhir
+	     menjulur setengah lebarnya melewati 100%. Tanpa padding pembungkus,
+	     julurannya melebarkan dokumen dan halaman ikut menggulir mendatar di 375px. -->
 	<Card padding="lg" class="mt-6">
 		<TierProgress points={gamification.points} />
 	</Card>
 
-	<div class="mt-6 space-y-3">
-		{#each TIER_TABLE as tier (tier.level)}
-			{@const tercapai = gamification.points >= tier.threshold}
-			<Card padding="md" accent={tercapai ? tier.color : ''}>
-				<div class="flex flex-wrap items-start justify-between gap-3">
-					<div class="min-w-0 flex-1">
-						<div class="flex flex-wrap items-center gap-2">
-							<TierBadge tier={tier.level} size="md" locked={!tercapai} />
-							<span class="numeric text-xs text-ink-600">
-								{tier.threshold === 0 ? 'Tanpa ambang' : `${formatAngka(tier.threshold)} poin`}
-							</span>
+	<div class="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+		<!-- Tangga jenjang -->
+		<section aria-labelledby="judul-tangga">
+			<h2 id="judul-tangga" class="mb-3 text-base font-bold text-heading">Tangga jenjang</h2>
+			<div class="space-y-3">
+				{#each TIER_TABLE as tier (tier.level)}
+					{@const tercapai = gamification.points >= tier.threshold}
+					<Card padding="md" accent={tercapai ? tier.color : ''}>
+						<div class="flex flex-wrap items-start justify-between gap-3">
+							<div class="min-w-0 flex-1">
+								<div class="flex flex-wrap items-center gap-2">
+									<TierBadge tier={tier.level} size="md" locked={!tercapai} />
+									<span class="numeric text-xs text-ink-600">
+										{tier.threshold === 0 ? 'Tanpa ambang' : `${formatAngka(tier.threshold)} poin`}
+									</span>
+								</div>
+								<p class="mt-2 text-[13px] leading-relaxed text-ink-600">{tier.deskripsi}</p>
+								<p class="mt-1.5 text-sm text-ink-800">
+									<span class="font-semibold">Manfaat:</span>
+									{tier.benefit}
+								</p>
+							</div>
+
+							<div class="shrink-0">
+								{#if tercapai}
+									<StatusBadge
+										label="Sudah kamu raih"
+										color="green"
+										size="sm"
+										iconPath={ICONS.checkCircle}
+									/>
+								{:else}
+									<StatusBadge
+										label="Kurang {formatAngka(tier.threshold - gamification.points)} poin"
+										color="slate"
+										size="sm"
+										iconPath={ICONS.lock}
+									/>
+								{/if}
+							</div>
 						</div>
-						<p class="mt-2 text-[13px] leading-relaxed text-ink-600">{tier.deskripsi}</p>
-						<p class="mt-1.5 text-sm text-ink-800">
-							<span class="font-semibold">Manfaat:</span>
-							{tier.benefit}
+					</Card>
+				{/each}
+			</div>
+
+			<p class="mt-4 flex items-start gap-1.5 text-xs leading-relaxed text-ink-600">
+				<Icon path={ICONS.info} size={14} class="mt-px shrink-0" />
+				Jenjang ditentukan murni oleh ambang poin. Tidak ada syarat tersembunyi, dan menukar Koin
+				Tukar tidak pernah menurunkan jenjang yang sudah kamu raih.
+			</p>
+		</section>
+
+		<!-- Riwayat poin -->
+		<section aria-labelledby="judul-riwayat">
+			<h2 id="judul-riwayat" class="mb-3 text-base font-bold text-heading">Riwayat poinmu</h2>
+
+			{#if riwayatPoin.length === 0}
+				<EmptyState
+					iconPath={ICONS.bolt}
+					title="Belum ada aksi yang tercatat"
+					message="Menyimak kabar mingguan, hadir di kegiatan, atau menulis Blog akan mengisi riwayat ini. Aksi pertama biasanya yang paling mudah."
+					size="sm"
+					actionLabel="Lihat kabar komunitas"
+					actionHref="/awardee/kabar"
+				/>
+			{:else}
+				<Card padding="none" class="overflow-hidden">
+					<p class="border-b border-ink-100 px-4 py-3 text-[13px] leading-relaxed text-ink-600">
+						<span class="font-semibold text-ink-800">
+							{frasaHitung(aksiBulanIni, 'aksi')} bulan ini.
+						</span>
+						Setiap baris di bawah adalah satu langkah yang kamu ambil sendiri.
+					</p>
+
+					<ul class="divide-y divide-ink-100">
+						{#each riwayatPoin as entri (entri.id)}
+							<li class="flex items-start gap-3 px-4 py-3">
+								<span
+									class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700"
+									aria-hidden="true"
+								>
+									<Icon path={ICONS.bolt} size={16} />
+								</span>
+
+								<div class="min-w-0 flex-1">
+									<p class="text-[13px] leading-snug font-semibold text-ink-800">{entri.label}</p>
+									<p class="mt-0.5 text-[11px] text-ink-600">
+										{formatTanggal(entri.occurredAt, 'pendek')} · {formatRelatif(entri.occurredAt)}
+									</p>
+									{#if entri.note}
+										<p class="mt-1 line-clamp-2 text-[12px] leading-relaxed text-ink-600">
+											{entri.note}
+										</p>
+									{/if}
+								</div>
+
+								<div class="flex shrink-0 flex-col items-end gap-1">
+									{#if entri.isAwarded && entri.points > 0}
+										<PointsChip points={entri.points} currency="PK" size="sm" signed />
+									{:else}
+										<StatusBadge
+											label={entri.statusMeta.label}
+											color={entri.statusMeta.badgeColor}
+											size="sm"
+										/>
+									{/if}
+								</div>
+							</li>
+						{/each}
+					</ul>
+
+					{#if gamification.ledger.length > BATAS_RIWAYAT}
+						<p class="border-t border-ink-100 px-4 py-3 text-[11px] text-ink-600">
+							Menampilkan {BATAS_RIWAYAT} aksi terbaru dari {formatAngka(gamification.ledger.length)} yang
+							tercatat.
 						</p>
-					</div>
-
-					<div class="shrink-0">
-						{#if tercapai}
-							<StatusBadge label="Terbuka" color="green" size="sm" iconPath={ICONS.checkCircle} />
-						{:else}
-							<StatusBadge
-								label="Kurang {formatAngka(tier.threshold - gamification.points)} poin"
-								color="slate"
-								size="sm"
-								iconPath={ICONS.lock}
-							/>
-						{/if}
-					</div>
-				</div>
-			</Card>
-		{/each}
+					{/if}
+				</Card>
+			{/if}
+		</section>
 	</div>
-
-	<p class="mt-4 flex items-start gap-1.5 text-xs leading-relaxed text-ink-600">
-		<Icon path={ICONS.info} size={14} class="mt-px shrink-0" />
-		Tier ditentukan murni oleh ambang poin. Tidak ada syarat tersembunyi, dan menukar Koin Tukar
-		tidak pernah menurunkan tier yang sudah kamu raih.
-	</p>
 {:else if tabAktif === TAB_LENCANA}
 	{#if gamification.badges.length === 0}
 		<div class="mt-6">
 			<EmptyState
-				icon={ICONS.badge}
+				iconPath={ICONS.badge}
 				title="Katalog lencana belum tersedia"
 				message="Katalog dimuat bersama data komunitas. Coba muat ulang halaman bila keadaan ini bertahan."
 			/>
 		</div>
 	{:else}
-		<p class="mt-6 text-[13px] leading-relaxed text-ink-600">
-			<span class="font-semibold text-ink-800">{formatAngka(lencanaTerkumpul)} terkumpul</span> ·
-			{formatAngka(lencanaTerkunci)} masih terkunci. Ketuk lencana mana pun untuk melihat kriteria
-			lengkap dan bonus Koin Tukar-nya.
-		</p>
+		<Card padding="md" class="mt-6">
+			<p class="text-[13px] leading-relaxed text-ink-700">
+				<span class="font-semibold text-brand-700">
+					{formatAngka(lencanaTerkumpul)} lencana sudah kamu raih
+				</span>
+				· {formatAngka(lencanaTerkunci)} lainnya masih menunggu. Yang belum terbuka tetap terlihat
+				lengkap dengan kriterianya — supaya kamu tahu persis langkah berikutnya, bukan menebak-nebak.
+			</p>
+		</Card>
 
 		<div class="mt-5 space-y-8">
 			{#each keluargaLencana as kelompok (kelompok.family)}
@@ -431,7 +603,7 @@
 				</div>
 				<p class="mt-1.5 text-[13px] text-ink-600">
 					Koin bertambah seiring Poin Kontribusi dan bonus lencana. Menukarnya tidak menyentuh
-					tier-mu.
+					jenjangmu.
 				</p>
 			</div>
 			{#if awardee}
@@ -446,25 +618,25 @@
 			bind:selected={kategori}
 			onchange={pilihKategori}
 			showClear={false}
-			label="Penyaring kategori penghargaan"
+			label="Penyaring kategori hadiah"
 		/>
 	</div>
 
 	{#if !awardee}
 		<div class="mt-6">
 			<EmptyState
-				icon={ICONS.user}
-				title="Belum ada sesi awardee"
-				message="Masuk sebagai awardee Pfriends untuk melihat katalog penukaran beserta saldo Koin Tukar-mu."
-				actionLabel="Masuk sebagai awardee"
+				iconPath={ICONS.user}
+				title="Belum ada sesi anggota"
+				message="Masuk sebagai anggota PFfriends untuk melihat katalog penukaran beserta saldo Koin Tukar-mu."
+				actionLabel="Masuk sebagai anggota"
 				actionHref="/masuk"
 			/>
 		</div>
 	{:else if rewardTampil.length === 0}
 		<div class="mt-6">
 			<EmptyState
-				icon={ICONS.gift}
-				title="Belum ada penghargaan pada kategori ini"
+				iconPath={ICONS.gift}
+				title="Belum ada hadiah pada kategori ini"
 				message="Katalog diperbarui tiap awal musim. Coba pilih kategori lain untuk melihat yang sedang tersedia."
 			/>
 		</div>
@@ -483,9 +655,9 @@
 {:else if pesanan.length === 0}
 	<div class="mt-6">
 		<EmptyState
-			icon={ICONS.inbox}
+			iconPath={ICONS.inbox}
 			title="Belum ada penukaran"
-			message="Setiap penghargaan yang kamu tukar tercatat di sini beserta status pemenuhannya."
+			message="Setiap hadiah yang kamu tukar tercatat di sini beserta status pemenuhannya."
 			actionLabel="Lihat katalog penukaran"
 			onAction={() => (tabAktif = TAB_TUKAR)}
 		/>
@@ -555,8 +727,8 @@
 		{#if rewardDipilih.requiresApproval}
 			<p class="mt-3 flex items-start gap-1.5 text-xs leading-relaxed text-warning">
 				<Icon path={ICONS.info} size={14} class="mt-px shrink-0" />
-				Penghargaan ini menunggu persetujuan Corsec sebelum dipenuhi. Koin sudah dipotong saat
-				pengajuan dan dikembalikan bila pengajuan ditolak.
+				Hadiah ini menunggu persetujuan Corsec sebelum dipenuhi. Koin sudah dipotong saat pengajuan
+				dan dikembalikan bila pengajuan ditolak.
 			</p>
 		{/if}
 	{/if}
@@ -611,7 +783,7 @@
 			<div class="flex items-center justify-between gap-3">
 				<dt class="text-ink-600">Sudah dimiliki</dt>
 				<dd class="numeric text-ink-700">
-					{formatAngka(lencanaDipilih.badge.holderCount)} awardee
+					{formatAngka(lencanaDipilih.badge.holderCount)} anggota
 				</dd>
 			</div>
 		</dl>

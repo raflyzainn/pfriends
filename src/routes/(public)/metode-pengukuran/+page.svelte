@@ -8,11 +8,11 @@
 	 *
 	 * EMPAT KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
-	 * 1. **Ini satu-satunya halaman publik yang boleh menyebut mekanik skor** —
-	 *    bersama teks consent `/daftar`. Alasannya sama: menyembunyikan keberadaan
+	 * 1. **Halaman ini boleh menyebut mekanik skor.** Menyembunyikan keberadaan
 	 *    sistem pencatatan justru membuat penjelasan metode menjadi tidak jujur.
-	 *    `scripts/verify/public-purity.mjs` mengecualikan kedua jalur itu, dan
-	 *    hanya keduanya.
+	 *    `scripts/verify/public-purity.mjs` mengecualikan jalurnya dari aturan kata.
+	 *    (Jalur kedua yang dikecualikan, `/daftar`, sudah dihapus bersama fitur
+	 *    pendaftarannya — pengecualiannya kini tidak menaungi berkas mana pun.)
 	 *
 	 * 2. **Seluruh angka parameter dibaca dari `REACH_PARAMETERS`.** Nol literal.
 	 *    Halaman yang menjelaskan rumus lalu menuliskan angkanya sendiri adalah
@@ -137,10 +137,10 @@
 </script>
 
 <svelte:head>
-	<title>Metode Pengukuran — Pfriends</title>
+	<title>Metode Pengukuran — PFfriends</title>
 	<meta
 		name="description"
-		content="Cara setiap angka di microsite Pfriends diperoleh: mana yang terhitung dari data, mana yang estimasi berparameter, mana yang sekadar rujukan industri, dan apa batasannya."
+		content="Cara setiap angka di microsite PFfriends diperoleh: mana yang terhitung dari data, mana yang estimasi berparameter, mana yang sekadar rujukan industri, dan apa batasannya."
 	/>
 </svelte:head>
 
@@ -200,7 +200,7 @@
 					<p class="kicker">Benchmark eksternal</p>
 					<p class="mt-3 max-w-[46ch] text-[16px] leading-[1.68] text-ink-700">
 						Angka rujukan industri yang dikutip dokumen inisiatif. Bukan hasil pengukuran
-						Pfriends, karena itu ditulis sebagai kalimat dan tidak pernah sebagai angka besar.
+						PFfriends, karena itu ditulis sebagai kalimat dan tidak pernah sebagai angka besar.
 					</p>
 				</dd>
 			</div>
@@ -251,7 +251,7 @@
 		<div class="grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,1fr)_340px]">
 			<div class="min-w-0">
 				<p class="max-w-[62ch] text-[16px] leading-[1.68] text-ink-700">
-					Pfriends tidak dapat membaca statistik akun pribadi anggota, dan tidak berniat
+					PFfriends tidak dapat membaca statistik akun pribadi anggota, dan tidak berniat
 					melakukannya. Yang dapat dihitung adalah berapa orang menyebarkan informasi program;
 					sisanya adalah perkiraan berdasarkan parameter yang seluruhnya ditulis di bawah ini.
 				</p>
@@ -307,7 +307,7 @@
 		scale="section"
 		rhythm="base"
 		kicker="Kelas C"
-		label="Rujukan industri yang dikutip, bukan capaian Pfriends"
+		label="Rujukan industri yang dikutip, bukan capaian PFfriends"
 	>
 		<ul class="max-w-[70ch] border-t border-ink-200">
 			{#each BENCHMARK_RUJUKAN as rujukan (rujukan.id)}
@@ -320,7 +320,7 @@
 		<p class="mt-6 max-w-[62ch] text-[15px] leading-[1.6] text-ink-600">
 			Kedua kalimat di atas sengaja tidak dicetak sebagai angka besar, gauge, maupun batang progres.
 			Bentuk visual seperti itu menyatakan "capaian" tanpa satu kata pun, dan keduanya bukan capaian
-			Pfriends.
+			PFfriends.
 		</p>
 	</SectionRule>
 

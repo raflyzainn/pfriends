@@ -96,7 +96,7 @@
 		SHARE_PUBLIC: { href: '/awardee/kabar', cara: 'Unggah ke media sosial publik, lampirkan tautan buktinya.' },
 		STORY_SUBMIT: {
 			href: '/awardee/cerita/tulis',
-			cara: 'Tulis satu cerita kontribusi di komposer, lalu kirim ke antrean tinjauan verifikator.'
+			cara: 'Tulis satu Blog kontribusi di komposer, lalu kirim ke antrean tinjauan verifikator.'
 		},
 		SESSION_ATTEND: { href: '/awardee/kalender', cara: 'Hadiri sesi daring lalu klaim dengan kode kehadiran.' },
 		KNOWLEDGE_QA: { href: '', cara: 'Ajukan pertanyaan atau jawaban bermanfaat yang sudah kamu bagikan.' },
@@ -199,7 +199,7 @@
 </script>
 
 <svelte:head>
-	<title>Pusat Aksi & Poin · Pfriends</title>
+	<title>Pusat Aksi & Poin · PFfriends</title>
 </svelte:head>
 
 <PageHeader

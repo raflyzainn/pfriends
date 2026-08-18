@@ -128,7 +128,7 @@
 </script>
 
 <svelte:head>
-	<title>{detail ? `${detail.title} · Kalender Pfriends` : 'Kegiatan tidak ditemukan · Pfriends'}</title>
+	<title>{detail ? `${detail.title} · Kalender PFfriends` : 'Kegiatan tidak ditemukan · PFfriends'}</title>
 </svelte:head>
 
 <div class="mx-auto w-full max-w-7xl px-5 sm:px-8">

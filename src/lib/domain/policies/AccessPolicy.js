@@ -80,10 +80,13 @@ export const ZONE_ROLES = Object.freeze({
  *
  * Mengembalikan pengguna ke `/masuk` sesudah ia berhasil masuk menghasilkan gelang
  * tak berujung: halaman masuk mengalihkan pengguna ter-login ke berandanya, dan
- * beranda mengembalikannya ke `next`. Jalur pendaftaran diperlakukan sama.
+ * beranda mengembalikannya ke `next`.
+ *
+ * `/daftar` dicabut pada revisi 4 Agustus 2026 bersama fitur pendaftaran mandiri —
+ * alurnya kini hanya Beranda → Login.
  * @type {readonly string[]}
  */
-const RUTE_TAMU = Object.freeze(['/masuk', '/daftar']);
+const RUTE_TAMU = Object.freeze(['/masuk']);
 
 /**
  * Menormalkan jalur sebelum dicocokkan dengan peta zona.

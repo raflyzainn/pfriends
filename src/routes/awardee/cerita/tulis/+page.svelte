@@ -100,12 +100,12 @@
 	 */
 	const validator = new Validator({
 		title: [
-			Rule.required('Judul cerita wajib diisi.'),
-			Rule.minLength(10, 'Judul terlalu pendek untuk menerangkan isi cerita — minimal 10 karakter.'),
-			Rule.maxLength(120, 'Judul maksimal 120 karakter agar utuh terbaca pada kartu cerita.')
+			Rule.required('Judul Blog wajib diisi.'),
+			Rule.minLength(10, 'Judul terlalu pendek untuk menerangkan isi tulisan — minimal 10 karakter.'),
+			Rule.maxLength(120, 'Judul maksimal 120 karakter agar utuh terbaca pada kartu Blog.')
 		],
 		summary: [Rule.maxLength(200, 'Ringkasan maksimal 200 karakter.')],
-		body: [Rule.required('Isi cerita wajib diisi.')],
+		body: [Rule.required('Isi Blog wajib diisi.')],
 		outcomeNote: [
 			Rule.required('Catatan hasil wajib diisi — tuliskan perubahan yang terjadi, bukan jalannya acara.')
 		],
@@ -411,14 +411,14 @@
 </script>
 
 <svelte:head>
-	<title>{modeRevisi ? 'Perbaiki naskah' : 'Tulis cerita'} — Pfriends</title>
+	<title>{modeRevisi ? 'Perbaiki tulisan' : 'Tulis Blog Baru'} — PFfriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 06 · Community Journalism"
-	title={modeRevisi ? 'Perbaiki naskah' : 'Tulis cerita'}
+	title={modeRevisi ? 'Perbaiki tulisan' : 'Tulis Blog Baru'}
 	subtitle={modeRevisi
-		? 'Tindak lanjuti catatan verifikator, lalu kirim ulang naskahmu ke antrean tinjauan.'
+		? 'Tindak lanjuti catatan verifikator, lalu kirim ulang tulisanmu ke antrean tinjauan.'
 		: 'Ceritakan satu hal baik yang benar-benar terjadi. Setiap kolom di bawah menopang salah satu syarat bukti ESG Pertamina Foundation.'}
 />
 
@@ -426,8 +426,8 @@
 	<div class="mt-6">
 		<EmptyState
 			iconPath={ICONS.user}
-			title="Sesi awardee belum termuat"
-			message="Komposer cerita membutuhkan identitas penulis. Masuk kembali sebagai awardee Pfriends untuk melanjutkan."
+			title="Sesi anggota belum termuat"
+			message="Komposer Blog membutuhkan identitas penulis. Masuk kembali sebagai anggota PFfriends untuk melanjutkan."
 			actionLabel="Ke halaman Masuk"
 			actionHref="/masuk"
 		/>
@@ -457,7 +457,7 @@
 
 				<div class="mt-5 space-y-4">
 					<label class="block">
-						<span class="label-micro">Judul cerita</span>
+						<span class="label-micro">Judul Blog</span>
 						<input
 							type="text"
 							bind:value={formJudul}
@@ -477,7 +477,7 @@
 						<input
 							type="text"
 							bind:value={formRingkasan}
-							placeholder="Satu kalimat yang tampil di kartu cerita"
+							placeholder="Satu kalimat yang tampil di kartu Blog"
 							aria-invalid={Boolean(galat.summary)}
 							class="mt-1.5 w-full max-w-full rounded-xl border bg-surface px-3 py-2 text-sm text-ink-800 {galat.summary
 								? 'border-danger'
@@ -493,7 +493,7 @@
 					</label>
 
 					<label class="block">
-						<span class="label-micro">Isi cerita</span>
+						<span class="label-micro">Isi Blog</span>
 						<textarea
 							bind:value={formIsi}
 							rows="12"
@@ -520,7 +520,7 @@
 			<Card padding="lg">
 				<h2 class="text-lg font-semibold text-heading">Klasifikasi dampak</h2>
 				<p class="mt-1 text-[13px] leading-relaxed text-ink-600">
-					Menentukan ke pilar mana cerita ini dihitung saat Pertamina Foundation menyusun laporan
+					Menentukan ke pilar mana tulisan ini dihitung saat Pertamina Foundation menyusun laporan
 					ESG.
 				</p>
 
@@ -601,7 +601,7 @@
 			<Card padding="lg">
 				<h2 class="text-lg font-semibold text-heading">Dokumentasi aktivitas</h2>
 				<p class="mt-1 text-[13px] leading-relaxed text-ink-600">
-					Empat isian ini adalah gerbang pertama bukti ESG: tanpa keduanya cerita tidak dapat
+					Empat isian ini adalah gerbang pertama bukti ESG: tanpa keduanya tulisan tidak dapat
 					dipertanggungjawabkan sebagai capaian program.
 				</p>
 
@@ -699,7 +699,7 @@
 				<label class="mt-4 flex items-start gap-2.5 rounded-xl border border-ink-200 p-3">
 					<input type="checkbox" bind:checked={formConsent} class="mt-0.5 h-4 w-4 shrink-0" />
 					<span class="text-[13px] leading-relaxed text-ink-700">
-						Saya mengizinkan Pertamina Foundation memublikasikan cerita ini beserta nama saya, dan
+						Saya mengizinkan Pertamina Foundation memublikasikan tulisan ini beserta nama saya, dan
 						memastikan tidak ada data pribadi orang lain — nomor telepon, NIK, alamat rumah — di
 						dalam naskah maupun buktinya.
 					</span>
@@ -722,7 +722,7 @@
 						iconPath={ICONS.upload}
 						onclick={kirim}
 					>
-						{modeRevisi ? 'Kirim ulang naskah' : 'Kirim ke antrean tinjauan'}
+						{modeRevisi ? 'Kirim ulang tulisan' : 'Kirim ke antrean tinjauan'}
 					</Button>
 				</div>
 			</div>
@@ -758,7 +758,7 @@
 						dengan catatan perbaikan yang wajib tertulis.
 					</li>
 					<li>
-						<span class="font-medium text-ink-800">3. Terbit</span> — cerita tayang di ruang publik dan
+						<span class="font-medium text-ink-800">3. Terbit</span> — tulisan tayang di ruang publik dan
 						masuk story bank untuk laporan ESG.
 					</li>
 				</ol>

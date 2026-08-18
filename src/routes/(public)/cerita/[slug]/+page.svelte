@@ -96,7 +96,7 @@
 
 	const tautanPenuh = $derived(browser ? page.url.href : '');
 	const pesanBagikan = $derived(
-		cerita ? `${cerita.title} — cerita dari komunitas Pfriends Pertamina Foundation` : ''
+		cerita ? `${cerita.title} — cerita dari komunitas PFfriends Pertamina Foundation` : ''
 	);
 	const tautanWa = $derived(
 		`https://wa.me/?text=${encodeURIComponent(`${pesanBagikan} ${tautanPenuh}`)}`
@@ -118,7 +118,7 @@
 </script>
 
 <svelte:head>
-	<title>{cerita?.isPublic ? `${cerita.title} — Pfriends` : 'Cerita Komunitas — Pfriends'}</title>
+	<title>{cerita?.isPublic ? `${cerita.title} — PFfriends` : 'Cerita Komunitas — PFfriends'}</title>
 	{#if cerita?.isPublic}
 		<meta name="description" content={cerita.summary} />
 	{/if}
