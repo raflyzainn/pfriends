@@ -43,7 +43,7 @@
 		TierBadge
 	} from '$lib/components';
 	import { CHAPTERS, COMMUNITIES, CommunityType } from '$lib/domain/constants/community.js';
-	import { catalog, CatalogKind } from '$lib/stores/catalog.svelte.js';
+	import { directory } from '$lib/stores/directory.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { formatAngka } from '$lib/utils/format.js';
 
@@ -80,7 +80,7 @@
 	const saya = $derived(session.awardee);
 
 	/** Direktori hanya memuat awardee berstatus aktif. */
-	const anggotaAktif = $derived(catalog.activeAwardees);
+	const anggotaAktif = $derived(directory.items);
 
 	const opsiKomunitas = [
 		{ id: SEMUA, label: 'Semua komunitas' },
@@ -93,59 +93,18 @@
 	];
 
 	/** Daftar kota yang benar-benar ada di direktori, bukan daftar tetap yang bisa kosong. */
-	const opsiKota = $derived(
-		[...new Set(anggotaAktif.map((awardee) => awardee.city).filter(Boolean))].sort((a, b) =>
-			a.localeCompare(b, 'id')
-		)
-	);
+	const opsiKota = $derived(directory.facets.cities);
 
-	const opsiKeahlian = $derived(
-		[...new Set(anggotaAktif.flatMap((awardee) => awardee.skills))].sort((a, b) =>
-			a.localeCompare(b, 'id')
-		)
-	);
+	const opsiKeahlian = $derived(directory.facets.skills);
 
-	const hasil = $derived.by(() => {
-		const cari = kueri.trim().toLowerCase();
-		return anggotaAktif.filter((awardee) => {
-			if (komunitas !== SEMUA && awardee.community !== komunitas) return false;
-			if (chapterId !== SEMUA && awardee.chapterId !== chapterId) return false;
-			if (kota !== SEMUA && awardee.city !== kota) return false;
-			if (keahlian !== SEMUA && !awardee.skills.includes(keahlian)) return false;
-			if (hanyaMentor && !awardee.openToMentoring) return false;
-			if (cari === '') return true;
+	const hasil = $derived(directory.items);
+	const tampil = $derived(directory.items);
 
-			const ladang = [
-				awardee.fullName,
-				awardee.occupation,
-				awardee.university,
-				awardee.city,
-				awardee.bio,
-				awardee.skills.join(' '),
-				awardee.businessProfile?.businessName ?? '',
-				awardee.businessProfile?.sector ?? ''
-			]
-				.join(' ')
-				.toLowerCase();
-			return ladang.includes(cari);
-		});
-	});
+	const jumlahSobi = $derived(directory.stats.sobi);
 
-	const tampil = $derived(hasil.slice(0, batas));
+	const jumlahWomenpreneur = $derived(directory.stats.womenpreneur);
 
-	const jumlahSobi = $derived(
-		anggotaAktif.filter((awardee) => awardee.community === CommunityType.SOBI).length
-	);
-
-	const jumlahWomenpreneur = $derived(
-		anggotaAktif.filter((awardee) => awardee.community === CommunityType.WOMENPRENEUR).length
-	);
-
-	const mentorSobi = $derived(
-		anggotaAktif.filter(
-			(awardee) => awardee.community === CommunityType.SOBI && awardee.openToMentoring
-		).length
-	);
+	const mentorSobi = $derived(directory.stats.mentors);
 
 	const adaPenyaringAktif = $derived(
 		kueri.trim() !== '' ||
@@ -158,7 +117,18 @@
 
 	onMount(async () => {
 		if (!session.ready) await session.hydrate();
-		await catalog.load();
+	});
+
+	let timerPencarian;
+	$effect(() => {
+		const query = {
+			search: kueri.trim(), community: komunitas === SEMUA ? '' : komunitas,
+			chapter: chapterId === SEMUA ? '' : chapterId, city: kota === SEMUA ? '' : kota,
+			skill: keahlian === SEMUA ? '' : keahlian, mentor: hanyaMentor
+		};
+		clearTimeout(timerPencarian);
+		timerPencarian = setTimeout(() => void directory.load(query), kueri.trim() ? 250 : 0);
+		return () => clearTimeout(timerPencarian);
 	});
 
 	/**
@@ -208,7 +178,7 @@
 	 * @returns {void}
 	 */
 	function bukaProfil(tampilan) {
-		anggotaDipilih = catalog.byId(CatalogKind.AWARDEE, /** @type {string} */ (tampilan.id));
+		anggotaDipilih = directory.byId(/** @type {string} */ (tampilan.id));
 	}
 
 	/**
@@ -254,7 +224,7 @@
 <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
 	<StatTile
 		label="Anggota aktif"
-		value={anggotaAktif.length}
+		value={directory.stats.active}
 		hint="Terdata di komunitas PFfriends"
 		iconPath={ICONS.users}
 		color="var(--color-pertamina-navy)"
@@ -406,7 +376,7 @@
 <div class="mt-5 flex flex-wrap items-center justify-between gap-2">
 	<p class="text-[13px] text-ink-600">
 		Menampilkan <span class="numeric font-semibold text-ink-800">{formatAngka(tampil.length)}</span>
-		dari {formatAngka(hasil.length)} awardee
+		dari {formatAngka(directory.totalItems)} awardee
 	</p>
 	{#if adaPenyaringAktif}
 		<Button variant="ghost" size="sm" iconPath={ICONS.refresh} onclick={bersihkanPenyaring}>
@@ -415,9 +385,19 @@
 	{/if}
 </div>
 
-{#if catalog.loading && anggotaAktif.length === 0}
+{#if directory.loading && anggotaAktif.length === 0}
 	<p class="mt-8 text-sm text-ink-600">Memuat direktori awardee…</p>
-{:else if hasil.length === 0}
+{:else if directory.error}
+	<div class="mt-4">
+		<EmptyState
+			icon={ICONS.refresh}
+			title="Jejaring belum dapat dimuat"
+			message={directory.error}
+			actionLabel="Coba lagi"
+			onAction={() => directory.load()}
+		/>
+	</div>
+{:else if directory.totalItems === 0}
 	<div class="mt-4">
 		<EmptyState
 			icon={ICONS.search}
@@ -434,10 +414,10 @@
 		{/each}
 	</div>
 
-	{#if tampil.length < hasil.length}
+	{#if directory.page < directory.totalPages}
 		<div class="mt-6 flex justify-center">
-			<Button variant="outline" onclick={() => (batas += UKURAN_HALAMAN)}>
-				Muat {formatAngka(Math.min(UKURAN_HALAMAN, hasil.length - tampil.length))} awardee lagi
+			<Button variant="outline" loading={directory.loading} onclick={() => directory.loadMore()}>
+				Muat {formatAngka(Math.min(UKURAN_HALAMAN, directory.totalItems - tampil.length))} awardee lagi
 			</Button>
 		</div>
 	{/if}

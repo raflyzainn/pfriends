@@ -42,7 +42,9 @@
 	const jalurKini = $derived(page.url?.pathname ?? '/');
 
 	/** Peran yang sedang aktif berhak memasuki zona ini. */
-	const berhak = $derived(AccessPolicy.canEnter(session.role, zone));
+	const berhak = $derived(
+		AccessPolicy.canEnter(session.role, zone) && session.canAccess(jalurKini)
+	);
 
 	/** Beranda peran yang sedang aktif — tujuan tombol jalan keluar. */
 	const beranda = $derived(session.homePath());

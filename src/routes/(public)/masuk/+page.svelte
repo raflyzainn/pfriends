@@ -48,6 +48,8 @@
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 
+	const DEMO_LOGIN = import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEMO_LOGIN === '1';
+
 	/** Banyaknya kartu awardee yang dipajang — enam, agar grid tiga kolom terisi rata. */
 	const JUMLAH_AWARDEE = 6;
 
@@ -75,7 +77,7 @@
 	let galat = $state('');
 
 	/** Formulir manual terbuka. */
-	let manualTerbuka = $state(false);
+	let manualTerbuka = $state(!DEMO_LOGIN);
 
 	let email = $state('');
 	let sandi = $state('');
@@ -110,6 +112,11 @@
 		try {
 			await catalog.load();
 			await session.hydrate();
+			if (!DEMO_LOGIN) {
+				kartuStaf = [];
+				kartuAwardee = [];
+				return;
+			}
 
 			const [admin, verifikator, awardee] = await Promise.all([
 				accountRepository.byRole(UserRole.ADMIN),
@@ -231,11 +238,12 @@
 	<header class="text-center">
 		<p class="kicker">Ruang anggota</p>
 		<h1 class="display-editorial mt-4 text-[clamp(28px,4vw,42px)] leading-[1.08] text-heading">
-			Pilih akun untuk masuk
+			{DEMO_LOGIN ? 'Pilih akun untuk masuk' : 'Masuk ke PFfriends'}
 		</h1>
 		<p class="mx-auto mt-5 max-w-[58ch] text-[16px] leading-[1.65] text-ink-700">
-			Ini prototipe peragaan. Klik salah satu kartu di bawah dan Anda langsung masuk ke ruang
-			sesuai peran akun itu — tanpa perlu mengetik kata sandi.
+			{DEMO_LOGIN
+				? 'Mode demo lokal aktif. Pilih kartu akun atau gunakan email dan kata sandi.'
+				: 'Awardee dapat masuk setelah mengirim registrasi. Akun yang belum disetujui hanya membuka portal status.'}
 		</p>
 	</header>
 
@@ -285,7 +293,8 @@
 		<p class="mt-10 text-center text-[15px] text-ink-600" aria-busy="true">
 			Menyiapkan akun peragaan…
 		</p>
-	{:else if adaKartu}
+	{:else}
+		{#if adaKartu}
 		<!-- ── Pengelola & verifikator ─────────────────────────────────────── -->
 		<section class="mt-12" aria-labelledby="staf-judul">
 			<h2 id="staf-judul" class="kicker">Pengelola program</h2>
@@ -366,6 +375,7 @@
 		</section>
 
 		<!-- ── Masuk manual ─────────────────────────────────────────────────── -->
+		{/if}
 		<div class="mt-14 border-t border-ink-200 pt-6 text-center">
 			{#if manualTerbuka}
 				<form class="mx-auto max-w-sm text-left" onsubmit={kirimManual} novalidate>
@@ -423,16 +433,17 @@
 				</button>
 			{/if}
 		</div>
-	{:else}
-		<p class="mx-auto mt-10 max-w-[60ch] text-center text-[15px] leading-[1.6] text-ink-600">
-			Daftar akun peragaan belum tersedia di peramban ini. Muat ulang halaman untuk
-			menyiapkannya.
-		</p>
 	{/if}
 
-	<p class="mx-auto mt-12 max-w-[64ch] text-center text-[13px] leading-[1.6] text-ink-600">
-		Prototipe ini memakai autentikasi tiruan, bukan mekanisme keamanan. Data tersimpan di peramban
-		Anda sendiri. Pada penerapan nyata, akun diterbitkan lewat direktori pengguna Pertamina
-		Foundation dan kata sandi tidak pernah dibagikan bersama.
-	</p>
+	<div class="mx-auto mt-10 max-w-xl rounded-card border border-ink-200 bg-surface p-6 text-center">
+		<h2 class="text-lg font-bold text-heading">Belum punya akun Awardee?</h2>
+		<p class="mt-2 text-sm leading-relaxed text-ink-600">Daftarkan data diri dan bukti keanggotaan untuk diperiksa Verifikator.</p>
+		<a href="/daftar" class="mt-5 inline-flex min-h-11 items-center rounded-control bg-brand-600 px-6 text-sm font-bold text-white">Daftar sebagai Awardee</a>
+	</div>
+
+	<div class="mx-auto mt-6 max-w-xl rounded-control bg-ink-50 p-4 text-center text-sm text-ink-600">
+		<strong class="text-heading">Login Verifikator dan Admin</strong>
+		<p class="mt-1">SSO OAuth sedang dipersiapkan. Akun password staf hanya tersedia ketika mode demo lokal diaktifkan.</p>
+		<!-- TODO(SSO): ganti pesan ini dengan tombol authWithOAuth2 setelah provider dan pemetaan claim disepakati. -->
+	</div>
 </div>

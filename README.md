@@ -32,11 +32,12 @@ npm run pb:seed      # sekali setelah superuser dibuat dan .env diisi
 npm run dev          # buka http://localhost:5173
 ```
 
-Fitur **Bukti Keaktifan** memakai PocketBase. Unduh PocketBase v0.39.9 untuk Windows ke
+Fitur **Bukti Keaktifan** dan **Registrasi Awardee** memakai PocketBase. Unduh PocketBase v0.39.9 untuk Windows ke
 `pocketbase/pocketbase.exe`, salin `.env.example` menjadi `.env`, lalu isi kredensial
 superuser hanya untuk menjalankan seed. `PB_SUPERUSER_*` tidak pernah masuk bundle browser.
 Panduan dasar ada di `docs/15-POCKETBASE-BUKTI-KEAKTIFAN.md`. Pelacakan status Awardee dan
 riwayat keputusan Verifikator dijelaskan di `docs/16-RIWAYAT-DAN-PELACAKAN-BUKTI.md`.
+Alur registrasi, klarifikasi, dan ACC akun dijelaskan di `docs/17-REGISTRASI-AWARDEE.md`.
 
 ### Perintah
 
@@ -45,13 +46,16 @@ npm run dev                  # server pengembangan
 npm run build                # build produksi statis ke folder build/
 npm run preview              # pratinjau hasil build
 npm run pb:serve             # backend PocketBase lokal
-npm run pb:seed              # seed 63 akun demo secara idempoten
+npm run pb:seed              # seed 63 akun, 60 profil, dan ledger poin demo secara idempoten
 
 npm run verify               # GERBANG UTAMA: compile + domain + seed + purity + build
 npm run verify:compile       # kompilasi seluruh .svelte dengan compiler Svelte 5
 npm run verify:domain        # 156 asersi aturan domain
 npm run verify:seed          #  70 asersi konsistensi data seed
 npm run verify:purity        #   6 aturan kemurnian zona publik (PO-2 & anti "terlalu AI")
+npm run verify:registration  # 18 asersi registrasi dan gamifikasi pada PocketBase uji
+npm run verify:directory     # 13 asersi Jejaring, privasi profil, filter, dan poin demo
+npm run verify:backend       # seluruh integration test PocketBase di atas
 
 # Gerbang peramban — server dev harus berjalan lebih dulu:
 npm run dev -- --port 5177
@@ -74,7 +78,13 @@ WebSocket bawaan Node — tanpa Playwright, Puppeteer, atau dependensi uji apa p
 
 Peran **melekat pada akun**, bukan dipilih dari daftar.
 
-Sejak revisi 4 Agustus 2026, **masuk cukup dengan mengklik kartu pengguna** di `/masuk` — tidak
+Pada mode demo lokal, masuk dapat dilakukan dengan mengklik kartu pengguna di `/masuk`. Kartu
+tersebut hanya tampil ketika `VITE_ENABLE_DEMO_LOGIN=1`. Selama SSO belum tersedia, login password
+staf tetap diterima backend. Awardee masuk dengan email dan password miliknya sendiri. Login
+Verifikator/Admin akan diganti SSO OAuth; titik integrasinya ditandai `TODO(SSO)`. Setelah provider
+SSO siap, set `PB_REQUIRE_STAFF_SSO=1` untuk mematikan login password staf.
+
+Sebelumnya **masuk cukup dengan mengklik kartu pengguna** di `/masuk` — tidak
 ada kolom sandi yang perlu diisi. Ini keringanan yang disengaja untuk tahap mockup: peragaan di
 ruang rapat sering harus berpindah peran beberapa kali dalam semenit, dan mengetik surel panjang
 setiap kali memakan waktu peragaan itu sendiri. Kata sandi demo tetap dipakai di balik layar dan
@@ -126,13 +136,13 @@ Navbar hanya memuat tiga: **Beranda**, **Blog**, **Calendar of Event**.
 | `/cerita/[slug]` | — | Satu tulisan terpublikasi |
 | `/kalender` | ✓ Calendar of Event | Kalender komunitas |
 | `/kalender/[id]` | — | Detail kegiatan + unduh `.ics` |
-| `/masuk` | — | Login satu klik: pilih kartu pengguna, tanpa mengetik sandi |
+| `/masuk` | — | Login email/password; kartu satu klik hanya pada mode demo lokal |
+| `/daftar` | — | Registrasi Awardee dengan data diri dan bukti protected |
+| `/pendaftaran/status` | — | Status terbatas dan pengiriman klarifikasi pendaftar |
 | `/tentang` | — | Latar program dan tata kelola |
 | `/komunitas` | — | Profil SOBI dan PFpreneur/Womenpreneur |
 | `/gerakan` | — | Gerakan bersama yang sedang berjalan |
 | `/metode-pengukuran` | — | Cara tiap angka dihitung |
-
-`/daftar` **dicabut** — pendaftaran mandiri dihapus; alurnya kini Beranda → Login.
 
 ### Zona Awardee — 12 route
 
@@ -147,22 +157,24 @@ bergaya kanal) · `/awardee/kalender` · `/awardee/penghargaan` · `/awardee/kab
 pribadi, bukan sebagai peringkat antar-peserta. Papan peringkat hanya tampil di beranda
 publik dan dasbor verifikator.
 
-### Zona Verifikator — 4 route
+### Zona Verifikator
 
 Navbar: Dasbor · Submission Blog · Konfigurasi Calendar of Event
 
 `/verifikator` (dasbor performa awardee & dampaknya) · `/verifikator/cerita` (Submission
 Blog) · `/verifikator/cerita/[id]` (tiga gerbang keputusan) · `/verifikator/kegiatan`
-(Konfigurasi Calendar of Event)
+(Konfigurasi Calendar of Event) · `/verifikator/bukti-keaktifan/**` ·
+`/verifikator/pendaftaran` (ACC, klarifikasi, tolak, dan buka kembali registrasi Awardee)
 
 `/verifikator/bukti` dan `/verifikator/profil` **dicabut**.
 
-### Zona Admin — 3 route
+### Zona Admin
 
 Navbar: Dasbor KPI · Kontrol Akun · Konfigurasi Gamifikasi
 
 `/admin` (dasbor KPI publikasi & performa sistem) · `/admin/awardee` (Kontrol Akun, 63 akun,
-dengan impersonate) · `/admin/gamifikasi` (nilai poin & ambang jenjang dapat disunting)
+dengan impersonate) · `/admin/gamifikasi` (nilai poin & ambang jenjang dapat disunting) ·
+`/admin/pendaftaran` (pemantauan registrasi read-only)
 
 `/admin/broadcast`, `/admin/moderasi`, `/admin/esg`, dan `/admin/laporan` **dicabut** —
 dua yang terakhir isinya melebur ke Dasbor KPI.

@@ -48,6 +48,11 @@ export { default as FilterChips } from './FilterChips.svelte';
 export { default as DataTable } from './DataTable.svelte';
 export { default as Timeline } from './Timeline.svelte';
 export { default as Tabs } from './Tabs.svelte';
+export { default as RegistrationForm } from './RegistrationForm.svelte';
+export { default as ProofPreview } from './ProofPreview.svelte';
+export { default as WhatsappLink } from './WhatsappLink.svelte';
+export { default as DummyBadge } from './DummyBadge.svelte';
+export { default as DummyRouteNotice } from './DummyRouteNotice.svelte';
 
 // ── Umpan balik ──────────────────────────────────────────────────────────
 export { default as Modal } from './Modal.svelte';

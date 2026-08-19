@@ -14,5 +14,8 @@ export function getPocketBase() {
 }
 
 export function pocketBaseMessage(error, fallback = 'PocketBase tidak dapat memproses permintaan.') {
-	return error?.response?.message || error?.message || fallback;
+	const fieldMessage = Object.values(error?.response?.data ?? {}).find(
+		(item) => typeof item?.message === 'string' && item.message.trim() !== ''
+	)?.message;
+	return fieldMessage || error?.response?.message || error?.message || fallback;
 }

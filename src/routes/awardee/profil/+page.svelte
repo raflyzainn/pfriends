@@ -60,6 +60,7 @@
 		ConsentType
 	} from '$lib/domain/value-objects/ConsentRecord.js';
 	import { consentRepository, awardeeRepository } from '$lib/infrastructure/repositories/index.js';
+	import { updateMyDirectoryProfile } from '$lib/infrastructure/pocketbase/directory.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
@@ -87,6 +88,31 @@
 
 	/** @type {boolean} Pencabutan sedang diproses. */
 	let sedangMencabut = $state(false);
+	let editorProfilTerbuka = $state(false);
+	let menyimpanProfil = $state(false);
+	let formulirProfil = $state({ occupation: '', bio: '', skills: '', openToMentoring: false, businessEmployees: 0, businessGrowthPercent: 0 });
+
+	function bukaEditorProfil() {
+		if (!awardee) return;
+		formulirProfil = {
+			occupation: awardee.occupation, bio: awardee.bio, skills: awardee.skills.join(', '),
+			openToMentoring: awardee.openToMentoring,
+			businessEmployees: awardee.businessProfile?.employees || 0,
+			businessGrowthPercent: awardee.businessProfile?.growthPercent || 0
+		};
+		editorProfilTerbuka = true;
+	}
+
+	async function simpanProfilJejaring() {
+		menyimpanProfil = true;
+		try {
+			await updateMyDirectoryProfile({ ...formulirProfil, skills: formulirProfil.skills.split(',').map((item) => item.trim()).filter(Boolean) });
+			await session.refresh();
+			editorProfilTerbuka = false;
+			toast.success('Profil Jejaring diperbarui', 'Perubahanmu sekarang terlihat oleh Awardee lain di Jejaring.');
+		} catch (error) { toast.error('Profil gagal disimpan', error instanceof Error ? error.message : 'Coba lagi.'); }
+		finally { menyimpanProfil = false; }
+	}
 
 	/**
 	 * Memuat rekaman consent milik awardee yang sedang masuk.
@@ -270,6 +296,9 @@
 	<div class="grid gap-4 lg:grid-cols-3">
 		<!-- Identitas -->
 		<Card padding="lg" class="lg:col-span-2">
+			<div class="mb-4 flex justify-end">
+				<Button variant="outline" size="sm" iconPath={ICONS.pencil} onclick={bukaEditorProfil}>Edit profil Jejaring</Button>
+			</div>
 			<div class="flex flex-wrap items-start gap-4">
 				<Avatar name={awardee.fullName} size="xl" tier={gamification.tier.level} showRing />
 
@@ -587,6 +616,22 @@
 			</ul>
 		{/if}
 	</section>
+
+	<Modal open={editorProfilTerbuka} title="Edit profil Jejaring" size="md" onclose={() => (editorProfilTerbuka = false)}>
+		<div class="space-y-4">
+			<label class="block"><span class="label-micro">Pekerjaan atau peran</span><input bind:value={formulirProfil.occupation} maxlength="160" class="mt-1.5 w-full rounded-xl border border-ink-300 px-3 py-2 text-sm" /></label>
+			<label class="block"><span class="label-micro">Bio singkat</span><textarea bind:value={formulirProfil.bio} maxlength="1200" rows="4" class="mt-1.5 w-full rounded-xl border border-ink-300 px-3 py-2 text-sm"></textarea></label>
+			<label class="block"><span class="label-micro">Keahlian</span><input bind:value={formulirProfil.skills} placeholder="Pisahkan dengan koma" class="mt-1.5 w-full rounded-xl border border-ink-300 px-3 py-2 text-sm" /><span class="mt-1 block text-xs text-ink-500">Maksimal 12 keahlian.</span></label>
+			<label class="flex items-center gap-2 text-sm text-ink-700"><input type="checkbox" bind:checked={formulirProfil.openToMentoring} /> Bersedia menjadi mentor</label>
+			{#if awardee.isWomenpreneur}
+				<div class="grid gap-3 sm:grid-cols-2">
+					<label><span class="label-micro">Tenaga kerja</span><input type="number" min="0" bind:value={formulirProfil.businessEmployees} class="mt-1.5 w-full rounded-xl border border-ink-300 px-3 py-2 text-sm" /></label>
+					<label><span class="label-micro">Pertumbuhan (%)</span><input type="number" min="-100" bind:value={formulirProfil.businessGrowthPercent} class="mt-1.5 w-full rounded-xl border border-ink-300 px-3 py-2 text-sm" /></label>
+				</div>
+			{/if}
+		</div>
+		{#snippet footer()}<Button variant="ghost" onclick={() => (editorProfilTerbuka = false)}>Batal</Button><Button loading={menyimpanProfil} onclick={simpanProfilJejaring}>Simpan profil</Button>{/snippet}
+	</Modal>
 
 	<!-- Konfirmasi pencabutan -->
 	<Modal

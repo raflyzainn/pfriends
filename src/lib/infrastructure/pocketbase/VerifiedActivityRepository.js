@@ -13,11 +13,11 @@ export class VerifiedActivityRepository {
 				activityType: row.activityType,
 				points: row.points,
 				status: ActivityStatus.AWARDED,
-				idempotencyKey: `pb-submission:${row.submission}`,
-				refId: row.submission,
-				evidence: [`pocketbase:${row.submission}`],
+				idempotencyKey: row.legacyActivityId ? `pb-demo:${row.legacyActivityId}` : `pb-submission:${row.submission}`,
+				refId: row.submission || row.legacyActivityId,
+				evidence: row.submission ? [`pocketbase:${row.submission}`] : [],
 				capReason: row.capReason || null,
-				note: 'Bukti keaktifan telah disetujui Verifikator.',
+				note: row.source === 'DEMO_SEED' ? 'Aktivitas demo yang dimigrasikan ke ledger server.' : 'Bukti keaktifan telah disetujui Verifikator.',
 				occurredAt: row.occurredAt
 			}));
 		} catch (error) {

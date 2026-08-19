@@ -35,7 +35,7 @@
 	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-04
 	 */
 	import { page } from '$app/state';
-	import { Footer, Icon, ICONS } from '$lib/components';
+	import { DummyRouteNotice, Footer, Icon, ICONS } from '$lib/components';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { impact } from '$lib/stores/impact.svelte.js';
 	import { navForZone, isNavActive } from '$lib/data/navigation.js';
@@ -181,6 +181,7 @@
 	{/if}
 
 	<main class="flex-1">
+		<DummyRouteNotice outerClass="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8" />
 		{@render children()}
 	</main>
 

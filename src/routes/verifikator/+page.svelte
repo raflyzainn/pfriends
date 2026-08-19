@@ -30,7 +30,7 @@
 	 *
 	 * @see docs/10-REVISION-SPEC.md — §6.4 route zona verifikator
 	 */
-	import { EmptyState, Icon, LeaderboardRow, PageHeader, StatTile, ICONS } from '$lib/components';
+	import { DummyBadge, EmptyState, Icon, LeaderboardRow, PageHeader, StatTile, ICONS } from '$lib/components';
 	import VerifAwardeePerforma from '$lib/charts/VerifAwardeePerforma.svelte';
 	import VerifKpiAwardeeBar from '$lib/charts/VerifKpiAwardeeBar.svelte';
 	import VerifSebaranChapter from '$lib/charts/VerifSebaranChapter.svelte';
@@ -39,6 +39,7 @@
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
+	import { verifierDashboardStore } from '$lib/stores/verifier-dashboard.svelte.js';
 	import { formatAngka } from '$lib/utils/format.js';
 	import { SlaBadge, slaAntrean } from './_components/index.js';
 	import {
@@ -70,6 +71,12 @@
 	 * @type {Date}
 	 */
 	const sekarang = new Date();
+	let dashboardLoaded = false;
+	$effect(() => {
+		if (dashboardLoaded) return;
+		dashboardLoaded = true;
+		void verifierDashboardStore.load();
+	});
 
 	/**
 	 * Peta id chapter ke sebutan pendeknya.
@@ -82,11 +89,16 @@
 	const LABEL_CHAPTER = new Map(CHAPTERS.map((c) => [c.id, c.label.replace(/^Chapter\s+/i, '')]));
 
 	const totalPostingan = jumlah(POSTINGAN_TERBIT);
-	const totalPoin = jumlah(POIN_BULANAN);
-	const persenAktif = Math.round((AWARDEE_AKTIF / AWARDEE_TERDAFTAR) * 100);
+	const totalPoin = $derived(verifierDashboardStore.data?.totalPoints ?? 0);
+	const awardeeAktif = $derived(verifierDashboardStore.data?.activeAwardees ?? 0);
+	const awardeeTerdaftar = $derived(verifierDashboardStore.data?.registeredAwardees ?? 0);
+	const persenAktif = $derived(awardeeTerdaftar > 0 ? Math.round((awardeeAktif / awardeeTerdaftar) * 100) : 0);
+	const poinBulananBackend = $derived(verifierDashboardStore.data?.monthly?.map((item) => item.points) ?? BULAN.map(() => 0));
+	const labelBulanBackend = $derived(verifierDashboardStore.data?.monthly?.map((item) => item.label) ?? [...BULAN]);
+	const sebaranBackend = $derived(verifierDashboardStore.data?.chapter ?? []);
 
 	/** Empat angka kunci performa awardee — bukan performa sistem. */
-	const angkaKunci = [
+	const angkaKunci = $derived([
 		{
 			id: 'postingan',
 			label: 'Postingan blog terbit',
@@ -108,8 +120,8 @@
 		{
 			id: 'aktif',
 			label: 'Awardee aktif',
-			value: AWARDEE_AKTIF,
-			hint: `${persenAktif}% dari ${formatAngka(AWARDEE_TERDAFTAR)} awardee terdaftar`,
+			value: awardeeAktif,
+			hint: `${persenAktif}% dari ${formatAngka(awardeeTerdaftar)} awardee terdaftar`,
 			trend: null,
 			iconPath: ICONS.users,
 			color: 'var(--color-brand-700)'
@@ -123,7 +135,7 @@
 			iconPath: ICONS.trophy,
 			color: 'var(--color-brand-600)'
 		}
-	];
+	]);
 
 	/**
 	 * Papan peringkat peserta paling aktif.
@@ -133,26 +145,8 @@
 	 * yang kebetulan berada di zona lain.
 	 */
 	const papanPeringkat = $derived.by(() => {
-		const dariKatalog = catalog.awardees
-			.filter((awardee) => (awardee.points ?? 0) > 0)
-			.sort((a, b) => (b.points ?? 0) - (a.points ?? 0))
-			.slice(0, BARIS_PAPAN)
-			.map((awardee, indeks) => ({
-				rank: indeks + 1,
-				id: awardee.id,
-				name: awardee.anonymousOnLeaderboard ? 'Peserta anonim' : awardee.fullName,
-				community: awardee.community,
-				chapter: LABEL_CHAPTER.get(awardee.chapterId) ?? awardee.chapterId,
-				points: awardee.points ?? 0,
-				delta: null
-			}));
-
-		if (dariKatalog.length > 0) return { baris: dariKatalog, contoh: false };
-
-		return {
-			baris: PESERTA_TERAKTIF.map((peserta, indeks) => ({ ...peserta, rank: indeks + 1 })),
-			contoh: true
-		};
+		const rows = verifierDashboardStore.data?.leaderboard ?? [];
+		return { baris: rows.map((row) => ({ ...row, delta: null })), contoh: false };
 	});
 
 	/** Tiga naskah paling lama menunggu keputusan. */
@@ -230,14 +224,10 @@
 <!-- BLOK 1 — angka kunci performa awardee. -->
 <section class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Angka kunci performa awardee">
 	{#each angkaKunci as kartu (kartu.id)}
-		<StatTile
-			label={kartu.label}
-			value={kartu.value}
-			hint={kartu.hint}
-			trend={kartu.trend}
-			iconPath={kartu.iconPath}
-			color={kartu.color}
-		/>
+		<div class="relative">
+			{#if kartu.id === 'postingan' || kartu.id === 'kpi'}<span class="absolute top-3 right-3 z-10"><DummyBadge /></span>{/if}
+			<StatTile label={kartu.label} value={kartu.value} hint={kartu.hint} trend={kartu.trend} iconPath={kartu.iconPath} color={kartu.color} />
+		</div>
 	{/each}
 </section>
 
@@ -254,16 +244,17 @@
 		<p class="mt-1 mb-3 text-sm leading-relaxed text-ink-600">
 			Apakah jumlah cerita yang benar-benar terbit tumbuh bersama poin yang diperoleh awardee?
 		</p>
+		<p class="mb-3 flex items-center gap-2 text-xs text-ink-600"><DummyBadge title="Seri Postingan masih memakai data contoh." /> Seri Postingan belum backend; seri Poin sudah berasal dari PocketBase.</p>
 		<VerifAwardeePerforma
-			labels={[...BULAN]}
+			labels={labelBulanBackend}
 			postingan={[...POSTINGAN_TERBIT]}
-			poin={[...POIN_BULANAN]}
+			poin={poinBulananBackend}
 			height="300px"
 		/>
 	</section>
 
 	<section class="card min-w-0 p-5" aria-labelledby="judul-kpi">
-		<h2 id="judul-kpi" class="text-base font-bold text-heading">Capaian KPI awardee</h2>
+		<div class="flex items-center gap-2"><h2 id="judul-kpi" class="text-base font-bold text-heading">Capaian KPI awardee</h2><DummyBadge /></div>
 		<p class="mt-1 mb-3 text-sm leading-relaxed text-ink-600">
 			Indikator mana yang sudah melewati ambang {AMBANG_KPI}%, dan mana yang masih tertinggal?
 		</p>
@@ -312,12 +303,6 @@
 				{/each}
 			</ul>
 
-			{#if papanPeringkat.contoh}
-				<p class="mt-3 text-xs leading-relaxed text-ink-600">
-					Delapan baris di atas adalah data contoh; papan akan memakai nama sungguhan begitu katalog
-					awardee termuat di peramban ini.
-				</p>
-			{/if}
 		{/if}
 	</section>
 
@@ -326,7 +311,7 @@
 		<p class="mt-1 mb-3 text-sm leading-relaxed text-ink-600">
 			Chapter dan komunitas mana yang paling hidup — dan mana yang perlu didekati.
 		</p>
-		<VerifSebaranChapter data={[...SEBARAN_CHAPTER]} height="230px" />
+		<VerifSebaranChapter data={sebaranBackend} height="230px" />
 	</section>
 </div>
 
@@ -335,6 +320,7 @@
 	<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
 		<h2 id="judul-antrean" class="text-lg font-bold text-heading">Menunggu keputusan Anda</h2>
 		<p class="text-xs text-ink-600">
+			<DummyBadge title="Metrik laju peninjauan ini masih berupa data contoh." />
 			Laju peninjauan
 			<span class="numeric font-semibold text-ink-800">
 				{LAJU_PENINJAUAN.keputusanPekanIni} keputusan
@@ -350,6 +336,7 @@
 	<div class="mt-4 grid gap-5 sm:grid-cols-2">
 		{#each antrean as kotak (kotak.id)}
 			<div class="card min-w-0 p-5">
+				<div class="mb-2"><DummyBadge title="Antrean cerita dan kegiatan masih memakai Dexie." /></div>
 				<div class="flex items-start gap-3">
 					<span
 						class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pertamina-navy-tint text-pertamina-navy"
@@ -414,7 +401,7 @@
 
 <!-- BLOK 5 — profil ringkas; menggantikan halaman profil yang dicabut dari navigasi. -->
 <section class="card mt-8 p-5" aria-labelledby="judul-profil">
-	<h2 id="judul-profil" class="text-base font-bold text-heading">Profil & rekam kerja Anda</h2>
+	<div class="flex items-center gap-2"><h2 id="judul-profil" class="text-base font-bold text-heading">Profil & rekam kerja Anda</h2><DummyBadge title="Rekam keputusan cerita dan kegiatan masih memakai Dexie." /></div>
 	<p class="mt-1 text-sm leading-relaxed text-ink-600">
 		Profil melekat pada akun dan perannya, sehingga tidak lagi menjadi tujuan navigasi tersendiri.
 	</p>

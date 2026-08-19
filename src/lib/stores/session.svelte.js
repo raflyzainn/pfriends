@@ -45,6 +45,7 @@ import { AuthService } from '$lib/domain/services/AuthService.js';
 import { accountRepository, awardeeRepository } from '$lib/infrastructure/repositories/index.js';
 import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
 import { getPocketBase } from '$lib/infrastructure/pocketbase/client.js';
+import { isApprovedOnboarding, RegistrationStatus } from '$lib/domain/constants/registration.js';
 
 /** Kunci penyimpanan sesi di localStorage. */
 const KUNCI_SESI = 'pfriends_session';
@@ -82,11 +83,12 @@ const PESAN_GALAT_TAK_TERDUGA =
  * @property {string|null} role
  * @property {string|null} accountId
  * @property {string|null} awardeeId
+ * @property {string|null} onboardingStatus
  * @property {SessionUser|null} user
  */
 
 /** Bentuk sesi kosong — tamu. */
-const SESI_KOSONG = Object.freeze({ role: null, accountId: null, awardeeId: null, user: null });
+const SESI_KOSONG = Object.freeze({ role: null, accountId: null, awardeeId: null, onboardingStatus: null, user: null });
 
 /**
  * Membaca sesi tersimpan.
@@ -111,6 +113,7 @@ function bacaSesiTersimpan() {
 			role,
 			accountId: typeof data?.accountId === 'string' ? data.accountId : null,
 			awardeeId: typeof data?.awardeeId === 'string' ? data.awardeeId : null,
+			onboardingStatus: typeof data?.onboardingStatus === 'string' ? data.onboardingStatus : null,
 			user: data?.user ?? null
 		};
 	} catch {
@@ -141,6 +144,32 @@ function potretPengguna(account) {
 	};
 }
 
+function inisialDariNama(name) {
+	const words = String(name || '').trim().split(/\s+/).filter(Boolean);
+	if (words.length === 0) return 'PF';
+	const selected = words.length === 1 ? [words[0]] : [words[0], words[words.length - 1]];
+	return selected.map((word) => word.charAt(0).toUpperCase()).join('');
+}
+
+function principalPocketBase(record) {
+	const displayName = record.displayName || record.email;
+	return Object.freeze({
+		id: record.legacyAccountId || record.id,
+		pocketBaseId: record.id,
+		email: record.email,
+		displayName,
+		role: record.role,
+		awardeeId: record.awardeeId || null,
+		unit: record.unit || '',
+		status: record.status,
+		initials: inisialDariNama(displayName),
+		isActive: record.status === 'AKTIF',
+		isAwardee: record.role === UserRole.AWARDEE,
+		isVerifier: record.role === UserRole.VERIFIER,
+		isAdmin: record.role === UserRole.ADMIN
+	});
+}
+
 class SessionStore {
 	/** @type {string|null} Salah satu UserRole; `null` berarti tamu. */
 	role = $state(null);
@@ -157,6 +186,9 @@ class SessionStore {
 	/** @type {SessionUser|null} Potret ringkas pengguna aktif. */
 	user = $state(null);
 
+	/** Status onboarding PocketBase; null untuk tamu. */
+	onboardingStatus = $state(null);
+
 	/** @type {boolean} Hidrasi sesi sudah selesai — jawaban sudah ada, apa pun isinya. */
 	ready = $state(false);
 
@@ -168,6 +200,8 @@ class SessionStore {
 
 	/** Ada sesi aktif. */
 	isAuthenticated = $derived(this.role !== null);
+
+	isApplicant = $derived(this.isAuthenticated && !isApprovedOnboarding(this.onboardingStatus));
 
 	isAwardee = $derived(this.role === UserRole.AWARDEE);
 
@@ -205,6 +239,7 @@ class SessionStore {
 		this.user = tersimpan.user;
 		this.#accountId = tersimpan.accountId;
 		this.#awardeeId = tersimpan.awardeeId;
+		this.onboardingStatus = tersimpan.onboardingStatus;
 		// Tidak ada yang perlu dihidrasi bila kita di server atau tidak ada sesi
 		// tersimpan — menahan `ready` pada keadaan itu membuat halaman menampilkan
 		// pemuatan yang tidak akan pernah selesai.
@@ -245,10 +280,24 @@ class SessionStore {
 			const pb = getPocketBase();
 			if (!pb) throw new Error('PocketBase tidak tersedia.');
 			const hasil = await pb.collection('users').authWithPassword(email, password);
-			const akun = await accountRepository.getById(hasil.record.legacyAccountId);
-			if (!akun || !akun.isActive || akun.role !== hasil.record.role) throw new Error('Akun demo tidak sinkron dengan PocketBase.');
-			const awardee = await this.#authService().awardeeOf(akun);
-			this.#terapkan(akun, awardee);
+			const onboarding = hasil.record.onboardingStatus || RegistrationStatus.APPROVED;
+			const principal = principalPocketBase(hasil.record);
+			if (!isApprovedOnboarding(onboarding)) {
+				this.#terapkan(principal, null, onboarding);
+				return { success: true, error: '' };
+			}
+			if (!principal.isActive) throw new Error('Akun tidak aktif.');
+			const akunLokal = hasil.record.legacyAccountId
+				? await accountRepository.getById(hasil.record.legacyAccountId)
+				: null;
+			const akun = akunLokal && akunLokal.role === hasil.record.role ? akunLokal : principal;
+			const awardee = akunLokal
+				? await this.#authService().awardeeOf(akunLokal)
+				: principal.awardeeId
+					? await awardeeRepository.getById(principal.awardeeId)
+					: null;
+			if (principal.isAwardee && !awardee) throw new Error('Profil Awardee belum tersedia.');
+			this.#terapkan(akun, awardee, onboarding);
 			return { success: true, error: '' };
 		} catch {
 			// Kegagalan penyimpanan peramban (mode privat, kuota, IndexedDB diblokir)
@@ -277,6 +326,7 @@ class SessionStore {
 		this.account = null;
 		this.awardee = null;
 		this.user = null;
+		this.onboardingStatus = null;
 		this.error = null;
 		this.#accountId = null;
 		this.#awardeeId = null;
@@ -296,6 +346,7 @@ class SessionStore {
 	 * @returns {string} `'/'` untuk tamu.
 	 */
 	homePath() {
+		if (this.isApplicant) return '/pendaftaran/status';
 		return AccessPolicy.homePathFor(this.role);
 	}
 
@@ -309,6 +360,7 @@ class SessionStore {
 	 * @returns {boolean}
 	 */
 	canAccess(pathname) {
+		if (this.isApplicant) return pathname === '/pendaftaran/status';
 		return AccessPolicy.canAccess(this.role, pathname);
 	}
 
@@ -318,6 +370,7 @@ class SessionStore {
 	 * @returns {string}
 	 */
 	nextAfterLogin(next) {
+		if (this.isApplicant) return '/pendaftaran/status';
 		return AccessPolicy.safeNext(next, this.role);
 	}
 
@@ -371,17 +424,30 @@ class SessionStore {
 			const pb = getPocketBase();
 			if (!pb?.authStore.isValid) { this.logout(); return; }
 			const auth = await pb.collection('users').authRefresh();
-			const akun = await accountRepository.getById(auth.record.legacyAccountId);
-			if (!akun || !akun.isActive) {
+			const onboarding = auth.record.onboardingStatus || RegistrationStatus.APPROVED;
+			const principal = principalPocketBase(auth.record);
+			if (!isApprovedOnboarding(onboarding)) {
+				this.#terapkan(principal, null, onboarding);
+				return;
+			}
+			if (!principal.isActive) {
 				this.logout();
 				return;
 			}
-			const awardee = await this.#authService().awardeeOf(akun);
-			if (akun.isAwardee && awardee === null) {
+			const akunLokal = auth.record.legacyAccountId
+				? await accountRepository.getById(auth.record.legacyAccountId)
+				: null;
+			const akun = akunLokal && akunLokal.role === auth.record.role ? akunLokal : principal;
+			const awardee = akunLokal
+				? await this.#authService().awardeeOf(akunLokal)
+				: principal.awardeeId
+					? await awardeeRepository.getById(principal.awardeeId)
+					: null;
+			if (principal.isAwardee && awardee === null) {
 				this.logout();
 				return;
 			}
-			this.#terapkan(akun, awardee);
+			this.#terapkan(akun, awardee, onboarding);
 		} catch {
 			// Basis data yang tidak dapat dibuka bukan alasan mengunci pengguna di layar
 			// pemuatan selamanya; sesi diakhiri dan halaman masuk mengambil alih.
@@ -398,14 +464,15 @@ class SessionStore {
 	 * @param {import('$lib/domain/entities/Awardee.js').Awardee|null} awardee
 	 * @returns {void}
 	 */
-	#terapkan(account, awardee) {
-		const akun = account instanceof UserAccount ? account : UserAccount.from(account);
+	#terapkan(account, awardee, onboardingStatus = RegistrationStatus.APPROVED) {
+		const akun = account;
 		this.account = akun;
 		this.role = akun.role;
 		this.user = potretPengguna(akun);
 		this.awardee = awardee ?? null;
 		this.#accountId = akun.id;
 		this.#awardeeId = akun.awardeeId ?? null;
+		this.onboardingStatus = onboardingStatus;
 		this.error = null;
 		this.#simpan();
 	}
@@ -440,6 +507,7 @@ class SessionStore {
 					role: this.role,
 					accountId: this.#accountId,
 					awardeeId: this.#awardeeId,
+					onboardingStatus: this.onboardingStatus,
 					user: this.user
 				})
 			);

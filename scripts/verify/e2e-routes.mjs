@@ -1,5 +1,5 @@
 /**
- * Uji asap end-to-end SELURUH 36 route V2 memakai Chrome DevTools Protocol.
+ * Uji asap end-to-end seluruh route utama memakai Chrome DevTools Protocol.
  *
  * Tanpa dependensi apa pun: memakai WebSocket bawaan Node 22 dan browser
  * berbasis Chromium yang sudah ada di mesin. Pfriends adalah SPA yang dirender
@@ -69,9 +69,9 @@ const naskahAntrean =
 if (!naskahAntrean) wajibAda('naskah di antrean verifikator');
 
 /**
- * Sepuluh route zona publik.
+ * Route zona publik.
  *
- * `/daftar` dicabut pada revisi 4 Agustus 2026 bersama fitur pendaftaran mandiri.
+ * `/daftar` kembali hidup untuk registrasi Awardee berbukti.
  * Empat route yang tidak lagi tercantum di navbar (`/tentang`, `/komunitas`,
  * `/gerakan`, `/metode-pengukuran`) tetap DIUJI: halamannya masih hidup dan masih
  * ditautkan dari dalam halaman lain, jadi kerusakannya tetap harus tertangkap.
@@ -86,7 +86,8 @@ const RUTE_PUBLIK = [
 	'/kalender',
 	`/kalender/${kegiatanTerjadwal.id}`,
 	'/metode-pengukuran',
-	'/masuk'
+	'/masuk',
+	'/daftar'
 ];
 
 /**
@@ -112,7 +113,7 @@ const RUTE_AWARDEE = [
 ];
 
 /**
- * Empat route zona verifikator.
+ * Route zona verifikator.
  *
  * `/verifikator/bukti` dan `/verifikator/profil` dicabut pada revisi 4 Agustus 2026:
  * navbar dipangkas jadi Dasbor · Submission Blog · Konfigurasi Calendar of Event,
@@ -122,16 +123,18 @@ const RUTE_VERIFIKATOR = [
 	'/verifikator',
 	'/verifikator/cerita',
 	`/verifikator/cerita/${naskahAntrean.id}`,
-	'/verifikator/kegiatan'
+	'/verifikator/kegiatan',
+	'/verifikator/bukti-keaktifan',
+	'/verifikator/pendaftaran'
 ];
 
 /**
- * Tiga route zona admin.
+ * Route zona admin.
  *
  * Diseminasi, Moderasi & Consent, Bukti ESG, dan Laporan dicabut pada revisi
  * 4 Agustus 2026; dua yang terakhir isinya melebur ke Dasbor KPI.
  */
-const RUTE_ADMIN = ['/admin', '/admin/awardee', '/admin/gamifikasi'];
+const RUTE_ADMIN = ['/admin', '/admin/awardee', '/admin/gamifikasi', '/admin/pendaftaran'];
 
 /**
  * Kredensial demo per peran. Kata sandinya satu untuk semua akun dan berasal dari
