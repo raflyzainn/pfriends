@@ -30,7 +30,7 @@ function badgeEntry(record) {
 export async function myGamification() {
 	try {
 		const response = await client().send('/api/pfriends/gamification/me');
-		return { profile: response.profile, ledger: (response.ledger || []).map(pointActivity), badges: (response.badges || []).map(badgeEntry) };
+		return { profile: response.profile, wallet: response.wallet || { balance: 0 }, ledger: (response.ledger || []).map(pointActivity), badges: (response.badges || []).map(badgeEntry) };
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Gamifikasi gagal dimuat.')); }
 }
 

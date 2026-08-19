@@ -1,12 +1,11 @@
 # Roadmap Migrasi Data Dummy ke PocketBase — PFfriends
 
 > Audit terakhir 19 Agustus 2026: backend sudah mencakup PocketBase Auth, **Registrasi
-> Awardee**, vertical slice **Bukti Keaktifan**, serta **gamifikasi server-side**. Sistem masih hybrid:
-> profil Awardee, ledger poin terverifikasi, tier, streak, badge, leaderboard, dan agregat gamifikasi
-> Verifikator sudah masuk PocketBase, sedangkan mayoritas katalog, konten, workflow lama, reward,
-> dan koin masih memakai Dexie. Detail operasional
+> Awardee**, vertical slice **Bukti Keaktifan**, serta **gamifikasi dan redemption server-side**. Sistem masih hybrid:
+> profil Awardee, ledger poin, tier, streak, badge, leaderboard, Koin Tukar, reward, pesanan, dan agregat gamifikasi
+> Verifikator sudah masuk PocketBase, sedangkan mayoritas katalog konten dan workflow lama masih memakai Dexie. Detail operasional
 > ada di `docs/15-POCKETBASE-BUKTI-KEAKTIFAN.md`, `docs/16-RIWAYAT-DAN-PELACAKAN-BUKTI.md`,
-> `docs/17-REGISTRASI-AWARDEE.md`, `docs/18-GAMIFIKASI-SERVER.md`, serta
+> `docs/17-REGISTRASI-AWARDEE.md`, `docs/18-GAMIFIKASI-SERVER.md`, `docs/20-KOIN-REWARD-DAN-PENUKARAN.md`, serta
 > `CHECKLIST-MIGRASI-HALAMAN.md`.
 
 Dokumen ini menjelaskan kondisi PFfriends saat ini dan rencana bertahap untuk memindahkan data demo dari IndexedDB/Dexie ke backend PocketBase tanpa menulis ulang domain dan tampilan yang sudah ada.
@@ -98,8 +97,8 @@ Audit ini berdasarkan migration, hooks, adapter/repository, dan store yang dipak
 | Kegiatan/kalender/attendance | **Belum backend** | Dexie `events` | proposal, approval, peserta, kapasitas, attendance, dan pembatalan belum PocketBase |
 | Gerakan dan laporan dampak | **Belum backend** | Dexie `movements` | partisipasi, laporan, evidence, validasi ESG/SDG, dan agregat belum PocketBase |
 | Kabar/broadcast engagement | **Belum backend** | Dexie `broadcasts` | publikasi, read/claim, jadwal, dan engagement belum PocketBase |
-| Badge, tier, streak, leaderboard | **Backend untuk ledger bukti** | `gamification_profiles`, `badges`, `awardee_badges` + endpoint server | sumber poin engagement/konten belum backend; koin, quest, reward, dan redemption masih lokal |
-| Reward dan redemption | **Belum backend** | transaksi Dexie | saldo koin, stok/kuota, approval, idempotensi, dan concurrency belum server-side |
+| Badge, tier, streak, leaderboard | **Backend untuk ledger bukti** | `gamification_profiles`, `badges`, `awardee_badges` + endpoint server | sumber poin engagement/konten belum backend dan quest belum tersedia |
+| Reward dan redemption | **Backend** | `coin_accounts`, `coin_transactions`, `rewards`, `redemptions` + endpoint transaksional | pengelolaan katalog Admin dan job expiry belum tersedia |
 | Forum | **Belum persistence** | state lokal halaman | channel, thread/message, moderasi, realtime, dan akses belum dirancang sebagai collection |
 | KPI/Admin dashboard | **Hybrid** | agregat gamifikasi Verifikator dari PocketBase; widget lain Dexie | KPI konten/admin, snapshot, audit, dan ekspor belum ada |
 | Notifikasi | **Belum backend** | toast UI | inbox, email/WhatsApp, realtime, retry, dan preference belum ada |
@@ -112,7 +111,7 @@ Saat audit ini, migration sudah membuat atau memperluas collection berikut:
 - `users`;
 - `activity_submissions`, `submission_reviews`, `submission_status_events`, dan `verified_point_activities`;
 - `awardee_registrations`, `registration_reviews`, dan `awardees`.
-- `gamification_profiles`, `badges`, dan `awardee_badges`.
+- `gamification_profiles`, `badges`, `awardee_badges`, `coin_accounts`, `coin_transactions`, `rewards`, dan `redemptions`.
 
 Collection lain pada rancangan §4 masih merupakan target dan belum boleh dianggap tersedia hanya karena UI atau entity domainnya sudah ada.
 
@@ -454,7 +453,7 @@ Fondasi dan vertical slice pertama sudah selesai, sehingga “sprint pertama” 
 
 1. Pertahankan `verified_point_activities` sebagai sumber kebenaran bukti keaktifan dan perluas menjadi ledger tunggal saat konten/engagement backend tersedia.
 2. Tier, streak, 14 badge, rekonsiliasi, leaderboard, dan agregat gamifikasi Verifikator sudah server-side.
-3. Implementasikan reward/redemption atomik termasuk koin, saldo, stok, kuota, dan concurrent request.
+3. Reward/redemption atomik, koin, saldo, kuota, idempotensi, Pesanan Saya, workflow Admin, dan refund sudah selesai; berikutnya tambahkan pengelolaan katalog dan job expiry bila dibutuhkan.
 4. Migrasikan sumber poin konten/engagement dengan idempotency dan cap server; setelah itu pensiunkan simulator serta repository gamifikasi Dexie yang tersisa.
 
 ### Prioritas 5 — Auth staf dan hardening produksi

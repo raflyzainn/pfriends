@@ -11,10 +11,12 @@ routerAdd('GET', '/api/pfriends/gamification/me', (e) => {
 	const utils = require(`${__hooks}/gamification-utils.js`);
 	const awardee = e.app.findFirstRecordByData('awardees', 'user', e.auth.id);
 	const result = utils.ensureProfile(e.app, awardee);
+	const wallet = require(`${__hooks}/reward-utils.js`).syncWallet(e.app, awardee);
 	const badges = e.app.findRecordsByFilter('awardee_badges', 'awardee = {:awardee} && status = "ACTIVE"', 'awardedAt', 0, 0, { awardee: awardee.id });
 	const catalog = e.app.findRecordsByFilter('badges', 'community = "" || community = {:community}', 'name', 0, 0, { community: awardee.getString('community') });
 	return e.json(200, {
 		profile: result.profile,
+		wallet: { balance: wallet.getInt('balance'), lifetimeEarned: wallet.getInt('lifetimeEarned'), lifetimeSpent: wallet.getInt('lifetimeSpent') },
 		ledger: result.entries.slice().reverse(),
 		badges: catalog.map((badge) => ({ id: badge.id, code: badge.getString('code'), name: badge.getString('name'), family: badge.getString('family'), rarity: badge.getString('rarity'), criteria: badge.getString('criteria'), icon: badge.getString('icon'), community: badge.getString('community'), unlocked: badges.some((row) => row.getString('badgeCode') === badge.getString('code')) }))
 	});

@@ -38,7 +38,7 @@
 	 * @see src/lib/domain/constants/scoring-table.js — nilai kanonik
 	 * @see src/lib/domain/constants/tier-table.js — ambang kanonik
 	 */
-	import { Button, Card, Icon, PageHeader, StatTile, StatusBadge, ICONS } from '$lib/components';
+	import { Button, Card, Icon, PageHeader, RedemptionAdminPanel, StatTile, StatusBadge, ICONS } from '$lib/components';
 	import TierDistributionChart from '$lib/charts/TierDistributionChart.svelte';
 	import { ActionClass, ActivityType, SCORING_TABLE } from '$lib/domain/constants/scoring-table.js';
 	import { TIER_TABLE } from '$lib/domain/constants/tier-table.js';
@@ -340,6 +340,8 @@
 		</Button>
 	{/snippet}
 </PageHeader>
+
+<RedemptionAdminPanel />
 
 {#if galat !== ''}
 	<div

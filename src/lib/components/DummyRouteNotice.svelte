@@ -8,6 +8,7 @@
 		if (['/masuk', '/daftar', '/pendaftaran/status'].includes(path)) return '';
 		if (path.startsWith('/awardee/bukti-keaktifan')) return '';
 		if (path.startsWith('/awardee/direktori')) return '';
+		if (path.startsWith('/awardee/penghargaan')) return '';
 		if (path.startsWith('/verifikator/bukti-keaktifan') || path.startsWith('/verifikator/pendaftaran')) return '';
 		if (path.startsWith('/admin/pendaftaran')) return '';
 		if (path === '/verifikator') return ''; // Ditandai per-widget karena sumbernya campuran.

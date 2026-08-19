@@ -46,7 +46,7 @@ npm run dev                  # server pengembangan
 npm run build                # build produksi statis ke folder build/
 npm run preview              # pratinjau hasil build
 npm run pb:serve             # backend PocketBase lokal
-npm run pb:seed              # seed 63 akun, 60 profil, dan ledger poin demo secara idempoten
+npm run pb:seed              # seed akun, profil, poin, koin, 12 reward, dan 13 penukaran secara idempoten
 
 npm run verify               # GERBANG UTAMA: compile + domain + seed + purity + build
 npm run verify:compile       # kompilasi seluruh .svelte dengan compiler Svelte 5
@@ -55,6 +55,7 @@ npm run verify:seed          #  70 asersi konsistensi data seed
 npm run verify:purity        #   6 aturan kemurnian zona publik (PO-2 & anti "terlalu AI")
 npm run verify:registration  # 18 asersi registrasi dan gamifikasi pada PocketBase uji
 npm run verify:directory     # 13 asersi Jejaring, privasi profil, filter, dan poin demo
+npm run verify:rewards       # saldo, katalog, penukaran idempoten, RBAC Admin, dan refund
 npm run verify:backend       # seluruh integration test PocketBase di atas
 
 # Gerbang peramban — server dev harus berjalan lebih dulu:

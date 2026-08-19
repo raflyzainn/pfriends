@@ -22,7 +22,8 @@
 		"verify:pocketbase": "node scripts/verify/pocketbase-test.mjs",
 		"verify:registration": "node scripts/verify/registration-test.mjs",
 		"verify:directory": "node scripts/verify/directory-test.mjs",
-		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory",
+		"verify:rewards": "node scripts/verify/reward-test.mjs",
+		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards",
 		"verify:browser": "npm run verify:e2e && npm run verify:gamification",
 		"screenshot": "node scripts/verify/screenshot.mjs"
 	},

@@ -43,7 +43,7 @@ class GamificationStore {
 			this.ledger = result.ledger;
 			this.badges = result.badges;
 			this.streakWeeks = result.profile.currentStreakWeeks || 0;
-			this.coins = 0;
+			this.coins = result.wallet.balance || 0;
 			this.dailyUsage = [];
 		} catch (error) {
 			this.error = error instanceof Error ? error.message : 'Gamifikasi gagal dimuat.';

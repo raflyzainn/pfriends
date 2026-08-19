@@ -20,7 +20,7 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [~] `/awardee` — poin, tier, streak, dan badge dari PocketBase; kabar, kegiatan, cerita, serta ringkasan komunitas masih lokal (`DUMMY`).
 - [x] `/awardee/bukti-keaktifan` dan `/awardee/bukti-keaktifan/[id]` — pengajuan, file terlindungi, status, revisi, dan riwayat memakai PocketBase.
 - [~] `/awardee/aksi` — riwayat poin memakai ledger PocketBase; katalog aksi ringan dan interaksi langsung belum backend (`DUMMY`).
-- [~] `/awardee/penghargaan` atau Pencapaian — poin, tier, streak, dan badge memakai PocketBase; koin, reward, penukaran, pesanan, dan quest masih lokal (`DUMMY`).
+- [x] `/awardee/penghargaan` atau Pencapaian — poin, tier, streak, badge, saldo Koin Tukar, katalog reward, kuota, penukaran, dan Pesanan Saya memakai PocketBase. Quest belum ditampilkan sebagai data operasional pada halaman ini.
 - [~] `/awardee/profil` — profil hasil approval dan gamifikasi terbaca dari PocketBase; edit profil umum, consent versioned, statistik konten, dan etalase masih hybrid/lokal (`DUMMY`).
 - [x] `/awardee/direktori` atau Jejaring — profil Awardee aktif, pencarian, filter, statistik, pagination, dan gamifikasi ringkas memakai endpoint PocketBase tersanitasi.
 - [ ] `/awardee/kabar` dan `/awardee/kabar/[id]` — broadcast, status baca, share, dan CTA masih lokal (`DUMMY`).
@@ -42,7 +42,7 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] `/admin/pendaftaran` — monitoring registrasi memakai PocketBase; Admin tidak mengambil keputusan.
 - [ ] `/admin` — KPI dan agregat operasional umum masih lokal (`DUMMY`).
 - [ ] `/admin/awardee` — manajemen akun/Awardee masih lokal dan memakai akun demo (`DUMMY`).
-- [ ] `/admin/gamifikasi` — simulator konfigurasi, ledger administratif, reward, dan proyeksi masih lokal (`DUMMY`). Endpoint pencabutan poin server sudah tersedia, tetapi belum menggantikan keseluruhan halaman.
+- [~] `/admin/gamifikasi` — antrean, keputusan, pengiriman, penyelesaian, refund penukaran, dan endpoint pencabutan poin memakai PocketBase; simulator konfigurasi dan proyeksi masih lokal (`DUMMY`).
 
 ## Komponen lintas halaman yang sudah backend
 
@@ -53,9 +53,10 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] Ledger poin dari bukti terverifikasi.
 - [x] Ledger akun demo dimigrasikan idempoten ke PocketBase sehingga poin/tier/badge tidak kembali nol.
 - [x] Tier, streak mingguan, 14 badge, leaderboard global/komunitas/chapter, serta agregat gamifikasi Verifikator.
+- [x] Ledger Koin Tukar, bonus rarity lencana, katalog reward, kuota, redemption idempoten, Pesanan Saya, workflow Admin, dan refund.
 - [ ] SSO OAuth Verifikator/Admin (`TODO`).
 - [ ] Reset password, verifikasi email, MFA, dan notifikasi.
-- [ ] Consent versioned, profil penuh, konten, kegiatan, gerakan, forum, reward/redemption, dan KPI umum.
+- [ ] Consent versioned, profil penuh, konten, kegiatan, gerakan, forum, quest, dan KPI umum.
 
 ## Aturan label UI
 
