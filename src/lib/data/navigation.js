@@ -247,7 +247,7 @@ const NAV_ADMIN = Object.freeze([
 	}),
 	Object.freeze({
 		id: 'gamification',
-		label: 'Konfigurasi Gamifikasi',
+		label: 'Gamifikasi',
 		href: '/admin/gamifikasi',
 		iconPath: ICONS.trophy,
 		primary: true

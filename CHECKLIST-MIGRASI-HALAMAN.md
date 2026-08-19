@@ -43,7 +43,9 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] `/admin/pendaftaran` — monitoring registrasi memakai PocketBase; Admin tidak mengambil keputusan.
 - [ ] `/admin` — KPI dan agregat operasional umum masih lokal (`DUMMY`).
 - [ ] `/admin/awardee` — manajemen akun/Awardee masih lokal dan memakai akun demo (`DUMMY`).
-- [~] `/admin/gamifikasi` — pemantauan penukaran dan CRUD katalog hadiah memakai PocketBase; keputusan pesanan tetap milik Verifikator, sedangkan simulator konfigurasi dan proyeksi masih lokal (`DUMMY`).
+- [~] `/admin/gamifikasi` — hub ringkasan gamifikasi memakai data PocketBase dan mengarahkan ke nested route agar tidak menjadi halaman panjang.
+- [x] `/admin/gamifikasi/pesanan` dan `/admin/gamifikasi/hadiah` — pemantauan penukaran serta CRUD katalog hadiah memakai PocketBase; keputusan pesanan tetap milik Verifikator.
+- [ ] `/admin/gamifikasi/aturan` — konfigurasi poin, tier, dan simulasi tetap dipertahankan dengan navigasi lompat, tetapi masih lokal (`DUMMY`).
 
 ## Komponen lintas halaman yang sudah backend
 

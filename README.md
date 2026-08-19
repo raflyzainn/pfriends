@@ -171,7 +171,7 @@ Blog) · `/verifikator/cerita/[id]` (tiga gerbang keputusan) · `/verifikator/ke
 
 ### Zona Admin
 
-Navbar: Dasbor KPI · Kontrol Akun · Konfigurasi Gamifikasi
+Navbar: Dasbor KPI · Kontrol Akun · Gamifikasi
 
 `/admin` (dasbor KPI publikasi & performa sistem) · `/admin/awardee` (Kontrol Akun, 63 akun,
 dengan impersonate) · `/admin/gamifikasi` (nilai poin & ambang jenjang dapat disunting) ·

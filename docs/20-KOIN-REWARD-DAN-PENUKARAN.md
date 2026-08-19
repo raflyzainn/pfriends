@@ -26,7 +26,7 @@ Saat Awardee menukar hadiah, server memeriksa role, status akun, komunitas, tier
 - Verifikator dapat mengubah `DIAJUKAN -> DITOLAK` dengan alasan minimal lima karakter.
 - Penolakan mengembalikan KT tepat satu kali dan membebaskan kuota bulan tersebut.
 
-Awardee melihat perubahan pada tab **Pesanan Saya**. Verifikator memprosesnya di `/verifikator/gamifikasi`, termasuk tautan WhatsApp Awardee. Admin hanya memantau pesanan di `/admin/gamifikasi`. Admin dan Verifikator sama-sama dapat membuat, membaca, mengubah, serta menghapus/nonaktifkan katalog hadiah.
+Awardee melihat perubahan pada tab **Pesanan Saya**. Verifikator memprosesnya di `/verifikator/gamifikasi`, termasuk tautan WhatsApp Awardee. Admin memantau melalui `/admin/gamifikasi/pesanan` dan mengelola katalog di `/admin/gamifikasi/hadiah`. Admin dan Verifikator sama-sama dapat membuat, membaca, mengubah, serta menghapus/nonaktifkan katalog hadiah.
 
 ## Koleksi dan endpoint
 
