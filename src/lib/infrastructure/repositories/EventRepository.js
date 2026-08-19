@@ -27,7 +27,16 @@ export class EventRepository {
 		const myId = row.myParticipant?.awardeeId ?? '';
 		const registered = Array.from({ length: Math.max(0, row.registeredCount || 0) }, (_, index) => index === 0 && myId ? myId : `participant-${row.id}-${index}`);
 		const attended = Array.from({ length: Math.max(0, row.attendeeCount || 0) }, (_, index) => row.myParticipant?.attendanceStatus === 'APPROVED' && index === 0 && myId ? myId : `attendee-${row.id}-${index}`);
-		return CommunityEvent.from({ ...row, proposedByRole: 'AWARDEE', registeredAwardeeIds: registered, attendeeAwardeeIds: attended, evidenceRefs: [] });
+		return CommunityEvent.from({
+			...row,
+			submittedAt: row.submittedAt || null,
+			reviewedAt: row.reviewedAt || null,
+			publishedAt: row.publishedAt || null,
+			proposedByRole: 'AWARDEE',
+			registeredAwardeeIds: registered,
+			attendeeAwardeeIds: attended,
+			evidenceRefs: []
+		});
 	}
 
 	async getAll() {

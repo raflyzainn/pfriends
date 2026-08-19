@@ -15,6 +15,7 @@
 - [x] Persetujuan bukti membukukan satu ledger `SESSION_ATTEND` sebesar 15 PK.
 - [x] Pengajuan kehadiran bebas dari halaman Bukti Keaktifan umum ditutup.
 - [x] Halaman publik, Awardee, dan Verifikator membaca event dari PocketBase.
+- [x] Tanggal opsional kosong dari PocketBase dinormalisasi menjadi `null` agar respons 200 selalu dapat dibentuk menjadi entity frontend.
 
 ## Alur
 
