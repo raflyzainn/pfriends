@@ -52,6 +52,7 @@
 	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast } from '$lib/stores/toast.svelte.js';
+	import { activitySubmissions, SubmissionStatus } from '$lib/stores/activity-submissions.svelte.js';
 
 	let { children } = $props();
 
@@ -77,7 +78,7 @@
 	 * @returns {Promise<void>}
 	 */
 	async function siapkanZona() {
-		await Promise.all([catalog.load(), gamification.refresh()]);
+		await Promise.all([catalog.load(), gamification.refresh(), activitySubmissions.load({ mine: true })]);
 		siap = true;
 	}
 
@@ -117,7 +118,8 @@
 	const navZona = $derived(
 		withBadges(navForZone(Zone.AWARDEE), {
 			unreadBroadcasts: kabarBelumDiklaim,
-			myStoriesNeedingRevision: naskahPerluRevisi
+			myStoriesNeedingRevision: naskahPerluRevisi,
+			activityEvidenceRevision: activitySubmissions.items.filter((item) => item.status === SubmissionStatus.NEEDS_REVISION).length
 		})
 	);
 

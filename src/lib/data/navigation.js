@@ -145,6 +145,13 @@ const NAV_AWARDEE = Object.freeze([
 		iconPath: ICONS.megaphone,
 		badgeKey: 'unreadBroadcasts'
 	}),
+	Object.freeze({
+		id: 'activity-evidence',
+		label: 'Bukti Keaktifan',
+		href: '/awardee/bukti-keaktifan',
+		iconPath: ICONS.upload,
+		badgeKey: 'activityEvidenceRevision'
+	}),
 	// Label "Jejaring" menunjuk ke `/awardee/direktori`. Routenya sengaja TIDAK ikut
 	// diganti nama, mengikuti keputusan yang sama pada butir "Blog" → `/cerita`:
 	// mengganti route hanya demi kecocokan label akan menyentuh tautan silang di
@@ -187,6 +194,14 @@ const NAV_VERIFIER = Object.freeze([
 		iconPath: ICONS.calendar,
 		primary: true,
 		badgeKey: 'eventQueue'
+	}),
+	Object.freeze({
+		id: 'activity-evidence',
+		label: 'Bukti Keaktifan',
+		href: '/verifikator/bukti-keaktifan',
+		iconPath: ICONS.upload,
+		primary: true,
+		badgeKey: 'activityEvidenceQueue'
 	})
 ]);
 

@@ -46,6 +46,7 @@
 	import { editorial } from '$lib/stores/editorial.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast } from '$lib/stores/toast.svelte.js';
+	import { activitySubmissions } from '$lib/stores/activity-submissions.svelte.js';
 
 	let { children } = $props();
 
@@ -65,13 +66,15 @@
 		sudahDisiapkan = true;
 		void catalog.load();
 		void editorial.load();
+		void activitySubmissions.load();
 	});
 
 	/** Ketiga tujuan zona verifikator, sudah bertanda lencana antrean. */
 	const navZona = $derived(
 		withBadges(navForZone(Zone.VERIFIER), {
 			storyQueue: editorial.storyQueue.length,
-			eventQueue: editorial.eventQueue.length
+			eventQueue: editorial.eventQueue.length,
+			activityEvidenceQueue: activitySubmissions.queueCount
 		})
 	);
 

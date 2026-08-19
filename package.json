@@ -8,6 +8,8 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
+		"pb:serve": "pocketbase\\pocketbase.exe serve --dir=pocketbase\\pb_data --migrationsDir=pocketbase\\pb_migrations --hooksDir=pocketbase\\pb_hooks",
+		"pb:seed": "node scripts/pocketbase/seed-demo.mjs",
 		"prepare": "svelte-kit sync || echo ''",
 		"verify:compile": "node scripts/verify/compile-all.mjs",
 		"verify:domain": "node scripts/verify/domain-test.mjs",
@@ -17,6 +19,7 @@
 		"verify": "npm run verify:compile && npm run verify:domain && npm run verify:seed && npm run verify:purity && npm run build",
 		"verify:e2e": "node scripts/verify/e2e-routes.mjs",
 		"verify:gamification": "node scripts/verify/e2e-gamification.mjs",
+		"verify:pocketbase": "node scripts/verify/pocketbase-test.mjs",
 		"verify:browser": "npm run verify:e2e && npm run verify:gamification",
 		"screenshot": "node scripts/verify/screenshot.mjs"
 	},
@@ -33,6 +36,7 @@
 	},
 	"dependencies": {
 		"dexie": "^4.3.0",
-		"echarts": "^6.0.0"
+		"echarts": "^6.0.0",
+		"pocketbase": "0.27.3"
 	}
 }

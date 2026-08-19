@@ -41,9 +41,10 @@ import { browser } from '$app/environment';
 import { UserRole, peranPengguna } from '$lib/domain/constants/roles.js';
 import { UserAccount } from '$lib/domain/entities/UserAccount.js';
 import { AccessPolicy } from '$lib/domain/policies/AccessPolicy.js';
-import { AuthService, AUTH_FAILURE_MESSAGE } from '$lib/domain/services/AuthService.js';
+import { AuthService } from '$lib/domain/services/AuthService.js';
 import { accountRepository, awardeeRepository } from '$lib/infrastructure/repositories/index.js';
 import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
+import { getPocketBase } from '$lib/infrastructure/pocketbase/client.js';
 
 /** Kunci penyimpanan sesi di localStorage. */
 const KUNCI_SESI = 'pfriends_session';
@@ -241,13 +242,13 @@ class SessionStore {
 		this.error = null;
 		try {
 			await bootstrapDatabase();
-			const hasil = await this.#authService().login(email, password);
-			if (!hasil.ok) {
-				const pesan = AUTH_FAILURE_MESSAGE[hasil.reason] ?? PESAN_GALAT_TAK_TERDUGA;
-				this.error = pesan;
-				return { success: false, error: pesan };
-			}
-			this.#terapkan(hasil.account, hasil.awardee);
+			const pb = getPocketBase();
+			if (!pb) throw new Error('PocketBase tidak tersedia.');
+			const hasil = await pb.collection('users').authWithPassword(email, password);
+			const akun = await accountRepository.getById(hasil.record.legacyAccountId);
+			if (!akun || !akun.isActive || akun.role !== hasil.record.role) throw new Error('Akun demo tidak sinkron dengan PocketBase.');
+			const awardee = await this.#authService().awardeeOf(akun);
+			this.#terapkan(akun, awardee);
 			return { success: true, error: '' };
 		} catch {
 			// Kegagalan penyimpanan peramban (mode privat, kuota, IndexedDB diblokir)
@@ -271,6 +272,7 @@ class SessionStore {
 	 * @returns {void}
 	 */
 	logout() {
+		getPocketBase()?.authStore.clear();
 		this.role = null;
 		this.account = null;
 		this.awardee = null;
@@ -366,7 +368,10 @@ class SessionStore {
 		this.loading = true;
 		try {
 			await bootstrapDatabase();
-			const akun = this.#accountId ? await accountRepository.getById(this.#accountId) : null;
+			const pb = getPocketBase();
+			if (!pb?.authStore.isValid) { this.logout(); return; }
+			const auth = await pb.collection('users').authRefresh();
+			const akun = await accountRepository.getById(auth.record.legacyAccountId);
 			if (!akun || !akun.isActive) {
 				this.logout();
 				return;

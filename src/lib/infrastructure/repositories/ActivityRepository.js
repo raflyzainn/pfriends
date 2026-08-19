@@ -18,6 +18,7 @@
 import { ActivityStatus, PointActivity } from '$lib/domain/entities/PointActivity.js';
 import { TABLE } from '../db.js';
 import { DexieRepository } from './DexieRepository.js';
+import { verifiedActivityRepository } from '../pocketbase/VerifiedActivityRepository.js';
 
 export class ActivityRepository extends DexieRepository {
 	constructor() {
@@ -26,6 +27,16 @@ export class ActivityRepository extends DexieRepository {
 			entity: PointActivity,
 			indexedFields: ['awardeeId', 'activityType', 'status']
 		});
+	}
+
+	async getAll() {
+		const [local, remote] = await Promise.all([super.getAll(), verifiedActivityRepository.getAll()]);
+		return [...local, ...remote];
+	}
+
+	async query(criteria = {}) {
+		const [local, remote] = await Promise.all([super.query(criteria), verifiedActivityRepository.query(criteria)]);
+		return [...local, ...remote];
 	}
 
 	/**

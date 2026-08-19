@@ -27,8 +27,15 @@ Di mesin lain (mis. Windows), pasang Node dari <https://nodejs.org> lalu:
 
 ```bash
 npm install
+npm run pb:serve     # terminal 1: PocketBase pada http://127.0.0.1:8090
+npm run pb:seed      # sekali setelah superuser dibuat dan .env diisi
 npm run dev          # buka http://localhost:5173
 ```
+
+Fitur **Bukti Keaktifan** memakai PocketBase. Unduh PocketBase v0.39.9 untuk Windows ke
+`pocketbase/pocketbase.exe`, salin `.env.example` menjadi `.env`, lalu isi kredensial
+superuser hanya untuk menjalankan seed. `PB_SUPERUSER_*` tidak pernah masuk bundle browser.
+Panduan lengkap ada di `docs/15-POCKETBASE-BUKTI-KEAKTIFAN.md`.
 
 ### Perintah
 
@@ -36,6 +43,8 @@ npm run dev          # buka http://localhost:5173
 npm run dev                  # server pengembangan
 npm run build                # build produksi statis ke folder build/
 npm run preview              # pratinjau hasil build
+npm run pb:serve             # backend PocketBase lokal
+npm run pb:seed              # seed 63 akun demo secara idempoten
 
 npm run verify               # GERBANG UTAMA: compile + domain + seed + purity + build
 npm run verify:compile       # kompilasi seluruh .svelte dengan compiler Svelte 5
@@ -67,8 +76,9 @@ Peran **melekat pada akun**, bukan dipilih dari daftar.
 Sejak revisi 4 Agustus 2026, **masuk cukup dengan mengklik kartu pengguna** di `/masuk` — tidak
 ada kolom sandi yang perlu diisi. Ini keringanan yang disengaja untuk tahap mockup: peragaan di
 ruang rapat sering harus berpindah peran beberapa kali dalam semenit, dan mengetik surel panjang
-setiap kali memakan waktu peragaan itu sendiri. Kata sandi demo tetap dipakai di balik layar
-lewat `AuthService`, sehingga alur sesi yang diuji tetap alur yang sesungguhnya.
+setiap kali memakan waktu peragaan itu sendiri. Kata sandi demo tetap dipakai di balik layar dan
+diverifikasi oleh PocketBase Auth. Setelah autentikasi berhasil, profil tampilan lama dimuat dari
+IndexedDB melalui identitas penghubung.
 
 | Peran | Surel | Kewenangan |
 |---|---|---|
@@ -359,17 +369,12 @@ Yang sudah terbukti — bukan diklaim:
 
 Ditulis di sini supaya tidak perlu ditanyakan saat presentasi.
 
-- **Ini mockup — tidak ada backend.** Seluruh data tinggal di IndexedDB (Dexie) pada peramban
-  masing-masing pengguna. Menghapus data situs mengembalikan seed awal. Dua peramban berbeda tidak
-  melihat perubahan satu sama lain.
-- **Autentikasi bersifat tiruan.** Kata sandi diverifikasi di klien dengan hash non-kriptografis
-  (FNV-1a bergaram). Siapa pun yang membuka DevTools dapat melewatinya. Ia dipakai karena seed harus
-  sinkron agar dapat berjalan di `node` polos untuk skrip verifikasi, sedangkan `crypto.subtle`
-  asinkron dan hanya ada di peramban. Peringatan lengkapnya ada di kepala
-  `src/lib/domain/value-objects/PasswordHash.js`. Saat backend nyata dipasang, verifikasi pindah
-  **seluruhnya** ke server dengan Argon2id dan kelas itu dihapus bersama seluruh pemanggilnya.
-- **Route guard adalah pengalaman pengguna, bukan keamanan.** Tanpa server tidak ada otorisasi yang
-  tidak dapat dilewati. `ZoneGuard` mencegah kekeliruan, bukan penyerang.
+- **Migrasi backend masih bertahap.** Autentikasi, bukti keaktifan, riwayat review, dan poin hasil
+  verifikasi sudah berada di PocketBase. Modul mockup lama seperti cerita dan kegiatan masih memakai
+  IndexedDB (Dexie), sehingga perubahan modul tersebut belum tersinkron antarperamban.
+- **Keamanan fitur baru ditegakkan di PocketBase.** Collection rules dan hook server membatasi
+  kepemilikan submission serta keputusan verifikator. `ZoneGuard` di antarmuka tetap hanya lapisan
+  pengalaman pengguna; data backend tidak mengandalkannya sebagai otorisasi.
 - **Nama, cerita, dan riwayat kontribusi adalah data sintetis** yang dibangkitkan deterministik
   untuk keperluan demo — bukan data penerima manfaat sungguhan. 60 awardee, 29 cerita, 20 kegiatan,
   639 entri aktivitas.
