@@ -98,7 +98,7 @@ Audit ini berdasarkan migration, hooks, adapter/repository, dan store yang dipak
 | Gerakan dan laporan dampak | **Belum backend** | Dexie `movements` | partisipasi, laporan, evidence, validasi ESG/SDG, dan agregat belum PocketBase |
 | Kabar/broadcast engagement | **Belum backend** | Dexie `broadcasts` | publikasi, read/claim, jadwal, dan engagement belum PocketBase |
 | Badge, tier, streak, leaderboard | **Backend untuk ledger bukti** | `gamification_profiles`, `badges`, `awardee_badges` + endpoint server | sumber poin engagement/konten belum backend dan quest belum tersedia |
-| Reward dan redemption | **Backend** | `coin_accounts`, `coin_transactions`, `rewards`, `redemptions` + endpoint transaksional | pengelolaan katalog Admin dan job expiry belum tersedia |
+| Reward dan redemption | **Backend** | `coin_accounts`, `coin_transactions`, `rewards`, `redemptions` + endpoint transaksional | CRUD katalog tersedia untuk Admin/Verifikator; job expiry belum tersedia |
 | Forum | **Belum persistence** | state lokal halaman | channel, thread/message, moderasi, realtime, dan akses belum dirancang sebagai collection |
 | KPI/Admin dashboard | **Hybrid** | agregat gamifikasi Verifikator dari PocketBase; widget lain Dexie | KPI konten/admin, snapshot, audit, dan ekspor belum ada |
 | Notifikasi | **Belum backend** | toast UI | inbox, email/WhatsApp, realtime, retry, dan preference belum ada |
@@ -453,7 +453,7 @@ Fondasi dan vertical slice pertama sudah selesai, sehingga “sprint pertama” 
 
 1. Pertahankan `verified_point_activities` sebagai sumber kebenaran bukti keaktifan dan perluas menjadi ledger tunggal saat konten/engagement backend tersedia.
 2. Tier, streak, 14 badge, rekonsiliasi, leaderboard, dan agregat gamifikasi Verifikator sudah server-side.
-3. Reward/redemption atomik, koin, saldo, kuota, idempotensi, Pesanan Saya, workflow Admin, dan refund sudah selesai; berikutnya tambahkan pengelolaan katalog dan job expiry bila dibutuhkan.
+3. Reward/redemption atomik, koin, saldo, kuota, idempotensi, Pesanan Saya, workflow Verifikator, pemantauan Admin, CRUD katalog, dan refund sudah selesai; berikutnya tambahkan job expiry bila dibutuhkan.
 4. Migrasikan sumber poin konten/engagement dengan idempotency dan cap server; setelah itu pensiunkan simulator serta repository gamifikasi Dexie yang tersisa.
 
 ### Prioritas 5 — Auth staf dan hardening produksi

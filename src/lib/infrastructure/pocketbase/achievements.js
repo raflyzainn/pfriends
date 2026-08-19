@@ -45,3 +45,19 @@ export async function transitionRedemption(id, status, note = '') {
 		return await client().send(`/api/pfriends/admin/redemptions/${id}/transition`, { method: 'POST', body: { status, note } });
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Status penukaran gagal diperbarui.')); }
 }
+
+export async function staffRewards() {
+	try { return await client().send('/api/pfriends/staff/rewards'); }
+	catch (error) { throw new Error(pocketBaseMessage(error, 'Katalog hadiah gagal dimuat.')); }
+}
+
+export async function saveStaffReward(data, id = '') {
+	try {
+		return await client().send(id ? `/api/pfriends/staff/rewards/${id}` : '/api/pfriends/staff/rewards', { method: id ? 'PATCH' : 'POST', body: data });
+	} catch (error) { throw new Error(pocketBaseMessage(error, 'Hadiah gagal disimpan.')); }
+}
+
+export async function deleteStaffReward(id) {
+	try { return await client().send(`/api/pfriends/staff/rewards/${id}`, { method: 'DELETE' }); }
+	catch (error) { throw new Error(pocketBaseMessage(error, 'Hadiah gagal dihapus.')); }
+}

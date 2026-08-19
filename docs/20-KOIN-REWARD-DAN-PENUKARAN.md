@@ -22,19 +22,20 @@ Saat Awardee menukar hadiah, server memeriksa role, status akun, komunitas, tier
 
 - Reward tanpa persetujuan langsung berstatus `DIKIRIM`.
 - Reward dengan persetujuan dimulai dari `DIAJUKAN`.
-- Admin memproses `DIAJUKAN -> DISETUJUI -> DIKIRIM -> SELESAI`.
-- Admin dapat mengubah `DIAJUKAN -> DITOLAK` dengan alasan minimal lima karakter.
+- Verifikator memproses `DIAJUKAN -> DISETUJUI -> DIKIRIM -> SELESAI`.
+- Verifikator dapat mengubah `DIAJUKAN -> DITOLAK` dengan alasan minimal lima karakter.
 - Penolakan mengembalikan KT tepat satu kali dan membebaskan kuota bulan tersebut.
 
-Awardee melihat perubahan pada tab **Pesanan Saya**. Admin memprosesnya pada bagian **Antrean penukaran hadiah** di `/admin/gamifikasi`, termasuk tautan WhatsApp Awardee.
+Awardee melihat perubahan pada tab **Pesanan Saya**. Verifikator memprosesnya di `/verifikator/gamifikasi`, termasuk tautan WhatsApp Awardee. Admin hanya memantau pesanan di `/admin/gamifikasi`. Admin dan Verifikator sama-sama dapat membuat, membaca, mengubah, serta menghapus/nonaktifkan katalog hadiah.
 
 ## Koleksi dan endpoint
 
 - `coin_accounts`, `coin_transactions`, `rewards`, dan `redemptions` dibuat melalui migration versioned.
 - `GET /api/pfriends/achievements` membaca wallet, katalog, kuota, dan pesanan Awardee.
 - `POST /api/pfriends/redemptions` membuat penukaran atomik.
-- `GET /api/pfriends/admin/redemptions` membaca antrean Admin.
-- `POST /api/pfriends/admin/redemptions/{id}/transition` menjalankan transisi dan audit Admin.
+- `GET /api/pfriends/admin/redemptions` membaca antrean staf.
+- `POST /api/pfriends/admin/redemptions/{id}/transition` menjalankan transisi dan audit Verifikator.
+- `/api/pfriends/staff/rewards` menyediakan CRUD katalog untuk Admin dan Verifikator.
 
 Collection dikunci dari CRUD browser biasa. Data hanya keluar atau berubah melalui endpoint yang memeriksa role.
 

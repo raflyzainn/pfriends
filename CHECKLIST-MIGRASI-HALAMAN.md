@@ -34,6 +34,7 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [~] `/verifikator` — total poin, Awardee terdaftar/aktif, tier, streak, badge, distribusi, tren poin, dan leaderboard dari PocketBase; KPI konten, antrean cerita/kegiatan, laju review, serta rekam kerja masih lokal dan diberi label `DUMMY` per widget.
 - [x] `/verifikator/pendaftaran` — antrean, preview bukti terlindungi, WhatsApp, klarifikasi, approve, reject, dan audit memakai PocketBase.
 - [x] `/verifikator/bukti-keaktifan` dan `/verifikator/bukti-keaktifan/[id]` — antrean, preview bukti, review, revisi, approval, ledger poin, dan audit memakai PocketBase.
+- [x] `/verifikator/gamifikasi` — melihat penukar, memproses seluruh status pesanan, refund, WhatsApp, serta CRUD katalog hadiah memakai PocketBase.
 - [ ] `/verifikator/cerita` dan `/verifikator/cerita/[id]` — workflow kurasi cerita masih Dexie (`DUMMY`).
 - [ ] `/verifikator/kegiatan` — workflow kegiatan masih Dexie (`DUMMY`).
 
@@ -42,7 +43,7 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] `/admin/pendaftaran` — monitoring registrasi memakai PocketBase; Admin tidak mengambil keputusan.
 - [ ] `/admin` — KPI dan agregat operasional umum masih lokal (`DUMMY`).
 - [ ] `/admin/awardee` — manajemen akun/Awardee masih lokal dan memakai akun demo (`DUMMY`).
-- [~] `/admin/gamifikasi` — antrean, keputusan, pengiriman, penyelesaian, refund penukaran, dan endpoint pencabutan poin memakai PocketBase; simulator konfigurasi dan proyeksi masih lokal (`DUMMY`).
+- [~] `/admin/gamifikasi` — pemantauan penukaran dan CRUD katalog hadiah memakai PocketBase; keputusan pesanan tetap milik Verifikator, sedangkan simulator konfigurasi dan proyeksi masih lokal (`DUMMY`).
 
 ## Komponen lintas halaman yang sudah backend
 
@@ -53,7 +54,7 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] Ledger poin dari bukti terverifikasi.
 - [x] Ledger akun demo dimigrasikan idempoten ke PocketBase sehingga poin/tier/badge tidak kembali nol.
 - [x] Tier, streak mingguan, 14 badge, leaderboard global/komunitas/chapter, serta agregat gamifikasi Verifikator.
-- [x] Ledger Koin Tukar, bonus rarity lencana, katalog reward, kuota, redemption idempoten, Pesanan Saya, workflow Admin, dan refund.
+- [x] Ledger Koin Tukar, bonus rarity lencana, katalog reward, kuota, redemption idempoten, Pesanan Saya, workflow Verifikator, pemantauan Admin, CRUD hadiah, dan refund.
 - [ ] SSO OAuth Verifikator/Admin (`TODO`).
 - [ ] Reset password, verifikasi email, MFA, dan notifikasi.
 - [ ] Consent versioned, profil penuh, konten, kegiatan, gerakan, forum, quest, dan KPI umum.

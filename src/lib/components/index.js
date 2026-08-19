@@ -51,6 +51,7 @@ export { default as Tabs } from './Tabs.svelte';
 export { default as RegistrationForm } from './RegistrationForm.svelte';
 export { default as ProofPreview } from './ProofPreview.svelte';
 export { default as RedemptionAdminPanel } from './RedemptionAdminPanel.svelte';
+export { default as RewardManagementPanel } from './RewardManagementPanel.svelte';
 export { default as WhatsappLink } from './WhatsappLink.svelte';
 export { default as DummyBadge } from './DummyBadge.svelte';
 export { default as DummyRouteNotice } from './DummyRouteNotice.svelte';

@@ -51,14 +51,14 @@ routerAdd('POST', '/api/pfriends/redemptions', (e) => {
 }, $apis.requireAuth('users'));
 
 routerAdd('GET', '/api/pfriends/admin/redemptions', (e) => {
-	if (!e.auth || e.auth.getString('role') !== 'ADMIN' || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya Admin aktif yang dapat memproses penukaran.');
+	if (!e.auth || !['ADMIN','VERIFIER'].includes(e.auth.getString('role')) || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya staf aktif yang dapat melihat penukaran.');
 	const status = e.request.url.query().get('status') || ''; const utils = require(`${__hooks}/reward-utils.js`);
 	const rows = status ? e.app.findRecordsByFilter('redemptions', 'status = {:status}', '-requestedAt', 0, 0, { status }) : e.app.findRecordsByFilter('redemptions', 'id != ""', '-requestedAt', 0, 0);
 	return e.json(200, { redemptions: rows.map(utils.redemptionDto) });
 }, $apis.requireAuth('users'));
 
 routerAdd('POST', '/api/pfriends/admin/redemptions/{id}/transition', (e) => {
-	if (!e.auth || e.auth.getString('role') !== 'ADMIN' || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya Admin aktif yang dapat memproses penukaran.');
+	if (!e.auth || e.auth.getString('role') !== 'VERIFIER' || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya Verifikator aktif yang dapat memproses penukaran.');
 	const body = new DynamicModel({ status: '', note: '' }); e.bindBody(body);
 	const target = String(body.status || '').trim(); const note = String(body.note || '').trim();
 	const allowed = { DIAJUKAN: ['DISETUJUI','DITOLAK'], DISETUJUI: ['DIKIRIM'], DIKIRIM: ['SELESAI'] };
@@ -78,4 +78,44 @@ routerAdd('POST', '/api/pfriends/admin/redemptions/{id}/transition', (e) => {
 		tx.save(row); response = row;
 	});
 	return e.json(200, { redemption: require(`${__hooks}/reward-utils.js`).redemptionDto(response) });
+}, $apis.requireAuth('users'));
+
+routerAdd('GET', '/api/pfriends/staff/rewards', (e) => {
+	if (!e.auth || !['ADMIN','VERIFIER'].includes(e.auth.getString('role')) || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya staf aktif yang dapat mengelola hadiah.');
+	const utils = require(`${__hooks}/reward-utils.js`); const month = new Date().toISOString().slice(0, 7);
+	const rows = e.app.findRecordsByFilter('rewards', 'id != ""', 'priceCoins', 0, 0).map((row) => utils.rewardDto(e.app, row, month));
+	return e.json(200, { rewards: rows });
+}, $apis.requireAuth('users'));
+
+routerAdd('POST', '/api/pfriends/staff/rewards', (e) => {
+	if (!e.auth || !['ADMIN','VERIFIER'].includes(e.auth.getString('role')) || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya staf aktif yang dapat mengelola hadiah.');
+	const body = new DynamicModel({ name: '', category: '', description: '', priceCoins: 0, minTierLevel: '', status: '', monthlyQuota: 0, requiresApproval: false, community: '', fulfillmentNote: '', image: '' }); e.bindBody(body);
+	const name = String(body.name || '').trim(); const price = Number(body.priceCoins || 0);
+	if (name.length < 3 || !Number.isInteger(price) || price < 1) throw new BadRequestError('Nama hadiah dan harga Koin Tukar wajib valid.');
+	const categories = ['MERCHANDISE','UPSKILLING','MENTORING','PROFIL','UNDANGAN','SERTIFIKAT','DAMPAK'];
+	const tiers = ['NEWCOMER','ACTIVE_MEMBER','CONTRIBUTOR','FEATURED_CANDIDATE','CHAMPION'];
+	if (!categories.includes(body.category) || !tiers.includes(body.minTierLevel)) throw new BadRequestError('Kategori atau tier minimum tidak valid.');
+	const row = new Record(e.app.findCollectionByNameOrId('rewards')); const now = Date.now().toString(36);
+	row.set('legacyId', `RWD-MANUAL-${now}-${Math.random().toString(36).slice(2, 7)}`);
+	for (const field of ['name','category','description','priceCoins','minTierLevel','status','requiresApproval','community','fulfillmentNote','image']) row.set(field, body[field]);
+	if (Number(body.monthlyQuota) > 0) row.set('monthlyQuota', Number(body.monthlyQuota));
+	e.app.save(row); return e.json(201, { reward: require(`${__hooks}/reward-utils.js`).rewardDto(e.app, row, new Date().toISOString().slice(0, 7)) });
+}, $apis.requireAuth('users'));
+
+routerAdd('PATCH', '/api/pfriends/staff/rewards/{id}', (e) => {
+	if (!e.auth || !['ADMIN','VERIFIER'].includes(e.auth.getString('role')) || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya staf aktif yang dapat mengelola hadiah.');
+	const body = new DynamicModel({ name: '', category: '', description: '', priceCoins: 0, minTierLevel: '', status: '', monthlyQuota: 0, requiresApproval: false, community: '', fulfillmentNote: '', image: '' }); e.bindBody(body);
+	const row = e.app.findRecordById('rewards', e.request.pathValue('id')); const name = String(body.name || '').trim(); const price = Number(body.priceCoins || 0);
+	if (name.length < 3 || !Number.isInteger(price) || price < 1) throw new BadRequestError('Nama hadiah dan harga Koin Tukar wajib valid.');
+	for (const field of ['name','category','description','priceCoins','minTierLevel','status','requiresApproval','community','fulfillmentNote','image']) row.set(field, body[field]);
+	row.set('monthlyQuota', Number(body.monthlyQuota) > 0 ? Number(body.monthlyQuota) : null);
+	e.app.save(row); return e.json(200, { reward: require(`${__hooks}/reward-utils.js`).rewardDto(e.app, row, new Date().toISOString().slice(0, 7)) });
+}, $apis.requireAuth('users'));
+
+routerAdd('DELETE', '/api/pfriends/staff/rewards/{id}', (e) => {
+	if (!e.auth || !['ADMIN','VERIFIER'].includes(e.auth.getString('role')) || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya staf aktif yang dapat mengelola hadiah.');
+	const row = e.app.findRecordById('rewards', e.request.pathValue('id'));
+	const used = e.app.findRecordsByFilter('redemptions', 'reward = {:reward}', '', 1, 0, { reward: row.id }).length > 0;
+	if (used) { row.set('status', 'SEGERA'); e.app.save(row); return e.json(200, { deleted: false, archived: true }); }
+	e.app.delete(row); return e.json(200, { deleted: true, archived: false });
 }, $apis.requireAuth('users'));

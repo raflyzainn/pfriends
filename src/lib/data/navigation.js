@@ -209,6 +209,13 @@ const NAV_VERIFIER = Object.freeze([
 		href: '/verifikator/pendaftaran',
 		iconPath: ICONS.inbox,
 		primary: true
+	}),
+	Object.freeze({
+		id: 'rewards',
+		label: 'Hadiah & Penukaran',
+		href: '/verifikator/gamifikasi',
+		iconPath: ICONS.gift,
+		primary: true
 	})
 ]);
 
