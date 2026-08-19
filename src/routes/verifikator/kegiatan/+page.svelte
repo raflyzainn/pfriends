@@ -64,6 +64,7 @@
 	import { editorial } from '$lib/stores/editorial.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast } from '$lib/stores/toast.svelte.js';
+	import { activitySubmissions, SUBMISSION_STATUS_META } from '$lib/stores/activity-submissions.svelte.js';
 	import { formatRentangTanggal, formatTanggal } from '$lib/utils/format.js';
 	import {
 		DecisionBar,
@@ -142,6 +143,8 @@
 	const jenisKegiatan = Object.values(EVENT_TYPE_META);
 
 	const bolehMengusulkan = $derived(AccessPolicy.canProposeEvent(session.role));
+	const buktiHadir = $derived(activitySubmissions.items.filter((item) => item.activityType === 'SESSION_ATTEND'));
+	const buktiHadirMenunggu = $derived(buktiHadir.filter((item) => item.status === 'SUBMITTED' || item.status === 'IN_REVIEW'));
 
 	/** Event yang punya tempat di kalender, urut waktu mulai. */
 	const agendaKalender = $derived(
@@ -338,20 +341,8 @@
 <PageHeader
 	eyebrow="Ruang kerja verifikator"
 	title="Konfigurasi Calendar of Event"
-	subtitle="Putuskan usulan yang menunggu, tambahkan event baru, dan rapikan detail agenda yang sudah tayang di kalender komunitas."
->
-	{#snippet actions()}
-		<Button
-			variant={formulirTerbuka ? 'secondary' : 'primary'}
-			size="md"
-			iconPath={formulirTerbuka ? ICONS.x : ICONS.plus}
-			disabled={!bolehMengusulkan && !formulirTerbuka}
-			onclick={() => (formulirTerbuka ? tutupFormulir() : bukaTambah())}
-		>
-			{formulirTerbuka ? 'Tutup formulir' : 'Tambah event'}
-		</Button>
-	{/snippet}
-</PageHeader>
+	subtitle="Putuskan usulan Awardee, periksa bukti hadir peserta, dan rapikan detail agenda yang sudah tayang."
+/>
 
 {#if formulirTerbuka}
 	<section class="card mt-5 p-5" aria-labelledby="judul-formulir">
@@ -496,6 +487,25 @@
 			</span>
 		</div>
 	{/each}
+</section>
+
+<section class="mt-8" aria-labelledby="judul-bukti-hadir">
+	<div class="flex flex-wrap items-baseline justify-between gap-2">
+		<div><h2 id="judul-bukti-hadir" class="text-lg font-bold text-heading">Bukti hadir peserta</h2><p class="mt-1 text-sm text-ink-600">Pendaftaran belum menghasilkan poin. Poin baru dibukukan setelah bukti hadir disetujui.</p></div>
+		<StatusBadge label={`${buktiHadirMenunggu.length} menunggu`} color={buktiHadirMenunggu.length ? 'amber' : 'slate'} withDot={buktiHadirMenunggu.length > 0} />
+	</div>
+	{#if buktiHadir.length === 0}
+		<div class="mt-4"><EmptyState title="Belum ada bukti hadir" message="Bukti yang diunggah peserta terdaftar setelah event selesai akan tampil di sini." iconPath={ICONS.upload} size="sm" /></div>
+	{:else}
+		<div class="mt-4 grid gap-3 md:grid-cols-2">
+			{#each buktiHadir as item (item.id)}
+				<div class="card p-4">
+					<div class="flex items-start justify-between gap-3"><div class="min-w-0"><h3 class="truncate font-semibold text-heading">{item.title}</h3><p class="mt-1 text-sm text-ink-600">{item.awardeeName || item.expand?.owner?.displayName || 'Awardee'}</p></div><StatusBadge label={SUBMISSION_STATUS_META[item.status]?.label || item.status} color={SUBMISSION_STATUS_META[item.status]?.color || 'slate'} withDot /></div>
+					<Button class="mt-3" size="sm" variant="secondary" href={`/verifikator/bukti-keaktifan/${item.id}`}>Periksa bukti</Button>
+				</div>
+			{/each}
+		</div>
+	{/if}
 </section>
 
 <section class="mt-8" aria-labelledby="judul-antrean">

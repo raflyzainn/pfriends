@@ -98,6 +98,18 @@ class ActivitySubmissionStore {
 		finally { this.working = false; }
 	}
 
+	async submitAttendance(event, files, existingId = '') {
+		const pb = getPocketBase();
+		if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
+		const data = new FormData();
+		data.set('activityType', 'SESSION_ATTEND'); data.set('event', event.id); data.set('activityDate', event.endsAt.toISOString()); data.set('title', `Kehadiran: ${event.title}`); data.set('description', `Bukti kehadiran pada event ${event.title}.`); data.set('owner', pb.authStore.record.id);
+		for (const file of files || []) data.append('evidenceFiles', file);
+		this.working = true; this.error = '';
+		try { const result = existingId ? await pb.collection('activity_submissions').update(existingId, data) : await pb.collection('activity_submissions').create(data); await this.load({ mine: true }); return result; }
+		catch (error) { this.error = pocketBaseMessage(error); throw error; }
+		finally { this.working = false; }
+	}
+
 	async review(id, decision, note = '') {
 		const pb = getPocketBase();
 		if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');

@@ -240,10 +240,7 @@ class EditorialStore {
 	 * @returns {Promise<EditorialOutcome>}
 	 */
 	async proposeEvent(input) {
-		return this.#jalankan(
-			(service, actor) => service.proposeEvent(input, actor),
-			'Usulan kegiatan terkirim ke verifikator.'
-		);
+		return this.#jalankanEvent(() => eventRepository.propose(input), 'Usulan kegiatan terkirim ke verifikator.');
 	}
 
 	/**
@@ -252,10 +249,7 @@ class EditorialStore {
 	 * @returns {Promise<EditorialOutcome>}
 	 */
 	async approveEvent(event) {
-		return this.#jalankan(
-			(service, actor) => service.approveEvent(event, actor),
-			'Kegiatan terjadwal dan tampil di kalender publik.'
-		);
+		return this.#jalankanEvent(() => eventRepository.decision(event.id, 'APPROVE'), 'Kegiatan terjadwal dan tampil di kalender publik.');
 	}
 
 	/**
@@ -265,10 +259,7 @@ class EditorialStore {
 	 * @returns {Promise<EditorialOutcome>}
 	 */
 	async rejectEvent(event, note) {
-		return this.#jalankan(
-			(service, actor) => service.rejectEvent(event, actor, note),
-			'Usulan ditolak beserta alasannya.'
-		);
+		return this.#jalankanEvent(() => eventRepository.decision(event.id, 'REJECT', note), 'Usulan ditolak beserta alasannya.');
 	}
 
 	/**
@@ -284,10 +275,11 @@ class EditorialStore {
 	 * @returns {Promise<EditorialOutcome>}
 	 */
 	async cancelEvent(event, reason) {
-		return this.#jalankan(
-			(service, actor) => service.cancelEvent(event, actor, reason),
-			'Kegiatan dibatalkan dan ditarik dari kalender publik.'
-		);
+		return this.#jalankanEvent(() => eventRepository.transition(event.id, 'DIBATALKAN', reason), 'Kegiatan dibatalkan dan ditarik dari kalender publik.');
+	}
+
+	async transitionEvent(event, status, note = '') {
+		return this.#jalankanEvent(() => eventRepository.transition(event.id, status, note), 'Status kegiatan diperbarui.');
 	}
 
 	// ------------------------------------------------------------------ consent
@@ -373,6 +365,14 @@ class EditorialStore {
 		}
 	}
 
+	async #jalankanEvent(tindakan, pesanSukses) {
+		if (!session.account) { toast.error(JUDUL_DITOLAK, PESAN_TANPA_SESI); return { ok: false, reason: SEBAB_LUAR_DOMAIN }; }
+		this.working = true;
+		try { await tindakan(); toast.success('Tersimpan', pesanSukses); await Promise.all([this.#muat(), import('./catalog.svelte.js').then(({ catalog }) => catalog.refresh())]); return { ok: true, reason: '' }; }
+		catch (error) { const message = error instanceof Error ? error.message : PESAN_GALAT_PENYIMPANAN; toast.error(JUDUL_DITOLAK, message); return { ok: false, reason: SEBAB_LUAR_DOMAIN }; }
+		finally { this.working = false; }
+	}
+
 	/**
 	 * Pemuatan sesungguhnya. Seluruh sumber dibaca dalam satu gelombang paralel;
 	 * tidak satu pun bergantung pada hasil yang lain.
@@ -389,7 +389,7 @@ class EditorialStore {
 
 			const [storyQueue, eventQueue, pipeline, myStories, myEvents] = await Promise.all([
 				service.storyQueue(),
-				service.eventQueue(),
+				eventRepository.proposalQueue(),
 				service.pipeline(),
 				awardeeId ? storyRepository.byAuthor(awardeeId) : Promise.resolve([]),
 				accountId ? eventRepository.proposedBy(accountId) : Promise.resolve([])

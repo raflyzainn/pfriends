@@ -53,6 +53,7 @@
 	import { ActivityType, poinUntuk } from '$lib/domain/constants/scoring-table.js';
 	import { EVENT_TYPE_META } from '$lib/domain/entities/CommunityEvent.js';
 	import { eventRepository } from '$lib/infrastructure/repositories/index.js';
+	import { activitySubmissions } from '$lib/stores/activity-submissions.svelte.js';
 	import { catalog, CatalogKind } from '$lib/stores/catalog.svelte.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
@@ -88,6 +89,7 @@
 
 	/** @type {string|null} Identitas kegiatan yang tombolnya sedang bekerja. */
 	let idSedangDiproses = $state(null);
+	let fileBukti = $state({});
 
 	const awardee = $derived(session.awardee);
 
@@ -277,9 +279,7 @@
 
 		idSedangDiproses = kegiatan.id;
 		try {
-			await eventRepository.update(kegiatan.id, {
-				registeredAwardeeIds: [...kegiatan.registeredAwardeeIds, awardee.id]
-			});
+			await eventRepository.register(kegiatan.id);
 			await catalog.refresh();
 			toast.push({
 				type: ToastType.SUCCESS,
@@ -304,26 +304,20 @@
 	 */
 	async function hadiri(kegiatan) {
 		if (!pastikanSesi() || !awardee) return;
-		if (kegiatan.hasAttended(awardee.id)) return;
+		const participant = eventRepository.participantFor(kegiatan.id);
+		if (!participant) { toast.push({ type: ToastType.WARNING, title: 'Belum terdaftar', message: 'Hanya peserta yang sudah mendaftar yang dapat mengirim bukti hadir.' }); return; }
+		const files = fileBukti[kegiatan.id] ?? [];
+		if (files.length === 0) { toast.push({ type: ToastType.WARNING, title: 'Bukti belum dipilih', message: 'Pilih minimal satu foto atau PDF bukti kehadiran.' }); return; }
 
 		idSedangDiproses = kegiatan.id;
 		try {
-			const hasil = await gamification.perform(ActivityType.SESSION_ATTEND, {
-				refId: kegiatan.id,
-				evidence: [...kegiatan.evidenceRefs],
-				note: `Kehadiran pada ${kegiatan.title}`
-			});
-			if (!hasil.accepted) return;
-
-			const terdaftar = kegiatan.isRegistered(awardee.id)
-				? [...kegiatan.registeredAwardeeIds]
-				: [...kegiatan.registeredAwardeeIds, awardee.id];
-
-			await eventRepository.update(kegiatan.id, {
-				attendeeAwardeeIds: [...kegiatan.attendeeAwardeeIds, awardee.id],
-				registeredAwardeeIds: terdaftar
-			});
+			const existing = activitySubmissions.items.find((row) => row.event === kegiatan.id);
+			await activitySubmissions.submitAttendance(kegiatan, files, existing?.status === 'NEEDS_REVISION' ? existing.id : '');
+			fileBukti[kegiatan.id] = [];
 			await catalog.refresh();
+			toast.push({ type: ToastType.SUCCESS, title: 'Bukti hadir terkirim', message: `${POIN_HADIR} poin diberikan setelah bukti disetujui Verifikator.` });
+		} catch (error) {
+			toast.push({ type: ToastType.ERROR, title: 'Bukti gagal dikirim', message: error?.response?.message || error?.message || 'PocketBase tidak dapat memproses bukti hadir.' });
 		} finally {
 			idSedangDiproses = null;
 		}
@@ -537,6 +531,8 @@
 		{#each lampau as kegiatan (kegiatan.id)}
 			{@const sudahHadir = awardee ? kegiatan.hasAttended(awardee.id) : false}
 			{@const tanggal = bagianTanggal(kegiatan.startsAt)}
+			{@const participant = eventRepository.participantFor(kegiatan.id)}
+			{@const attendanceSubmission = activitySubmissions.items.find((row) => row.event === kegiatan.id)}
 			<Card padding="md">
 				<div class="flex items-start gap-4">
 					{#if tanggal}
@@ -616,15 +612,17 @@
 						<StatusBadge label="Kegiatan dibatalkan" color="slate" />
 					{:else if sudahHadir}
 						<StatusBadge label="Kehadiran tercatat" color="green" withDot iconPath={ICONS.check} />
+					{:else if !participant}
+						<StatusBadge label="Tidak terdaftar" color="slate" />
 					{:else}
-						<Button
-							size="sm"
-							loading={idSedangDiproses === kegiatan.id}
-							disabled={idSedangDiproses !== null || (kuotaHadir?.exhausted ?? false)}
-							onclick={() => hadiri(kegiatan)}
-						>
-							Hadiri
-						</Button>
+						<div class="flex min-w-0 flex-col items-end gap-2">
+							{#if attendanceSubmission && attendanceSubmission.status !== 'NEEDS_REVISION'}
+								<StatusBadge label={attendanceSubmission.status === 'APPROVED' ? 'Bukti disetujui' : 'Bukti sedang diperiksa'} color={attendanceSubmission.status === 'APPROVED' ? 'green' : 'blue'} withDot />
+							{:else}
+								<input type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" class="max-w-64 text-xs" onchange={(e) => (fileBukti[kegiatan.id] = [...e.currentTarget.files])} />
+								<Button size="sm" loading={idSedangDiproses === kegiatan.id} disabled={idSedangDiproses !== null || (fileBukti[kegiatan.id]?.length ?? 0) === 0} onclick={() => hadiri(kegiatan)}>{attendanceSubmission ? 'Kirim ulang bukti' : 'Upload bukti hadir'}</Button>
+							{/if}
+						</div>
 					{/if}
 				</div>
 			</Card>

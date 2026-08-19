@@ -6,7 +6,7 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 
 - [ ] `/` — landing, sorotan, angka, dan konten masih berasal dari katalog/seed lokal (`DUMMY`).
 - [ ] `/komunitas` — katalog komunitas masih lokal (`DUMMY`).
-- [ ] `/kalender` dan `/kalender/[id]` — kegiatan publik masih lokal (`DUMMY`).
+- [x] `/kalender` dan `/kalender/[id]` — event yang disetujui dibaca dari PocketBase; usulan mentah tidak tampil publik.
 - [ ] `/gerakan` — gerakan publik masih lokal (`DUMMY`).
 - [ ] `/cerita` dan `/cerita/[slug]` — cerita publik masih lokal (`DUMMY`).
 - [ ] `/metode-pengukuran` — angka dampak masih store lokal (`DUMMY`).
@@ -17,26 +17,26 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 
 ## Awardee
 
-- [~] `/awardee` — poin, tier, streak, dan badge dari PocketBase; kabar, kegiatan, cerita, serta ringkasan komunitas masih lokal (`DUMMY`).
+- [~] `/awardee` — poin, tier, streak, badge, dan kegiatan dari PocketBase; kabar, cerita, serta ringkasan komunitas masih lokal (`DUMMY`).
 - [x] `/awardee/bukti-keaktifan` dan `/awardee/bukti-keaktifan/[id]` — pengajuan, file terlindungi, status, revisi, dan riwayat memakai PocketBase.
 - [~] `/awardee/aksi` — riwayat poin memakai ledger PocketBase; katalog aksi ringan dan interaksi langsung belum backend (`DUMMY`).
 - [x] `/awardee/penghargaan` atau Pencapaian — poin, tier, streak, badge, saldo Koin Tukar, katalog reward, kuota, penukaran, dan Pesanan Saya memakai PocketBase. Quest belum ditampilkan sebagai data operasional pada halaman ini.
 - [~] `/awardee/profil` — profil hasil approval dan gamifikasi terbaca dari PocketBase; edit profil umum, consent versioned, statistik konten, dan etalase masih hybrid/lokal (`DUMMY`).
 - [x] `/awardee/direktori` atau Jejaring — profil Awardee aktif, pencarian, filter, statistik, pagination, dan gamifikasi ringkas memakai endpoint PocketBase tersanitasi.
 - [ ] `/awardee/kabar` dan `/awardee/kabar/[id]` — broadcast, status baca, share, dan CTA masih lokal (`DUMMY`).
-- [ ] `/awardee/kalender` — kegiatan, pendaftaran, kapasitas, dan attendance masih lokal (`DUMMY`).
+- [x] `/awardee/kalender` — usulan, status keputusan, agenda, pendaftaran, kapasitas, bukti hadir, revisi, dan poin memakai PocketBase.
 - [ ] `/awardee/gerakan` — partisipasi serta laporan dampak masih lokal (`DUMMY`).
 - [ ] `/awardee/cerita` dan `/awardee/cerita/tulis` — draft, submit, kurasi, dan publikasi masih lokal (`DUMMY`).
 - [ ] `/awardee/forum` — state halaman belum mempunyai persistence backend (`DUMMY`).
 
 ## Verifikator
 
-- [~] `/verifikator` — total poin, Awardee terdaftar/aktif, tier, streak, badge, distribusi, tren poin, dan leaderboard dari PocketBase; KPI konten, antrean cerita/kegiatan, laju review, serta rekam kerja masih lokal dan diberi label `DUMMY` per widget.
+- [~] `/verifikator` — total poin, Awardee, tier, streak, badge, leaderboard, dan antrean kegiatan dari PocketBase; KPI konten, antrean cerita, laju review, serta rekam kerja lain masih lokal dan diberi label `DUMMY` per widget.
 - [x] `/verifikator/pendaftaran` — antrean, preview bukti terlindungi, WhatsApp, klarifikasi, approve, reject, dan audit memakai PocketBase.
 - [x] `/verifikator/bukti-keaktifan` dan `/verifikator/bukti-keaktifan/[id]` — antrean, preview bukti, review, revisi, approval, ledger poin, dan audit memakai PocketBase.
 - [x] `/verifikator/gamifikasi` — melihat penukar, memproses seluruh status pesanan, refund, WhatsApp, serta CRUD katalog hadiah memakai PocketBase.
 - [ ] `/verifikator/cerita` dan `/verifikator/cerita/[id]` — workflow kurasi cerita masih Dexie (`DUMMY`).
-- [ ] `/verifikator/kegiatan` — workflow kegiatan masih Dexie (`DUMMY`).
+- [x] `/verifikator/kegiatan` — keputusan usulan, lifecycle agenda, penyuntingan, peserta, dan antrean bukti hadir memakai PocketBase.
 
 ## Admin
 
@@ -57,9 +57,10 @@ Audit kode per 19 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] Ledger akun demo dimigrasikan idempoten ke PocketBase sehingga poin/tier/badge tidak kembali nol.
 - [x] Tier, streak mingguan, 14 badge, leaderboard global/komunitas/chapter, serta agregat gamifikasi Verifikator.
 - [x] Ledger Koin Tukar, bonus rarity lencana, katalog reward, kuota, redemption idempoten, Pesanan Saya, workflow Verifikator, pemantauan Admin, CRUD hadiah, dan refund.
+- [x] Calendar of Event: usulan Awardee, keputusan Verifikator, kalender publik, registrasi, kuota, bukti hadir protected, revisi, dan ledger 15 PK.
 - [ ] SSO OAuth Verifikator/Admin (`TODO`).
 - [ ] Reset password, verifikasi email, MFA, dan notifikasi.
-- [ ] Consent versioned, profil penuh, konten, kegiatan, gerakan, forum, quest, dan KPI umum.
+- [ ] Consent versioned, profil penuh, konten cerita, gerakan, forum, quest, dan KPI umum. Kegiatan/Calendar of Event sudah backend.
 
 ## Aturan label UI
 

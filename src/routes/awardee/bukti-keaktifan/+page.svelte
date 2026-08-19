@@ -4,7 +4,7 @@
 	import { activitySubmissions, SUBMISSION_STATUS_META, SubmissionStatus } from '$lib/stores/activity-submissions.svelte.js';
 	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
 
-	const TYPES = SCORING_TABLE.filter((rule) => rule.needsEvidence);
+	const TYPES = SCORING_TABLE.filter((rule) => rule.needsEvidence && rule.type !== 'SESSION_ATTEND');
 	let activityType = $state(TYPES[0]?.type ?? 'SHARE_PUBLIC');
 	let activityDate = $state(new Date().toISOString().slice(0, 10));
 	let title = $state(''); let description = $state(''); let externalUrl = $state('');
@@ -62,7 +62,7 @@
 					<div class="flex items-start justify-between gap-3"><div><p class="text-xs text-ink-500">{String(item.activityDate).slice(0,10)}</p><h3 class="mt-1 font-semibold text-heading">{item.title}</h3><p class="mt-1 text-sm text-ink-600">{TYPES.find((rule) => rule.type === item.activityType)?.label}</p></div><StatusBadge label={SUBMISSION_STATUS_META[item.status]?.label} color={SUBMISSION_STATUS_META[item.status]?.color} withDot /></div>
 					{#if item.reviewNote}<p class="mt-3 rounded-lg bg-ink-50 p-3 text-sm text-ink-700"><strong>Catatan Verifikator:</strong> {item.reviewNote}</p>{/if}
 					{#if item.status === SubmissionStatus.APPROVED}<p class="mt-3 text-sm font-semibold text-success">+{item.awardedPoints} poin dibukukan</p>{/if}
-					<div class="mt-3 flex flex-wrap gap-2"><Button size="sm" variant="secondary" href={`/awardee/bukti-keaktifan/${item.id}`}>Lihat detail & status</Button>{#if item.status === SubmissionStatus.NEEDS_REVISION}<Button size="sm" variant="outline" onclick={() => edit(item)}>Perbaiki bukti</Button>{/if}</div>
+					<div class="mt-3 flex flex-wrap gap-2"><Button size="sm" variant="secondary" href={`/awardee/bukti-keaktifan/${item.id}`}>Lihat detail & status</Button>{#if item.activityType === 'SESSION_ATTEND'}<Button size="sm" variant="outline" href="/awardee/kalender">Buka Calendar of Event</Button>{:else if item.status === SubmissionStatus.NEEDS_REVISION}<Button size="sm" variant="outline" onclick={() => edit(item)}>Perbaiki bukti</Button>{/if}</div>
 				</Card>
 			{/each}</div>
 		{/if}

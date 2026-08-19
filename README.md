@@ -137,6 +137,8 @@ Navbar hanya memuat tiga: **Beranda**, **Blog**, **Calendar of Event**.
 | `/cerita/[slug]` | — | Satu tulisan terpublikasi |
 | `/kalender` | ✓ Calendar of Event | Kalender komunitas |
 | `/kalender/[id]` | — | Detail kegiatan + unduh `.ics` |
+
+Calendar of Event memakai PocketBase dan sengaja tidak memiliki data event dari seeder. Awardee mengusulkan event, Verifikator menyetujui, lalu event tampil publik. Registrasi tidak berpoin; 15 poin kehadiran baru dibukukan setelah peserta mengunggah bukti dan Verifikator menyetujuinya. Lihat `docs/21-CALENDAR-OF-EVENT-POCKETBASE.md`.
 | `/masuk` | — | Login email/password; kartu satu klik hanya pada mode demo lokal |
 | `/daftar` | — | Registrasi Awardee dengan data diri dan bukti protected |
 | `/pendaftaran/status` | — | Status terbatas dan pengiriman klarifikasi pendaftar |

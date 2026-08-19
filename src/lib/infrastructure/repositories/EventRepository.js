@@ -18,17 +18,29 @@
  */
 
 import { CommunityEvent, EventStatus } from '$lib/domain/entities/CommunityEvent.js';
-import { TABLE } from '../db.js';
-import { DexieRepository } from './DexieRepository.js';
+import { getPocketBase, pocketBaseMessage } from '../pocketbase/client.js';
 
-export class EventRepository extends DexieRepository {
-	constructor() {
-		super({
-			tableName: TABLE.EVENTS,
-			entity: CommunityEvent,
-			indexedFields: ['slug', 'type', 'status', 'chapterId', 'proposedBy']
-		});
+export class EventRepository {
+	#rows = [];
+
+	#entity(row) {
+		const myId = row.myParticipant?.awardeeId ?? '';
+		const registered = Array.from({ length: Math.max(0, row.registeredCount || 0) }, (_, index) => index === 0 && myId ? myId : `participant-${row.id}-${index}`);
+		const attended = Array.from({ length: Math.max(0, row.attendeeCount || 0) }, (_, index) => row.myParticipant?.attendanceStatus === 'APPROVED' && index === 0 && myId ? myId : `attendee-${row.id}-${index}`);
+		return CommunityEvent.from({ ...row, proposedByRole: 'AWARDEE', registeredAwardeeIds: registered, attendeeAwardeeIds: attended, evidenceRefs: [] });
 	}
+
+	async getAll() {
+		const pb = getPocketBase();
+		if (!pb) return [];
+		const response = await pb.send('/api/pfriends/events');
+		this.#rows = response.items ?? [];
+		return this.#rows.map((row) => this.#entity(row));
+	}
+
+	async getById(id) { return (await this.getAll()).find((event) => event.id === id) ?? null; }
+	participantFor(id) { return this.#rows.find((row) => row.id === id)?.myParticipant ?? null; }
+	async query(criteria = {}) { return (await this.getAll()).filter((row) => Object.entries(criteria).every(([key, value]) => value === undefined || row[key] === value)); }
 
 	/**
 	 * Kegiatan berdasarkan slug — jalur baca halaman `/kalender/[slug]`.
@@ -128,6 +140,38 @@ export class EventRepository extends DexieRepository {
 	 */
 	async completed() {
 		return this.query({ status: EventStatus.SELESAI });
+	}
+
+	async propose(event) {
+		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
+		try { return await pb.send('/api/pfriends/events', { method: 'POST', body: CommunityEvent.from(event).toJSON() }); }
+		catch (error) { throw new Error(pocketBaseMessage(error)); }
+	}
+
+	async decision(id, decision, note = '') {
+		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
+		try { return await pb.send(`/api/pfriends/events/${id}/decision`, { method: 'POST', body: { decision, note } }); }
+		catch (error) { throw new Error(pocketBaseMessage(error)); }
+	}
+
+	async transition(id, status, note = '') {
+		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
+		try { return await pb.send(`/api/pfriends/events/${id}/transition`, { method: 'POST', body: { status, note } }); }
+		catch (error) { throw new Error(pocketBaseMessage(error)); }
+	}
+
+	async register(id) {
+		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
+		try { return await pb.send(`/api/pfriends/events/${id}/register`, { method: 'POST' }); }
+		catch (error) { throw new Error(pocketBaseMessage(error)); }
+	}
+
+	async update(id, changes) {
+		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
+		const current = await this.getById(id); if (!current) throw new Error('Event tidak ditemukan.');
+		const body = current.withChanges(changes).toJSON();
+		try { return await pb.send(`/api/pfriends/events/${id}`, { method: 'PATCH', body }); }
+		catch (error) { throw new Error(pocketBaseMessage(error)); }
 	}
 }
 

@@ -247,13 +247,13 @@ export const EVENT_DECISIONS = Object.freeze({
 		to: EventStatus.BERLANGSUNG,
 		label: 'Tandai sedang berlangsung',
 		description: 'Menandai agenda yang sudah dimulai.',
-		alasanTidakTersedia: BELUM_TERSEDIA_KEGIATAN
+		jalankan: (event) => editorial.transitionEvent(event, EventStatus.BERLANGSUNG)
 	}),
 	[EventStatus.SELESAI]: keputusan({
 		to: EventStatus.SELESAI,
 		label: 'Tandai selesai',
 		description: 'Menutup agenda yang sudah dilaksanakan.',
-		alasanTidakTersedia: BELUM_TERSEDIA_KEGIATAN
+		jalankan: (event) => editorial.transitionEvent(event, EventStatus.SELESAI)
 	}),
 	[EventStatus.DIBATALKAN]: keputusan({
 		to: EventStatus.DIBATALKAN,

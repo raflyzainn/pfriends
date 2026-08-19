@@ -23,7 +23,8 @@
 		"verify:registration": "node scripts/verify/registration-test.mjs",
 		"verify:directory": "node scripts/verify/directory-test.mjs",
 		"verify:rewards": "node scripts/verify/reward-test.mjs",
-		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards",
+		"verify:calendar": "node scripts/verify/calendar-test.mjs",
+		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards && npm run verify:calendar",
 		"verify:browser": "npm run verify:e2e && npm run verify:gamification",
 		"screenshot": "node scripts/verify/screenshot.mjs"
 	},

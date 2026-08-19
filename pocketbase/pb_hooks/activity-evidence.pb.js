@@ -12,6 +12,14 @@ onRecordCreateRequest((e) => {
 	e.record.set('revisionCount', 0);
 	e.record.set('reviewer', ''); e.record.set('reviewNote', ''); e.record.set('reviewStartedAt', ''); e.record.set('reviewedAt', ''); e.record.set('awardedPoints', 0);
 	e.record.set('submittedAt', new Date().toISOString());
+	if (e.record.getString('activityType') === 'SESSION_ATTEND') {
+		const eventId = e.record.getString('event');
+		if (!eventId) throw new BadRequestError('Bukti hadir wajib terhubung ke event.');
+		const event = e.app.findRecordById('events', eventId);
+		if (!['TERJADWAL','BERLANGSUNG','SELESAI'].includes(event.getString('status')) || new Date(event.getString('endsAt')) > new Date()) throw new BadRequestError('Bukti hadir baru dapat dikirim setelah event selesai.');
+		const participant = e.app.findFirstRecordByFilter('event_participants', 'event = {:event} && owner = {:owner}', { event: eventId, owner: e.auth.id });
+		e.record.set('eventParticipant', participant.id); e.record.set('activityDate', event.getString('endsAt')); e.record.set('title', `Kehadiran: ${event.getString('title')}`); e.record.set('description', `Bukti kehadiran pada event ${event.getString('title')}.`);
+	} else { e.record.set('event', ''); e.record.set('eventParticipant', ''); }
 	e.next();
 }, 'activity_submissions');
 
@@ -19,17 +27,19 @@ onRecordUpdateRequest((e) => {
 	if (!e.auth || e.auth.id !== e.record.getString('owner') || e.record.original().getString('status') !== 'NEEDS_REVISION') {
 		throw new ForbiddenError('Pengajuan ini tidak dapat diperbarui.');
 	}
-	for (const field of ['owner','awardeeId','awardeeName','activityType','status','revisionCount','reviewer','reviewNote','reviewStartedAt','reviewedAt','awardedPoints']) {
+	for (const field of ['owner','awardeeId','awardeeName','activityType','event','eventParticipant','status','revisionCount','reviewer','reviewNote','reviewStartedAt','reviewedAt','awardedPoints']) {
 		e.record.set(field, e.record.original().get(field));
 	}
 	e.record.set('status', 'SUBMITTED');
 	e.record.set('reviewer', '');
 	e.record.set('reviewStartedAt', '');
-	e.record.set('submittedAt', new Date().toISOString());
+		e.record.set('submittedAt', new Date().toISOString());
+		if (e.record.getString('eventParticipant')) { const participant = e.app.findRecordById('event_participants', e.record.getString('eventParticipant')); participant.set('attendanceStatus', 'SUBMITTED'); e.app.save(participant); }
 	e.next();
 }, 'activity_submissions');
 
 onRecordAfterCreateSuccess((e) => {
+	if (e.record.getString('eventParticipant')) { const participant = e.app.findRecordById('event_participants', e.record.getString('eventParticipant')); participant.set('attendanceStatus', 'SUBMITTED'); e.app.save(participant); }
 	const event = new Record(e.app.findCollectionByNameOrId('submission_status_events'));
 	event.set('submission', e.record.id); event.set('actor', e.record.getString('owner')); event.set('actorName', e.record.getString('awardeeName')); event.set('eventType', 'SUBMITTED'); event.set('toStatus', 'SUBMITTED'); event.set('occurredAt', e.record.getString('submittedAt'));
 	e.app.save(event);
@@ -57,6 +67,7 @@ routerAdd('POST', '/api/pfriends/activity-submissions/{id}/start-review', (e) =>
 		submission.set('reviewer', e.auth.id);
 		submission.set('reviewStartedAt', now);
 		tx.save(submission);
+		if (submission.getString('eventParticipant')) { const participant = tx.findRecordById('event_participants', submission.getString('eventParticipant')); participant.set('attendanceStatus', 'IN_REVIEW'); tx.save(participant); }
 		const event = new Record(tx.findCollectionByNameOrId('submission_status_events'));
 		event.set('submission', submission.id); event.set('actor', e.auth.id); event.set('actorName', e.auth.getString('displayName')); event.set('eventType', 'REVIEW_STARTED'); event.set('fromStatus', 'SUBMITTED'); event.set('toStatus', 'IN_REVIEW'); event.set('occurredAt', now);
 		tx.save(event);
@@ -97,6 +108,7 @@ routerAdd('POST', '/api/pfriends/activity-submissions/{id}/review', (e) => {
 			tx.save(ledger);
 			submission.set('status', 'APPROVED'); submission.set('awardedPoints', points);
 		}
+		if (submission.getString('eventParticipant')) { const participant = tx.findRecordById('event_participants', submission.getString('eventParticipant')); participant.set('attendanceStatus', body.decision === 'APPROVE' ? 'APPROVED' : 'NEEDS_REVISION'); if (body.decision === 'APPROVE') participant.set('attendedAt', now); tx.save(participant); }
 		submission.set('reviewer', e.auth.id); submission.set('reviewNote', String(body.note || '').trim()); submission.set('reviewedAt', now);
 		tx.save(submission);
 		const event = new Record(tx.findCollectionByNameOrId('submission_status_events'));

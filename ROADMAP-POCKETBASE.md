@@ -94,7 +94,7 @@ Audit ini berdasarkan migration, hooks, adapter/repository, dan store yang dipak
 | Akun demo/admin awardee | **Hybrid** | sesi memakai PocketBase; `AccountRepository` masih Dexie | pengelolaan akun, lock/unlock, role, dan audit admin belum backend |
 | Consent profil dan publikasi | **Belum backend** | Dexie `consents`; registrasi hanya menyimpan snapshot consent | grant/revoke/versioning dan dampak takedown belum server-side |
 | Cerita/editorial | **Belum backend** | Dexie `stories` | draft, review, publish, file, slug, audit, dan rule publik belum PocketBase |
-| Kegiatan/kalender/attendance | **Belum backend** | Dexie `events` | proposal, approval, peserta, kapasitas, attendance, dan pembatalan belum PocketBase |
+| Kegiatan/kalender/attendance | **Backend** | `events`, `event_participants`, `activity_submissions`, ledger poin | event sengaja tanpa seed; reminder dan ekspor peserta belum ada |
 | Gerakan dan laporan dampak | **Belum backend** | Dexie `movements` | partisipasi, laporan, evidence, validasi ESG/SDG, dan agregat belum PocketBase |
 | Kabar/broadcast engagement | **Belum backend** | Dexie `broadcasts` | publikasi, read/claim, jadwal, dan engagement belum PocketBase |
 | Badge, tier, streak, leaderboard | **Backend untuk ledger bukti** | `gamification_profiles`, `badges`, `awardee_badges` + endpoint server | sumber poin engagement/konten belum backend dan quest belum tersedia |
@@ -211,7 +211,7 @@ Estimasi berikut memakai satu developer full-time sebagai patokan awal. Sesuaika
 | 2 — Auth/RBAC | **Sebagian besar** | auth/session/RBAC berjalan; reset password, email verification, dan SSO belum |
 | 3 — Referensi/read-only | **Belum** | hampir seluruh katalog publik dan internal masih Dexie |
 | 4 — Profil/consent/upload | **Sebagian** | profil hasil registrasi dan protected evidence tersedia; edit profil/consent umum belum |
-| 5 — Workflow | **Sebagian** | registrasi dan bukti keaktifan sudah server-side; cerita dan kegiatan belum |
+| 5 — Workflow | **Sebagian** | registrasi, bukti keaktifan, kegiatan, peserta, attendance, dan poin hadir sudah server-side; cerita belum |
 | 6 — Gamifikasi/reward | **Sebagian** | ledger bukti, tier, streak, badge, leaderboard, dan agregat Verifikator sudah server-side; koin, reward/redemption, quest, dan sumber poin lain belum |
 | 7 — Migrasi/cutover | **Belum** | seed demo PocketBase baru mencakup akun; belum ada import/rekonsiliasi semua data |
 | 8 — Hardening produksi | **Belum** | belum ada deployment production, observability, rate limit, atau restore drill |
@@ -445,7 +445,7 @@ Fondasi dan vertical slice pertama sudah selesai, sehingga “sprint pertama” 
 ### Prioritas 3 — Workflow cerita dan kegiatan
 
 1. Pindahkan draft/submit/review/publish cerita ke endpoint transaksional dan audit server.
-2. Pindahkan proposal/approval/cancel kegiatan serta peserta dan attendance ke collection terpisah.
+2. ~~Pindahkan proposal/approval/cancel kegiatan serta peserta dan attendance ke collection terpisah.~~ Selesai melalui `events`, `event_participants`, dan bukti hadir terhubung.
 3. Tegakkan self-approval, status transition, checklist sensitivitas, dan SLA di hook—bukan hanya UI.
 4. Simpan cover/dokumentasi sebagai protected/public file sesuai status konten.
 
