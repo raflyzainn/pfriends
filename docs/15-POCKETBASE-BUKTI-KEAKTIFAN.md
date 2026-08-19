@@ -31,13 +31,17 @@ Menyimpan owner, Awardee, jenis aktivitas, tanggal, judul, deskripsi, tautan, ma
 Status yang sah:
 
 ```text
-SUBMITTED -> NEEDS_REVISION -> SUBMITTED
-SUBMITTED -> APPROVED
+SUBMITTED -> IN_REVIEW -> NEEDS_REVISION -> SUBMITTED
+SUBMITTED -> IN_REVIEW -> APPROVED
 ```
 
 ### `submission_reviews`
 
 Riwayat keputusan append-only. Catatan minimal lima karakter wajib untuk `REQUEST_REVISION`.
+
+### `submission_status_events`
+
+Audit trail append-only untuk pengiriman, mulai pemeriksaan, permintaan revisi, kirim ulang, dan approval. Detail desain dan UI tracking dijelaskan di `docs/16-RIWAYAT-DAN-PELACAKAN-BUKTI.md`.
 
 ### `verified_point_activities`
 

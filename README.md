@@ -35,7 +35,8 @@ npm run dev          # buka http://localhost:5173
 Fitur **Bukti Keaktifan** memakai PocketBase. Unduh PocketBase v0.39.9 untuk Windows ke
 `pocketbase/pocketbase.exe`, salin `.env.example` menjadi `.env`, lalu isi kredensial
 superuser hanya untuk menjalankan seed. `PB_SUPERUSER_*` tidak pernah masuk bundle browser.
-Panduan lengkap ada di `docs/15-POCKETBASE-BUKTI-KEAKTIFAN.md`.
+Panduan dasar ada di `docs/15-POCKETBASE-BUKTI-KEAKTIFAN.md`. Pelacakan status Awardee dan
+riwayat keputusan Verifikator dijelaskan di `docs/16-RIWAYAT-DAN-PELACAKAN-BUKTI.md`.
 
 ### Perintah
 
