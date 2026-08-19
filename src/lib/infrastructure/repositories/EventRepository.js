@@ -129,7 +129,12 @@ export class EventRepository {
 	 * @returns {Promise<CommunityEvent[]>}
 	 */
 	async proposedBy(accountId) {
-		const events = await this.query({ proposedBy: accountId });
+		// `session.accountId` mempertahankan id legacy (mis. `USR-001`) untuk
+		// kompatibilitas modul Dexie, sedangkan relasi `events.proposedBy` menyimpan
+		// record id PocketBase. Untuk query kepemilikan backend, id PocketBase dari
+		// auth store selalu menjadi sumber yang benar.
+		const pocketBaseAccountId = getPocketBase()?.authStore?.record?.id || accountId;
+		const events = await this.query({ proposedBy: pocketBaseAccountId });
 		return events.sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
 	}
 

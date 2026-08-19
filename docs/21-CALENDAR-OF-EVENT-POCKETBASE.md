@@ -16,6 +16,7 @@
 - [x] Pengajuan kehadiran bebas dari halaman Bukti Keaktifan umum ditutup.
 - [x] Halaman publik, Awardee, dan Verifikator membaca event dari PocketBase.
 - [x] Tanggal opsional kosong dari PocketBase dinormalisasi menjadi `null` agar respons 200 selalu dapat dibentuk menjadi entity frontend.
+- [x] Tab “Usulan Saya” membandingkan relasi `proposedBy` dengan record ID PocketBase, bukan ID akun legacy.
 
 ## Alur
 
