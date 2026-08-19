@@ -93,7 +93,7 @@ routerAdd('POST', '/api/pfriends/activity-submissions/{id}/review', (e) => {
 			const capped = count >= dailyCap[type];
 			const points = capped ? 0 : score[type];
 			const ledger = new Record(tx.findCollectionByNameOrId('verified_point_activities'));
-			ledger.set('submission', id); ledger.set('awardeeId', awardeeId); ledger.set('activityType', type); ledger.set('points', points); ledger.set('capReason', capped ? 'DAILY_CAP' : ''); ledger.set('occurredAt', submission.getString('activityDate')); ledger.set('awardedAt', now); ledger.set('status', 'AWARDED');
+			ledger.set('submission', id); ledger.set('user', submission.getString('owner')); ledger.set('source', 'EVIDENCE'); ledger.set('awardeeId', awardeeId); ledger.set('activityType', type); ledger.set('points', points); ledger.set('capReason', capped ? 'DAILY_CAP' : ''); ledger.set('occurredAt', submission.getString('activityDate')); ledger.set('awardedAt', now); ledger.set('status', 'AWARDED');
 			tx.save(ledger);
 			submission.set('status', 'APPROVED'); submission.set('awardedPoints', points);
 		}
