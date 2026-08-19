@@ -588,6 +588,27 @@
 		</div>
 	</Card>
 
+	<Card class="mt-4" padding="md">
+		<div class="flex items-start gap-3">
+			<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+				<Icon path={ICONS.info} size={20} />
+			</div>
+			<div class="min-w-0">
+				<h2 class="text-sm font-bold text-heading">Bagaimana Koin Tukar dihitung?</h2>
+				<p class="mt-1 text-sm leading-relaxed text-ink-600">
+					Setiap <strong>1 Poin Kontribusi terverifikasi menghasilkan 1 KT</strong>. Lencana juga memberi
+					bonus sekali saat diraih: Umum 25 KT, Langka 75 KT, Epik 200 KT, dan Legendaris 500 KT.
+				</p>
+				<div class="mt-3 rounded-control bg-ink-50 px-3 py-2.5 text-[13px] font-semibold text-ink-700">
+					Saldo KT = poin terverifikasi + bonus lencana − hadiah yang ditukar + refund
+				</div>
+				<p class="mt-2 text-xs leading-relaxed text-ink-500">
+					Menukar hadiah hanya mengurangi saldo KT. Poin Kontribusi, jenjang, streak, dan lencana tidak ikut berkurang.
+				</p>
+			</div>
+		</div>
+	</Card>
+
 	<div class="mt-5">
 		<FilterChips
 			options={opsiKategori}

@@ -5,6 +5,7 @@ function findOne(app, collection, filter, params) {
 }
 
 function addTransaction(app, awardee, sourceKey, type, amount, referenceId, note, occurredAt) {
+	if (!amount) return;
 	if (findOne(app, 'coin_transactions', 'sourceKey = {:key}', { key: sourceKey })) return;
 	const collection = app.findCollectionByNameOrId('coin_transactions');
 	const row = new Record(collection);

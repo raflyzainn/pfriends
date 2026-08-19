@@ -106,10 +106,13 @@ for (const awardeeData of awardees) {
 	const awardee = recordsByAwardeeId.get(awardeeData.id);
 	if (!awardee) continue;
 	const pointRows = await pb.collection('verified_point_activities').getFullList({ filter: pb.filter('awardeeId = {:id}', { id: awardeeData.id }) });
-	for (const row of pointRows) await upsert('coin_transactions', 'sourceKey = {:key}', { key: `POINT:${row.id}` }, {
+	for (const row of pointRows) {
+		if (!row.points) continue;
+		await upsert('coin_transactions', 'sourceKey = {:key}', { key: `POINT:${row.id}` }, {
 		awardee: awardee.id, user: awardee.user, sourceKey: `POINT:${row.id}`, type: 'POINT_CREDIT',
 		amount: row.points, referenceId: row.id, note: 'Koin dari poin terverifikasi.', occurredAt: row.awardedAt || row.occurredAt
 	});
+	}
 	const badgeRows = await pb.collection('awardee_badges').getFullList({ filter: pb.filter('awardee = {:id} && status = "ACTIVE"', { id: awardee.id }), expand: 'badge' });
 	for (const row of badgeRows) {
 		const badge = row.expand?.badge;
