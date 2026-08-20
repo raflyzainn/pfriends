@@ -175,10 +175,15 @@ class EditorialStore {
 
 	async saveStoryDraft(values, id = '') {
 		if (!session.isAwardee) return { ok: false, reason: SEBAB_LUAR_DOMAIN, story: null };
-		this.working = true;
-		try { const story = id ? await updateStoryDraft(id, values) : await createStoryDraft(values); await this.#muat(); return { ok: true, reason: '', story }; }
+		try {
+			const story = id ? await updateStoryDraft(id, values) : await createStoryDraft(values);
+			const index = this.myStories.findIndex((item) => item.id === story.id);
+			this.myStories = index === -1
+				? [story, ...this.myStories]
+				: this.myStories.map((item) => item.id === story.id ? story : item);
+			return { ok: true, reason: '', story };
+		}
 		catch (error) { this.error = error instanceof Error ? error.message : PESAN_GALAT_PENYIMPANAN; return { ok: false, reason: SEBAB_LUAR_DOMAIN, story: null }; }
-		finally { this.working = false; }
 	}
 
 	/**
@@ -418,7 +423,7 @@ class EditorialStore {
 			this.error =
 				penyebab instanceof Error
 					? penyebab.message
-					: 'Antrean editorial gagal dimuat dari penyimpanan peramban.';
+					: 'Antrean editorial gagal dimuat dari PocketBase.';
 		} finally {
 			this.loading = false;
 		}

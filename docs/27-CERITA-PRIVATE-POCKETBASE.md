@@ -13,6 +13,20 @@ Dokumen ini mencatat implementasi halaman Cerita milik Awardee dan ruang pemerik
 | Poin | Pengiriman pertama membuat satu ledger `STORY_SUBMIT`. Pengiriman ulang tidak membuat ledger baru |
 | Consent | Consent aktif diperiksa ketika mengirim, menyetujui, dan menerbitkan. Pencabutan consent menarik konten publik |
 
+## Penyimpanan draf
+
+Komposer menunggu 1,5 detik setelah perubahan terakhir sebelum menyimpan. Permintaan yang sedang berjalan tidak ditumpuk. Bila penulis kembali mengubah isian ketika penyimpanan berlangsung, satu penyimpanan lanjutan dijalankan setelah permintaan pertama selesai.
+
+Respons backend memperbarui daftar Cerita dalam memori tanpa membaca ulang seluruh antrean. Perubahan internal seperti pengosongan pilihan berkas setelah unggahan berhasil tidak dianggap sebagai ketikan baru dan tidak memicu permintaan berulang.
+
+Status penyimpanan tampil di bagian atas halaman dengan keadaan `Perubahan belum tersimpan`, `Menyimpan`, `Semua perubahan tersimpan`, atau `Gagal menyimpan`. Navigasi di dalam aplikasi menunggu perubahan terakhir tersimpan. Jika penyimpanan gagal, pengguna tetap berada di komposer. Penutupan tab ketika masih ada perubahan memakai peringatan bawaan peramban.
+
+## Pemuatan Verifikator
+
+Layout Verifikator menunggu pemulihan sesi selesai sebelum memuat antrean. Halaman Submission Blog juga menyegarkan antrean setelah sesi Verifikator tersedia. Kegagalan koneksi ditampilkan sebagai galat dengan tombol coba lagi dan tidak disamarkan sebagai antrean kosong.
+
+Halaman Cerita Awardee dan Verifikator tidak lagi menampilkan pemberitahuan data dummy. Penanda tersebut tetap tersedia pada bagian lain yang memang masih memakai penyimpanan lokal.
+
 ## Collection
 
 Migration `1723968820_story_workflow.js` menambahkan pemilik, berkas bukti, calon sampul, waktu simpan draf, dan poin pada `stories`. Migration yang sama membuat `story_reviews`, `story_status_events`, dan `story_public_covers`.

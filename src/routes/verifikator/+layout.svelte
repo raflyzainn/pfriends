@@ -64,15 +64,19 @@
 	 */
 	let sudahDisiapkan = false;
 
+	async function siapkanZona() {
+		await session.hydrate();
+		if (!session.isVerifier) return;
+		await Promise.all([
+			catalog.load(), editorial.load(), activitySubmissions.load(), registration.loadQueue(),
+			workflowBadges.loadMovements(), workflowBadges.loadRedemptions()
+		]);
+	}
+
 	$effect(() => {
 		if (!browser || sudahDisiapkan) return;
 		sudahDisiapkan = true;
-		void catalog.load();
-		void editorial.load();
-		void activitySubmissions.load();
-		void registration.loadQueue();
-		void workflowBadges.loadMovements();
-		void workflowBadges.loadRedemptions();
+		void siapkanZona();
 	});
 
 	/** Ketiga tujuan zona verifikator, sudah bertanda lencana antrean. */

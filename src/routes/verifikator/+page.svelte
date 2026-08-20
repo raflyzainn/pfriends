@@ -336,7 +336,7 @@
 	<div class="mt-4 grid gap-5 sm:grid-cols-2">
 		{#each antrean as kotak (kotak.id)}
 			<div class="card min-w-0 p-5">
-				<div class="mb-2"><DummyBadge title="Antrean cerita dan kegiatan masih memakai Dexie." /></div>
+				{#if kotak.id === 'kegiatan'}<div class="mb-2"><DummyBadge title="Antrean kegiatan masih memakai penyimpanan lokal." /></div>{/if}
 				<div class="flex items-start gap-3">
 					<span
 						class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pertamina-navy-tint text-pertamina-navy"
@@ -401,7 +401,7 @@
 
 <!-- BLOK 5: profil ringkas; menggantikan halaman profil yang dicabut dari navigasi. -->
 <section class="card mt-8 p-5" aria-labelledby="judul-profil">
-	<div class="flex items-center gap-2"><h2 id="judul-profil" class="text-base font-bold text-heading">Profil & rekam kerja Anda</h2><DummyBadge title="Rekam keputusan cerita dan kegiatan masih memakai Dexie." /></div>
+	<div class="flex items-center gap-2"><h2 id="judul-profil" class="text-base font-bold text-heading">Profil & rekam kerja Anda</h2><DummyBadge title="Rekam keputusan kegiatan masih memakai penyimpanan lokal." /></div>
 	<p class="mt-1 text-sm leading-relaxed text-ink-600">
 		Profil melekat pada akun dan perannya, sehingga tidak lagi menjadi tujuan navigasi tersendiri.
 	</p>

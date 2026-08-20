@@ -12,16 +12,17 @@
 		if (path.startsWith('/awardee/penghargaan')) return '';
 		if (path.startsWith('/awardee/kalender')) return '';
 		if (path.startsWith('/awardee/gerakan')) return '';
+		if (path.startsWith('/awardee/cerita')) return '';
 		if (path.startsWith('/verifikator/bukti-keaktifan') || path.startsWith('/verifikator/pendaftaran')) return '';
 		if (path.startsWith('/verifikator/gamifikasi')) return '';
 		if (path.startsWith('/verifikator/gerakan')) return '';
+		if (path.startsWith('/verifikator/cerita')) return '';
 		if (path.startsWith('/admin/pendaftaran')) return '';
 		if (path.startsWith('/admin/broadcast')) return '';
 		if (path.startsWith('/admin/gerakan')) return '';
 		if (path === '/verifikator') return ''; // Ditandai per-widget karena sumbernya campuran.
 		if (path.startsWith('/verifikator/kegiatan')) return '';
 		if (path.startsWith('/verifikator/kabar')) return '';
-		if (path.startsWith('/verifikator/cerita')) return 'Antrean dan keputusan pada halaman ini masih memakai data lokal Dexie.';
 		if (path.startsWith('/admin/gamifikasi')) return '';
 		if (path.startsWith('/admin')) return 'Data KPI dan pengelolaan akun pada halaman ini masih memakai data lokal Dexie.';
 		if (path.startsWith('/awardee')) return 'Konten komunitas pada halaman ini masih memakai seed lokal; poin, tier, streak, badge, dan bukti keaktifan tidak termasuk label ini.';

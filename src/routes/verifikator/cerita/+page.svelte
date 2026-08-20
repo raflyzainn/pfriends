@@ -36,8 +36,9 @@
 	 * @see docs/10-REVISION-SPEC.md: US-R26 antrean tinjauan FIFO, §5.6 SLA
 	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 2, 4, dan 6
 	 */
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { EmptyState, Icon, PageHeader, Tabs, ICONS } from '$lib/components';
+	import { Button, EmptyState, Icon, PageHeader, Tabs, ICONS } from '$lib/components';
 	import { STORY_STATUS_META } from '$lib/domain/constants/community.js';
 	import { AccessPolicy } from '$lib/domain/policies/AccessPolicy.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
@@ -166,6 +167,11 @@
 		const hasil = await terbuka.decision.jalankan(terbuka.story, payload);
 		if (hasil.ok) keputusanTerbuka = null;
 	}
+
+	onMount(async () => {
+		if (!session.ready) await session.hydrate();
+		if (session.isVerifier) await editorial.refresh();
+	});
 </script>
 
 <PageHeader
@@ -198,7 +204,13 @@
 	</div>
 {/if}
 
-{#if editorial.loading && editorial.storyQueue.length === 0}
+{#if editorial.error && editorial.storyQueue.length === 0}
+	<div class="mt-5 rounded-card border border-danger/30 bg-danger-tint/40 p-5" role="alert">
+		<p class="text-sm font-semibold text-heading">Antrean Cerita gagal dimuat</p>
+		<p class="mt-1 text-sm leading-relaxed text-ink-600">{editorial.error}</p>
+		<div class="mt-4"><Button size="sm" variant="secondary" onclick={() => editorial.refresh()}>Coba lagi</Button></div>
+	</div>
+{:else if editorial.loading && editorial.storyQueue.length === 0}
 	<div class="mt-5 space-y-3" aria-busy="true" aria-label="Memuat Submission Blog">
 		{#each ['a', 'b', 'c'] as kunci (kunci)}
 			<div class="skeleton h-28 w-full rounded-card"></div>

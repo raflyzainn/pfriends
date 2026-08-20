@@ -41,8 +41,8 @@
 	 * @see docs/10-REVISION-SPEC.md: §5.2 state machine cerita
 	 */
 
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
+	import { onMount, tick } from 'svelte';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Button, Card, EmptyState, Icon, ICONS, PageHeader, StatusBadge } from '$lib/components';
 	import { STORY_STATUS } from '$lib/domain/constants/community.js';
@@ -143,6 +143,9 @@
 	let statusSimpan = $state('');
 	let timerSimpan;
 	let siapSimpanOtomatis = $state(false);
+	let sidikJariTersimpan = $state('');
+	let janjiSimpan = null;
+	let lewatiNavigasi = false;
 
 	/** @type {boolean} Penulis sudah pernah menekan kirim; galat per field baru ditampilkan sesudahnya. */
 	let sudahDicoba = $state(false);
@@ -323,6 +326,8 @@
 	onMount(async () => {
 		if (!session.ready) await session.hydrate();
 		await editorial.load();
+		await tick();
+		sidikJariTersimpan = sidikJari(snapshotDraf());
 		siapSimpanOtomatis = true;
 	});
 
@@ -349,23 +354,77 @@
 		idDraf = sumber.id;
 	});
 
-	function nilaiDraf() {
-		return { title: formJudul, summary: formRingkasan, body: formIsi, location: formLokasi, activityDate: formTanggal ? new Date(`${formTanggal}T09:00:00`).toISOString() : '', participantCount: Number(formPeserta) || 0, esgTags: [{ pillar: formPilar, sdgGoal: Number(formSdg) }], outcome: { note: formCatatanHasil, metric: formMetrik, value: Number(formNilai) || 0, unit: formSatuan }, evidenceFiles: berkasBukti, coverCandidate: berkasSampul };
+	function snapshotDraf() {
+		return {
+			title: formJudul, summary: formRingkasan, body: formIsi, pillar: formPilar,
+			sdgGoal: formSdg, outcomeNote: formCatatanHasil, metric: formMetrik,
+			metricValue: formNilai, unit: formSatuan, location: formLokasi,
+			activityDate: formTanggal, participantCount: formPeserta,
+			evidenceNames: berkasBukti.map((file) => `${file.name}:${file.size}:${file.lastModified}`),
+			coverName: berkasSampul ? `${berkasSampul.name}:${berkasSampul.size}:${berkasSampul.lastModified}` : '',
+			evidenceStored: formBukti === 'Bukti tersimpan', coverStored: sampulTersedia
+		};
 	}
 
+	function sidikJari(snapshot) { return JSON.stringify(snapshot); }
+
+	function nilaiDraf(snapshot, evidenceFiles = berkasBukti, coverCandidate = berkasSampul) {
+		return { title: snapshot.title, summary: snapshot.summary, body: snapshot.body, location: snapshot.location, activityDate: snapshot.activityDate ? new Date(`${snapshot.activityDate}T09:00:00`).toISOString() : '', participantCount: Number(snapshot.participantCount) || 0, esgTags: [{ pillar: snapshot.pillar, sdgGoal: Number(snapshot.sdgGoal) }], outcome: { note: snapshot.outcomeNote, metric: snapshot.metric, value: Number(snapshot.metricValue) || 0, unit: snapshot.unit }, evidenceFiles, coverCandidate };
+	}
+
+	const perubahanBelumTersimpan = $derived(
+		siapSimpanOtomatis && sidikJari(snapshotDraf()) !== sidikJariTersimpan
+	);
+
 	async function simpanDraf() {
-		if (!siapSimpanOtomatis || sedangMengirim || (!formJudul.trim() && !formIsi.trim())) return true;
+		clearTimeout(timerSimpan);
+		if (janjiSimpan) {
+			const berhasil = await janjiSimpan;
+			return berhasil && perubahanBelumTersimpan ? simpanDraf() : berhasil;
+		}
+		if (!siapSimpanOtomatis || !perubahanBelumTersimpan) return true;
+		if (!formJudul.trim() && !formIsi.trim()) { sidikJariTersimpan = sidikJari(snapshotDraf()); statusSimpan = 'Semua perubahan tersimpan'; return true; }
+
+		const snapshotTerkirim = snapshotDraf();
+		const buktiTerkirim = [...berkasBukti];
+		const sampulTerkirim = berkasSampul;
 		statusSimpan = 'Menyimpan';
-		const hasil = await editorial.saveStoryDraft(nilaiDraf(), idDraf || idNaskahRevisi);
-		if (!hasil.ok || !hasil.story) { statusSimpan = 'Gagal menyimpan'; return false; }
-		idDraf = hasil.story.id; berkasBukti = []; berkasSampul = null; formBukti = hasil.story.evidenceFiles.length ? 'Bukti tersimpan' : ''; sampulTersedia = Boolean(hasil.story.coverCandidate); statusSimpan = 'Tersimpan'; return true;
+		janjiSimpan = (async () => {
+			const hasil = await editorial.saveStoryDraft(nilaiDraf(snapshotTerkirim, buktiTerkirim, sampulTerkirim), idDraf || idNaskahRevisi);
+			if (!hasil.ok || !hasil.story) { statusSimpan = 'Gagal menyimpan'; return false; }
+			idDraf = hasil.story.id;
+			const namaBuktiSekarang = berkasBukti.map((file) => `${file.name}:${file.size}:${file.lastModified}`);
+			if (JSON.stringify(namaBuktiSekarang) === JSON.stringify(snapshotTerkirim.evidenceNames)) berkasBukti = [];
+			if (berkasSampul === sampulTerkirim) berkasSampul = null;
+			formBukti = hasil.story.evidenceFiles.length ? 'Bukti tersimpan' : '';
+			sampulTersedia = Boolean(hasil.story.coverCandidate);
+			const keadaanTersimpan = { ...snapshotTerkirim, evidenceNames: [], coverName: '', evidenceStored: hasil.story.evidenceFiles.length > 0, coverStored: Boolean(hasil.story.coverCandidate) };
+			sidikJariTersimpan = sidikJari(keadaanTersimpan);
+			statusSimpan = sidikJari(snapshotDraf()) === sidikJariTersimpan ? 'Semua perubahan tersimpan' : 'Perubahan belum tersimpan';
+			return true;
+		})();
+		try { return await janjiSimpan; } finally { janjiSimpan = null; }
 	}
 
 	$effect(() => {
-		const jejak = [formJudul, formRingkasan, formIsi, formPilar, formSdg, formCatatanHasil, formMetrik, formNilai, formSatuan, formLokasi, formTanggal, formPeserta, formBukti, berkasSampul, berkasBukti];
-		if (!siapSimpanOtomatis || jejak.length === 0) return;
-		clearTimeout(timerSimpan); timerSimpan = setTimeout(() => void simpanDraf(), 1000);
+		const jejak = sidikJari(snapshotDraf());
+		if (!siapSimpanOtomatis) return;
+		if (jejak === sidikJariTersimpan) { statusSimpan = 'Semua perubahan tersimpan'; return; }
+		statusSimpan = 'Perubahan belum tersimpan';
+		clearTimeout(timerSimpan); timerSimpan = setTimeout(() => void simpanDraf(), 1500);
 		return () => clearTimeout(timerSimpan);
+	});
+
+	beforeNavigate((navigasi) => {
+		if (lewatiNavigasi || !perubahanBelumTersimpan) return;
+		navigasi.cancel();
+		if (navigasi.willUnload || !navigasi.to?.url) return;
+		const tujuan = `${navigasi.to.url.pathname}${navigasi.to.url.search}${navigasi.to.url.hash}`;
+		void (async () => {
+			if (!(await simpanDraf())) return;
+			lewatiNavigasi = true;
+			try { await goto(tujuan); } finally { lewatiNavigasi = false; }
+		})();
 	});
 
 	/**
@@ -449,7 +508,14 @@
 	subtitle={modeRevisi
 		? 'Tindak lanjuti catatan verifikator, lalu kirim ulang tulisanmu ke antrean tinjauan.'
 		: 'Ceritakan satu hal baik yang benar-benar terjadi. Setiap kolom di bawah menopang salah satu syarat bukti ESG Pertamina Foundation.'}
-/>
+>
+	{#snippet actions()}
+		<div class="flex min-h-10 items-center gap-2 rounded-control border border-ink-200 bg-surface px-3 text-xs font-semibold {statusSimpan === 'Gagal menyimpan' ? 'text-danger' : 'text-ink-600'}" aria-live="polite">
+			<Icon path={statusSimpan === 'Semua perubahan tersimpan' ? ICONS.checkCircle : statusSimpan === 'Gagal menyimpan' ? ICONS.warning : ICONS.clock} size={16} />
+			{statusSimpan || 'Semua perubahan tersimpan'}
+		</div>
+	{/snippet}
+</PageHeader>
 
 {#if !awardee}
 	<div class="mt-6">
@@ -750,7 +816,6 @@
 					<span class="numeric font-semibold text-ink-800">{formatAngka(POIN_CERITA)}</span>
 					Poin Kontribusi pada buku besarmu.
 				</p>
-				{#if statusSimpan}<p class="text-xs font-semibold {statusSimpan === 'Gagal menyimpan' ? 'text-danger' : 'text-ink-600'}">{statusSimpan}</p>{/if}
 				<div class="flex flex-wrap items-center gap-2">
 					<Button variant="secondary" size="md" href="/awardee/cerita">Batal</Button>
 					<Button
