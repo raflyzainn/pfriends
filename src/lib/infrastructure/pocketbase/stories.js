@@ -29,4 +29,4 @@ export async function archiveStoryRecord(id, reason) { return entity(await send(
 export async function revokeStoryConsent() { return send('/api/pfriends/stories/consent/revoke', { method: 'POST' }); }
 
 export async function storyFileToken() { try { return await client().files.getToken(); } catch (error) { throw new Error(pocketBaseMessage(error, 'Token berkas Cerita gagal dibuat.')); } }
-export function storyFileUrl(story, filename, token = '') { const pb = getPocketBase(); if (!pb || !filename) return ''; return pb.files.getURL({ id: story.id, collectionName: 'stories', collectionId: 'stories' }, filename, { token }); }
+export function storyFileUrl(story, filename, token = '') { const pb = getPocketBase(); if (!pb || !filename) return ''; return pb.files.getURL({ id: story.id, collectionName: 'stories' }, filename, { token }); }

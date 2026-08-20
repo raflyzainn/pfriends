@@ -25,6 +25,7 @@ const login = async (account) => {
 };
 const awardee = await login(awardeeAccount);
 const verifier = await login(verifierAccount);
+const storyCollection = await maintenance.collections.getOne('stories');
 let checks = 0;
 const expect = (value, message) => { if (!value) throw new Error(message); checks++; };
 const suffix = Date.now();
@@ -51,6 +52,13 @@ try {
 	expect(story.esgTags?.[0]?.pillar === 'S' && Number(story.esgTags?.[0]?.sdgGoal) === 4, `Tag ESG draf tidak tersimpan dengan benar: ${JSON.stringify(story.esgTags)}`);
 	const submitted = await awardee.send(`/api/pfriends/stories/${story.id}/submit`, { method: 'POST' });
 	expect(submitted.status === 'DIAJUKAN', 'Draf harus masuk antrean Verifikator.');
+	const verifierFileToken = await verifier.files.getToken();
+	const evidenceUrl = verifier.files.getURL({ id: story.id, collectionId: storyCollection.id }, story.evidenceFiles[0], { token: verifierFileToken });
+	const evidenceResponse = await fetch(evidenceUrl);
+	expect(evidenceResponse.status === 200 && evidenceResponse.headers.get('content-type')?.startsWith('image/png'), 'Verifikator harus dapat membuka bukti Cerita terlindungi.');
+	let directViewBlocked = false;
+	try { await verifier.collection('stories').getOne(story.id); } catch (error) { directViewBlocked = error.status === 403 || error.status === 404; }
+	expect(directViewBlocked, 'Akses record langsung harus tetap ditolak meskipun berkas terlindungi dapat dibuka.');
 	const mine = await awardee.send('/api/pfriends/stories/mine');
 	expect(mine.items.some((item) => item.id === story.id), 'Awardee harus melihat Cerita miliknya.');
 	const queue = await verifier.send('/api/pfriends/verifier/stories');

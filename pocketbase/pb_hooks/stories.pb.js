@@ -60,3 +60,8 @@ routerAdd('POST', '/api/pfriends/verifier/stories/{id}/archive', (e) => {
 routerAdd('POST', '/api/pfriends/stories/consent/revoke', (e) => {
 	const utils = require(`${__hooks}/story-utils.js`); utils.requireRole(e, 'AWARDEE'); let withdrawn = 0; let blocked = 0; e.app.runInTransaction((tx) => { const awardee = tx.findFirstRecordByData('awardees', 'user', e.auth.id); awardee.set('consentActive', false); tx.save(awardee); for (const row of tx.findRecordsByFilter('stories', 'owner = {:owner}', '', 0, 0, { owner: e.auth.id })) { const before = row.getString('status'); row.set('consentActive', false); row.set('consentLegacyId', ''); if (['TERPUBLIKASI','DISETUJUI'].includes(before)) { row.set('status', 'DIARSIPKAN'); row.set('archiveReason', 'CONSENT_DICABUT'); row.set('archivedAt', new Date().toISOString()); try { tx.delete(tx.findFirstRecordByData('story_public_covers', 'story', row.id)); } catch (_) {} utils.statusEvent(tx, row, e.auth, 'CONSENT_REVOKED', before, 'DIARSIPKAN', 'CONSENT_DICABUT'); withdrawn++; } else { blocked++; } tx.save(row); } }); return e.json(200, { withdrawn, blocked });
 }, $apis.requireAuth('users'));
+
+onRecordViewRequest((e) => {
+	if (e.auth && ['AWARDEE','VERIFIER'].includes(e.auth.getString('role'))) throw new ForbiddenError('Gunakan endpoint workflow Cerita untuk membaca naskah.');
+	return e.next();
+}, 'stories');

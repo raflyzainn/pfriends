@@ -33,6 +33,8 @@ Migration `1723968820_story_workflow.js` menambahkan pemilik, berkas bukti, calo
 
 Collection utama tetap terkunci dari akses record langsung. Frontend memakai endpoint khusus yang memeriksa sesi dan peran pada server.
 
+Berkas terlindungi mengikuti aturan baca khusus. Awardee hanya dapat membuka berkas dari Cerita miliknya. Verifikator dapat membuka bukti setelah Cerita dikirim dan tidak dapat membuka berkas draf. Hook record tetap menolak pembacaan record langsung sehingga izin berkas tidak membuka field internal collection.
+
 ## Endpoint Awardee
 
 | Endpoint | Fungsi |
@@ -69,4 +71,8 @@ npm run verify:compile
 npm run build
 ```
 
-Tes integrasi Cerita menjalankan dua belas pemeriksaan dari pembuatan draf sampai arsip. Tes mencakup persistensi berkas, antrean Verifikator, revisi pada record yang sama, checklist sensitif, promosi sampul publik, penghapusan dari katalog publik, dan idempotensi ledger poin.
+Tes integrasi Cerita menjalankan empat belas pemeriksaan dari pembuatan draf sampai arsip. Tes mencakup persistensi berkas, akses bukti terlindungi oleh Verifikator, penolakan akses record langsung, antrean Verifikator, revisi pada record yang sama, checklist sensitif, promosi sampul publik, penghapusan dari katalog publik, dan idempotensi ledger poin.
+
+## Penyegaran Cerita Publik
+
+Saat pengguna kembali dari ruang Verifikator atau Awardee menuju landing page, layout publik memuat ulang katalog publik. Penyegaran ini memastikan Cerita yang baru berubah ke status `TERPUBLIKASI` langsung muncul di `/cerita` tanpa bergantung pada cache store dari kunjungan sebelumnya.

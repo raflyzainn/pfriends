@@ -67,7 +67,7 @@
 	$effect(() => {
 		catalog.load();
 		impact.load();
-		publicContent.load();
+		publicContent.load({ force: true });
 	});
 </script>
 
