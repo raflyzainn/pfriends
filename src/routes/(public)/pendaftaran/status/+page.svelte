@@ -39,7 +39,7 @@
 	}
 </script>
 
-<svelte:head><title>Status registrasi · PFfriends</title></svelte:head>
+<svelte:head><title>Status registrasi · PFriends</title></svelte:head>
 
 <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

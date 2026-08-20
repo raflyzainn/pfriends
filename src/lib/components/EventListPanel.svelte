@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * EventListPanel — daftar kegiatan sebagai BARIS TABEL, bukan kartu.
+	 * EventListPanel: daftar kegiatan sebagai BARIS TABEL, bukan kartu.
 	 *
 	 * Satu komponen, lima tempat: E4 beranda · panel `/cerita` · panel
 	 * `/cerita/[slug]` · dasbor `/awardee` · dasbor `/verifikator`. Membuat
@@ -14,14 +14,14 @@
 	 *    akan membuat dua zona mengimpor dari direktori yang menyatakan dirinya
 	 *    milik zona publik.
 	 *
-	 * 2. **Nol jejak gamifikasi — secara STRUKTURAL.** `EventCardVM` memang tidak
+	 * 2. **Nol jejak gamifikasi: secara STRUKTURAL.** `EventCardVM` memang tidak
 	 *    memuat poin, kuota, sisa kursi, maupun daftar pendaftar, jadi prop
 	 *    `showPoints` yang ada pada `EventCard` tidak punya padanan di sini dan
 	 *    memang tidak boleh punya (Keputusan Pemilik Produk #2, `docs/11` §6 E4).
 	 *
 	 * 3. **`thumbnailAt` BAKU `0` dan ditentukan PEMANGGIL per lokasi.** Baku `3`
 	 *    akan menjadikan "baris ketiga selalu berbeda" sebagai keseragaman BARU di
-	 *    lima halaman sekaligus — persis yang prinsip P-3 hindari. Penyimpangan
+	 *    lima halaman sekaligus: persis yang prinsip P-3 hindari. Penyimpangan
 	 *    ritme adalah keputusan editor, bukan nilai bawaan komponen.
 	 *
 	 * 4. **Nilai `variant` `'list'` DILARANG.** Ia nama lama (`docs/10` §6.5,
@@ -33,8 +33,8 @@
 	 *    WCAG, dan sekaligus menghindari "judul mungil sebagai satu-satunya tautan"
 	 *    yang membuat daftar sulit dipakai di ponsel.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak props FINAL
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E4 baris agenda, §7.1 panel `/cerita`, §10.1 hover
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak props FINAL
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E4 baris agenda, §7.1 panel `/cerita`, §10.1 hover
 	 */
 	import Icon from './Icon.svelte';
 	import { ICONS } from '$lib/data/icons.js';
@@ -70,7 +70,7 @@
 		class: className = ''
 	} = $props();
 
-	/** Sisi thumbnail dalam piksel — kotak, sesuai rasio 1:1 manifes foto. */
+	/** Sisi thumbnail dalam piksel: kotak, sesuai rasio 1:1 manifes foto. */
 	const SISI_THUMBNAIL = 72;
 
 	const VARIAN_SAH = ['panel', 'rail', 'strip'];
@@ -83,8 +83,8 @@
 	const thumbnailAktif = $derived(varianAktif === 'rail' ? 0 : thumbnailAt);
 
 	/**
-	 * Thumbnail yang berkasnya gagal dimuat. Barisnya tetap utuh — tanggal, judul,
-	 * dan tempat sudah memuat seluruh informasi — hanya kotak gambarnya yang
+	 * Thumbnail yang berkasnya gagal dimuat. Barisnya tetap utuh: tanggal, judul,
+	 * dan tempat sudah memuat seluruh informasi: hanya kotak gambarnya yang
 	 * dilepas, bukan diganti ikon rusak (`docs/12` §3.3(d) butir 4).
 	 * @type {Record<string, true>}
 	 */
@@ -102,7 +102,7 @@
 		if (!dev) return;
 		if (!VARIAN_SAH.includes(variant)) {
 			console.warn(
-				`[EventListPanel] variant="${variant}" tidak dikenal — dirender sebagai "panel". ` +
+				`[EventListPanel] variant="${variant}" tidak dikenal: dirender sebagai "panel". ` +
 					"Nilai 'list' adalah nama lama dan dilarang dipakai (docs/12 §2.13)."
 			);
 		}

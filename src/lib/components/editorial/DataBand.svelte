@@ -1,8 +1,8 @@
 <script>
 	/**
-	 * DataBand — pita navy lebar penuh: satu metrik utama + maksimum tiga sekunder.
+	 * DataBand: pita navy lebar penuh: satu metrik utama + maksimum tiga sekunder.
 	 *
-	 * Tanggung jawab: menggantikan empat `StatTile` dalam `grid-cols-4` — persis
+	 * Tanggung jawab: menggantikan empat `StatTile` dalam `grid-cols-4`: persis
 	 * pola yang dibuang D-05 (semua isi adalah kartu putih radius 16) dan D-06
 	 * (ikon outline seragam di dalam kotak tint). Di sini tidak ada kartu, tidak
 	 * ada ikon, tidak ada kotak tint: hanya angka, penyebut, dan garis pemisah.
@@ -11,23 +11,23 @@
 	 *
 	 * 1. **Komponen ini TIDAK PERNAH melempar** (`docs/12` §2.13). `context` atau
 	 *    `asOf` yang kosong menghasilkan `console.warn` di dev plus label pengganti
-	 *    yang tercetak — satu pita data tidak boleh merobohkan beranda.
+	 *    yang tercetak: satu pita data tidak boleh merobohkan beranda.
 	 *
 	 * 2. **Garis pemisah `putih/20` sah walau kontrasnya 1.3.** Ia dekoratif dan
 	 *    bukan pembawa informasi: batas antarkolom juga dinyatakan oleh jarak dan
 	 *    oleh label masing-masing angka, sehingga WCAG 1.4.11 tidak terlanggar
-	 *    (`docs/11` §10.2). Yang membawa informasi — angka, label, konteks — semuanya
+	 *    (`docs/11` §10.2). Yang membawa informasi: angka, label, konteks: semuanya
 	 *    putih/70 ke atas (5.98 ✓); `putih/55` yang diusulkan audit visual GAGAL
 	 *    di 4.28 dan tidak dipakai di mana pun.
 	 *
 	 * 3. **Angka HANYA boleh datang dari `ProgramImpactService.publicSnapshot()`.**
 	 *    Snapshot itu tidak memuat satu pun field poin/tier, sehingga kebocoran
 	 *    Keputusan Pemilik Produk #2 menjadi mustahil secara struktural, bukan
-	 *    secara konvensi. Komponen ini tidak mengimpor store — pemanggil yang
+	 *    secara konvensi. Komponen ini tidak mengimpor store: pemanggil yang
 	 *    mengoper, sesuai aturan D-6.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak props FINAL
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E2 pita data, §10.2 kontras di atas navy
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak props FINAL
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E2 pita data, §10.2 kontras di atas navy
 	 */
 	import ImpactFigure from './ImpactFigure.svelte';
 	import Icon from '../Icon.svelte';
@@ -63,7 +63,7 @@
 		class: className = ''
 	} = $props();
 
-	/** Maksimum item sekunder — empat kolom berarti pita, lima berarti tabel. */
+	/** Maksimum item sekunder: empat kolom berarti pita, lima berarti tabel. */
 	const MAKS_ITEM = 3;
 
 	/** Label pengganti saat `asOf` kosong; sengaja terbaca janggal agar tertangkap. */
@@ -83,7 +83,7 @@
 		if (Array.isArray(items) && items.length > MAKS_ITEM) {
 			console.warn(
 				`[DataBand] ${items.length} item sekunder dioper, maksimum ${MAKS_ITEM}. ` +
-					'Sisanya tidak dirender — pita data bukan tabel (docs/11 §6 E2).'
+					'Sisanya tidak dirender: pita data bukan tabel (docs/11 §6 E2).'
 			);
 		}
 	});
@@ -91,7 +91,7 @@
 
 <section
 	class={kelas('w-full bg-pertamina-navy py-12', className)}
-	aria-label="Angka program PFfriends"
+	aria-label="Angka program PFriends"
 >
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 		<div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-0">
@@ -109,7 +109,7 @@
 			</div>
 
 			{#each daftar as item (item.label)}
-				<!-- Garis vertikal 1px putih/20 — pemisah kolom, BUKAN border kartu.
+				<!-- Garis vertikal 1px putih/20: pemisah kolom, BUKAN border kartu.
 				     Hilang di bawah lg: pada satu kolom ia menjadi garis mendatar tanpa arti. -->
 				<div class="min-w-0 lg:flex-1 lg:border-l lg:border-white/20 lg:px-8">
 					<ImpactFigure

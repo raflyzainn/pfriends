@@ -1,20 +1,20 @@
 /**
- * REPOSITORY — Kalender Komunitas (Hal 5 pilar 02).
+ * REPOSITORY: Kalender Komunitas (Hal 5 pilar 02).
  *
  * Tanggung jawab: akses data kegiatan upskilling, pertemuan komunitas, dan
- * sharing session — sumber langsung KPI-05 Hal 6, pemasok aksi SESSION_ATTEND,
+ * sharing session: sumber langsung KPI-05 Hal 6, pemasok aksi SESSION_ATTEND,
  * sekaligus antrean usulan kegiatan bagi verifikator.
  *
  * Satu perilaku yang berubah sejak V2 dan perlu diketahui pemanggil: `upcoming()`
  * kini menyaring `isPubliclyVisible` LEBIH DULU, baru `isUpcoming()`. Sejak
- * `DIUSULKAN` masuk ke `EventStatus`, `isUpcoming()` sendirian tidak lagi cukup —
+ * `DIUSULKAN` masuk ke `EventStatus`, `isUpcoming()` sendirian tidak lagi cukup :
  * ia hanya mengecualikan yang dibatalkan, sehingga usulan mentah bertanggal masa
  * depan akan lolos dan tampil di kalender publik sebagai agenda resmi. Usulan
  * milik sendiri dibaca lewat `proposedBy()`, bukan dengan melonggarkan penyaring
  * publik.
  *
  * @see src/lib/domain/entities/CommunityEvent.js
- * @see docs/12-BUILD-CONTRACT-V2.md — R-09 penyaring publik tunggal `isPubliclyVisible`
+ * @see docs/12-BUILD-CONTRACT-V2.md: R-09 penyaring publik tunggal `isPubliclyVisible`
  */
 
 import { CommunityEvent, EventStatus } from '$lib/domain/entities/CommunityEvent.js';
@@ -52,7 +52,7 @@ export class EventRepository {
 	async query(criteria = {}) { return (await this.getAll()).filter((row) => Object.entries(criteria).every(([key, value]) => value === undefined || row[key] === value)); }
 
 	/**
-	 * Kegiatan berdasarkan slug — jalur baca halaman `/kalender/[slug]`.
+	 * Kegiatan berdasarkan slug: jalur baca halaman `/kalender/[slug]`.
 	 * @param {string} slug
 	 * @returns {Promise<CommunityEvent|null>}
 	 */
@@ -108,7 +108,7 @@ export class EventRepository {
 
 	/**
 	 * Antrean usulan kegiatan: yang menunggu keputusan verifikator, tertua lebih
-	 * dulu. Urutan tertua-dulu disengaja — antrean yang menampilkan usulan terbaru
+	 * dulu. Urutan tertua-dulu disengaja: antrean yang menampilkan usulan terbaru
 	 * di puncak membuat usulan yang paling lama menunggu tidak pernah tersentuh,
 	 * dan justru itulah yang paling dekat melewati SLA.
 	 * @returns {Promise<CommunityEvent[]>}
@@ -123,7 +123,7 @@ export class EventRepository {
 	}
 
 	/**
-	 * Kegiatan yang diusulkan sebuah akun — tab "Usulan saya", termasuk yang masih
+	 * Kegiatan yang diusulkan sebuah akun: tab "Usulan saya", termasuk yang masih
 	 * draf, ditolak, atau belum terbit.
 	 * @param {string} accountId Id `UserAccount` pengusul.
 	 * @returns {Promise<CommunityEvent[]>}
@@ -140,7 +140,7 @@ export class EventRepository {
 
 	/**
 	 * Kegiatan yang sah dihitung pada KPI-05 Hal 6 ("2 aktivitas engagement
-	 * terlaksana") — selesai, berbukti, dan mencapai kuorum kehadiran.
+	 * terlaksana"): selesai, berbukti, dan mencapai kuorum kehadiran.
 	 * @returns {Promise<CommunityEvent[]>}
 	 */
 	async countedForKpi() {

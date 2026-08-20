@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * PhotoFigure — satu-satunya cara foto masuk ke zona publik.
+	 * PhotoFigure: satu-satunya cara foto masuk ke zona publik.
 	 *
 	 * Tanggung jawab: `<figure>` bersemantik dengan `alt` wajib, `width`/`height`
 	 * eksplisit (anti-CLS), keying rule opsional, kapsi, dan baris kredit.
@@ -9,13 +9,13 @@
 	 *
 	 * 1. **Kredit dibaca dari `PHOTOS`, bukan dari `photo-credits.json`.**
 	 *    `docs/11` §8.1 menyuruh komponen ini membaca berkas kredit sendiri;
-	 *    `docs/12` §8.2 MENCABUTNYA — JSON itu adalah masukan bagi `photos.js`, dan
+	 *    `docs/12` §8.2 MENCABUTNYA: JSON itu adalah masukan bagi `photos.js`, dan
 	 *    tiga jalur kredit yang saling menduplikasi melanggar KP-3. Karena kontrak
 	 *    props memberi `src` (jalur) dan bukan kunci manifes, pencarian dilakukan
 	 *    terbalik lewat `src`. Peta dibangun sekali di tingkat modul: 28 entri,
 	 *    dan membangunnya ulang per instance akan berjalan puluhan kali per halaman.
 	 *
-	 * 2. **`src` yang tidak dikenal tetap dirender — tanpa baris kredit.** Komponen
+	 * 2. **`src` yang tidak dikenal tetap dirender: tanpa baris kredit.** Komponen
 	 *    ini juga akan dipakai halaman yang memuat foto di luar manifes; menolak
 	 *    merender akan mengubah kelalaian kecil menjadi halaman kosong.
 	 *
@@ -25,7 +25,7 @@
 	 *    `foto(key) === null` menutup kasus BUILD (slot tidak pernah terunduh),
 	 *    `use:pantauGagalMuat` menutup kasus RUNTIME (berkas terhapus atau salah
 	 *    nama setelah build). Tanpa yang kedua, gerbang butir 4 hanya benar selama
-	 *    tidak ada yang menyentuh `static/img/` — dan itu bukan ketahanan.
+	 *    tidak ada yang menyentuh `static/img/`: dan itu bukan ketahanan.
 	 *
 	 * 4. **`priority` mengubah tiga atribut sekaligus.** `loading="lazy"` pada foto
 	 *    LCP menunda elemen yang justru diukur; `fetchpriority="high"` tanpa
@@ -33,8 +33,8 @@
 	 *    jadi satu prop yang mengatur keduanya adalah satu-satunya bentuk yang
 	 *    tidak bisa dipakai setengah.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak props FINAL, §3.3(d) butir 2 & 4
-	 * @see docs/11-VISUAL-DIRECTION.md — §4.1 rasio, §4.3 radius & keying rule, §4.4 kapsi, §4.5 alt
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak props FINAL, §3.3(d) butir 2 & 4
+	 * @see docs/11-VISUAL-DIRECTION.md: §4.1 rasio, §4.3 radius & keying rule, §4.4 kapsi, §4.5 alt
 	 */
 	import { PHOTOS } from '$lib/data/photos.js';
 	import { gayaKeyline, kelas, pantauGagalMuat, rasioFoto } from '../_visual.js';
@@ -44,8 +44,8 @@
 	 * @typedef {object} PhotoFigureProps
 	 * @property {string} src        Jalur `/img/*.jpg`. Kosong → blok tipografis.
 	 * @property {string} alt        WAJIB non-kosong; Bahasa Indonesia; tanpa awalan "Foto/Gambar".
-	 * @property {number} width      Piksel intrinsik — dipasang ke atribut `width`.
-	 * @property {number} height     Piksel intrinsik — dipasang ke atribut `height`.
+	 * @property {number} width      Piksel intrinsik: dipasang ke atribut `width`.
+	 * @property {number} height     Piksel intrinsik: dipasang ke atribut `height`.
 	 * @property {'4:5'|'3:2'|'16:9'|'21:9'|'1:1'} ratio
 	 * @property {string} [caption]  Kapsi baris 1. Selama foto stok: WAJIB generik.
 	 * @property {'red'|'navy'|'green'|'none'} [keyline]
@@ -81,7 +81,7 @@
 	/**
 	 * Sumber yang terbukti gagal dimuat di peramban. Disimpan sebagai NILAI `src`,
 	 * bukan sebagai boolean, supaya penggantian `src` otomatis memulihkan gambar
-	 * tanpa efek samping — komponen yang dipakai ulang di dalam `{#each}` tidak
+	 * tanpa efek samping: komponen yang dipakai ulang di dalam `{#each}` tidak
 	 * terkunci di cabang tipografis gara-gara sampul sebelumnya yang hilang.
 	 */
 	let srcGagal = $state('');
@@ -101,7 +101,7 @@
 	const punyaKaki = $derived(Boolean(caption || kreditTampil));
 
 	/**
-	 * Bulan Bahasa Indonesia — dipakai mendeteksi kapsi yang mengklaim tanggal.
+	 * Bulan Bahasa Indonesia: dipakai mendeteksi kapsi yang mengklaim tanggal.
 	 * Tidak diimpor dari `utils/date.js` karena yang dicari di sini adalah TEKS
 	 * yang ditulis manusia, bukan tanggal yang diformat mesin.
 	 */
@@ -116,13 +116,13 @@
 		// yang justru DIPERINTAHKAN keputusan 3 di kepala berkas ini, dan label
 		// bacanya datang dari `fallbackLabel`, bukan dari `alt`. Versi sebelumnya
 		// menyalakan galat untuk cabang itu juga, sehingga satu cerita yang sah
-		// tampil tanpa foto memerahkan `e2e-routes.mjs` lewat galat konsol — gerbang
+		// tampil tanpa foto memerahkan `e2e-routes.mjs` lewat galat konsol: gerbang
 		// yang menghukum rancangan yang benar. Yang tetap dijaga tidak berubah:
 		// begitu ada `src`, `alt` kosong tetap galat.
 		if (src && !alt?.trim()) {
 			console.error(
 				`[PhotoFigure] Prop "alt" kosong untuk "${src}". ` +
-					'Alt WAJIB non-kosong di zona publik — P-1 melarang foto dekoratif, jadi kasus ' +
+					'Alt WAJIB non-kosong di zona publik: P-1 melarang foto dekoratif, jadi kasus ' +
 					'alt="" seharusnya nol (docs/11 §4.5).'
 			);
 		}
@@ -134,8 +134,8 @@
 			);
 		}
 		// Penegakan kejujuran stok: selama fotonya belum diganti dokumentasi asli,
-		// kapsi DILARANG mengklaim tempat & bulan kegiatan PFfriends yang sesungguhnya.
-		// "Cangkringan, Sleman, Juni 2026" pada foto stok adalah keterangan palsu —
+		// kapsi DILARANG mengklaim tempat & bulan kegiatan PFriends yang sesungguhnya.
+		// "Cangkringan, Sleman, Juni 2026" pada foto stok adalah keterangan palsu :
 		// masalah yang lebih besar daripada terlihat seperti AI (docs/11 §4.4).
 		if (entri?.isStock && caption && POLA_BULAN.test(caption)) {
 			console.error(

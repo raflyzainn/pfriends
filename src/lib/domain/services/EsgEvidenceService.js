@@ -1,11 +1,11 @@
 /**
- * SERVICE — Bukti ESG.
+ * SERVICE: Bukti ESG.
  *
  * Tanggung jawab: menilai kesiapan sebuah cerita sebagai bukti ESG, dan menyusun
  * matriks bukti tiga pilar untuk konsol admin.
  *
- * Gerbang empat syarat Hal 12 — *"Documented activity + outcome note + ESG/SDG
- * tag + evidence source"* — bersifat konjungtif. Bukti yang kehilangan salah
+ * Gerbang empat syarat Hal 12: *"Documented activity + outcome note + ESG/SDG
+ * tag + evidence source"*: bersifat konjungtif. Bukti yang kehilangan salah
  * satunya tidak boleh masuk agregasi, dan tidak ada mekanisme di kelas ini untuk
  * melewatinya.
  *
@@ -15,8 +15,8 @@
  * `matrix()` selalu memisahkan bukti yang siap dari yang belum, dan tidak pernah
  * menjumlahkan keduanya menjadi satu angka yang terdengar bagus.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 10 ESG Measurement Hints, Hal 12 Minimum for ESG evidence
- * @see docs/04-ESG-GOVERNANCE.md — §1 model bukti tiga pilar
+ * @see docs/00-SOURCE-BRIEF.md: Hal 10 ESG Measurement Hints, Hal 12 Minimum for ESG evidence
+ * @see docs/04-ESG-GOVERNANCE.md: §1 model bukti tiga pilar
  */
 
 import { ESG_EVIDENCE_GATE, ESG_PILLARS, EsgPillar, SDG_GOALS } from '../constants/esg-taxonomy.js';
@@ -184,7 +184,7 @@ export class EsgEvidenceService {
 	/**
 	 * Antrean cerita yang sudah punya tag ESG namun buktinya belum lengkap,
 	 * beserta apa yang kurang dari masing-masing. Ini pekerjaan konkret yang
-	 * ditunggu admin — daftar "hampir jadi" jauh lebih berguna daripada angka
+	 * ditunggu admin: daftar "hampir jadi" jauh lebih berguna daripada angka
 	 * persentase kesiapan.
 	 *
 	 * @returns {Promise<{story: Story, checklist: EvidenceChecklist}[]>}
@@ -200,7 +200,7 @@ export class EsgEvidenceService {
 
 	/**
 	 * Cakupan SDG: nomor tujuan mana yang benar-benar terbukti oleh cerita siap.
-	 * Tujuan yang tidak pernah terbukti tetap ditampilkan dengan cacah nol —
+	 * Tujuan yang tidak pernah terbukti tetap ditampilkan dengan cacah nol :
 	 * justru kekosongan itulah informasi yang berguna, karena ia menunjukkan
 	 * klaim mana yang belum boleh dibuat.
 	 *

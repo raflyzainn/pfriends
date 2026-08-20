@@ -1,5 +1,5 @@
 /**
- * STORE — Konsol Pertamina Foundation.
+ * STORE: Konsol Pertamina Foundation.
  *
  * Tanggung jawab: menyediakan potret KPI, matriks bukti ESG, agregat antrean
  * moderasi, dan **seluruh deret angka yang digambar dasbor ECharts**.
@@ -12,21 +12,21 @@
  *    status cerita langsung ke repository, melewati `ContentReviewService`, dan
  *    karena itu melewati pemeriksaan legalitas transisi maupun konflik
  *    kepentingan. Jalur kedua yang lebih longgar daripada jalur resmi bukan
- *    kemudahan — itu lubang tata kelola yang tidak terlihat dari antarmuka.
+ *    kemudahan: itu lubang tata kelola yang tidak terlihat dari antarmuka.
  *    Satu-satunya tindakan konten yang tersisa bagi Admin adalah **takedown**
  *    (`TERPUBLIKASI → DIARSIPKAN`), dan ia WAJIB lewat `ContentReviewService`.
  *
  * 2. **Angka chart dihitung di sini, bukan di komponen chart.** Komponen chart
  *    hanya menyusun `option`. Metrik yang lahir di dalam komponen adalah metrik
- *    tanpa definisi operasional tertulis — dan Corsec yang akan diminta
+ *    tanpa definisi operasional tertulis: dan Corsec yang akan diminta
  *    mempertanggungjawabkan angkanya, bukan aplikasinya. Rumus yang sudah punya
  *    rumah di domain (`KpiCalculator`, `EsgEvidenceService`, `TierResolver`,
  *    `ContentReviewService`) **tidak disalin ke sini**; store hanya memanggilnya
  *    dan menyusun hasilnya menjadi deret per bulan atau per segmen.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.1 matriks kewenangan, §3.5 WP-07 butir 6 & 8, R-23
- * @see docs/10-REVISION-SPEC.md — §7.2 katalog chart, §7.5 CH-7/CH-8
- * @see docs/00-SOURCE-BRIEF.md — Hal 6 KPI, Hal 10 ESG, Hal 11 tabel skor, Hal 12 gerbang bukti
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.1 matriks kewenangan, §3.5 WP-07 butir 6 & 8, R-23
+ * @see docs/10-REVISION-SPEC.md: §7.2 katalog chart, §7.5 CH-7/CH-8
+ * @see docs/00-SOURCE-BRIEF.md: Hal 6 KPI, Hal 10 ESG, Hal 11 tabel skor, Hal 12 gerbang bukti
  */
 
 import { browser } from '$app/environment';
@@ -71,7 +71,7 @@ const reviewService = new ContentReviewService({
 
 /**
  * Rentang program Hal 7: Januari–Juli 2026. Seluruh chart deret waktu memakai
- * ketujuh bulan ini, termasuk bulan yang kosong — bulan yang hilang dari sumbu
+ * ketujuh bulan ini, termasuk bulan yang kosong: bulan yang hilang dari sumbu
  * membuat kekosongan aktivitas tidak terlihat, padahal justru itu yang perlu
  * dilihat pengelola.
  */
@@ -80,7 +80,7 @@ const JUMLAH_BULAN_PROGRAM = 7;
 
 /**
  * Jenis aksi yang dihitung sebagai amplifikasi, DITURUNKAN dari kelas verifikasi
- * B pada tabel skor Hal 11 — bukan ditulis sebagai daftar lepas.
+ * B pada tabel skor Hal 11: bukan ditulis sebagai daftar lepas.
  *
  * Kelas B adalah kelas "membagikan konten" (jaringan pribadi dan media sosial
  * publik); itulah definisi yang dipakai `KpiCalculator` untuk M-04. Menurunkannya
@@ -140,7 +140,7 @@ class AdminStore {
 	/** @type {import('$lib/domain/entities/Story.js').Story[]} Naskah yang menunggu keputusan verifikator. */
 	moderationQueue = $state.raw([]);
 
-	/** @type {import('$lib/domain/entities/Story.js').Story[]} Cerita yang sudah tayang — kandidat takedown. */
+	/** @type {import('$lib/domain/entities/Story.js').Story[]} Cerita yang sudah tayang: kandidat takedown. */
 	publishedStories = $state.raw([]);
 
 	/** @type {import('$lib/domain/services/TierResolver.js').TierDistributionRow[]} */
@@ -154,7 +154,7 @@ class AdminStore {
 	/** @type {BulanProgram[]} Sumbu waktu bersama seluruh chart deret waktu. */
 	programMonths = $state.raw([]);
 
-	/** @type {SegmenCoverage[]} C-02 — cakupan registrasi per komunitas dan chapter. */
+	/** @type {SegmenCoverage[]} C-02: cakupan registrasi per komunitas dan chapter. */
 	coverageSegments = $state.raw([]);
 
 	/** @type {{monthKey: string, label: string, contents: number, days: number}[]} C-03. */
@@ -166,13 +166,13 @@ class AdminStore {
 	/** @type {{label: string, value: number}[]} Amplifikasi bulan terakhir per chapter. */
 	amplificationByChapter = $state.raw([]);
 
-	/** @type {{type: string, label: string, points: number[]}[]} C-13 — sembilan seri sumber poin. */
+	/** @type {{type: string, label: string, points: number[]}[]} C-13: sembilan seri sumber poin. */
 	pointSources = $state.raw([]);
 
 	/** @type {{monthKey: string, label: string, registered: number, active: number, amplifiers: number}[]} C-14. */
 	engagement = $state.raw([]);
 
-	/** @type {{key: string, label: string, count: number}[]} C-17 — corong gerbang bukti ESG. */
+	/** @type {{key: string, label: string, count: number}[]} C-17: corong gerbang bukti ESG. */
 	esgGate = $state.raw([]);
 
 	/** @type {{monthKey: string, label: string, min: number, max: number, mid: number}[]} C-18. */
@@ -199,7 +199,7 @@ class AdminStore {
 	/** Jumlah naskah yang menunggu keputusan verifikator. */
 	pendingCount = $derived(this.moderationQueue.length);
 
-	/** KPI yang belum mencapai targetnya — inilah yang perlu ditindaklanjuti. */
+	/** KPI yang belum mencapai targetnya: inilah yang perlu ditindaklanjuti. */
 	kpiTertinggal = $derived(this.kpi.filter((baris) => baris.percent < 100));
 
 	/**
@@ -249,7 +249,7 @@ class AdminStore {
 	 * Menarik cerita yang sudah tayang dari ruang publik (takedown).
 	 *
 	 * Ini satu-satunya tindakan konten yang tersisa bagi Admin, dan ia berjalan
-	 * lewat `ContentReviewService.archiveStory` — bukan lewat penulisan status
+	 * lewat `ContentReviewService.archiveStory`: bukan lewat penulisan status
 	 * langsung. Konsekuensinya nyata dan disengaja: bila peta transisi kelak
 	 * mencabut kewenangan takedown dari Admin, tombol ini berhenti bekerja
 	 * seketika tanpa satu baris pun di store yang perlu diubah.
@@ -399,7 +399,7 @@ class AdminStore {
 			]);
 
 			// Pita estimasi jangkauan dihitung per bulan lewat service yang sama
-			// dengan kartu jangkauan di atasnya — rumusnya tidak disalin ke sini.
+			// dengan kartu jangkauan di atasnya: rumusnya tidak disalin ke sini.
 			const pita = await Promise.all(
 				bulan.map((b) => kpiCalculator.organicReach(AdminStore.#tengahBulan(b.indeks)))
 			);
@@ -461,7 +461,7 @@ class AdminStore {
 	}
 
 	/**
-	 * C-02 — cakupan registrasi per segmen.
+	 * C-02: cakupan registrasi per segmen.
 	 *
 	 * Pembilangnya memakai definisi M-01 apa adanya: aktif DAN ber-consent aktif.
 	 * Terdata tanpa persetujuan bukan cakupan yang sah untuk dilaporkan, dan
@@ -501,7 +501,7 @@ class AdminStore {
 	}
 
 	/**
-	 * C-03 — ritme diseminasi per bulan.
+	 * C-03: ritme diseminasi per bulan.
 	 *
 	 * Dua angka berbeda dan tidak boleh dipertukarkan: `contents` adalah konten
 	 * UNIK (M-02), `days` adalah HARI kirim unik (M-03). Lima pesan serentak
@@ -521,7 +521,7 @@ class AdminStore {
 	}
 
 	/**
-	 * C-04 — amplification rate per bulan, dua penyebut berdampingan.
+	 * C-04: amplification rate per bulan, dua penyebut berdampingan.
 	 *
 	 * `activeRate` memakai penyebut anggota AKTIF (definisi M-04 Hal 6);
 	 * `totalRate` memakai penyebut seluruh anggota terdaftar. Keduanya ditampilkan
@@ -585,11 +585,11 @@ class AdminStore {
 	}
 
 	/**
-	 * C-13 — poin per jenis aksi per bulan, satu seri per baris tabel skor.
+	 * C-13: poin per jenis aksi per bulan, satu seri per baris tabel skor.
 	 *
 	 * Urutan seri mengikuti `SCORING_TABLE` (poin menaik), sehingga tumpukan
 	 * terbaca dari aksi paling ringan sampai kontribusi paling bermakna. Itulah
-	 * pertanyaan yang dijawab chart ini — bukan sekadar totalnya.
+	 * pertanyaan yang dijawab chart ini: bukan sekadar totalnya.
 	 *
 	 * @param {readonly import('$lib/domain/entities/PointActivity.js').PointActivity[]} activities
 	 * @param {readonly {monthKey: string}[]} bulan
@@ -615,13 +615,13 @@ class AdminStore {
 	}
 
 	/**
-	 * C-14 — corong keterlibatan sepanjang program.
+	 * C-14: corong keterlibatan sepanjang program.
 	 *
 	 * Ketiga deret dibaca sebagai penyusutan: berapa yang TERDAFTAR sampai akhir
 	 * bulan itu, berapa di antaranya AKTIF dalam jendela
 	 * `windowAnggotaAktifHari`, dan berapa dari yang aktif itu benar-benar
 	 * MENGAMPLIFIKASI. Jendela aktif dihitung mundur dari akhir bulan
-	 * bersangkutan, bukan dari hari ini — kalau tidak, keenam bulan pertama akan
+	 * bersangkutan, bukan dari hari ini: kalau tidak, keenam bulan pertama akan
 	 * selalu tampak mati.
 	 *
 	 * @param {readonly import('$lib/domain/entities/Awardee.js').Awardee[]} awardees
@@ -661,11 +661,11 @@ class AdminStore {
 	}
 
 	/**
-	 * C-17 — di gerbang mana bukti ESG paling banyak gugur.
+	 * C-17: di gerbang mana bukti ESG paling banyak gugur.
 	 *
 	 * Tahapnya KUMULATIF dan karena itu menurun monoton: setiap batang menghitung
 	 * naskah yang lolos gerbang tersebut DAN seluruh gerbang sebelumnya. Batang
-	 * terakhir, "Layak ESG", adalah keempat gerbang sekaligus — nilainya memang
+	 * terakhir, "Layak ESG", adalah keempat gerbang sekaligus: nilainya memang
 	 * sama dengan batang keempat, dan kesamaan itu justru pernyataannya: tidak ada
 	 * syarat tersembunyi di luar keempat gerbang Hal 12.
 	 *
@@ -698,12 +698,12 @@ class AdminStore {
 	}
 
 	/**
-	 * C-18 — pita estimasi jangkauan organik per bulan.
+	 * C-18: pita estimasi jangkauan organik per bulan.
 	 *
 	 * Memakai angka NETO (sudah didiskon tumpang tindih audiens), bukan bruto:
 	 * pita ini dibaca sebagai jangkauan yang masuk akal untuk perencanaan.
 	 * Menyajikan bruto sebagai angka perencanaan adalah kesalahan analitik yang
-	 * paling sering terjadi pada laporan komunitas — angka brutonya tetap tersedia
+	 * paling sering terjadi pada laporan komunitas: angka brutonya tetap tersedia
 	 * pada kartu jangkauan, tanpa perlu ada yang memilih diam-diam.
 	 *
 	 * @param {readonly {monthKey: string, label: string}[]} bulan

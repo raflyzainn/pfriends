@@ -1,17 +1,17 @@
 /**
- * REPOSITORY — Awardee Pfriends.
+ * REPOSITORY: Awardee Pfriends.
  *
  * Tanggung jawab: akses data penerima manfaat untuk direktori alumni, papan
  * peringkat, konsol admin, dan zona awardee ter-login.
  *
  * Perhatikan batas yang dijaga berkas ini: tabel `awardees` memuat PENERIMA MANFAAT
- * saja. Identitas login — surel, kata sandi, peran — hidup di tabel `accounts` lewat
+ * saja. Identitas login: surel, kata sandi, peran: hidup di tabel `accounts` lewat
  * `AccountRepository`. Menaruh staf Pertamina Foundation sebagai baris awardee akan
  * merusak tiga perhitungan sekaligus: penyebut cakupan KPI, penyaring papan
  * peringkat, dan distribusi tier.
  *
- * @see src/lib/domain/entities/Awardee.js — entity yang dipetakan
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.11 kontrak export AwardeeRepository
+ * @see src/lib/domain/entities/Awardee.js: entity yang dipetakan
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.11 kontrak export AwardeeRepository
  */
 
 import { Awardee } from '$lib/domain/entities/Awardee.js';

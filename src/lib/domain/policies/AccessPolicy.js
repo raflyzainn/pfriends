@@ -1,8 +1,8 @@
 /**
- * POLICY — Kebijakan Akses Zona.
+ * POLICY: Kebijakan Akses Zona.
  *
- * Tanggung jawab: menjawab satu pertanyaan untuk seluruh aplikasi — "boleh atau
- * tidak peran ini membuka jalur ini" — beserta turunannya: ke mana seseorang
+ * Tanggung jawab: menjawab satu pertanyaan untuk seluruh aplikasi: "boleh atau
+ * tidak peran ini membuka jalur ini": beserta turunannya: ke mana seseorang
  * dipulangkan, jalur tujuan mana yang aman dipakai sesudah masuk, dan kapan
  * seorang aktor sedang menilai karyanya sendiri.
  *
@@ -15,26 +15,26 @@
  *    tertinggal justru yang longgar.
  * 2. **Murni dan sinkron.** Tanpa `await`, tanpa penyimpanan, tanpa `$app/*`.
  *    Itulah yang membuat matriks perilaku guard dapat diuji di `node` polos untuk
- *    zona yang halamannya bahkan belum dibuat — jauh lebih murah daripada
+ *    zona yang halamannya bahkan belum dibuat: jauh lebih murah daripada
  *    membuktikannya lewat peramban.
  * 3. **Tamu diwakili `null`, dan `null` fail-closed.** Setiap pertanyaan yang
  *    tidak dipahami kebijakan ini dijawab "tidak boleh". Zona yang tidak dikenal
  *    dianggap PUBLIK hanya untuk pemetaan jalur, sedangkan pemeriksaan peran
  *    terhadap zona tak dikenal selalu `false`.
- * 4. **Pencocokan zona dilakukan pada bentuk jalur yang dinormalkan** — tanpa
+ * 4. **Pencocokan zona dilakukan pada bentuk jalur yang dinormalkan**: tanpa
  *    query string, tanpa fragmen, tanpa garis miring akhir, dan tanpa perbedaan
  *    besar-kecil huruf. Tanpa penormalan itu, `/Admin/` dan `/admin?x=1` akan
  *    lolos sebagai jalur publik hanya karena bentuk tulisannya berbeda.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.6 kontrak export, §6.4 matriks perilaku guard
- * @see docs/10-REVISION-SPEC.md — §3.6 route guard satu keputusan satu tempat, §4.3 jangkar PO-2
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.6 kontrak export, §6.4 matriks perilaku guard
+ * @see docs/10-REVISION-SPEC.md: §3.6 route guard satu keputusan satu tempat, §4.3 jangkar PO-2
  */
 
 import { bolehkan, peranPengguna, RolePermission, UserRole } from '../constants/roles.js';
 
 /**
  * Empat zona aplikasi. Zona adalah pengelompokan jalur berdasarkan siapa yang
- * berhak masuk — bukan berdasarkan tata letak maupun menu.
+ * berhak masuk: bukan berdasarkan tata letak maupun menu.
  * @readonly
  * @enum {string}
  */
@@ -82,7 +82,7 @@ export const ZONE_ROLES = Object.freeze({
  * tak berujung: halaman masuk mengalihkan pengguna ter-login ke berandanya, dan
  * beranda mengembalikannya ke `next`.
  *
- * `/daftar` dicabut pada revisi 4 Agustus 2026 bersama fitur pendaftaran mandiri —
+ * `/daftar` dicabut pada revisi 4 Agustus 2026 bersama fitur pendaftaran mandiri :
  * alurnya kini hanya Beranda → Login.
  * @type {readonly string[]}
  */
@@ -122,7 +122,7 @@ export class AccessPolicy {
 	 *
 	 * @param {string|null} role Kode UserRole, atau `null` untuk tamu.
 	 * @param {string} zone Salah satu Zone.
-	 * @returns {boolean} `false` untuk zona yang tidak dikenal — gerbang menutup
+	 * @returns {boolean} `false` untuk zona yang tidak dikenal: gerbang menutup
 	 *   ketika ditanya hal yang tidak ia pahami.
 	 */
 	static canEnter(role, zone) {
@@ -136,7 +136,7 @@ export class AccessPolicy {
 	 * Apakah sebuah peran berhak membuka sebuah jalur.
 	 *
 	 * Dipakai store sesi, komponen penjaga zona, dan uji perilaku guard. Jalur yang
-	 * halamannya belum dibuat tetap dapat ditanyakan — kebijakan ini menjawab dari
+	 * halamannya belum dibuat tetap dapat ditanyakan: kebijakan ini menjawab dari
 	 * peta zona, bukan dari keberadaan berkas route.
 	 *
 	 * @param {string|null} role Kode UserRole, atau `null` untuk tamu.
@@ -161,12 +161,12 @@ export class AccessPolicy {
 	 * Jalur tujuan yang aman dipakai sesudah masuk.
 	 *
 	 * Menutup tiga kegagalan sekaligus:
-	 * (a) *open redirect* — `//situs-lain.com` dan `https://situs-lain.com` adalah
+	 * (a) *open redirect*: `//situs-lain.com` dan `https://situs-lain.com` adalah
 	 *     jalur absolut ke host lain yang akan membawa pengguna keluar dari aplikasi
 	 *     sambil membawa konteks sesinya;
-	 * (b) **gelang login** — `next` yang menunjuk halaman masuk atau pendaftaran
+	 * (b) **gelang login**: `next` yang menunjuk halaman masuk atau pendaftaran
 	 *     memantulkan pengguna ter-login bolak-balik tanpa henti;
-	 * (c) **pantulan zona** — `next` yang tidak boleh dibuka peran itu akan ditolak
+	 * (c) **pantulan zona**: `next` yang tidak boleh dibuka peran itu akan ditolak
 	 *     guard tepat sesudah masuk, dan pengguna menyimpulkan loginnya gagal.
 	 *
 	 * @param {string|null|undefined} next Jalur tujuan yang diminta, umumnya dari query `?next=`.
@@ -194,7 +194,7 @@ export class AccessPolicy {
 	 * Apakah peran ini boleh melihat mekanik skor: poin, tabel skor, dan tier.
 	 *
 	 * Jangkar struktural PO-2. `canSeeScoring(null) === false` berarti zona publik
-	 * tidak pernah punya jawaban "boleh" untuk ditanyakan — larangan gamifikasi di
+	 * tidak pernah punya jawaban "boleh" untuk ditanyakan: larangan gamifikasi di
 	 * ruang publik menjadi aturan yang diuji, bukan kesepakatan yang akan terlupa
 	 * pada halaman berikutnya. Verifikator juga `false`: ia dinilai pada mutu
 	 * keputusan, bukan pada capaian angka.
@@ -209,7 +209,7 @@ export class AccessPolicy {
 	/**
 	 * Apakah peran ini boleh melihat papan peringkat bernama.
 	 *
-	 * Hanya Awardee. Admin pun tidak — yang dilihat Admin adalah distribusi tier
+	 * Hanya Awardee. Admin pun tidak: yang dilihat Admin adalah distribusi tier
 	 * agregat tanpa nama, dan itu bukan papan peringkat.
 	 *
 	 * @param {string|null} role
@@ -247,12 +247,12 @@ export class AccessPolicy {
 	}
 
 	/**
-	 * Apakah aktor sedang menilai karyanya sendiri — konflik kepentingan X-01.
+	 * Apakah aktor sedang menilai karyanya sendiri: konflik kepentingan X-01.
 	 *
 	 * Sengaja hanya membandingkan dua identitas, tanpa mengenal jenis kontennya.
 	 * Pemanggil menentukan pasangan mana yang dibandingkan: pada jalur cerita
 	 * `(actor.awardeeId, story.authorId)`, pada jalur kegiatan
-	 * `(actor.id, event.proposedBy)`. Perbedaan itu bukan detail — `authorId`
+	 * `(actor.id, event.proposedBy)`. Perbedaan itu bukan detail: `authorId`
 	 * menunjuk seorang Awardee sedangkan `proposedBy` menunjuk sebuah UserAccount.
 	 *
 	 * Identitas kosong menghasilkan `false`: dua kekosongan bukan orang yang sama.

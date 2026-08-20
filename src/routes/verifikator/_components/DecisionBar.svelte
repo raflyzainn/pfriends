@@ -1,9 +1,9 @@
 <script>
 	/**
-	 * DecisionBar — deretan tombol keputusan sebuah entity.
+	 * DecisionBar: deretan tombol keputusan sebuah entity.
 	 *
 	 * @prop {import('./decisions.js').Decision[]} decisions  Hasil `keputusanCerita()` /
-	 *   `keputusanKegiatan()` — yakni turunan langsung dari peta transisi domain.
+	 *   `keputusanKegiatan()`: yakni turunan langsung dari peta transisi domain.
 	 * @prop {string} blockedReason  Alasan tertulis mengapa seluruh keputusan dimatikan;
 	 *   kosong berarti tidak ada halangan. Dipakai konflik kepentingan.
 	 * @prop {boolean} working       Ada keputusan lain yang sedang diproses.
@@ -32,7 +32,7 @@
 	 * 5. **`compact` MENGGESER penjelasan, bukan membuangnya.** Di dalam daftar
 	 *    submission, tiga paragraf penjelasan per baris menenggelamkan judul naskah
 	 *    yang seharusnya dibaca lebih dulu; di sana penjelasan itu pindah ke atribut
-	 *    `title` tiap tombol. Banner `blockedReason` TIDAK ikut diringkas — alasan
+	 *    `title` tiap tombol. Banner `blockedReason` TIDAK ikut diringkas: alasan
 	 *    sebuah keputusan dimatikan harus terbaca tanpa menunggu kursor singgah,
 	 *    karena pengguna papan ketik dan layar sentuh tidak pernah memicu tooltip.
 	 */
@@ -113,7 +113,7 @@
 				{#each decisions as decision (decision.to)}
 					{@const halangan = alasanNonaktif(decision)}
 					<div class="text-[13px] leading-relaxed">
-						<dt class="inline font-semibold text-ink-800">{decision.label} —</dt>
+						<dt class="inline font-semibold text-ink-800">{decision.label} :</dt>
 						<dd class="inline text-ink-600">
 							{halangan !== '' && blockedReason === '' ? halangan : decision.description}
 						</dd>

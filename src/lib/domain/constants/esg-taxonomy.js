@@ -1,23 +1,23 @@
 /**
- * TAKSONOMI ESG — Hal 10 dokumen sumber ("ESG Measurement Hints") dan
+ * TAKSONOMI ESG: Hal 10 dokumen sumber ("ESG Measurement Hints") dan
  * Hal 12 ("Minimum for ESG evidence").
  *
  * Tanggung jawab: mendefinisikan tiga pilar ESG beserta cakupan aktivitas dan
  * field bukti yang diminta dokumen, daftar SDG yang relevan bagi Pfriends, serta
  * pemetaan aktivitas komunitas ke pilar dan SDG.
  *
- * Prinsip yang dijaga di file ini: `cakupan` dan `buktiField` bukan karangan —
+ * Prinsip yang dijaga di file ini: `cakupan` dan `buktiField` bukan karangan :
  * keduanya adalah pemecahan langsung dari dua kolom tabel Hal 10, dan teks Inggris
  * aslinya disimpan pada `labelSumber` agar setiap baris dapat ditelusuri balik ke
  * slide. Field turunan yang tidak ada di Hal 10 tidak dimasukkan ke sini.
  *
  * Satu batasan penting (docs/04 §2.2): tidak semua aksi berpoin layak menjadi
  * bukti ESG. Empat aksi berpoin rendah adalah KPI aktivitas, bukan bukti dampak.
- * Tanpa batasan ini poin bisa "dicuci" menjadi klaim dampak — persis yang
+ * Tanpa batasan ini poin bisa "dicuci" menjadi klaim dampak: persis yang
  * diperingatkan Hal 11.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 10 dan Hal 12
- * @see docs/04-ESG-GOVERNANCE.md — §1 Model Bukti Tiga Pilar, §2 Pemetaan Aktivitas
+ * @see docs/00-SOURCE-BRIEF.md: Hal 10 dan Hal 12
+ * @see docs/04-ESG-GOVERNANCE.md: §1 Model Bukti Tiga Pilar, §2 Pemetaan Aktivitas
  */
 
 import { ActivityType } from './scoring-table.js';
@@ -109,7 +109,7 @@ export const ESG_PILLARS = Object.freeze([
 				label: 'Lokasi aksi',
 				labelSumber: 'locations',
 				deskripsi:
-					'Kelurahan hingga provinsi. Koordinat dibulatkan — presisi tingkat rumah dilarang.'
+					'Kelurahan hingga provinsi. Koordinat dibulatkan: presisi tingkat rumah dilarang.'
 			}),
 			Object.freeze({
 				key: 'action_reports',
@@ -193,7 +193,7 @@ export const ESG_PILLARS = Object.freeze([
 		label: 'Tata Kelola',
 		labelSumber: 'Governance',
 		deskripsi:
-			'Bukti pilar ini tidak diunggah anggota melainkan dihasilkan sistem — tata kelola harus menjadi hasil sampingan cara aplikasi bekerja, bukan laporan manual.',
+			'Bukti pilar ini tidak diunggah anggota melainkan dihasilkan sistem: tata kelola harus menjadi hasil sampingan cara aplikasi bekerja, bukan laporan manual.',
 		token: 'esg-g',
 		ink: 'esg-g-ink',
 		tint: 'esg-g-tint',
@@ -252,7 +252,7 @@ export const ESG_PILLARS = Object.freeze([
  * @property {number} goal        Nomor tujuan SDG (1–17).
  * @property {string} label       Nama tujuan Bahasa Indonesia.
  * @property {string} labelSumber Nama tujuan Inggris (nomenklatur PBB).
- * @property {string} color       Warna resmi SDG PBB — dipakai untuk chip dan chart.
+ * @property {string} color       Warna resmi SDG PBB: dipakai untuk chip dan chart.
  */
 
 /**
@@ -489,7 +489,7 @@ export const ESG_ACTIVITY_MAP = Object.freeze([
 ]);
 
 /**
- * Empat syarat gerbang bukti ESG — Hal 12 "Minimum for ESG evidence".
+ * Empat syarat gerbang bukti ESG: Hal 12 "Minimum for ESG evidence".
  * Bersifat konjungtif: bukti yang kehilangan salah satunya tidak boleh masuk
  * agregasi ESG. Dipakai EsgEvidenceService.isEvidenceReady (WP-2) dan ditampilkan
  * sebagai checklist di konsol admin.
@@ -524,7 +524,7 @@ export const ESG_EVIDENCE_GATE = Object.freeze([
 
 /**
  * Aksi berpoin yang layak naik menjadi bukti ESG (docs/04 §2.2). Empat aksi
- * berpoin tertinggi adalah tepat aksi yang menghasilkan bukti — desain poin dan
+ * berpoin tertinggi adalah tepat aksi yang menghasilkan bukti: desain poin dan
  * desain bukti saling menguatkan. Aksi di luar peta ini hanya menyumbang KPI
  * aktivitas dan amplifikasi.
  * @type {Readonly<Record<string, {pillar: string, sdgGoals: readonly number[], jalur: string}>>}

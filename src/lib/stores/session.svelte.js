@@ -1,8 +1,8 @@
 /**
- * STORE — Sesi Pengguna.
+ * STORE: Sesi Pengguna.
  *
  * Tanggung jawab: mengingat siapa yang sedang masuk, memeriksa kredensial lewat
- * `AuthService`, dan menjawab satu pertanyaan yang ditanyakan seluruh guard —
+ * `AuthService`, dan menjawab satu pertanyaan yang ditanyakan seluruh guard :
  * "boleh tidak orang ini membuka jalur ini?".
  *
  * Lima keputusan yang tidak terbaca dari kode:
@@ -13,13 +13,13 @@
  * 2. **`login()` memanggil `bootstrapDatabase()` sebagai langkah PERTAMA.** Peramban
  *    dengan IndexedDB kosong yang membuka `/masuk` secara langsung akan menemukan
  *    tabel `accounts` kosong, dan kredensial demo yang benar akan ditolak sebagai
- *    `KREDENSIAL_SALAH` — kegagalan yang mustahil ditebak penggunanya. Efek
+ *    `KREDENSIAL_SALAH`: kegagalan yang mustahil ditebak penggunanya. Efek
  *    penyiapan di layout publik adalah balapan, bukan jaminan.
  * 3. **`ready` terpisah dari `isAuthenticated`.** `ready` menjawab "sudah tahu
  *    belum?", `isAuthenticated` menjawab "punya sesi tidak?". Guard yang hanya
  *    membaca `isAuthenticated` akan melempar keluar setiap pengguna sah pada
  *    milidetik pertama sesudah muat ulang, karena saat itu jawabannya memang belum
- *    ada. Satu bendera saja tidak cukup; dua bendera cukup — dan bendera ketiga
+ *    ada. Satu bendera saja tidak cukup; dua bendera cukup: dan bendera ketiga
  *    (`hydrated`) sengaja TIDAK ada, lihat §2.12 kontrak.
  * 4. **Keputusan akses TIDAK ditulis di sini.** `canAccess`, `homePath`, dan
  *    `nextAfterLogin` seluruhnya mendelegasikan ke `AccessPolicy`. Store yang
@@ -33,8 +33,8 @@
  * kebenarannya adalah buku besar; menyalinnya ke localStorage hanya menciptakan
  * angka kedua yang cepat basi.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.12 kontrak store sesi, §3.2 kriteria selesai WP-02
- * @see docs/10-REVISION-SPEC.md — §3 sesi dan hidrasi
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.12 kontrak store sesi, §3.2 kriteria selesai WP-02
+ * @see docs/10-REVISION-SPEC.md: §3 sesi dan hidrasi
  */
 
 import { browser } from '$app/environment';
@@ -54,7 +54,7 @@ const KUNCI_SESI = 'pfriends_session';
 const PERAN_SAH = Object.freeze(Object.values(UserRole));
 
 /**
- * Pesan yang dipakai ketika kegagalan tidak punya kode yang dikenal — mis.
+ * Pesan yang dipakai ketika kegagalan tidak punya kode yang dikenal: mis.
  * IndexedDB ditolak peramban. Pesan tiap `AuthFailure` hidup di domain dan tidak
  * pernah disalin ke sini.
  */
@@ -87,14 +87,14 @@ const PESAN_GALAT_TAK_TERDUGA =
  * @property {SessionUser|null} user
  */
 
-/** Bentuk sesi kosong — tamu. */
+/** Bentuk sesi kosong: tamu. */
 const SESI_KOSONG = Object.freeze({ role: null, accountId: null, awardeeId: null, onboardingStatus: null, user: null });
 
 /**
  * Membaca sesi tersimpan.
  *
- * Kegagalan apa pun — localStorage diblokir, JSON rusak, atau bentuk lama dari
- * versi sebelumnya (`{role:'member'}`) — diperlakukan sebagai "belum ada sesi".
+ * Kegagalan apa pun: localStorage diblokir, JSON rusak, atau bentuk lama dari
+ * versi sebelumnya (`{role:'member'}`): diperlakukan sebagai "belum ada sesi".
  * Melempar di sini akan mematikan seluruh aplikasi hanya karena satu baris
  * penyimpanan yang tidak dapat dibaca, dan menulis ke konsol hanya menakut-nakuti
  * peninjau tentang keadaan yang sudah tertangani.
@@ -126,7 +126,7 @@ function bacaSesiTersimpan() {
  *
  * Potret ikut tersimpan di localStorage supaya nama pengguna tampil seketika saat
  * halaman dimuat ulang, sebelum IndexedDB sempat terbuka. Tanpa lapis ini setiap
- * muat ulang menampilkan header kosong lebih dulu — kedipan yang tidak perlu
+ * muat ulang menampilkan header kosong lebih dulu: kedipan yang tidak perlu
  * dilihat siapa pun.
  *
  * @param {UserAccount} account
@@ -189,7 +189,7 @@ class SessionStore {
 	/** Status onboarding PocketBase; null untuk tamu. */
 	onboardingStatus = $state(null);
 
-	/** @type {boolean} Hidrasi sesi sudah selesai — jawaban sudah ada, apa pun isinya. */
+	/** @type {boolean} Hidrasi sesi sudah selesai: jawaban sudah ada, apa pun isinya. */
 	ready = $state(false);
 
 	/** @type {boolean} Sedang memeriksa kredensial atau memuat entity. */
@@ -224,7 +224,7 @@ class SessionStore {
 	/** @type {Promise<void>|null} Hidrasi yang sedang berjalan. */
 	#hidrasi = null;
 
-	/** @type {AuthService|null} Dirakit malas — konstruktor store berjalan juga di server. */
+	/** @type {AuthService|null} Dirakit malas: konstruktor store berjalan juga di server. */
 	#auth = null;
 
 	/**
@@ -241,7 +241,7 @@ class SessionStore {
 		this.#awardeeId = tersimpan.awardeeId;
 		this.onboardingStatus = tersimpan.onboardingStatus;
 		// Tidak ada yang perlu dihidrasi bila kita di server atau tidak ada sesi
-		// tersimpan — menahan `ready` pada keadaan itu membuat halaman menampilkan
+		// tersimpan: menahan `ready` pada keadaan itu membuat halaman menampilkan
 		// pemuatan yang tidak akan pernah selesai.
 		this.ready = !browser || tersimpan.role === null;
 	}
@@ -260,7 +260,7 @@ class SessionStore {
 	 * Masuk dengan surel dan kata sandi.
 	 *
 	 * `bootstrapDatabase()` dipanggil lebih dulu, sebelum menyentuh `AuthService`.
-	 * Lihat butir 2 pada catatan berkas — tanpa itu, kredensial demo yang benar
+	 * Lihat butir 2 pada catatan berkas: tanpa itu, kredensial demo yang benar
 	 * ditolak di peramban yang IndexedDB-nya masih kosong.
 	 *
 	 * Tidak melempar: gagal masuk adalah jawaban yang sah, dan halaman `/masuk`
@@ -315,7 +315,7 @@ class SessionStore {
 	 * Mengakhiri sesi dan membersihkan jejaknya dari peramban.
 	 *
 	 * `ready` sengaja TETAP `true`: jawaban atas "siapa yang masuk?" sudah diketahui
-	 * — jawabannya "tidak ada". Menurunkannya ke `false` akan membuat guard
+	 *: jawabannya "tidak ada". Menurunkannya ke `false` akan membuat guard
 	 * menampilkan splash tepat setelah pengguna menekan keluar.
 	 *
 	 * @returns {void}
@@ -353,7 +353,7 @@ class SessionStore {
 	/**
 	 * Apakah peran yang sedang aktif berhak membuka sebuah jalur.
 	 *
-	 * Delegasi penuh ke `AccessPolicy` — tidak ada satu pun perbandingan prefiks
+	 * Delegasi penuh ke `AccessPolicy`: tidak ada satu pun perbandingan prefiks
 	 * jalur di berkas ini, dan ketiadaannya diperiksa sebagai gerbang (§3.2 butir 5).
 	 *
 	 * @param {string} pathname
@@ -376,7 +376,7 @@ class SessionStore {
 
 	/**
 	 * Memulihkan sesi secara penuh: memastikan basis data demo terisi, lalu memuat
-	 * akun dan entity awardee. Idempoten — pemanggilan berbarengan dari beberapa
+	 * akun dan entity awardee. Idempoten: pemanggilan berbarengan dari beberapa
 	 * guard menunggu janji yang sama.
 	 *
 	 * @returns {Promise<void>}
@@ -412,7 +412,7 @@ class SessionStore {
 	 *
 	 * Akun yang hilang atau dinonaktifkan sesudah sesi tersimpan mengakhiri sesi.
 	 * Membiarkannya berjalan berarti menampilkan zona yang seharusnya sudah tertutup
-	 * bagi orang itu — dan penonaktifan akun yang baru berlaku setelah pengguna
+	 * bagi orang itu: dan penonaktifan akun yang baru berlaku setelah pengguna
 	 * menekan keluar bukan penonaktifan.
 	 *
 	 * @returns {Promise<void>}

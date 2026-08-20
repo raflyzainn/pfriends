@@ -1,5 +1,5 @@
 /**
- * SERVICE — Kalkulator KPI.
+ * SERVICE: Kalkulator KPI.
  *
  * Tanggung jawab: menghitung lima Key Objective Hal 6 dari data yang benar-benar
  * ada di sistem, serta mengestimasi jangkauan organik komunitas.
@@ -7,7 +7,7 @@
  * Prinsip yang dijaga: setiap angka harus dapat ditelusuri ke definisi
  * operasionalnya. Formula tiap metrik ikut dibawa pada hasil, sehingga pembaca
  * laporan tahu persis bagaimana angkanya muncul. KPI yang tidak dapat ditelusuri
- * cara hitungnya adalah KPI yang tidak dapat dipertanggungjawabkan — dan Corsec
+ * cara hitungnya adalah KPI yang tidak dapat dipertanggungjawabkan: dan Corsec
  * yang akan diminta mempertanggungjawabkannya, bukan aplikasinya.
  *
  * Tiga definisi yang sengaja lebih ketat dari bacaan sepintas Hal 6:
@@ -18,8 +18,8 @@
  *   M-05 menuntut bukti dan kuorum, karena kata kuncinya "terlaksana" dan bukan
  *        "terjadwal".
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 6 KPI dan Keluaran
- * @see docs/02-KPI-MODEL.md — §2 lima metrik inti, §3 model reach
+ * @see docs/00-SOURCE-BRIEF.md: Hal 6 KPI dan Keluaran
+ * @see docs/02-KPI-MODEL.md: §2 lima metrik inti, §3 model reach
  */
 
 import {
@@ -121,7 +121,7 @@ export class KpiCalculator {
 	}
 
 	/**
-	 * Estimasi jangkauan organik komunitas (Hal 6 — Dampak Inisiatif).
+	 * Estimasi jangkauan organik komunitas (Hal 6: Dampak Inisiatif).
 	 *
 	 * Memakai rentang 25–500 jaringan sosial per awardee persis seperti tertulis
 	 * di Hal 6, dikalikan koefisien eksposur agar kedua batas yang disebut sumber
@@ -168,15 +168,15 @@ export class KpiCalculator {
 			parameter: { ...REACH_PARAMETERS },
 			asumsi: Object.freeze([
 				`Setiap awardee memiliki ${jaringanSosialMin}–${jaringanSosialMax} jaringan sosial (Hal 6).`,
-				`Koefisien eksposur ${koefisienEksposurMin}–${koefisienEksposurMax} — asumsi, menunggu konfirmasi Corsec.`,
-				`Tumpang tindih audiens antarawardee ${Math.round(overlapJaringan * 100)}% — asumsi.`,
+				`Koefisien eksposur ${koefisienEksposurMin}–${koefisienEksposurMax}: asumsi, menunggu konfirmasi Corsec.`,
+				`Tumpang tindih audiens antarawardee ${Math.round(overlapJaringan * 100)}%: asumsi.`,
 				'Angka bruto dipakai untuk komunikasi, angka neto untuk perencanaan.'
 			])
 		};
 	}
 
 	/**
-	 * M-01 — Coverage registrasi penerima manfaat.
+	 * M-01: Coverage registrasi penerima manfaat.
 	 * Akun tanpa consent tidak dihitung: terdata tanpa persetujuan bukan cakupan
 	 * yang sah untuk dilaporkan.
 	 * @param {readonly Awardee[]} awardees
@@ -194,7 +194,7 @@ export class KpiCalculator {
 	}
 
 	/**
-	 * M-02 — Volume konten terdiseminasi pada bulan berjalan.
+	 * M-02: Volume konten terdiseminasi pada bulan berjalan.
 	 * @param {readonly Broadcast[]} broadcasts
 	 * @param {string} monthKey
 	 * @returns {{id: string, actual: number, numerator: number, denominator: number}}
@@ -215,7 +215,7 @@ export class KpiCalculator {
 	}
 
 	/**
-	 * M-03 — Frekuensi diseminasi: jumlah HARI kalender unik yang punya kiriman.
+	 * M-03: Frekuensi diseminasi: jumlah HARI kalender unik yang punya kiriman.
 	 * @param {readonly Broadcast[]} broadcasts
 	 * @param {string} monthKey
 	 * @returns {{id: string, actual: number, numerator: number, denominator: number}}
@@ -235,8 +235,8 @@ export class KpiCalculator {
 	}
 
 	/**
-	 * M-04 — Amplification rate: porsi awardee aktif yang mengamplifikasi.
-	 * Berbasis awardee unik, bukan jumlah share — satu awardee yang membagikan
+	 * M-04: Amplification rate: porsi awardee aktif yang mengamplifikasi.
+	 * Berbasis awardee unik, bukan jumlah share: satu awardee yang membagikan
 	 * dua puluh kali tetap satu amplifier.
 	 * @param {readonly Awardee[]} awardeeAktif
 	 * @param {readonly PointActivity[]} activities
@@ -255,7 +255,7 @@ export class KpiCalculator {
 	}
 
 	/**
-	 * M-05 — Aktivitas engagement terlaksana sepanjang program.
+	 * M-05: Aktivitas engagement terlaksana sepanjang program.
 	 * @param {readonly CommunityEvent[]} events
 	 * @returns {{id: string, actual: number, numerator: number, denominator: number}}
 	 */

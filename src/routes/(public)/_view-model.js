@@ -1,5 +1,5 @@
 /**
- * ADAPTER TAMPILAN — zona publik.
+ * ADAPTER TAMPILAN: zona publik.
  *
  * Tanggung jawab: menerjemahkan entity domain menjadi bentuk polos yang diminta
  * kontrak props komponen bersama, untuk tujuh halaman publik sekaligus.
@@ -7,14 +7,14 @@
  * EMPAT KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
  *
  * 1. **`totalPoin` DICABUT dari `ringkasKomunitas`.** Field itu belum pernah
- *    dirender, tetapi ia terekspos — dan satu-satunya fungsinya adalah
+ *    dirender, tetapi ia terekspos: dan satu-satunya fungsinya adalah
  *    membocorkan bahwa sistem skor ada (`docs/10` §4.3 H-6). Larangan Keputusan
  *    Pemilik Produk #2 ditegakkan pada BENTUK DATA: halaman publik tidak dapat
  *    membocorkan angka yang tidak pernah sampai kepadanya. Agregat skor per
  *    komunitas kini hanya hidup di zona ter-login dan di agregat `/admin`.
  *
  * 2. **`kartuCerita` mengisi `cover` lewat `fotoCerita(slug)`.** `Story` tidak
- *    pernah punya field sampul — diverifikasi ke `StoryInput` dan ke seed. Selama
+ *    pernah punya field sampul: diverifikasi ke `StoryInput` dan ke seed. Selama
  *    pemetaan itu tidak dilakukan di sini, `StoryCard` selalu jatuh ke fallback
  *    tipografis dan dua belas foto sampul di `static/img/` tidak pernah tampil
  *    (cacat D-08). Sumber pemetaannya tunggal: `src/lib/data/photos.js`.
@@ -22,13 +22,13 @@
  * 3. **Kegiatan TIDAK dipetakan di berkas ini.** `eventCardVM` milik
  *    `editorial/view-model.js` adalah satu-satunya pemeta kegiatan di seluruh
  *    proyek (KP-3). `agendaPublik()` di bawah hanya memotong daftarnya lalu
- *    mendelegasikan pemetaan — ia bukan pemeta tandingan.
+ *    mendelegasikan pemetaan: ia bukan pemeta tandingan.
  *
  * 4. **Berkas berawalan garis bawah dan tanpa `+`**, sehingga tidak pernah
  *    menjadi rute SvelteKit.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak komponen, §3.5 WP-04
- * @see docs/10-REVISION-SPEC.md — §4.3 H-6 agregat skor haram tampil publik
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak komponen, §3.5 WP-04
+ * @see docs/10-REVISION-SPEC.md: §4.3 H-6 agregat skor haram tampil publik
  */
 
 import { CommunityType, komunitas } from '$lib/domain/constants/community.js';
@@ -88,7 +88,7 @@ export function kartuCerita(story) {
 /**
  * Warna keying rule per kategori gerakan.
  *
- * Tiga warna palet yang sudah ada — tidak ada warna baru yang masuk. Pemetaan
+ * Tiga warna palet yang sudah ada: tidak ada warna baru yang masuk. Pemetaan
  * ditulis di sini, bukan di komponen, supaya `/` dan `/gerakan` tidak pernah
  * memberi warna berbeda untuk kategori yang sama.
  * @type {Readonly<Record<string, 'red'|'navy'|'green'>>}
@@ -100,7 +100,7 @@ const KEYLINE_KATEGORI = Object.freeze({
 });
 
 /**
- * Bentuk baris daftar gerakan — baris editorial ber-keying rule, bukan kartu.
+ * Bentuk baris daftar gerakan: baris editorial ber-keying rule, bukan kartu.
  *
  * `wilayah` dihitung dari daftar wilayah yang dipisahkan koma pada entity:
  * gerakan menyimpan wilayah sebagai teks bebas, dan cacah titik aksi adalah
@@ -154,7 +154,7 @@ function cacahWilayah(region) {
  *
  * Hanya anggota aktif yang dihitung. Angka yang dipajang di halaman publik adalah
  * klaim kepada calon anggota, dan menghitung pendaftar yang belum terverifikasi
- * akan membesarkan klaim itu melebihi yang dapat dipertanggungjawabkan — penyaring
+ * akan membesarkan klaim itu melebihi yang dapat dipertanggungjawabkan: penyaring
  * yang sama dipakai `ProgramImpactService.publicSnapshot()` (aturan D-07).
  *
  * @param {readonly import('$lib/domain/entities/Awardee.js').Awardee[]} awardees

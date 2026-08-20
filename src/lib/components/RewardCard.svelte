@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * RewardCard — kartu katalog penukaran poin.
+	 * RewardCard: kartu katalog penukaran poin.
 	 *
 	 * Props:
 	 * @prop {{id:string,name:string,category?:string,priceKt:number,minTier?:string,
@@ -10,8 +10,8 @@
 	 * @prop {string|null} userTier
 	 * @prop {(reward:any)=>void} onRedeem
 	 *
-	 * Tidak ada tombol mati tanpa penjelasan. Ketiga penghalang penukaran — tier
-	 * kurang, saldo kurang, kuota habis — selalu dinyatakan eksplisit BESERTA
+	 * Tidak ada tombol mati tanpa penjelasan. Ketiga penghalang penukaran: tier
+	 * kurang, saldo kurang, kuota habis: selalu dinyatakan eksplisit BESERTA
 	 * angkanya, karena "kurang 120 KT" dapat ditindaklanjuti sedangkan tombol abu
 	 * hanya membingungkan.
 	 */
@@ -43,7 +43,7 @@
 		[REWARD_CATEGORY.DAMPAK]: ICONS.heart
 	};
 
-	/** Ambang peringatan kuota menipis — murni aturan tampilan, bukan aturan domain. */
+	/** Ambang peringatan kuota menipis: murni aturan tampilan, bukan aturan domain. */
 	const AMBANG_KUOTA_MENIPIS = 0.2;
 
 	const saldo = $derived(balanceKt === undefined ? points : balanceKt);

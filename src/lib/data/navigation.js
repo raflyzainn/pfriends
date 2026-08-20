@@ -1,5 +1,5 @@
 /**
- * DATA NAVIGASI — daftar tujuan tiap zona, sebagai data.
+ * DATA NAVIGASI: daftar tujuan tiap zona, sebagai data.
  *
  * Tanggung jawab: menjadi satu-satunya tempat yang tahu "zona X punya tujuan apa
  * saja, dengan label dan ikon apa". Layout zona, `Sidebar`, dan `BottomNav`
@@ -11,12 +11,12 @@
  *    sesi, tidak memanggil `AccessPolicy.canEnter`, dan tidak pernah menyaring
  *    butir berdasarkan peran. Penjagaan akses hidup di `AccessPolicy` + `ZoneGuard`;
  *    menaruh separuh keputusan di daftar menu akan melahirkan dua gerbang yang
- *    cepat berbeda pendapat — dan gerbang yang berbeda pendapat selalu dimenangkan
+ *    cepat berbeda pendapat: dan gerbang yang berbeda pendapat selalu dimenangkan
  *    oleh yang paling longgar.
  * 2. **Tujuan yang halamannya belum ada tetap didaftarkan.** `/kalender` dan
  *    `/metode-pengukuran` dibangun paket lain pada gelombang berikutnya. Menunda
  *    pendaftarannya berarti berkas ini harus disunting lagi tepat pada gelombang
- *    ketika lima paket menyentuh berkas lain secara paralel — persis waktu yang
+ *    ketika lima paket menyentuh berkas lain secara paralel: persis waktu yang
  *    paling buruk untuk menyentuh berkas bersama.
  * 3. **Lencana dinyatakan sebagai `badgeKey`, bukan sebagai angka.** Angkanya
  *    hidup di store (`editorial.reviewQueueCount`, `admin.pendingCount`) dan baru
@@ -27,8 +27,8 @@
  * milik paket ini; menuliskan path SVG langsung di sini akan menjadi salinan kedua
  * dari registry ikon.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak export navigation.js, §2.14 route final V2
- * @see src/lib/domain/policies/AccessPolicy.js — Zone; penjagaan akses yang sesungguhnya
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak export navigation.js, §2.14 route final V2
+ * @see src/lib/domain/policies/AccessPolicy.js: Zone; penjagaan akses yang sesungguhnya
  */
 
 import { Zone } from '$lib/domain/policies/AccessPolicy.js';
@@ -61,7 +61,7 @@ const BERANDA_ZONA = Object.freeze(['/', '/awardee', '/verifikator', '/admin']);
  *
  * Dipangkas dari tujuh menjadi tiga (revisi 4 Agustus 2026). Halaman `/gerakan`,
  * `/komunitas`, `/tentang`, dan `/metode-pengukuran` MASIH ADA dan tetap dapat
- * dibuka lewat tautan di dalam halaman — yang dicabut hanya tempatnya di bilah
+ * dibuka lewat tautan di dalam halaman: yang dicabut hanya tempatnya di bilah
  * navigasi. Menghapus routenya sekalian akan mematikan tautan yang tersebar di
  * beranda dan footer, jauh melebihi yang diminta.
  *
@@ -70,7 +70,7 @@ const BERANDA_ZONA = Object.freeze(['/', '/awardee', '/verifikator', '/admin']);
  * dan mengganti route hanya demi kecocokan label akan menyentuh berkas jauh lebih
  * banyak daripada nilainya pada tahap mockup.
  *
- * Nol butir bermuatan mekanik skor — tidak ada "Papan Peringkat", tidak ada
+ * Nol butir bermuatan mekanik skor: tidak ada "Papan Peringkat", tidak ada
  * "Poin". Larangan PO-2 ditegakkan pada bentuk data navigasi, bukan pada disiplin
  * pemanggil yang kelak menyalin daftar ini.
  * @type {readonly NavItem[]}
@@ -98,7 +98,7 @@ const NAV_PUBLIC = Object.freeze([
  *
  * Lima butir bertanda `primary` adalah yang muat di bilah ponsel, dan urutannya
  * bukan selera: awardee membuka microsite ini terutama dari tautan WhatsApp di
- * ponsel, sehingga kelima itulah navigasi utamanya — bukan pelengkap sidebar.
+ * ponsel, sehingga kelima itulah navigasi utamanya: bukan pelengkap sidebar.
  * @type {readonly NavItem[]}
  */
 const NAV_AWARDEE = Object.freeze([
@@ -155,7 +155,7 @@ const NAV_AWARDEE = Object.freeze([
 	// Label "Jejaring" menunjuk ke `/awardee/direktori`. Routenya sengaja TIDAK ikut
 	// diganti nama, mengikuti keputusan yang sama pada butir "Blog" → `/cerita`:
 	// mengganti route hanya demi kecocokan label akan menyentuh tautan silang di
-	// forum, profil, dan seed sekaligus — jauh melebihi nilainya pada tahap mockup.
+	// forum, profil, dan seed sekaligus: jauh melebihi nilainya pada tahap mockup.
 	Object.freeze({
 		id: 'directory',
 		label: 'Jejaring',
@@ -177,6 +177,13 @@ const NAV_VERIFIER = Object.freeze([
 		label: 'Dasbor',
 		href: '/verifikator',
 		iconPath: ICONS.chart,
+		primary: true
+	}),
+	Object.freeze({
+		id: 'broadcasts',
+		label: 'Pemantauan Kabar',
+		href: '/verifikator/kabar',
+		iconPath: ICONS.megaphone,
 		primary: true
 	}),
 	Object.freeze({
@@ -232,6 +239,13 @@ const NAV_ADMIN = Object.freeze([
 		primary: true
 	}),
 	Object.freeze({
+		id: 'broadcasts',
+		label: 'Kabar',
+		href: '/admin/broadcast',
+		iconPath: ICONS.megaphone,
+		primary: true
+	}),
+	Object.freeze({
 		id: 'awardees',
 		label: 'Kontrol Akun',
 		href: '/admin/awardee',
@@ -270,7 +284,7 @@ export const NAV_BY_ZONE = Object.freeze({
  *
  * Mengembalikan salinan dangkal baru setiap pemanggilan. Konstanta di atas beku,
  * tetapi pemanggil yang menambahkan lencana atau menyortir ulang tetap perlu array
- * yang boleh disentuh — dan array bersama yang diam-diam disortir di satu halaman
+ * yang boleh disentuh: dan array bersama yang diam-diam disortir di satu halaman
  * akan mengubah urutan menu di halaman lain.
  *
  * @param {string} zone Salah satu `Zone`.
@@ -284,7 +298,7 @@ export function navForZone(zone) {
 /**
  * Tujuan utama sebuah zona untuk bilah navigasi ponsel.
  *
- * Bila tidak satu pun butir bertanda `primary`, lima butir pertama dipakai —
+ * Bila tidak satu pun butir bertanda `primary`, lima butir pertama dipakai -
  * bilah navigasi yang kosong jauh lebih merugikan daripada bilah yang urutannya
  * belum ditata.
  *
@@ -320,7 +334,7 @@ export function withBadges(items, counts) {
 /**
  * Apakah sebuah tujuan sedang dibuka.
  *
- * Pencocokan awalan memakai pemisah `/` — `/admin` tidak menyalakan dirinya untuk
+ * Pencocokan awalan memakai pemisah `/`: `/admin` tidak menyalakan dirinya untuk
  * `/administrasi`, dan `/awardee/cerita` tidak menyalakan `/awardee/ceritaku`.
  * Beranda zona (`/`, `/awardee`, `/admin`, `/verifikator`) dicocokkan persis:
  * tanpa itu beranda akan menyala di seluruh halaman zonanya sekaligus.

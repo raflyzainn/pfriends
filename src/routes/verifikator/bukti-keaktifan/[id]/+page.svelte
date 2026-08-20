@@ -11,7 +11,7 @@
 	async function decide(decision) { try { await activitySubmissions.review(page.params.id, decision, note); toast.push({ type: ToastType.SUCCESS, title: decision === 'APPROVE' ? 'Bukti disetujui' : 'Revisi diminta', message: decision === 'APPROVE' ? 'Poin telah dibukukan secara otomatis.' : 'Catatan dapat dilihat Awardee.' }); note = ''; } catch {} }
 </script>
 
-<svelte:head><title>Detail Bukti Keaktifan · Verifikator PFfriends</title></svelte:head>
+<svelte:head><title>Detail Bukti Keaktifan · Verifikator PFriends</title></svelte:head>
 <PageHeader eyebrow="Verifikasi bukti" title={activitySubmissions.selected?.title ?? 'Memuat pengajuan…'} description="Periksa konteks aktivitas, lampiran, dan seluruh jejak keputusan." />
 
 {#if activitySubmissions.selected}

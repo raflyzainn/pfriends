@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * KpiCard — kartu satu metrik KPI.
+	 * KpiCard: kartu satu metrik KPI.
 	 *
 	 * Props:
 	 * @prop {{id:string,label?:string,name?:string,actual:number,target:number,unit?:string,
@@ -11,25 +11,25 @@
 	 *
 	 * Menerima langsung keluaran `KpiCalculator.snapshot()`. Bila `percent` atau
 	 * `status` tidak disertakan, keduanya diturunkan dari `actual` dan `target`
-	 * sebagai tampilan semata — aturan ambang warna tetap milik
+	 * sebagai tampilan semata: aturan ambang warna tetap milik
 	 * `$lib/domain/constants/kpi-targets.js`, tidak pernah ditulis ulang di sini.
 	 *
-	 * MITIGASI WAJIB `--font-display` — jangan dihapus tanpa membaca ini.
+	 * MITIGASI WAJIB `--font-display`: jangan dihapus tanpa membaca ini.
 	 *
 	 * Kartu ini adalah pemakai `@utility numeric` yang paling menonjol di `/admin`.
 	 * Dua lapis pengaman dipasang bersamaan:
 	 * (a) `app.css` mengubah `numeric` agar membaca `var(--font-sans)` (daftar
-	 *     putih `docs/12` §3.4 butir 7) — tanpa itu, mengganti `--font-display`
+	 *     putih `docs/12` §3.4 butir 7): tanpa itu, mengganti `--font-display`
 	 *     memindahkan 167 pemakaian `numeric` di 47 berkas ke serif sekaligus;
 	 * (b) judul kartu di bawah memasang `font-sans` eksplisit, sehingga komponen
 	 *     ini tetap benar walau seseorang kelak menyunting `app.css`.
 	 * Menambahkan `font-sans` di SEBELAH `numeric` bukan mitigasi yang sah: utility
 	 * itu menetapkan `font-family` sendiri, jadi pemenangnya bergantung urutan
-	 * utility Tailwind 4 — taruhan, bukan jaminan. Karena itu perbaikan (a) ada di
+	 * utility Tailwind 4: taruhan, bukan jaminan. Karena itu perbaikan (a) ada di
 	 * `app.css`, bukan di sini.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.3(a) baris KpiCard, §3.3(d) butir 8
-	 * @see docs/11-VISUAL-DIRECTION.md — §3.4 KOREKSI atas klaim "nol tabrakan"
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.3(a) baris KpiCard, §3.3(d) butir 8
+	 * @see docs/11-VISUAL-DIRECTION.md: §3.4 KOREKSI atas klaim "nol tabrakan"
 	 */
 	import Icon from './Icon.svelte';
 	import ProgressBar from './ProgressBar.svelte';
@@ -45,7 +45,7 @@
 
 	let { kpi = null, href = '', class: className = '' } = $props();
 
-	/** Warna status universal — hijau tercapai, kuning mendekati, merah tertinggal. */
+	/** Warna status universal: hijau tercapai, kuning mendekati, merah tertinggal. */
 	const WARNA_STATUS = {
 		[KPI_STATUS.HIJAU]: { aksen: 'var(--color-pertamina-green)', teks: 'text-pertamina-green-ink' },
 		[KPI_STATUS.KUNING]: { aksen: 'var(--color-tier-champion)', teks: 'text-warning' },

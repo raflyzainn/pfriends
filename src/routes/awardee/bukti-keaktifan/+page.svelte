@@ -4,7 +4,7 @@
 	import { activitySubmissions, SUBMISSION_STATUS_META, SubmissionStatus } from '$lib/stores/activity-submissions.svelte.js';
 	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
 
-	const TYPES = SCORING_TABLE.filter((rule) => rule.needsEvidence && rule.type !== 'SESSION_ATTEND');
+	const TYPES = SCORING_TABLE.filter((rule) => rule.needsEvidence && !['SESSION_ATTEND','SHARE_PUBLIC'].includes(rule.type));
 	let activityType = $state(TYPES[0]?.type ?? 'SHARE_PUBLIC');
 	let activityDate = $state(new Date().toISOString().slice(0, 10));
 	let title = $state(''); let description = $state(''); let externalUrl = $state('');
@@ -29,7 +29,7 @@
 	}
 </script>
 
-<svelte:head><title>Bukti Keaktifan · Awardee PFfriends</title></svelte:head>
+<svelte:head><title>Bukti Keaktifan · Awardee PFriends</title></svelte:head>
 <PageHeader eyebrow="Kontribusi" title="Bukti Keaktifan" description="Kirim dokumentasi aktivitasmu untuk ditinjau Verifikator dan memperoleh poin kontribusi." />
 
 <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">

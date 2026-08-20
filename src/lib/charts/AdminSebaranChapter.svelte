@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * AdminSebaranChapter — sebaran anggota per chapter, dipecah per komunitas.
+	 * AdminSebaranChapter: sebaran anggota per chapter, dipecah per komunitas.
 	 *
 	 * Props:
 	 * @prop {string[]} categories  Label chapter, urut seperti di konstanta domain.
@@ -9,18 +9,18 @@
 	 * @prop {string} height
 	 * @prop {boolean} loading
 	 *
-	 * Satu chart menjawab dua pertanyaan sekaligus — "chapter mana yang paling
-	 * besar" dan "bagaimana komposisi komunitasnya" — karena keduanya selalu
+	 * Satu chart menjawab dua pertanyaan sekaligus: "chapter mana yang paling
+	 * besar" dan "bagaimana komposisi komunitasnya": karena keduanya selalu
 	 * ditanyakan berurutan. Memisahkannya menjadi batang chapter dan donat
 	 * komunitas memaksa pembaca menjumlahkan sendiri di kepala, dan jumlah itu
 	 * justru isi jawabannya.
 	 *
 	 * Bar HORIZONTAL bertumpuk: label chapter terbaca mendatar tanpa dimiringkan,
 	 * dan panjang total tiap baris langsung dapat dibandingkan. Tumpukan sah di
-	 * sini karena kedua komunitas saling lepas — seorang anggota hanya berada di
+	 * sini karena kedua komunitas saling lepas: seorang anggota hanya berada di
 	 * satu komunitas, sehingga tidak ada orang yang terhitung dua kali.
 	 *
-	 * Tanpa data, `option` bernilai `null` — bukan batang bernilai nol (CH-4).
+	 * Tanpa data, `option` bernilai `null`: bukan batang bernilai nol (CH-4).
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import { tip, legend, grid, valueAxis, categoryAxis, animasi, angka, series as paletSeri } from './_chartTheme.js';

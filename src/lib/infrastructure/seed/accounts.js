@@ -1,5 +1,5 @@
 /**
- * PEMBANGKIT AKUN DEMO — pemetaan murni, nol keacakan.
+ * PEMBANGKIT AKUN DEMO: pemetaan murni, nol keacakan.
  *
  * Tanggung jawab: mengubah daftar awardee hasil `buildSeed()` menjadi baris tabel
  * `accounts`, dan menjadi SATU-SATUNYA tempat kredensial demo dituliskan.
@@ -23,8 +23,8 @@
  *    pada naskah cerita. Memakai id yang sama membuat jejak peninjauan historis
  *    langsung punya pemilik, bukan menunjuk string yatim yang tidak dapat dibuka.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.11 kontrak export, §5.6 S-2…S-6 determinisme
- * @see docs/10-REVISION-SPEC.md — §11.3 delta seed & akun demo
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.11 kontrak export, §5.6 S-2…S-6 determinisme
+ * @see docs/10-REVISION-SPEC.md: §11.3 delta seed & akun demo
  */
 
 import { UserRole } from '../../domain/constants/roles.js';
@@ -33,7 +33,7 @@ import { AccountStatus } from '../../domain/entities/UserAccount.js';
 import { PasswordHash } from '../../domain/value-objects/PasswordHash.js';
 
 /**
- * Kata sandi seluruh akun demo. Konstanta literal, bukan hasil pengacakan —
+ * Kata sandi seluruh akun demo. Konstanta literal, bukan hasil pengacakan :
  * lihat butir 3 pada catatan berkas.
  */
 export const SANDI_DEMO = 'pfriends2026';
@@ -46,7 +46,7 @@ export const ID_VERIFIKATOR_UTAMA = 'PF-CORSEC-01';
  *
  * Tambahan atas daftar export §2.11 (yang hanya menyebut verifikator utama dan
  * admin). Diperlukan karena `seed-data.js` harus dapat menunjuk peninjau kedua
- * secara simbolis alih-alih menuliskan string `'PF-CORSEC-02'` berulang kali —
+ * secara simbolis alih-alih menuliskan string `'PF-CORSEC-02'` berulang kali :
  * dan karena satu akun verifikator saja membuat cerita atau kegiatan yang
  * diajukan verifikator itu sendiri menjadi buntu permanen: penyetujunya wajib
  * bukan pengusulnya.
@@ -60,7 +60,7 @@ export const ID_ADMIN = 'PF-CORSEC';
 const RANAH_STAF = 'pertaminafoundation.org';
 
 /**
- * Naskah akun staf. Ditulis literal karena staf bukan turunan data awardee —
+ * Naskah akun staf. Ditulis literal karena staf bukan turunan data awardee :
  * mereka tidak punya poin, chapter, maupun tanggal bergabung sebagai penerima
  * manfaat, dan membangkitkannya dari profil awardee justru akan menyeret ketiganya.
  *
@@ -72,7 +72,7 @@ const NASKAH_AKUN_STAF = Object.freeze([
 		email: `verifikator@${RANAH_STAF}`,
 		role: UserRole.VERIFIER,
 		displayName: 'Rani Hapsari',
-		unit: 'Corporate Secretary — Kendali Mutu Konten',
+		unit: 'Corporate Secretary: Kendali Mutu Konten',
 		createdAt: '2026-01-05T08:00:00+07:00',
 		lastLoginAt: '2026-07-19T16:20:00+07:00'
 	}),
@@ -81,7 +81,7 @@ const NASKAH_AKUN_STAF = Object.freeze([
 		email: `verifikator2@${RANAH_STAF}`,
 		role: UserRole.VERIFIER,
 		displayName: 'Bagas Prayoga',
-		unit: 'Corporate Secretary — Kendali Mutu Konten',
+		unit: 'Corporate Secretary: Kendali Mutu Konten',
 		// Dibuat pada tanggal yang sama dengan verifikator utama, bukan menyusul
 		// belakangan: ia tercatat sebagai penyetuju kegiatan sejak Februari, dan akun
 		// yang baru ada sesudah keputusannya sendiri adalah jejak audit yang mustahil.
@@ -93,7 +93,7 @@ const NASKAH_AKUN_STAF = Object.freeze([
 		email: `admin@${RANAH_STAF}`,
 		role: UserRole.ADMIN,
 		displayName: 'Dwi Anggraini',
-		unit: 'Corporate Secretary — Pengelola Program Pfriends',
+		unit: 'Corporate Secretary: Pengelola Program Pfriends',
 		createdAt: '2026-01-05T08:00:00+07:00',
 		lastLoginAt: '2026-07-19T09:40:00+07:00'
 	})
@@ -104,7 +104,7 @@ const NASKAH_AKUN_STAF = Object.freeze([
  *
  * Keduanya sengaja tidak disamakan: status awardee menyatakan keadaan sebagai
  * PENERIMA MANFAAT, status akun menyatakan hak MASUK. Awardee yang dorman tetap
- * boleh masuk untuk memperbarui datanya — justru itu jalan keluarnya dari dorman.
+ * boleh masuk untuk memperbarui datanya: justru itu jalan keluarnya dari dorman.
  * Yang benar-benar kehilangan akses hanyalah yang ditangguhkan (sementara,
  * `TERKUNCI`) dan yang keluar atau dinonaktifkan (permanen, `NONAKTIF`).
  *
@@ -163,7 +163,7 @@ function akunAwardee(awardee, index) {
  * Membangkitkan seluruh baris tabel `accounts` dari daftar awardee.
  *
  * Hasilnya 63 baris: 60 akun awardee (satu per penerima manfaat, ber-`awardeeId`),
- * dua akun verifikator, dan satu akun admin. Akun staf ber-`awardeeId: null` —
+ * dua akun verifikator, dan satu akun admin. Akun staf ber-`awardeeId: null` :
  * invarian `UserAccount` menolak sebaliknya, dan invarian itulah yang membuat
  * pemeriksaan konflik kepentingan pada jalur cerita bermakna.
  *
@@ -192,11 +192,11 @@ export function bangkitkanAkun(awardees) {
 /**
  * Akun awardee yang dipajang sebagai contoh pada panel bantuan `/masuk`.
  *
- * Dipilih deterministik — poin tertinggi berstatus AKTIF, seri diputus oleh id
- * menaik — bukan diacak. Alasannya bukan estetika: panel demo yang menunjuk akun
+ * Dipilih deterministik: poin tertinggi berstatus AKTIF, seri diputus oleh id
+ * menaik: bukan diacak. Alasannya bukan estetika: panel demo yang menunjuk akun
  * berbeda pada tiap pemuatan membuat tangkapan layar dan naskah peragaan basi
  * setiap kali data dibangun ulang. Awardee berpoin tertinggi juga profil yang
- * paling layak dibuka lebih dulu — papan peringkat, lencana, dan riwayat poinnya
+ * paling layak dibuka lebih dulu: papan peringkat, lencana, dan riwayat poinnya
  * terisi penuh.
  *
  * @param {readonly Record<string, any>[]} awardees Baris awardee hasil `buildSeed()`.

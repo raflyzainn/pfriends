@@ -5,17 +5,17 @@
  * dipanggil berulang kali dari mana pun.
  *
  * Idempotensi ditegakkan lewat dua lapis. Lapis pertama adalah penanda
- * `seedVersion` di tabel `meta` — bila versinya sudah cocok, tidak ada satu pun
+ * `seedVersion` di tabel `meta`: bila versinya sudah cocok, tidak ada satu pun
  * penulisan dilakukan. Lapis kedua adalah janji dalam memori: pemanggilan yang
  * terjadi bersamaan sebelum pemanggilan pertama selesai akan menunggu janji yang
- * sama, bukan memulai pengisian keduanya. Lapis kedua ini bukan kemewahan —
+ * sama, bukan memulai pengisian keduanya. Lapis kedua ini bukan kemewahan :
  * layout, halaman, dan store dapat memanggil `bootstrapDatabase()` hampir
  * bersamaan saat hidrasi, dan tanpanya data akan ditulis dua kali.
  *
  * Menaikkan `SEED_VERSION` adalah cara resmi memperbarui data demo: pengisian
  * berikutnya akan mengosongkan tabel lebih dulu lalu menulis ulang seluruhnya.
  *
- * @see docs/09-BUILD-CONTRACT.md — §6 "Bootstrap: isi Dexie sekali saja; idempoten"
+ * @see docs/09-BUILD-CONTRACT.md: §6 "Bootstrap: isi Dexie sekali saja; idempoten"
  */
 
 import { browser } from '$app/environment';
@@ -30,7 +30,7 @@ import { buildSeed } from './seed-data.js';
  * dalam satu langkah. Bila hanya `DB_VERSION` yang naik, tabel `accounts` terbentuk
  * tetapi tidak pernah terisi: pemeriksaan di bawah menemukan versi seed yang masih
  * cocok, tidak menulis apa pun, dan login menjadi mustahil TANPA satu pun pesan
- * galat — kueri hanya mengembalikan array kosong.
+ * galat: kueri hanya mengembalikan array kosong.
  * @type {number}
  */
 export const SEED_VERSION = 2;
@@ -50,7 +50,7 @@ let berjalan = null;
  *
  * Tabel baru wajib didaftarkan di TIGA tempat sekaligus: `TABLE` dan skema versi
  * pada `db.js`, lalu daftar ini. Transaksi tulis di bawah hanya membuka tabel yang
- * tercantum di sini — tabel yang lupa didaftarkan menghasilkan `NotFoundError` di
+ * tercantum di sini: tabel yang lupa didaftarkan menghasilkan `NotFoundError` di
  * tengah transaksi, dan seluruh pengisian gagal, bukan hanya satu koleksi.
  * @type {readonly {table: string, key: keyof import('./seed-data.js').SeedBundle}[]}
  */

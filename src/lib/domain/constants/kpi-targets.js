@@ -1,5 +1,5 @@
 /**
- * TARGET KPI KANONIK — Hal 6 dokumen sumber ("KPI dan Keluaran").
+ * TARGET KPI KANONIK: Hal 6 dokumen sumber ("KPI dan Keluaran").
  *
  * Tanggung jawab: mendefinisikan lima Key Objective beserta target, satuan,
  * formula, dan ambang warna. Ini satu-satunya tempat angka 75% / 1–2 / 2 / 50% / 2
@@ -7,15 +7,15 @@
  *
  * Formula disimpan sebagai STRING, bukan fungsi. Alasannya disengaja: string ini
  * ikut ditampilkan di konsol admin agar pembaca laporan tahu persis bagaimana
- * angka dihitung — KPI yang tidak bisa ditelusuri cara hitungnya adalah KPI yang
+ * angka dihitung: KPI yang tidak bisa ditelusuri cara hitungnya adalah KPI yang
  * tidak bisa dipertanggungjawabkan. Eksekusi hitungnya milik KpiCalculator (WP-2).
  *
  * Penandaan provenance mengikuti konvensi docs/02: nilai tanpa penanda berasal
  * langsung dari Hal 6; nilai ber-`[ASUMSI]` adalah turunan yang perlu konfirmasi
  * Corsec dan sudah dicatat sebagai butir terbuka di docs/02.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 6 "KPI dan Keluaran"
- * @see docs/02-KPI-MODEL.md — §1.3 Registry Parameter, §2 Lima Metrik Inti, §3 Reach
+ * @see docs/00-SOURCE-BRIEF.md: Hal 6 "KPI dan Keluaran"
+ * @see docs/02-KPI-MODEL.md: §1.3 Registry Parameter, §2 Lima Metrik Inti, §3 Reach
  */
 
 /**
@@ -45,13 +45,13 @@ export const KPI_TYPE = Object.freeze({
  * @property {string} id             Kode metrik docs/02 (M-01 … M-05).
  * @property {string} label          Nama metrik untuk UI.
  * @property {string} shortLabel     Nama pendek untuk kartu sempit dan label chart.
- * @property {number} target         Nilai target — KANONIK, dari Hal 6.
+ * @property {number} target         Nilai target: KANONIK, dari Hal 6.
  * @property {number} [targetMax]    Batas atas bila target berupa rentang (hanya M-02).
  * @property {string} unit           Satuan yang ditampilkan di sebelah angka.
  * @property {string} type           Salah satu KPI_TYPE.
  * @property {string} periode        Periode evaluasi target.
  * @property {string} formula        Formula perhitungan, ditampilkan apa adanya di konsol admin.
- * @property {string} definisi       Definisi operasional ringkas — apa yang dihitung dan apa yang tidak.
+ * @property {string} definisi       Definisi operasional ringkas: apa yang dihitung dan apa yang tidak.
  * @property {string} kutipanSumber  Kutipan Hal 6 yang menjadi dasar metrik ini.
  * @property {string} source         Rujukan halaman sumber.
  * @property {number} ambangKuning   Rasio pencapaian minimum agar berstatus KUNING (di bawahnya MERAH).
@@ -82,7 +82,7 @@ export const KPI_TARGETS = Object.freeze([
 			'Akun tanpa consent tidak dihitung. Penyebut dibekukan sebagai snapshot awal periode agar coverage tidak terlihat stagnan saat data baru masuk.',
 		kutipanSumber:
 			'75% dari penerima manfaat Pertamina Foundation terdata dalam komunitas Pfriends.',
-		source: 'Hal 6 — Key Objectives',
+		source: 'Hal 6: Key Objectives',
 		ambangKuning: 0.8
 	}),
 	Object.freeze({
@@ -100,7 +100,7 @@ export const KPI_TARGETS = Object.freeze([
 			'Menghitung aset konten unik, bukan peristiwa pengirimannya. Satu konten yang dikirim ulang tiga kali tetap dihitung satu.',
 		kutipanSumber:
 			'1–2 konten Pertamina dan/atau PF terdiseminasi di forum komunitas Pfriends dalam satu bulan.',
-		source: 'Hal 6 — Key Objectives',
+		source: 'Hal 6: Key Objectives',
 		ambangKuning: 0.5
 	}),
 	Object.freeze({
@@ -115,7 +115,7 @@ export const KPI_TARGETS = Object.freeze([
 		definisi:
 			'Dihitung per hari, bukan per broadcast, agar satu batch berisi lima pesan serentak tidak terhitung lima kali diseminasi. Ini metrik ritme komunikasi.',
 		kutipanSumber: 'Melakukan diseminasi informasi ke komunitas minimal 2 kali dalam satu bulan.',
-		source: 'Hal 6 — Key Objectives',
+		source: 'Hal 6: Key Objectives',
 		ambangKuning: 0.5
 	}),
 	Object.freeze({
@@ -132,7 +132,7 @@ export const KPI_TARGETS = Object.freeze([
 			'Berbasis anggota unik, bukan jumlah share. Satu anggota yang membagikan 20 kali tetap dihitung satu amplifier.',
 		kutipanSumber:
 			'50% anggota komunitas ikut melakukan amplifikasi informasi Pertamina dan/atau PF.',
-		source: 'Hal 6 — Key Objectives',
+		source: 'Hal 6: Key Objectives',
 		ambangKuning: 0.8
 	}),
 	Object.freeze({
@@ -146,19 +146,19 @@ export const KPI_TARGETS = Object.freeze([
 		formula:
 			'AE = |{ kegiatan berstatus selesai DAN memiliki minimal satu lampiran bukti DAN jumlah hadir >= kuorum }|',
 		definisi:
-			'Kata kunci Hal 6 adalah "terlaksana", bukan "terjadwal" — kegiatan tanpa bukti pelaksanaan tidak dihitung.',
+			'Kata kunci Hal 6 adalah "terlaksana", bukan "terjadwal": kegiatan tanpa bukti pelaksanaan tidak dihitung.',
 		kutipanSumber: '2 aktivitas engagement komunitas terlaksana.',
-		source: 'Hal 6 — Key Objectives',
+		source: 'Hal 6: Key Objectives',
 		ambangKuning: 0.5
 	})
 ]);
 
 /**
- * Parameter estimasi jangkauan organik dan konversi reputasi (Hal 6 — Dampak Inisiatif).
+ * Parameter estimasi jangkauan organik dan konversi reputasi (Hal 6: Dampak Inisiatif).
  *
  * Catatan rekonsiliasi (docs/02 §3.1): perkalian langsung 100 anggota x 25 jaringan
  * menghasilkan 2.500, sedangkan Hal 6 menulis 250. Selisih 10x ini TIDAK diperbaiki
- * di sini — angka sumber dipertahankan apa adanya, dan koefisien eksposur `alpha`
+ * di sini: angka sumber dipertahankan apa adanya, dan koefisien eksposur `alpha`
  * diperkenalkan untuk mereproduksi kedua batas Hal 6 secara persis:
  *   pesimis  100 x 25  x 0,10 = 250
  *   optimis  100 x 500 x 1,00 = 50.000
@@ -167,23 +167,23 @@ export const KPI_TARGETS = Object.freeze([
  * @type {Readonly<Record<string, number>>}
  */
 export const REACH_PARAMETERS = Object.freeze({
-	/** Ukuran jaringan sosial per anggota, batas bawah — Hal 6. */
+	/** Ukuran jaringan sosial per anggota, batas bawah: Hal 6. */
 	jaringanSosialMin: 25,
-	/** Ukuran jaringan sosial per anggota, batas atas — Hal 6. */
+	/** Ukuran jaringan sosial per anggota, batas atas: Hal 6. */
 	jaringanSosialMax: 500,
-	/** Koefisien eksposur, batas bawah — [ASUMSI] docs/02 §3.1. */
+	/** Koefisien eksposur, batas bawah: [ASUMSI] docs/02 §3.1. */
 	koefisienEksposurMin: 0.1,
-	/** Koefisien eksposur, batas atas — [ASUMSI] docs/02 §3.1. */
+	/** Koefisien eksposur, batas atas: [ASUMSI] docs/02 §3.1. */
 	koefisienEksposurMax: 1.0,
-	/** Faktor tumpang tindih audiens antaranggota — [ASUMSI] docs/02 §3.2. */
+	/** Faktor tumpang tindih audiens antaranggota: [ASUMSI] docs/02 §3.2. */
 	overlapJaringan: 0.3,
-	/** Penurunan kebutuhan paid media, batas bawah — Hal 6. */
+	/** Penurunan kebutuhan paid media, batas bawah: Hal 6. */
 	penghematanPaidMediaMin: 0.05,
-	/** Penurunan kebutuhan paid media, batas atas — Hal 6. */
+	/** Penurunan kebutuhan paid media, batas atas: Hal 6. */
 	penghematanPaidMediaMax: 0.2,
-	/** Pengali engagement konten komunitas dibanding akun brand, batas bawah — Hal 6. */
+	/** Pengali engagement konten komunitas dibanding akun brand, batas bawah: Hal 6. */
 	pengaliEngagementMin: 2.0,
-	/** Pengali engagement konten komunitas dibanding akun brand, batas atas — Hal 6. */
+	/** Pengali engagement konten komunitas dibanding akun brand, batas atas: Hal 6. */
 	pengaliEngagementMax: 3.0
 });
 
@@ -227,7 +227,7 @@ export function targetKpi(id) {
 
 /**
  * Rasio pencapaian sebuah KPI. Untuk M-02 yang bertarget rentang 1–2, batas bawah
- * rentanglah yang menjadi penyebut — sesuai aturan warna docs/02 (VKT 2 = hijau).
+ * rentanglah yang menjadi penyebut: sesuai aturan warna docs/02 (VKT 2 = hijau).
  * @param {number} actual
  * @param {KpiTarget} kpi
  * @returns {number} Rasio pencapaian, 0 bila target tidak positif.

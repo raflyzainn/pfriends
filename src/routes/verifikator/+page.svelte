@@ -1,19 +1,19 @@
 <script>
 	/**
-	 * HALAMAN `/verifikator` — dasbor performa awardee dan dampaknya.
+	 * HALAMAN `/verifikator`: dasbor performa awardee dan dampaknya.
 	 *
-	 * Tanggung jawab: menjawab satu pertanyaan dalam satu layar — seberapa hidup
+	 * Tanggung jawab: menjawab satu pertanyaan dalam satu layar: seberapa hidup
 	 * para awardee bulan ini, dan apa yang masih menunggu keputusan saya.
 	 *
 	 * Lima keputusan yang tidak terbaca dari kode:
 	 *
 	 * 1. **Dasbor ini SENGAJA berbeda fokus dari dasbor Admin.** Admin membaca
-	 *    performa sistem dan aplikasi; verifikator membaca performa ORANG —
+	 *    performa sistem dan aplikasi; verifikator membaca performa ORANG :
 	 *    postingan, poin, KPI, dan capaian awardee. Dua dasbor yang menampilkan
 	 *    deret yang sama hanya membuat satu di antaranya tidak pernah dibuka.
 	 * 2. **Papan peringkat "Peserta Paling Aktif" hadir atas permintaan pemilik
 	 *    produk,** dan itu mencabut larangan lama yang menjauhkan mekanik skor dari
-	 *    zona ini. Yang ditampilkan tetap terbatas: poin dan peringkat awardee —
+	 *    zona ini. Yang ditampilkan tetap terbatas: poin dan peringkat awardee :
 	 *    bukan poin verifikator, yang memang tidak dinilai dengan angka.
 	 * 3. **Angka performa datang dari `dasbor-data.js`, angka antrean dari store.**
 	 *    Pemisahan itu disengaja: deret performa adalah data contoh untuk mockup,
@@ -22,13 +22,13 @@
 	 *    lencana antrean berbohong pada halaman yang ditunjuknya.
 	 * 4. **Papan peringkat memakai nama sungguhan bila katalog sudah termuat.**
 	 *    `PESERTA_TERAKTIF` hanyalah cadangan agar papan tidak pernah kosong saat
-	 *    demo — dan cadangan itu ditandai terbuka di kaki panel, bukan disamarkan.
+	 *    demo: dan cadangan itu ditandai terbuka di kaki panel, bukan disamarkan.
 	 * 5. **Profil ditaruh sebagai panel di dasbor, bukan sebagai butir navigasi.**
 	 *    Profil melekat pada akun dan perannya; satu tujuan navigasi tersendiri
 	 *    untuk membaca lima baris identitas menambah satu ketukan tanpa menambah
 	 *    satu pun informasi.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §6.4 route zona verifikator
+	 * @see docs/10-REVISION-SPEC.md: §6.4 route zona verifikator
 	 */
 	import { DummyBadge, EmptyState, Icon, LeaderboardRow, PageHeader, StatTile, ICONS } from '$lib/components';
 	import VerifAwardeePerforma from '$lib/charts/VerifAwardeePerforma.svelte';
@@ -97,7 +97,7 @@
 	const labelBulanBackend = $derived(verifierDashboardStore.data?.monthly?.map((item) => item.label) ?? [...BULAN]);
 	const sebaranBackend = $derived(verifierDashboardStore.data?.chapter ?? []);
 
-	/** Empat angka kunci performa awardee — bukan performa sistem. */
+	/** Empat angka kunci performa awardee: bukan performa sistem. */
 	const angkaKunci = $derived([
 		{
 			id: 'postingan',
@@ -140,7 +140,7 @@
 	/**
 	 * Papan peringkat peserta paling aktif.
 	 *
-	 * Awardee yang memilih anonim tetap dihitung poinnya tetapi tidak dinamai —
+	 * Awardee yang memilih anonim tetap dihitung poinnya tetapi tidak dinamai :
 	 * pilihan itu dibuat di zona awardee dan tidak boleh terbatalkan oleh dasbor
 	 * yang kebetulan berada di zona lain.
 	 */
@@ -212,7 +212,7 @@
 <PageHeader
 	eyebrow="Ruang kerja verifikator"
 	title="Performa awardee & dampaknya"
-	subtitle="Selamat datang, {session.displayName}. Layar ini membaca capaian para awardee — bukan performa aplikasi — lalu menutupnya dengan pekerjaan yang masih menunggu keputusan Anda."
+	subtitle="Selamat datang, {session.displayName}. Layar ini membaca capaian para awardee: bukan performa aplikasi: lalu menutupnya dengan pekerjaan yang masih menunggu keputusan Anda."
 />
 
 {#if editorial.error}
@@ -221,7 +221,7 @@
 	</p>
 {/if}
 
-<!-- BLOK 1 — angka kunci performa awardee. -->
+<!-- BLOK 1: angka kunci performa awardee. -->
 <section class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Angka kunci performa awardee">
 	{#each angkaKunci as kartu (kartu.id)}
 		<div class="relative">
@@ -232,7 +232,7 @@
 </section>
 
 <!--
-	BLOK 2 — dua chart yang menjawab dua pertanyaan berbeda.
+	BLOK 2: dua chart yang menjawab dua pertanyaan berbeda.
 	`min-w-0` pada butir grid wajib: canvas ECharts tidak menyusut sendiri, dan
 	tanpanya halaman menggulir mendatar di lebar 375 px.
 -->
@@ -262,7 +262,7 @@
 	</section>
 </div>
 
-<!-- BLOK 3 — papan peringkat peserta paling aktif, berdampingan dengan asal kontribusinya. -->
+<!-- BLOK 3: papan peringkat peserta paling aktif, berdampingan dengan asal kontribusinya. -->
 <div class="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
 	<section class="card min-w-0 p-5" aria-labelledby="judul-papan">
 		<div class="flex flex-wrap items-baseline justify-between gap-2">
@@ -309,13 +309,13 @@
 	<section class="card min-w-0 p-5" aria-labelledby="judul-sebaran">
 		<h2 id="judul-sebaran" class="text-base font-bold text-heading">Asal kontribusi</h2>
 		<p class="mt-1 mb-3 text-sm leading-relaxed text-ink-600">
-			Chapter dan komunitas mana yang paling hidup — dan mana yang perlu didekati.
+			Chapter dan komunitas mana yang paling hidup: dan mana yang perlu didekati.
 		</p>
 		<VerifSebaranChapter data={sebaranBackend} height="230px" />
 	</section>
 </div>
 
-<!-- BLOK 4 — pekerjaan yang menunggu keputusan, dengan tautan ke halaman yang mengerjakannya. -->
+<!-- BLOK 4: pekerjaan yang menunggu keputusan, dengan tautan ke halaman yang mengerjakannya. -->
 <section class="mt-8" aria-labelledby="judul-antrean">
 	<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
 		<h2 id="judul-antrean" class="text-lg font-bold text-heading">Menunggu keputusan Anda</h2>
@@ -399,7 +399,7 @@
 	</div>
 </section>
 
-<!-- BLOK 5 — profil ringkas; menggantikan halaman profil yang dicabut dari navigasi. -->
+<!-- BLOK 5: profil ringkas; menggantikan halaman profil yang dicabut dari navigasi. -->
 <section class="card mt-8 p-5" aria-labelledby="judul-profil">
 	<div class="flex items-center gap-2"><h2 id="judul-profil" class="text-base font-bold text-heading">Profil & rekam kerja Anda</h2><DummyBadge title="Rekam keputusan cerita dan kegiatan masih memakai Dexie." /></div>
 	<p class="mt-1 text-sm leading-relaxed text-ink-600">
@@ -416,7 +416,7 @@
 			</span>
 			<div class="min-w-0">
 				<p class="truncate text-base font-bold text-heading">{session.displayName}</p>
-				<p class="truncate text-sm text-ink-600">{akun?.email ?? '—'}</p>
+				<p class="truncate text-sm text-ink-600">{akun?.email ?? ':'}</p>
 				<p class="label-micro mt-0.5">
 					{session.roleLabel}{akun?.unit ? ` · ${akun.unit}` : ''}
 				</p>
@@ -442,7 +442,7 @@
 	</div>
 
 	<p class="mt-4 text-xs leading-relaxed text-ink-600">
-		Verifikator dinilai pada mutu keputusan, bukan pada perolehan angka — karena itu tidak ada poin,
+		Verifikator dinilai pada mutu keputusan, bukan pada perolehan angka: karena itu tidak ada poin,
 		tier, maupun peringkat untuk akun Anda sendiri. Poin pada papan di atas adalah milik awardee.
 		{#if !AccessPolicy.canProposeEvent(session.role)}
 			Peran Anda tidak berwenang mengusulkan kegiatan.

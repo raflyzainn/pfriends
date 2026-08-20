@@ -1,5 +1,5 @@
 /**
- * ADAPTER TAMPILAN — Kalender Komunitas publik (`/kalender`, `/kalender/[id]`).
+ * ADAPTER TAMPILAN: Kalender Komunitas publik (`/kalender`, `/kalender/[id]`).
  *
  * Tanggung jawab: menyaring, mengelompokkan, dan melengkapi agenda komunitas
  * untuk dua halaman publik. Berkas berawalan garis bawah dan tanpa `+`, sehingga
@@ -15,7 +15,7 @@
  *
  * 2. **Penyaring publik selalu berjalan LEBIH DULU dan hanya lewat satu gerbang.**
  *    Setiap fungsi yang mengembalikan kegiatan pada berkas ini memanggil
- *    `kegiatanTampilPublik(status)` — fungsi yang sama yang dipakai entity dan
+ *    `kegiatanTampilPublik(status)`: fungsi yang sama yang dipakai entity dan
  *    store. Menyusun perbandingan status sendiri di halaman adalah persis cara
  *    usulan mentah bocor sebagai agenda resmi (risiko R-09): kodenya tetap sah,
  *    tidak ada gerbang statis yang berubah merah, dan yang rugi adalah pengusul
@@ -30,17 +30,17 @@
  *    `chapterId` kosong berarti terbuka untuk seluruh chapter, dan kegiatan dengan
  *    `community` kosong terbuka untuk kedua komunitas. Menyembunyikan keduanya
  *    saat seseorang memilih "Chapter PF 11" akan menyembunyikan justru sebagian
- *    besar agenda yang boleh ia hadiri — penyaring yang secara teknis benar dan
+ *    besar agenda yang boleh ia hadiri: penyaring yang secara teknis benar dan
  *    secara praktis menyesatkan.
  *
  * 5. **Detail publik disusun dengan DAFTAR PUTIH.** `detailKegiatan()` menyebut
  *    satu per satu field yang boleh dibaca publik, bukan menyalin seluruh entity
  *    lalu menghapus yang sensitif. Field baru yang kelak ditambahkan ke entity
- *    karena itu berstatus tersembunyi sampai seseorang sengaja membukanya —
+ *    karena itu berstatus tersembunyi sampai seseorang sengaja membukanya :
  *    arah kegagalan yang benar untuk daftar pendaftar dan identitas pengusul.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-08 kriteria selesai 2, 3, 4
- * @see docs/10-REVISION-SPEC.md — batas visibilitas kalender publik
+ * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-08 kriteria selesai 2, 3, 4
+ * @see docs/10-REVISION-SPEC.md: batas visibilitas kalender publik
  */
 
 import {
@@ -78,7 +78,7 @@ export const ModeKehadiran = Object.freeze({
  */
 
 /**
- * Pilihan jenis kegiatan, diturunkan dari `EVENT_TYPE_META` — bukan daftar tulis
+ * Pilihan jenis kegiatan, diturunkan dari `EVENT_TYPE_META`: bukan daftar tulis
  * tangan yang akan tertinggal begitu jenis keempat muncul.
  * @type {readonly OpsiSaring[]}
  */
@@ -145,7 +145,7 @@ export function adaFilterAktif(filter) {
 }
 
 /**
- * Banyaknya penyaring yang sedang aktif — dipakai label tombol "Atur ulang".
+ * Banyaknya penyaring yang sedang aktif: dipakai label tombol "Atur ulang".
  * @param {FilterKalender} filter
  * @returns {number}
  */
@@ -157,7 +157,7 @@ export function jumlahFilterAktif(filter) {
  * GERBANG TUNGGAL halaman kalender publik.
  *
  * Menerima instans `CommunityEvent` maupun objek datar: keduanya membawa `status`,
- * dan jawabannya diambil dari `kegiatanTampilPublik()` — bukan dari perbandingan
+ * dan jawabannya diambil dari `kegiatanTampilPublik()`: bukan dari perbandingan
  * status yang disalin ke sini. Lihat keputusan 2.
  *
  * @param {any} event
@@ -256,7 +256,7 @@ export function keAgenda(events) {
  * Mengelompokkan agenda per bulan, urut menaik.
  *
  * Bulan tanpa kegiatan tidak dibuatkan kelompok kosong: tampilan daftar hanya
- * menampilkan bulan yang benar-benar berisi, dan "September 2026 — tidak ada
+ * menampilkan bulan yang benar-benar berisi, dan "September 2026: tidak ada
  * kegiatan" berulang tujuh kali bukan informasi, melainkan derau.
  *
  * @param {readonly EventCardVM[]} agenda
@@ -314,7 +314,7 @@ export function agendaTanggal(agenda, tanggal) {
 /**
  * Batas navigasi bulan `MonthCalendar`: bulan kegiatan terawal sampai terakhir.
  *
- * Bulan berjalan selalu ikut masuk rentang walau kosong — kalender yang menolak
+ * Bulan berjalan selalu ikut masuk rentang walau kosong: kalender yang menolak
  * menampilkan bulan ini karena kebetulan tidak ada agenda terasa rusak, bukan
  * informatif.
  *
@@ -358,7 +358,7 @@ export function bulanAwal(agenda, acuan = new Date()) {
  * Mencari satu kegiatan publik berdasarkan slug ATAU id.
  *
  * Keduanya diterima karena `eventCardVM` menyusun tautan detail dari slug,
- * sedangkan rute bernama `[id]` — dan tautan lama yang menyebut id sungguhan
+ * sedangkan rute bernama `[id]`: dan tautan lama yang menyebut id sungguhan
  * tetap harus terbuka alih-alih menjadi halaman "tidak ditemukan" yang keliru.
  *
  * Kegiatan yang belum lolos gerbang publik dikembalikan sebagai `null`, sehingga
@@ -408,7 +408,7 @@ function labelKomunitas(id) {
  * `registeredAwardeeIds` & `attendeeAwardeeIds` (identitas peserta),
  * `quota` & sisa kursi (mengundang perlombaan kursi pada halaman yang tidak
  * punya tombol daftar), `proposedBy` & `proposedByRole` & `reviewedBy` &
- * `reviewNote` (jejak audit internal — publik tidak perlu tahu siapa menyetujui
+ * `reviewNote` (jejak audit internal: publik tidak perlu tahu siapa menyetujui
  * agenda siapa), `evidenceRefs` (nama berkas dokumentasi internal).
  *
  * @param {any} event Kegiatan yang SUDAH lolos `cariKegiatanPublik`.

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * ToastHost — kontainer notifikasi menumpuk.
+	 * ToastHost: kontainer notifikasi menumpuk.
 	 *
 	 * Props (seluruhnya opsional):
 	 * @prop {{id:string,type?:'success'|'error'|'info'|'warning'|'points',title?:string,
@@ -11,10 +11,10 @@
 	 *
 	 * Komponen ini SENGAJA tidak mengimpor store toast. Ia digerakkan sepenuhnya
 	 * lewat props, sehingga lapisan komponen tidak pernah bergantung pada lapisan
-	 * store — layout zona yang memasangkan keduanya.
+	 * store: layout zona yang memasangkan keduanya.
 	 *
 	 * Perayaan sebanding dengan kelangkaan: toast poin rutin menghilang sendiri,
-	 * sedangkan toast yang memuat kenaikan tier tidak pernah menutup otomatis —
+	 * sedangkan toast yang memuat kenaikan tier tidak pernah menutup otomatis :
 	 * momen itu layak dibaca sampai selesai.
 	 */
 	import Icon from './Icon.svelte';

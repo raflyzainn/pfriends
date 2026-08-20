@@ -8,7 +8,7 @@
 	const dateTime = (value) => String(value || '').slice(0, 16).replace('T', ' ');
 </script>
 
-<svelte:head><title>Detail Bukti Keaktifan · Awardee PFfriends</title></svelte:head>
+<svelte:head><title>Detail Bukti Keaktifan · Awardee PFriends</title></svelte:head>
 <PageHeader eyebrow="Pelacakan bukti" title={activitySubmissions.selected?.title ?? 'Memuat pengajuan…'} description="Lihat isi pengajuan, lampiran, dan perkembangan pemeriksaannya." />
 
 {#if activitySubmissions.selected}

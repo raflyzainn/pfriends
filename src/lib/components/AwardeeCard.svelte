@@ -1,11 +1,11 @@
 <script>
 	/**
-	 * AwardeeCard — kartu profil anggota untuk direktori dan sorotan.
+	 * AwardeeCard: kartu profil anggota untuk direktori dan sorotan.
 	 *
 	 * Props:
 	 * @prop {{id:string,name:string,avatar?:string,community?:string,chapter?:string,
 	 *         tier?:string,activePk?:number,badges?:number,city?:string,headline?:string}} awardee
-	 * @prop {boolean} showScoring  Baku `false` — lihat catatan di bawah.
+	 * @prop {boolean} showScoring  Baku `false`: lihat catatan di bawah.
 	 * @prop {(awardee:any)=>void} onclick
 	 * @prop {'grid'|'list'} variant
 	 * @prop {boolean} showActions
@@ -13,18 +13,18 @@
 	 *
 	 * Komunitas selalu ditandai eksplisit. Seluruh nilai platform ini adalah
 	 * mempertemukan alumni beasiswa dengan pelaku UMKM binaan, sehingga keduanya
-	 * harus dapat dibedakan sekilas — bila tidak, direktori kehilangan gunanya.
+	 * harus dapat dibedakan sekilas: bila tidak, direktori kehilangan gunanya.
 	 *
 	 * `showScoring` BAKU `false` menutup kebocoran struktural: kartu ini merender
 	 * grid Poin/Badge/Chapter dan `TierBadge`, dan sebelum ada gerbang ini SEMUA
-	 * pemakaiannya membocorkan mekanik gamifikasi — termasuk bila ia dipakai di
+	 * pemakaiannya membocorkan mekanik gamifikasi: termasuk bila ia dipakai di
 	 * sorotan zona publik. `true` hanya sah di `/awardee/direktori`,
 	 * `/verifikator`, dan `/admin` (Keputusan Pemilik Produk #2).
 	 * Cincin tier pada avatar ikut mati bersamanya: warna cincin adalah kanal
 	 * skor yang sama, hanya tanpa angka.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 AwardeeCard { awardee, showScoring, … }
-	 * @see docs/11-VISUAL-DIRECTION.md — §9 baris MemberCard "bocor secara struktural"
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 AwardeeCard { awardee, showScoring, … }
+	 * @see docs/11-VISUAL-DIRECTION.md: §9 baris MemberCard "bocor secara struktural"
 	 */
 	import Avatar from './Avatar.svelte';
 	import TierBadge from './TierBadge.svelte';
@@ -100,7 +100,7 @@
 					<p class="label-micro mt-0.5">Badge</p>
 				</div>
 				<div>
-					<p class="truncate text-sm font-semibold text-ink-900">{awardee?.chapter ?? '—'}</p>
+					<p class="truncate text-sm font-semibold text-ink-900">{awardee?.chapter ?? ':'}</p>
 					<p class="label-micro mt-0.5">Chapter</p>
 				</div>
 			</div>
@@ -108,7 +108,7 @@
 			<!-- Tanpa skor, chapter tetap ditampilkan: ia identitas jejaring, bukan
 			     capaian, dan tanpanya kartu direktori kehilangan penciri utamanya. -->
 			<p class="mt-4 border-t border-ink-100 pt-3 text-sm text-ink-600">
-				{awardee?.chapter ?? '—'}
+				{awardee?.chapter ?? ':'}
 			</p>
 		{/if}
 

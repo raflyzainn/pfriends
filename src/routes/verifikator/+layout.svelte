@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * LAYOUT ZONA VERIFIKATOR — kerangka ruang kerja peninjauan konten.
+	 * LAYOUT ZONA VERIFIKATOR: kerangka ruang kerja peninjauan konten.
 	 *
 	 * Tanggung jawab: memasang `ZoneGuard`, menyediakan navigasi ketiga tujuan zona
 	 * dari `navigation.js`, dan memuat sekali antrean editorial beserta katalog yang
@@ -9,33 +9,33 @@
 	 * Lima keputusan yang tidak terbaca dari kode:
 	 *
 	 * 1. **Penjagaan akses tidak ditulis di sini.** Ia milik `ZoneGuard`, yang
-	 *    membedakan tiga keadaan — belum siap, tamu, dan peran keliru — dengan tiga
+	 *    membedakan tiga keadaan: belum siap, tamu, dan peran keliru: dengan tiga
 	 *    perlakuan berbeda, dan yang membawa `data-zone-splash`/`data-zone-denied`
 	 *    sebagai satu-satunya detektor bagi skrip e2e. Layout yang menulis penjaga
 	 *    sendiri berarti empat zona dengan empat penjaga yang perlahan berbeda.
 	 * 2. **Daftar navigasi TIDAK ditulis tangan.** Ia datang dari
 	 *    `navForZone(Zone.VERIFIER)`, dan angka lencananya ditempelkan `withBadges`
-	 *    dari store — bukan disimpan di daftar menu. Ketiga tujuan zona ini
+	 *    dari store: bukan disimpan di daftar menu. Ketiga tujuan zona ini
 	 *    seluruhnya `primary`: verifikator bekerja di dalam antrean, dan tidak ada
 	 *    tujuan yang hanya dapat dicapai dari desktop (`docs/10` §6.4).
 	 * 3. **`Header` bersama sengaja TIDAK dipakai.** Komponen itu merender
-	 *    `PointsChip` PK dan KT begitu prop `user` terisi — angka gamifikasi milik
+	 *    `PointsChip` PK dan KT begitu prop `user` terisi: angka gamifikasi milik
 	 *    akun yang sedang masuk. Verifikator dinilai pada mutu keputusan, bukan pada
 	 *    capaian angka, sehingga bilah atas zona ini ditulis di sini supaya tidak ada
 	 *    jalur bagi poin PRIBADI untuk sampai ke layar ini. Poin AWARDEE pada papan
 	 *    peringkat dasbor adalah hal berbeda: itu data yang ditinjau, bukan capaian
 	 *    peninjaunya.
 	 * 4. **Pemuatan dikerjakan sekali di layout.** Seluruh halaman membaca antrean
-	 *    yang sama, dan `editorial.load()` maupun `catalog.load()` idempoten —
+	 *    yang sama, dan `editorial.load()` maupun `catalog.load()` idempoten :
 	 *    memindahkannya ke tiap halaman hanya menambah tempat yang bisa lupa
 	 *    memanggilnya, dan satu kedipan tiap kali berpindah antrean.
 	 * 5. **Efek pemuatan berjalan di dalam `ZoneGuard`.** Karena guard tidak
 	 *    merender isinya sebelum peran terbukti verifikator, tidak perlu ada
-	 *    pemeriksaan peran kedua di sini — dan aplikasi tidak membaca seluruh tabel
+	 *    pemeriksaan peran kedua di sini: dan aplikasi tidak membaca seluruh tabel
 	 *    untuk seseorang yang tidak akan pernah melihat hasilnya.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 1, §2.13 ZoneGuard & navigation.js
-	 * @see docs/10-REVISION-SPEC.md — §6.4 route zona verifikator, §3.7 matriks perilaku guard
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 1, §2.13 ZoneGuard & navigation.js
+	 * @see docs/10-REVISION-SPEC.md: §6.4 route zona verifikator, §3.7 matriks perilaku guard
 	 */
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
@@ -90,7 +90,7 @@
 </script>
 
 <svelte:head>
-	<title>{bagianKini} · Verifikator PFfriends</title>
+	<title>{bagianKini} · Verifikator PFriends</title>
 </svelte:head>
 
 <ZoneGuard zone={Zone.VERIFIER} label="ruang kerja verifikator">
@@ -117,7 +117,7 @@
 				</button>
 
 				<div class="min-w-0 flex-1">
-					<p class="label-micro leading-tight">Pertamina Foundation · PFfriends</p>
+					<p class="label-micro leading-tight">Pertamina Foundation · PFriends</p>
 					<p class="truncate text-sm leading-tight font-semibold text-heading">{bagianKini}</p>
 				</div>
 

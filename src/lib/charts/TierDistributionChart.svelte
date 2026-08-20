@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * TierDistributionChart — sebaran anggota per tier.
+	 * TierDistributionChart: sebaran anggota per tier.
 	 *
 	 * Props:
 	 * @prop {{level?:string,label?:string,count:number}[]} data
@@ -12,10 +12,10 @@
 	 * sama dengan chip tier di seluruh aplikasi. Bila berbeda, pembaca dasbor akan
 	 * menghabiskan waktu mencocokkan legenda alih-alih membaca sebarannya.
 	 *
-	 * Chart didampingi ringkasan teks di bawahnya — chart tidak pernah menjadi
+	 * Chart didampingi ringkasan teks di bawahnya: chart tidak pernah menjadi
 	 * satu-satunya sumber informasi.
 	 *
-	 * Tanpa data, kedua varian `option` bernilai `null` — bukan batang bernilai
+	 * Tanpa data, kedua varian `option` bernilai `null`: bukan batang bernilai
 	 * nol. Sebaran tier yang seluruhnya nol tidak dapat dibedakan dari sebaran
 	 * yang gagal dimuat, padahal keduanya menuntut tindakan berbeda (CH-4).
 	 */
@@ -34,7 +34,7 @@
 		data.map((d) => {
 			const meta = d.level ? META.get(d.level) : null;
 			return {
-				label: meta?.label ?? d.label ?? d.level ?? '—',
+				label: meta?.label ?? d.label ?? d.level ?? ':',
 				color: meta?.color ?? palette.slate,
 				count: d.count ?? 0
 			};

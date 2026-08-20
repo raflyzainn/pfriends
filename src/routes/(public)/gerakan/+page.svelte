@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * GERAKAN BERSAMA — etalase movement-based program.
+	 * GERAKAN BERSAMA: etalase movement-based program.
 	 *
 	 * Hanya gerakan yang benar-benar berjalan atau sudah selesai yang tampil di
 	 * sini. Usulan yang belum disetujui sengaja disembunyikan: memajangnya di
@@ -19,16 +19,16 @@
 	 * 2. **`MovementCard` diganti baris ber-keying rule.** Kartu memaksa setiap
 	 *    gerakan tampil sama besar; barisnya membuat gerakan unggulan benar-benar
 	 *    terbaca sebagai unggulan. Strip empat kartu statistik yang dulu ada di
-	 *    puncak halaman juga dicabut — empat kotak berukuran identik adalah bentuk
+	 *    puncak halaman juga dicabut: empat kotak berukuran identik adalah bentuk
 	 *    yang dibuang diagnosis D-05.
 	 *
 	 * 3. **Angka ringkasan dihitung dari daftar yang sudah tersaring publik**, dan
 	 *    hanya tiga: gerakan berjalan, orang bergerak, laporan lapangan. Ketiganya
-	 *    berkelas terhitung, jadi ditulis tegas — tanpa gauge dan tanpa rasio
+	 *    berkelas terhitung, jadi ditulis tegas: tanpa gauge dan tanpa rasio
 	 *    terhadap target internal.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 03 Movement-Based Program
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E6 gerakan bersama
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 03 Movement-Based Program
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E6 gerakan bersama
 	 */
 	import { FilterChips, Icon, ICONS } from '$lib/components';
 	import { PhotoFigure, SectionRule } from '$lib/components/editorial';
@@ -85,7 +85,7 @@
 			.map((gerakan) => baris(gerakan))
 	);
 
-	/** Ringkasan dampak kolektif — bahasa gerakan selalu jamak, bukan per individu. */
+	/** Ringkasan dampak kolektif: bahasa gerakan selalu jamak, bukan per individu. */
 	const dampak = $derived({
 		berjalan: gerakanPublik.filter((gerakan) => gerakan.isRunning).length,
 		peserta: gerakanPublik.reduce((jumlah, gerakan) => jumlah + gerakan.participantCount, 0),
@@ -134,10 +134,10 @@
 </script>
 
 <svelte:head>
-	<title>Gerakan Bersama — PFfriends</title>
+	<title>Gerakan Bersama: PFriends</title>
 	<meta
 		name="description"
-		content="Gerakan bersama komunitas PFfriends: aksi lingkungan, edukasi masyarakat, dan pemberdayaan ekonomi yang dijalankan anggota di berbagai daerah."
+		content="Gerakan bersama komunitas PFriends: aksi lingkungan, edukasi masyarakat, dan pemberdayaan ekonomi yang dijalankan anggota di berbagai daerah."
 	/>
 </svelte:head>
 
@@ -171,7 +171,7 @@
 
 			<!-- Panel digantung di TEPI KANAN pada ≥1024 px. Rata kiri dan dinaikkan
 			     80 px seperti sebelumnya, latarnya yang pejal menutup rapat kapsi dan
-			     baris kredit foto — keduanya rata kiri, tepat di bawah gambar — pada
+			     baris kredit foto: keduanya rata kiri, tepat di bawah gambar: pada
 			     seluruh lebar 375–1920 px. Foto unggulan halaman ini akhirnya tampil
 			     tanpa label "foto stok" dan tanpa nama fotografernya, dua keterangan
 			     yang wajib ada (`docs/11` §4.4). Di bawah 1024 px tumpukannya dilepas:
@@ -217,7 +217,7 @@
 			</div>
 		</section>
 
-		<!-- Tiga angka ringkasan, sejajar dalam prosa — bukan empat kotak statistik. -->
+		<!-- Tiga angka ringkasan, sejajar dalam prosa: bukan empat kotak statistik. -->
 		<SectionRule scale="quiet" rhythm="snug" kicker="Sejauh ini" label="Yang sudah tercatat">
 			<dl class="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-3">
 				<div class="min-w-0">
@@ -325,7 +325,7 @@
 			<div class="mt-8 border-t border-ink-200 pt-8">
 				<p class="max-w-[56ch] text-[16px] leading-[1.68] text-ink-700">
 					Belum ada gerakan yang berjalan. Gerakan bersama selalu berawal dari usulan anggota
-					sendiri — begitu satu usulan disetujui verifikator, wilayah dan target pesertanya
+					sendiri: begitu satu usulan disetujui verifikator, wilayah dan target pesertanya
 					muncul di halaman ini.
 				</p>
 				<a
@@ -346,7 +346,7 @@
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" style="padding-block:var(--rhythm-tight);">
 		<div class="grid grid-cols-1 gap-x-12 gap-y-8 lg:grid-cols-12">
 			<div class="min-w-0 lg:col-span-7">
-				<!-- `display-editorial` berbaris 0.98 — ukuran judul satu baris. Judul
+				<!-- `display-editorial` berbaris 0.98: ukuran judul satu baris. Judul
 				     yang dibatasi 22ch selalu pecah dua baris, dan leading itu membuat
 				     ekor huruf baris pertama menyentuh kepala huruf baris kedua. -->
 				<h2
@@ -355,7 +355,7 @@
 					Ingin menggerakkan sesuatu di daerahmu?
 				</h2>
 				<p class="mt-4 max-w-[52ch] text-[16px] leading-[1.68] text-white/88">
-					Anggota PFfriends dapat mengusulkan gerakan sendiri dan memimpinnya sampai laporannya
+					Anggota PFriends dapat mengusulkan gerakan sendiri dan memimpinnya sampai laporannya
 					selesai.
 				</p>
 			</div>

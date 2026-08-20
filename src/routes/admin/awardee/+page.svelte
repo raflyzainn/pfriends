@@ -1,9 +1,9 @@
 <script>
 	/**
-	 * HALAMAN — Kontrol Akun.
+	 * HALAMAN: Kontrol Akun.
 	 *
-	 * Tanggung jawab: satu daftar berisi SELURUH akun PFfriends — awardee,
-	 * verifikator, dan admin — beserta satu tindakan yang hanya boleh dimiliki
+	 * Tanggung jawab: satu daftar berisi SELURUH akun PFriends: awardee,
+	 * verifikator, dan admin: beserta satu tindakan yang hanya boleh dimiliki
 	 * konsol ini: berpindah sesi ke akun mana pun untuk keperluan peragaan.
 	 *
 	 * ── Tiga keputusan yang tidak terbaca dari kode ──────────────────────────
@@ -16,7 +16,7 @@
 	 *    definisinya sendiri.
 	 * 2. **Perpindahan sesi berjalan lewat `session.login()`, bukan lewat
 	 *    penulisan peran langsung ke store.** Menyetel `session.role` dari
-	 *    halaman akan melewati `AuthService` — dan bersamanya melewati
+	 *    halaman akan melewati `AuthService`: dan bersamanya melewati
 	 *    pemeriksaan akun nonaktif, pemuatan entity awardee, serta pencatatan
 	 *    waktu masuk terakhir. Sesi hasil jalan pintas itu tampak benar di layar
 	 *    dan salah di setiap tempat yang membacanya. Kata sandi demo seragam
@@ -24,7 +24,7 @@
 	 * 3. **Tujuan pengalihan diminta dari `session.homePath()`, bukan ditebak
 	 *    dari peran di sini.** Peta peran → beranda hidup di `AccessPolicy`;
 	 *    menyalinnya ke halaman ini melahirkan peta kedua yang cepat berbeda
-	 *    pendapat dengan `ZoneGuard` — dan pengguna akan terlempar bolak-balik di
+	 *    pendapat dengan `ZoneGuard`: dan pengguna akan terlempar bolak-balik di
 	 *    antara keduanya.
 	 *
 	 * Halaman ini TIDAK menyunting akun. Menonaktifkan, mengubah peran, dan
@@ -32,8 +32,8 @@
 	 * audit; menaruh tombolnya di mockup akan menjanjikan kemampuan yang belum
 	 * ada penampungnya.
 	 *
-	 * @see src/lib/stores/session.svelte.js — kontrak sesi dan hidrasi
-	 * @see src/lib/domain/services/AuthService.js — satu-satunya gerbang kredensial
+	 * @see src/lib/stores/session.svelte.js: kontrak sesi dan hidrasi
+	 * @see src/lib/domain/services/AuthService.js: satu-satunya gerbang kredensial
 	 */
 	import { goto } from '$app/navigation';
 	import {
@@ -181,7 +181,7 @@
 	 *
 	 * Memakai jalur masuk yang sama persis dengan halaman `/masuk`: sandi demo
 	 * seragam diperiksa `AuthService`, akun nonaktif ditolak dengan pesannya
-	 * sendiri, dan entity awardee ikut dimuat. Tidak ada jalan pintas — lihat
+	 * sendiri, dan entity awardee ikut dimuat. Tidak ada jalan pintas: lihat
 	 * butir 2 pada catatan berkas.
 	 *
 	 * @param {import('$lib/domain/entities/UserAccount.js').UserAccount} entity
@@ -211,7 +211,7 @@
 <PageHeader
 	eyebrow="Konsol Corporate Secretary"
 	title="Kontrol Akun"
-	subtitle="Seluruh akun PFfriends dalam satu daftar — awardee, verifikator, dan admin. Tombol “Masuk sebagai” memindahkan sesi ke akun terpilih dan membuka zonanya, supaya setiap peran dapat diperagakan tanpa perlu keluar-masuk halaman login."
+	subtitle="Seluruh akun PFriends dalam satu daftar: awardee, verifikator, dan admin. Tombol “Masuk sebagai” memindahkan sesi ke akun terpilih dan membuka zonanya, supaya setiap peran dapat diperagakan tanpa perlu keluar-masuk halaman login."
 />
 
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -290,7 +290,7 @@
 	bind:sortKey
 	bind:sortDir
 	loading={memuat && akun.length === 0}
-	caption="Daftar seluruh akun PFfriends beserta peran, penempatan, status akun, waktu masuk terakhir, dan tombol perpindahan sesi"
+	caption="Daftar seluruh akun PFriends beserta peran, penempatan, status akun, waktu masuk terakhir, dan tombol perpindahan sesi"
 	empty="Tidak ada akun yang cocok dengan penyaring ini. Longgarkan saringan peran atau kosongkan kata kunci pencarian."
 >
 	{#snippet cell(row, kolom)}
@@ -360,7 +360,7 @@
 				{/if}
 			</div>
 		{:else}
-			—
+			:
 		{/if}
 	{/snippet}
 </DataTable>
@@ -373,7 +373,7 @@
 	<p class="mt-1.5 text-xs leading-relaxed text-ink-600">
 		Perpindahan memakai jalur masuk yang sama dengan halaman login: kredensial tetap diperiksa, akun
 		nonaktif tetap ditolak, dan waktu masuk terakhir tetap tercatat. Seluruh akun peragaan memakai
-		satu kata sandi yang sama. Setelah berpindah, sesi admin ini berakhir — kembali ke konsol dengan
+		satu kata sandi yang sama. Setelah berpindah, sesi admin ini berakhir: kembali ke konsol dengan
 		keluar dari zona tujuan lalu masuk kembali sebagai Admin PF.
 	</p>
 </div>

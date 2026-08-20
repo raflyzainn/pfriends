@@ -1,5 +1,5 @@
 /**
- * BARREL KOMPONEN — satu titik impor untuk seluruh komponen bersama.
+ * BARREL KOMPONEN: satu titik impor untuk seluruh komponen bersama.
  *
  * Halaman cukup menulis:
  *   import { PageHeader, Card, TierBadge } from '$lib/components';
@@ -13,8 +13,8 @@
  * direktori ini, BUKAN di `editorial/`, karena tiga dari lima pemakainya adalah
  * zona ter-login.
  *
- * @see docs/09-BUILD-CONTRACT.md — §4 WP-5, §5 kontrak komponen
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak export komponen FINAL
+ * @see docs/09-BUILD-CONTRACT.md: §4 WP-5, §5 kontrak komponen
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak export komponen FINAL
  */
 
 // ── Primitif ─────────────────────────────────────────────────────────────

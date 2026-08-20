@@ -1,10 +1,10 @@
 <script>
 	/**
-	 * EChart — pembungkus tipis ECharts. Tidak memuat logika chart apa pun.
+	 * EChart: pembungkus tipis ECharts. Tidak memuat logika chart apa pun.
 	 *
 	 * Props:
 	 * @prop {Record<string, any>|null} option  Option ECharts yang sudah jadi.
-	 *   `null` berarti "tidak ada data" dan merender pesan kosong — BUKAN grafik
+	 *   `null` berarti "tidak ada data" dan merender pesan kosong: BUKAN grafik
 	 *   bernilai nol (CH-4).
 	 * @prop {string} height
 	 * @prop {boolean} loading
@@ -20,32 +20,32 @@
 	 * membongkar canvas, menjalankan ulang impor pustaka, dan menggambar dari
 	 * nol: animasi hilang, ada kedipan putih, dan halaman dengan enam chart
 	 * membayarnya enam kali. Cacat itu baru benar-benar terasa ketika jumlah
-	 * chart naik — persis yang dilakukan paket ini.
+	 * chart naik: persis yang dilakukan paket ini.
 	 *
-	 *   1. **Siklus hidup** — bergantung pada `container` saja. Membuat instans,
+	 *   1. **Siklus hidup**: bergantung pada `container` saja. Membuat instans,
 	 *      memasang `ResizeObserver`, membongkar saat komponen dilepas.
-	 *   2. **Data** — bergantung pada `option` dan instans. Memanggil
+	 *   2. **Data**: bergantung pada `option` dan instans. Memanggil
 	 *      `setOption(opt, { notMerge: true })`. `notMerge` wajib: tanpa itu seri
 	 *      lama yang tidak lagi ada pada option baru tetap tergambar.
-	 *   3. **Interaksi** — memasang dan melepas `chart.on('click')` mengikuti
+	 *   3. **Interaksi**: memasang dan melepas `chart.on('click')` mengikuti
 	 *      identitas handler, sehingga handler lama tidak menumpuk.
 	 *
 	 * Empat penjagaan lain yang harus tetap ada:
-	 *   - `browser` guard: ECharts menyentuh `document` saat init.
-	 *   - Impor dinamis `$lib/charts/_echarts.js`: pustaka (walau sudah
+	 *  : `browser` guard: ECharts menyentuh `document` saat init.
+	 *  : Impor dinamis `$lib/charts/_echarts.js`: pustaka (walau sudah
 	 *     di-tree-shake) tetap keluar dari bundel awal; halaman tanpa chart tidak
 	 *     membayarnya.
-	 *   - `ResizeObserver` diperedam `requestAnimationFrame` dan **melewati wadah
+	 *  : `ResizeObserver` diperedam `requestAnimationFrame` dan **melewati wadah
 	 *     berlebar nol**. Ini bukan mikro-optimasi: ECharts yang digambar ulang
 	 *     pada ukuran nol tidak pulih sendiri, sehingga chart tampil kosong
 	 *     selamanya setelah wadahnya sempat tersembunyi.
-	 *   - `dispose()` berpenjagaan ganda saat pembongkaran; instans ECharts
+	 *  : `dispose()` berpenjagaan ganda saat pembongkaran; instans ECharts
 	 *     memegang canvas dan listener.
 	 *
 	 * Setiap chart konkret tinggal di `src/lib/charts/` dan hanya menyusun `option`.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.1 cacat E-1…E-4, §7.5 CH-4
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-07 butir 2 & 4, R-15
+	 * @see docs/10-REVISION-SPEC.md: §7.1 cacat E-1…E-4, §7.5 CH-4
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-07 butir 2 & 4, R-15
 	 */
 	import { browser } from '$app/environment';
 	import Skeleton from './Skeleton.svelte';
@@ -74,7 +74,7 @@
 
 	const gaya = $derived(kelas(cls, className));
 
-	/** Tidak ada data sama sekali — pesan kosong, bukan sumbu bernilai nol. */
+	/** Tidak ada data sama sekali: pesan kosong, bukan sumbu bernilai nol. */
 	const kosong = $derived(option === null || option === undefined);
 
 	// ── Efek 1 · siklus hidup ────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN `/verifikator/cerita` — Submission Blog, antrean FIFO.
+	 * HALAMAN `/verifikator/cerita`: Submission Blog, antrean FIFO.
 	 *
 	 * Tanggung jawab: menampilkan submission blog yang menunggu tindakan verifikator
 	 * dengan urutan tertua lebih dahulu, usia antrean dalam hari kerja, penanda
@@ -14,7 +14,7 @@
 	 * 2. **Tombol keputusan tiap baris dirender dari
 	 *    `allowedStoryTransitions(status, role)`.** Baris berstatus `DIAJUKAN`
 	 *    karena itu hanya menawarkan "Ambil untuk ditinjau", sedangkan baris
-	 *    `REVIEW` menawarkan tiga keputusan — bukan karena halaman ini tahu
+	 *    `REVIEW` menawarkan tiga keputusan: bukan karena halaman ini tahu
 	 *    aturannya, melainkan karena peta transisi domain yang menjawabnya
 	 *    (`docs/12` §3.5 WP-06 butir 2).
 	 * 3. **Penyaring status memakai daftar dari antrean itu sendiri**, bukan daftar
@@ -23,18 +23,18 @@
 	 * 4. **Konflik kepentingan tetap diperiksa pada jalur cerita.** `WRITE_CONTENT`
 	 *    bukan milik VERIFIER, sehingga `story.authorId` selalu menunjuk Awardee dan
 	 *    pemeriksaan ini secara sah tidak pernah menyala. Ia dipasang sebagai
-	 *    pertahanan berlapis — untuk menangkap data yang lolos invarian karena
+	 *    pertahanan berlapis: untuk menangkap data yang lolos invarian karena
 	 *    kekeliruan migrasi kelak (`docs/12` §3.5 WP-06 butir 3).
 	 * 5. **Nol angka hari kerja tertulis di berkas ini.** Usia dan batas datang dari
 	 *    `slaAntrean()`, yang bersumber pada `SLA_HARI_KERJA`.
 	 * 6. **`DecisionBar` dirender `compact` di dalam daftar.** Penjelasan tiap
-	 *    keputusan tetap ada — ia pindah ke atribut `title` tombolnya — karena tiga
+	 *    keputusan tetap ada: ia pindah ke atribut `title` tombolnya: karena tiga
 	 *    paragraf penjelasan yang berulang pada setiap baris menenggelamkan judul
 	 *    submission yang justru harus dibaca lebih dulu. Penjelasan lengkapnya hidup
 	 *    di halaman detail, tempat keputusan sesungguhnya diambil.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — US-R26 antrean tinjauan FIFO, §5.6 SLA
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 2, 4, dan 6
+	 * @see docs/10-REVISION-SPEC.md: US-R26 antrean tinjauan FIFO, §5.6 SLA
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 2, 4, dan 6
 	 */
 	import { goto } from '$app/navigation';
 	import { EmptyState, Icon, PageHeader, Tabs, ICONS } from '$lib/components';
@@ -58,7 +58,7 @@
 	const SEMUA = 'SEMUA';
 
 	/**
-	 * Waktu acuan seluruh perhitungan usia di halaman ini — satu nilai untuk
+	 * Waktu acuan seluruh perhitungan usia di halaman ini: satu nilai untuk
 	 * seluruh baris. Lihat catatan yang sama pada papan antrean.
 	 * @type {Date}
 	 */
@@ -258,7 +258,7 @@
 
 <p class="mt-6 text-xs leading-relaxed text-ink-600">
 	Persetujuan submission menuntut checklist data sensitif {TOTAL_BUTIR_SENSITIF} butir dikonfirmasi
-	lebih dahulu. Buka halaman detail submission untuk menjalankannya — checklist itu harus dibaca
+	lebih dahulu. Buka halaman detail submission untuk menjalankannya: checklist itu harus dibaca
 	berdampingan dengan naskahnya, bukan dicentang dari daftar. Keterangan tiap tombol keputusan
 	tersedia sebagai penjelasan singkat saat kursor menyinggahinya, dan tertulis lengkap di halaman
 	detail.

@@ -1,5 +1,5 @@
 /**
- * SERVICE — Kalkulator SROI sederhana.
+ * SERVICE: Kalkulator SROI sederhana.
  *
  * Tanggung jawab: mengubah tiga kuantitas nyata (jangkauan neto, jam pelatihan
  * terkumpul, peserta aksi lingkungan berbukti) menjadi nilai sosial neto dan rasio
@@ -11,7 +11,7 @@
  * organisasi. Selama ia hidup di dalam komponen, ia tidak dapat dijalankan tanpa
  * peramban, tidak dapat diuji, dan tidak dapat dipanggil dari tempat kedua tanpa
  * disalin. Angka yang paling perlu dipertahankan saat diaudit justru menjadi angka
- * yang paling tidak terlindungi. Di sini ia menjadi fungsi murni atas angka murni —
+ * yang paling tidak terlindungi. Di sini ia menjadi fungsi murni atas angka murni :
  * dapat diuji dengan `node` polos, dan setiap langkah antaranya ikut dikembalikan
  * supaya laporan dapat menunjukkan JALANNYA, bukan cuma hasilnya.
  *
@@ -25,12 +25,12 @@
  *    berarti pemanggilnya salah menghitung; menerima diam-diam akan menghasilkan
  *    rasio yang tampak wajar di atas data yang rusak.
  * 3. **Kelayakan pelaporan ikut dihitung di sini.** Rasio tidak pernah keluar
- *    sendirian — `layakDilaporkan` menyertainya, dan itulah yang menahan angka
+ *    sendirian: `layakDilaporkan` menyertainya, dan itulah yang menahan angka
  *    estimasi dibawa keluar sebagai klaim sebelum pipeline bukti berdiri (Hal 9).
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 3 SROI, Hal 6 dampak, Hal 9 pipeline bukti
- * @see docs/02-KPI-MODEL.md — §7 SROI sederhana
- * @see src/lib/domain/constants/sroi-model.js — seluruh angkanya
+ * @see docs/00-SOURCE-BRIEF.md: Hal 3 SROI, Hal 6 dampak, Hal 9 pipeline bukti
+ * @see docs/02-KPI-MODEL.md: §7 SROI sederhana
+ * @see src/lib/domain/constants/sroi-model.js: seluruh angkanya
  */
 
 import { REACH_PARAMETERS } from '../constants/kpi-targets.js';
@@ -57,7 +57,7 @@ import {
  * @property {number} kuantitas
  * @property {string} satuan
  * @property {string} sumber
- * @property {number} proxy        Nilai rupiah per satuan — [ASUMSI].
+ * @property {number} proxy        Nilai rupiah per satuan: [ASUMSI].
  * @property {string} satuanProxy
  * @property {number} nilai        kuantitas × proxy, rupiah.
  */
@@ -114,7 +114,7 @@ export class SroiCalculator {
 	#pengaliEngagement;
 
 	/**
-	 * Seluruh parameter dapat diganti lewat konstruktor — bukan demi kelenturan yang
+	 * Seluruh parameter dapat diganti lewat konstruktor: bukan demi kelenturan yang
 	 * tidak diminta, melainkan supaya uji domain dapat menyuntikkan angka sederhana
 	 * (mis. investasi 100 dan satu penyesuaian 50%) dan memeriksa aritmetikanya tanpa
 	 * bergantung pada nilai produksi yang suatu saat akan diubah Corsec.
@@ -146,7 +146,7 @@ export class SroiCalculator {
 		Object.freeze(this);
 	}
 
-	/** @returns {Readonly<Record<string, number>>} Nilai proxy yang sedang dipakai — [ASUMSI]. */
+	/** @returns {Readonly<Record<string, number>>} Nilai proxy yang sedang dipakai: [ASUMSI]. */
 	get proxy() {
 		return this.#proxy;
 	}
@@ -272,8 +272,8 @@ export class SroiCalculator {
 	/**
 	 * Daftar asumsi yang dipakai perhitungan, siap ditampilkan apa adanya.
 	 *
-	 * Dibangun dari objek proxy yang sama dengan yang dipakai menghitung — bukan
-	 * disalin ulang di halaman — supaya tabel asumsi tidak dapat menjadi basi tanpa
+	 * Dibangun dari objek proxy yang sama dengan yang dipakai menghitung: bukan
+	 * disalin ulang di halaman: supaya tabel asumsi tidak dapat menjadi basi tanpa
 	 * ada yang menyadarinya. Tabel asumsi yang basi persis merusak hal yang hendak
 	 * dijaganya: kepercayaan pembaca pada angkanya.
 	 *

@@ -1,5 +1,5 @@
 /**
- * STORE — Alur Editorial.
+ * STORE: Alur Editorial.
  *
  * Tanggung jawab: menjadi satu-satunya jalan zona Awardee dan zona Verifikator
  * mengubah status cerita dan usulan kegiatan, serta memegang antrean yang mereka
@@ -9,8 +9,8 @@
  *
  * 1. **Store ini tidak pernah memutuskan legalitas sebuah transisi.** Setiap metode
  *    meneruskan permintaan ke `ContentReviewService` dan hanya menerjemahkan
- *    jawabannya menjadi toast. Menyalin sebagian aturan ke sini — sekadar untuk
- *    menyembunyikan tombol lebih awal — akan melahirkan matriks transisi kedua
+ *    jawabannya menjadi toast. Menyalin sebagian aturan ke sini: sekadar untuk
+ *    menyembunyikan tombol lebih awal: akan melahirkan matriks transisi kedua
  *    yang cepat menyimpang dari yang pertama, dan yang menyimpang selalu yang
  *    lebih longgar.
  * 2. **Aktor diambil dari `session.account`, bukan dari parameter.** Identitas
@@ -23,15 +23,15 @@
  * 4. **`pipeline` diisi saat pemuatan, bukan diturunkan di dalam komponen.**
  *    Rumusnya hidup di domain (`ContentReviewService.pipeline()`), dan satu-satunya
  *    alasan ia tidak dapat ditulis sebagai `$derived` murni adalah karena sumbernya
- *    membaca repository — perhitungannya tetap milik domain.
+ *    membaca repository: perhitungannya tetap milik domain.
  * 5. **Pencabutan consent masuk lewat store ini, bukan lewat repository langsung.**
  *    Menariknya kembali dari publik adalah transisi status cerita, dan seluruh
  *    transisi status cerita hanya boleh lewat `ContentReviewService`. Halaman profil
  *    yang menulis `stories` sendiri akan menjadi jalur kedua yang melewati peta
  *    transisi, jejak audit, dan alasan arsip sekaligus.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.12 kontrak store editorial, §2.9 ContentReviewService
- * @see docs/10-REVISION-SPEC.md — §5 state machine konten
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.12 kontrak store editorial, §2.9 ContentReviewService
+ * @see docs/10-REVISION-SPEC.md: §5 state machine konten
  */
 
 import { browser } from '$app/environment';
@@ -52,7 +52,7 @@ import { toast } from './toast.svelte.js';
 const JUDUL_DITOLAK = 'Tindakan tidak dapat diproses';
 
 /**
- * Pesan ketika tidak ada akun aktif di sesi. Bukan kode `ReviewFailure` — ini
+ * Pesan ketika tidak ada akun aktif di sesi. Bukan kode `ReviewFailure`: ini
  * kegagalan di sisi antarmuka, sebelum permintaan sempat sampai ke domain.
  */
 const PESAN_TANPA_SESI = 'Sesi Anda sudah berakhir. Masuk kembali untuk melanjutkan.';
@@ -92,7 +92,7 @@ class EditorialStore {
 	/** @type {boolean} Antrean sedang dimuat. */
 	loading = $state(false);
 
-	/** @type {boolean} Sebuah keputusan sedang diproses — dipakai mematikan tombol. */
+	/** @type {boolean} Sebuah keputusan sedang diproses: dipakai mematikan tombol. */
 	working = $state(false);
 
 	/** @type {string|null} Pesan galat pemuatan terakhir. */
@@ -291,7 +291,7 @@ class EditorialStore {
 	 * Dipanggil `/awardee/profil` tepat sesudah rekaman consent disimpan. Ia tidak
 	 * memakai `#jalankan` karena bentuk hasilnya berbeda: yang perlu dilaporkan ke
 	 * penulis adalah BERAPA naskahnya yang tersentuh, bukan sekadar berhasil atau
-	 * tidak. Toast-nya pun dirakit halaman, bukan di sini — kalimatnya menyatu
+	 * tidak. Toast-nya pun dirakit halaman, bukan di sini: kalimatnya menyatu
 	 * dengan kalimat pencabutan consent itu sendiri.
 	 *
 	 * @param {string} [awardeeId] Id penulis; default awardee yang sedang masuk.

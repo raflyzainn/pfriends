@@ -1,5 +1,5 @@
 /**
- * SERVICE — Mesin Gamifikasi.
+ * SERVICE: Mesin Gamifikasi.
  *
  * Tanggung jawab: menjalankan pemberian poin dari ujung ke ujung dalam urutan
  * yang benar, dan menjadi satu-satunya jalan masuk poin ke sistem.
@@ -12,14 +12,14 @@
  * `PointActivity` sendiri.
  *
  * Dependency Inversion: repository disuntik lewat konstruktor. Kelas ini tidak
- * pernah mengimpor Dexie dan tidak tahu data disimpan di mana — yang ia tahu
+ * pernah mengimpor Dexie dan tidak tahu data disimpan di mana: yang ia tahu
  * hanyalah kontrak `Repository`. Itulah yang membuat mesin ini dapat diuji dengan
  * repository in-memory dan kelak disambungkan ke API nyata tanpa satu baris pun
  * berubah di sini.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 11 Gamification Scoring Model
- * @see docs/03-GAMIFICATION-SPEC.md — §5.7 pipeline pemberian poin
- * @see docs/09-BUILD-CONTRACT.md — §5 kontrak export
+ * @see docs/00-SOURCE-BRIEF.md: Hal 11 Gamification Scoring Model
+ * @see docs/03-GAMIFICATION-SPEC.md: §5.7 pipeline pemberian poin
+ * @see docs/09-BUILD-CONTRACT.md: §5 kontrak export
  */
 
 import { aturanSkor, SCORING_TABLE } from '../constants/scoring-table.js';
@@ -87,16 +87,16 @@ export class GamificationEngine {
 	 * Memberikan poin atas sebuah aksi awardee.
 	 *
 	 * Alur keputusan:
-	 *   1. Ambil aturan kanonik dari tabel Hal 11 — jenis aksi tak dikenal gagal cepat.
+	 *   1. Ambil aturan kanonik dari tabel Hal 11: jenis aksi tak dikenal gagal cepat.
 	 *   2. Hitung berapa kali aksi sejenis sudah dilakukan awardee hari ini.
 	 *   3. Tanyakan ke AntiGamingPolicy apakah masih dalam kuota.
 	 *   4. Bila ditolak, kembalikan hasil tanpa membukukan poin.
 	 *   5. Bila aksi menuntut bukti dan buktinya kosong, entri dicatat berstatus
-	 *      PENDING — aksinya diakui, poinnya menunggu verifikasi.
+	 *      PENDING: aksinya diakui, poinnya menunggu verifikasi.
 	 *   6. Bila lolos, entri dibukukan berstatus AWARDED dengan poin penuh.
 	 *
 	 * Perhatikan langkah 5: aksinya tetap tercatat dan `accepted` tetap `true`.
-	 * KPI Hal 6 menghitung jumlah aksi, bukan jumlah poin — menolak aksi yang
+	 * KPI Hal 6 menghitung jumlah aksi, bukan jumlah poin: menolak aksi yang
 	 * sah hanya karena buktinya menyusul akan merusak pelaporan KPI sekaligus
 	 * memberi kesan kepada awardee bahwa kontribusinya hilang.
 	 *
@@ -230,7 +230,7 @@ export class GamificationEngine {
 
 	/**
 	 * Berapa kali sebuah aksi sudah dilakukan awardee pada hari kalender tertentu.
-	 * Entri yang ditolak tidak ikut dihitung — menolak aksi lalu tetap membebankan
+	 * Entri yang ditolak tidak ikut dihitung: menolak aksi lalu tetap membebankan
 	 * kuotanya adalah hukuman ganda yang tidak pernah dijelaskan kepada awardee.
 	 *
 	 * @param {string} awardeeId

@@ -1,5 +1,5 @@
 /**
- * MODUL LOKAL ZONA VERIFIKATOR — registri keputusan editorial.
+ * MODUL LOKAL ZONA VERIFIKATOR: registri keputusan editorial.
  *
  * Tanggung jawab: menerjemahkan STATUS TUJUAN yang sudah dinyatakan sah oleh peta
  * transisi domain menjadi satu tombol beserta masukan yang wajib menyertainya.
@@ -33,8 +33,8 @@
  *    akan menyembunyikan selisih itu; menandainya membuat selisih tersebut terbaca
  *    di layar, dan begitu store melengkapinya cukup satu baris untuk menghidupkan.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 2 & 6, §2.12 kontrak store editorial
- * @see docs/10-REVISION-SPEC.md — §5.3 tabel transisi cerita, §5.5 konflik kepentingan
+ * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 2 & 6, §2.12 kontrak store editorial
+ * @see docs/10-REVISION-SPEC.md: §5.3 tabel transisi cerita, §5.5 konflik kepentingan
  */
 
 import {
@@ -64,8 +64,8 @@ export const DecisionInput = Object.freeze({
 /**
  * Kalimat penolakan ketika catatan atau alasan wajib dibiarkan kosong.
  *
- * Satu kalimat untuk ketiga jalur — "Minta revisi", "Tolak usulan", dan
- * "Arsipkan naskah" — supaya penolakan yang sebabnya sama tidak berbunyi berbeda
+ * Satu kalimat untuk ketiga jalur: "Minta revisi", "Tolak usulan", dan
+ * "Arsipkan naskah": supaya penolakan yang sebabnya sama tidak berbunyi berbeda
  * di tiga halaman.
  * @type {string}
  */
@@ -87,11 +87,11 @@ export const PESAN_SENSITIVITAS_WAJIB =
  * @type {string}
  */
 export const PESAN_KONFLIK_KEGIATAN =
-	'Anda pengusul kegiatan ini — persetujuan harus dilakukan verifikator lain.';
+	'Anda pengusul kegiatan ini: persetujuan harus dilakukan verifikator lain.';
 
 /** Kalimat konflik kepentingan pada naskah cerita. */
 export const PESAN_KONFLIK_CERITA =
-	'Anda penulis naskah ini — peninjauan harus dilakukan verifikator lain.';
+	'Anda penulis naskah ini: peninjauan harus dilakukan verifikator lain.';
 
 /**
  * Alasan yang ditampilkan untuk transisi sah yang belum punya jalur eksekusi di
@@ -331,7 +331,7 @@ export function periksaMasukan(decision, payload) {
  */
 export const ARCHIVE_REASON_LABEL = Object.freeze({
 	[STORY_ARCHIVE_REASON.DITOLAK]: 'Ditolak permanen setelah peninjauan',
-	[STORY_ARCHIVE_REASON.KEDALUWARSA]: 'Kedaluwarsa — tidak lagi relevan',
+	[STORY_ARCHIVE_REASON.KEDALUWARSA]: 'Kedaluwarsa: tidak lagi relevan',
 	[STORY_ARCHIVE_REASON.CONSENT_DICABUT]: 'Consent penulis dicabut',
 	[STORY_ARCHIVE_REASON.PERMINTAAN_ANGGOTA]: 'Atas permintaan penulis',
 	[STORY_ARCHIVE_REASON.IDLE_TIMEOUT]: 'Tidak ditindaklanjuti hingga batas waktu'

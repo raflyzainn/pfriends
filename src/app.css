@@ -4,11 +4,11 @@
 @plugin '@tailwindcss/typography';
 
 /* ============================================================================
-   FONT LOKAL — static/fonts/, disajikan adapter-static sebagai /fonts/*
+   FONT LOKAL: static/fonts/, disajikan adapter-static sebagai /fonts/*
    [DAFTAR PUTIH 12-BUILD-CONTRACT-V2 §3.4 app.css butir (1)]
 
    Dimuat lokal, bukan dari Google Fonts, karena peragaan sering terjadi di
-   ruang rapat dengan Wi-Fi tamu yang memblokir fonts.gstatic.com — satu demo
+   ruang rapat dengan Wi-Fi tamu yang memblokir fonts.gstatic.com: satu demo
    seperti itu menjatuhkan seluruh tipografi ke system-ui (11-VISUAL §3.2).
 
    `font-display: swap` dipilih daripada `optional`: teks Indonesia yang panjang
@@ -72,7 +72,7 @@
 }
 
 /* ============================================================================
-   Pfriends — Design System
+   Pfriends: Design System
    Token diambil dari docs/08-DESIGN-SYSTEM.md. Rasio kontras pada komentar
    dihitung terhadap latar putih (#FFFFFF) mengikuti WCAG 2.1.
    Varian -ink adalah versi yang AMAN untuk teks; warna polos untuk fill/aksen.
@@ -80,11 +80,11 @@
    ========================================================================== */
 
 @theme {
-	/* ══════════ PALET PFFRIENDS — TEAL & KUNING ══════════
+	/* ══════════ PALET PFFRIENDS: TEAL & KUNING ══════════
 	   Empat warna dasar dari pemilik produk:
 	     #34908B  teal utama      #6FBEB2  teal madya
 	     #A5E9DD  teal muda       #FDF4AF  kuning aksen
-	   Keempatnya CERAH — tidak satu pun lolos 4.5:1 sebagai teks di atas putih
+	   Keempatnya CERAH: tidak satu pun lolos 4.5:1 sebagai teks di atas putih
 	   (#34908B hanya 3.81). Karena itu tiap keluarga punya varian `-ink` yang
 	   digelapkan khusus untuk teks, sementara warna aslinya dipakai untuk fill,
 	   chip, dan aksen. Memakai #34908B sebagai warna teks akan membuat seluruh
@@ -96,8 +96,8 @@
 	--color-brand-300: #6fbeb2; /* ← palet 2 · fill & border */
 	--color-brand-400: #4aa79f;
 	--color-brand-500: #34908b; /* ← palet 1 · WARNA UTAMA, fill saja (3.81 ✗) */
-	--color-brand-600: #2a7671; /* teks — 5.35 ✓ */
-	--color-brand-700: #235e5b; /* teks — 7.44 ✓ */
+	--color-brand-600: #2a7671; /* teks: 5.35 ✓ */
+	--color-brand-700: #235e5b; /* teks: 7.44 ✓ */
 	--color-brand-800: #1e4b49;
 	--color-brand-900: #1a3e3d;
 	--color-brand-950: #0d2423;
@@ -109,12 +109,12 @@
 	--color-accent-400: #ecd245;
 	--color-accent-500: #d9b81f; /* fill saja */
 	--color-accent-600: #b8951a;
-	--color-accent-700: #8f7014; /* teks — 4.67 ✓ */
+	--color-accent-700: #8f7014; /* teks: 4.67 ✓ */
 	--color-accent-800: #6b5310;
 
 	/* ══════════ ALIAS LAMA → PALET BARU ══════════
 	   Nama `pertamina-*` masih dipakai di 112 berkas .svelte. Alih-alih menyunting
-	   seluruhnya, NILAI-nya yang dipetakan ulang ke palet baru — satu perubahan di
+	   seluruhnya, NILAI-nya yang dipetakan ulang ke palet baru: satu perubahan di
 	   sini mengganti warna seluruh sistem sekaligus, dan nol risiko ada berkas
 	   terlewat. Nama tokennya memang jadi tidak lagi deskriptif; itu hutang yang
 	   disengaja dan dibayar saat penggantian nama massal dilakukan terpisah. */
@@ -132,12 +132,12 @@
 	--color-pertamina-green-ink: #2a7671; /* → teks 5.35 ✓ */
 	--color-pertamina-green-tint: #d9f4ef;
 
-	--color-heading: #1a3e3d; /* judul — teal-900, 11.86 ✓ */
+	--color-heading: #1a3e3d; /* judul: teal-900, 11.86 ✓ */
 
-	/* ══════════ TIER — jenjang poin ══════════
+	/* ══════════ TIER: jenjang poin ══════════
 	   Ambang poinnya tetap kanonik (25/50/100/150); yang berubah hanya WARNA-nya,
 	   kini menaik di dalam satu keluarga teal dan memuncak di kuning. Progresi satu
-	   keluarga membuat urutan jenjang terbaca dari warnanya sendiri — biru→hijau→
+	   keluarga membuat urutan jenjang terbaca dari warnanya sendiri: biru→hijau→
 	   merah→kuning yang lama tidak menyiratkan urutan apa pun. */
 	--color-tier-active: #6fbeb2; /* Active Member · 25 pts */
 	--color-tier-active-fill: #4aa79f; /* chip solid + teks putih */
@@ -153,13 +153,13 @@
 	--color-tier-featured-ink: #1a3e3d; /* teks 11.86 ✓ */
 	--color-tier-featured-tint: #cfe9e4;
 
-	--color-tier-champion: #d9b81f; /* Champion · 150 pts — puncak, kuning */
+	--color-tier-champion: #d9b81f; /* Champion · 150 pts: puncak, kuning */
 	--color-tier-champion-ink: #8f7014; /* teks 4.67 ✓ */
 	--color-tier-champion-tint: #fdf4af;
 
 	/* ══════════ PILAR ESG ══════════
 	   Tiga pilar tetap harus dibedakan sekilas, jadi jaraknya diambil dari terang-
-	   gelap teal ditambah satu kuning — bukan tiga hue acak. */
+	   gelap teal ditambah satu kuning: bukan tiga hue acak. */
 	--color-esg-e: #6fbeb2;
 	--color-esg-e-ink: #2a7671; /* 5.35 ✓ */
 	--color-esg-e-tint: #d9f4ef;
@@ -186,14 +186,14 @@
 	--color-ink-50: #f8fafc;
 	--color-ink-100: #f1f5f9;
 	--color-ink-200: #e2e8f0; /* garis kartu, track progres */
-	--color-ink-300: #cbd5e1; /* divider — dekoratif saja */
-	--color-ink-400: #94a3b8; /* ikon dekoratif — 2.56 ✗ */
-	--color-ink-450: #7d8b9d; /* batas kontrol form — 3.47 ✓ */
-	--color-ink-500: #64748b; /* teks sekunder di PUTIH — 4.76 ✓ */
-	--color-ink-600: #475569; /* teks sekunder di KANVAS — 7.00 ✓ */
-	--color-ink-700: #334155; /* body — 10.35 ✓ */
-	--color-ink-800: #1e293b; /* judul — 14.63 ✓ */
-	--color-ink-900: #0f1b2d; /* angka besar — 17.28 ✓ */
+	--color-ink-300: #cbd5e1; /* divider: dekoratif saja */
+	--color-ink-400: #94a3b8; /* ikon dekoratif: 2.56 ✗ */
+	--color-ink-450: #7d8b9d; /* batas kontrol form: 3.47 ✓ */
+	--color-ink-500: #64748b; /* teks sekunder di PUTIH: 4.76 ✓ */
+	--color-ink-600: #475569; /* teks sekunder di KANVAS: 7.00 ✓ */
+	--color-ink-700: #334155; /* body: 10.35 ✓ */
+	--color-ink-800: #1e293b; /* judul: 14.63 ✓ */
+	--color-ink-900: #0f1b2d; /* angka besar: 17.28 ✓ */
 
 	/* ══════════ SEMANTIK ══════════ */
 	--color-success: #047857; /* 5.48 ✓ */
@@ -208,7 +208,7 @@
 	/* ══════════ PERMUKAAN ══════════ */
 	/* Kertas hangat menggantikan #F5F6F7 abu-biru. Seluruh pasangan kontras
 	   diperiksa ulang di 11-VISUAL §10.1: tidak satu pun jatuh dari lolos ke
-	   gagal. Larangan lama tetap — ink-500 gagal di kanvas (4.33), teks sekunder
+	   gagal. Larangan lama tetap: ink-500 gagal di kanvas (4.33), teks sekunder
 	   di kanvas publik WAJIB ink-600 (6.90). [DAFTAR PUTIH §3.4 butir (3)] */
 	/* Kanvas bergeser dari kertas hangat ke teal yang sangat encer, supaya permukaan
 	   putih kartu tetap terbaca sebagai "naik" dan latar sepakat dengan palet baru.
@@ -222,7 +222,7 @@
 	/* [DAFTAR PUTIH §3.4 butir (4)] Penggantian NILAI token yang sudah ada, bukan
 	   token baru. Nilai lama identik dengan --font-sans, dan itulah cacat D-09:
 	   satu keluarga, satu suara. Serif hanya dipakai lewat `display-editorial`
-	   dan `figure-number` — TIDAK lagi lewat selektor h1…h4 global, lihat butir (8). */
+	   dan `figure-number`: TIDAK lagi lewat selektor h1…h4 global, lihat butir (8). */
 	--font-display: 'Fraunces', 'Instrument Serif', Georgia, serif;
 	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
@@ -237,13 +237,13 @@
 
 	/* ══════════ RITME VERTIKAL ══════════ */
 	/* Padding-block seksi zona publik. Nilainya sengaja TIDAK rata: spacing
-	   metronomik adalah cacat D-10 — halaman berdetak, bukan berirama.
+	   metronomik adalah cacat D-10: halaman berdetak, bukan berirama.
 	   [DAFTAR PUTIH §3.4 butir (5)] */
 	--rhythm-flush: 0px;
-	--rhythm-tight: 4.5rem; /* 72px  — penutup */
-	--rhythm-snug: 5.5rem; /* 88px  — kalender */
-	--rhythm-base: 7rem; /* 112px — gerakan */
-	--rhythm-loose: 8rem; /* 128px — komunitas, cerita */
+	--rhythm-tight: 4.5rem; /* 72px : penutup */
+	--rhythm-snug: 5.5rem; /* 88px : kalender */
+	--rhythm-base: 7rem; /* 112px: gerakan */
+	--rhythm-loose: 8rem; /* 128px: komunitas, cerita */
 
 	/* ══════════ SHADOW ══════════ */
 	--shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04);
@@ -262,7 +262,7 @@
 	body {
 		/* [DAFTAR PUTIH §3.4 butir (2)] Aura radial dicabut. Dua gradien yang
 		   menempel di seluruh badan halaman adalah separuh cacat D-01: kedalaman
-		   harus datang dari foto, garis, dan ruang putih — tidak pernah dari blur
+		   harus datang dari foto, garis, dan ruang putih: tidak pernah dari blur
 		   atau gradien dekoratif (11-VISUAL P-4). */
 		background: var(--color-canvas);
 		color: var(--color-ink-700);
@@ -275,14 +275,14 @@
 	/* [DAFTAR PUTIH §3.4 butir (8)] Selektor h1…h4 DIPERSEMPIT.
 	   Sebelumnya aturan ini menetapkan `font-family: var(--font-display)`. Setelah
 	   butir (4) mengganti nilai token itu menjadi Fraunces, aturan lama akan
-	   memindahkan SELURUH judul ke serif di semua zona — termasuk /awardee,
+	   memindahkan SELURUH judul ke serif di semua zona: termasuk /awardee,
 	   /verifikator, dan /admin yang wajib tetap Plus Jakarta (11-VISUAL §3.4).
 	   Menyempitkannya ke sebuah kelas induk mustahil ditegakkan: layout ketiga
 	   zona itu milik paket kerja lain dan tidak dapat disunting dari sini.
 	   Karena itu deklarasi `font-family` DIHAPUS dari selektor global, dan serif
 	   menjadi OPT-IN lewat `@utility display-editorial` / `figure-number`.
 	   `:where()` menurunkan kekhususan ke nol sehingga satu kelas Tailwind mana
-	   pun sudah cukup untuk menimpanya — tanpa `!important` di komponen. */
+	   pun sudah cukup untuk menimpanya: tanpa `!important` di komponen. */
 	:where(h1, h2, h3, h4) {
 		color: var(--color-heading);
 		letter-spacing: -0.02em;
@@ -293,7 +293,7 @@
 		color: var(--color-ink-900);
 	}
 
-	/* Fokus terlihat di SEMUA kontrol — jangan outline:none tanpa pengganti */
+	/* Fokus terlihat di SEMUA kontrol: jangan outline:none tanpa pengganti */
 	:where(a, button, input, select, textarea, [tabindex]):focus-visible {
 		outline: 2px solid var(--color-pertamina-blue);
 		outline-offset: 2px;
@@ -358,12 +358,12 @@
 }
 
 /* Angka besar: tabular + rapat. Dipakai KpiCard, StatTile, PointsChip besar.
-   [DAFTAR PUTIH §3.4 butir (7) — MITIGASI WAJIB, bukan opsional]
+   [DAFTAR PUTIH §3.4 butir (7): MITIGASI WAJIB, bukan opsional]
    Baris `font-family` di bawah dulunya `var(--font-display)`. Utility ini dipakai
    167 kali di 47 berkas, termasuk seluruh routes/admin/** dan routes/awardee/**;
    membiarkannya membaca token yang baru saja diganti akan memindahkan SETIAP
    angka dasbor ke serif tanpa satu gerbang pun berubah merah. Menambahkan kelas
-   `font-sans` di sebelahnya tidak menolong — utility ini menetapkan `font-family`
+   `font-sans` di sebelahnya tidak menolong: utility ini menetapkan `font-family`
    sendiri, sehingga pemenangnya bergantung urutan utility Tailwind 4.
    Padanan zona publik adalah `figure-number`, satu-satunya utility yang memang
    memakai --font-display untuk angka. */
@@ -374,7 +374,7 @@
 	font-weight: 700;
 }
 
-/* Label mikro uppercase — gaya khas portal Pertamina */
+/* Label mikro uppercase: gaya khas portal Pertamina */
 @utility label-micro {
 	font-size: 0.625rem;
 	line-height: 1;
@@ -385,15 +385,15 @@
 }
 
 /* ============================================================================
-   UTILITY EDITORIAL — zona publik saja
+   UTILITY EDITORIAL: zona publik saja
    [DAFTAR PUTIH 12-BUILD-CONTRACT-V2 §3.4 app.css butir (6)]
    Keempatnya ADITIF. `label-micro` di atas sengaja TIDAK diubah: ia dipakai
    41 berkas yang mayoritas ada di zona ter-login, dan me-mono-kannya termasuk
-   larangan eksplisit daftar putih. Zona publik memakai `kicker` — dua utility,
+   larangan eksplisit daftar putih. Zona publik memakai `kicker`: dua utility,
    dua zona, kali ini benar-benar tanpa tabrakan.
    ========================================================================== */
 
-/* Display editorial — Fraunces dengan sumbu WONK menyala.
+/* Display editorial: Fraunces dengan sumbu WONK menyala.
    WONK membuat beberapa terminal huruf sedikit "salah" (ekor g, terminal y).
    Itu disengaja: kerataan sempurna justru yang membuat halaman terbaca
    di-generate. Sumbu ini hanya bekerja karena berkas variabel yang diunduh
@@ -409,8 +409,8 @@
 	line-height: 0.98;
 }
 
-/* Kicker publik — pengganti label-micro di zona publik.
-   ink-600 = 6.90 di kanvas hangat ✓. BUKAN ink-500 (4.33 ✗ — 11-VISUAL §10.1). */
+/* Kicker publik: pengganti label-micro di zona publik.
+   ink-600 = 6.90 di kanvas hangat ✓. BUKAN ink-500 (4.33 ✗: 11-VISUAL §10.1). */
 @utility kicker {
 	font-family: var(--font-mono);
 	font-size: 0.6875rem; /* 11px */
@@ -421,7 +421,7 @@
 	color: var(--color-ink-600);
 }
 
-/* Angka data publik — tabular, serif, rapat.
+/* Angka data publik: tabular, serif, rapat.
    WONK sengaja MATI: huruf boleh nakal, angka tidak. Angka yang bergoyang saat
    nilainya berganti terbaca sebagai bug, bukan sebagai karakter. */
 @utility figure-number {
@@ -436,9 +436,9 @@
 	line-height: 1;
 }
 
-/* Keying rule — bar solid 4px yang MENGHUBUNGKAN, bukan MENGOTAKKAN.
+/* Keying rule: bar solid 4px yang MENGHUBUNGKAN, bukan MENGOTAKKAN.
    Mengambil alih pekerjaan border kartu. Warnanya polos (merah/navy/hijau) dan
-   itu sah justru karena ia tidak pernah menyentuh glyph — aturan emas
+   itu sah justru karena ia tidak pernah menyentuh glyph: aturan emas
    08-DESIGN-SYSTEM §0.1 tetap utuh. Warna diberikan pemanggil lewat `background`. */
 @utility keyline {
 	display: block;
@@ -447,7 +447,7 @@
 	border-radius: 0;
 }
 
-/* Kilau tipis untuk kartu Champion — sekali pakai, jangan disebar */
+/* Kilau tipis untuk kartu Champion: sekali pakai, jangan disebar */
 @utility sheen-champion {
 	background-image: linear-gradient(135deg, rgb(240 180 41 / 0.1) 0%, rgb(240 180 41 / 0) 55%);
 }

@@ -1,18 +1,18 @@
 /**
- * REPOSITORY — Buku Besar Poin.
+ * REPOSITORY: Buku Besar Poin.
  *
  * Tanggung jawab: menyimpan dan membaca entri `PointActivity`. Ini repository
  * terpanas di sistem: tier, papan peringkat, badge, dan KPI amplifikasi Hal 6
  * seluruhnya diturunkan dari tabel ini.
  *
- * **Append-only.** `delete()` sengaja menolak — bukan lupa diimplementasikan.
+ * **Append-only.** `delete()` sengaja menolak: bukan lupa diimplementasikan.
  * Catatan pada kontrak `Repository` menyatakannya eksplisit: KPI Hal 6 menghitung
  * jumlah aksi, sehingga menghapus entri sama dengan memalsukan laporan. Entri yang
  * keliru dikoreksi dengan mengubah statusnya menjadi REVOKED, dan riwayat
  * koreksinya tetap terbaca.
  *
  * @see src/lib/domain/entities/PointActivity.js
- * @see docs/09-BUILD-CONTRACT.md — §4 WP-3
+ * @see docs/09-BUILD-CONTRACT.md: §4 WP-3
  */
 
 import { ActivityStatus, PointActivity } from '$lib/domain/entities/PointActivity.js';
@@ -67,7 +67,7 @@ export class ActivityRepository extends DexieRepository {
 	 * Jumlah kejadian satu jenis aksi milik seorang awardee pada satu hari kalender.
 	 * Inilah masukan `AntiGamingPolicy.check` untuk menegakkan kuota harian.
 	 *
-	 * Entri yang ditolak tidak dihitung — `consumesQuota` sudah menyatakan aturan
+	 * Entri yang ditolak tidak dihitung: `consumesQuota` sudah menyatakan aturan
 	 * itu di entity, dan repository tinggal mematuhinya.
 	 *
 	 * @param {string} awardeeId
@@ -111,7 +111,7 @@ export class ActivityRepository extends DexieRepository {
 	}
 
 	/**
-	 * Entri yang masih menunggu kelengkapan bukti — antrean verifikasi bukti.
+	 * Entri yang masih menunggu kelengkapan bukti: antrean verifikasi bukti.
 	 * @returns {Promise<PointActivity[]>}
 	 */
 	async pending() {
@@ -127,7 +127,7 @@ export class ActivityRepository extends DexieRepository {
 	async delete(id) {
 		throw new TypeError(
 			`Entri buku besar poin tidak boleh dihapus (id "${id}"). ` +
-				'KPI Hal 6 menghitung jumlah aksi — koreksi dilakukan dengan status REVOKED, bukan penghapusan.'
+				'KPI Hal 6 menghitung jumlah aksi: koreksi dilakukan dengan status REVOKED, bukan penghapusan.'
 		);
 	}
 }

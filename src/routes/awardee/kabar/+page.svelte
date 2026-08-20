@@ -1,11 +1,11 @@
 <script>
 	/**
-	 * HALAMAN — Kabar PFfriends.
+	 * HALAMAN: Kabar PFriends.
 	 *
 	 * Tanggung jawab: menampilkan seluruh diseminasi yang sudah dikirim ke
 	 * komunitas, dan menunjukkan dengan jelas mana yang poinnya masih menunggu.
 	 *
-	 * Halaman ini adalah pintu masuk KPI Hal 6 — "1–2 konten terdiseminasi per
+	 * Halaman ini adalah pintu masuk KPI Hal 6: "1–2 konten terdiseminasi per
 	 * bulan", "diseminasi minimal 2 kali per bulan", dan "50% awardee melakukan
 	 * amplifikasi". Karena itu penanda "belum diklaim" dibuat menonjol: yang
 	 * hendak didorong bukan sekadar membuka daftar, melainkan menindaklanjuti
@@ -13,11 +13,11 @@
 	 *
 	 * Status "sudah dibaca" dibaca dari BUKU BESAR POIN, bukan dari penanda
 	 * `openedBy` pada kabar. Keduanya bisa berbeda, dan yang ingin dijawab
-	 * antarmuka ini adalah "masih adakah poin di sini" — hanya buku besar yang
+	 * antarmuka ini adalah "masih adakah poin di sini": hanya buku besar yang
 	 * mengetahuinya.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 04, Hal 6 KPI diseminasi
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.14 /awardee/kabar
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 04, Hal 6 KPI diseminasi
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.14 /awardee/kabar
 	 */
 	import {
 		Card,
@@ -97,13 +97,13 @@
 		}
 		return {
 			judul: 'Belum ada kabar baru',
-			pesan: 'Kabar mingguan PFfriends terbit setiap Selasa pagi.'
+			pesan: 'Kabar mingguan PFriends terbit setiap Selasa pagi.'
 		};
 	});
 </script>
 
 <svelte:head>
-	<title>Kabar PFfriends · PFfriends</title>
+	<title>Kabar PFriends · PFriends</title>
 </svelte:head>
 
 <PageHeader

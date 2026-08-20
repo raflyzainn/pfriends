@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * DUA KOMUNITAS & CHAPTER — profil SOBI, Womenpreneur, dan pembagian chapter.
+	 * DUA KOMUNITAS & CHAPTER: profil SOBI, Womenpreneur, dan pembagian chapter.
 	 *
 	 * Halaman ini memikul satu beban argumen yang tidak dipikul halaman lain:
 	 * menjelaskan mengapa alumni beasiswa dan pelaku UMKM binaan ditempatkan di
@@ -10,36 +10,37 @@
 	 * TIGA KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
 	 * 1. **`EventCard` tidak dipakai sama sekali di zona publik.** Kartu itu
-	 *    menampilkan sisa kuota dan nilai kehadiran — keduanya haram publik. Yang
+	 *    menampilkan sisa kuota dan nilai kehadiran: keduanya haram publik. Yang
 	 *    dipakai adalah `EventListPanel`, komponen bersama yang bentuk datanya
 	 *    (`EventCardVM`) memang tidak memuat keduanya. Larangan ditegakkan pada
 	 *    bentuk data, bukan pada disiplin pemanggil.
 	 *
 	 * 2. **Cuplikan agenda mengambil `catalog.upcomingEvents()`, bukan daftar
 	 *    mentah.** Sejak V2 kegiatan punya status "diusulkan", dan usulan mentah
-	 *    bertanggal masa depan akan lolos penyaring naif — lalu tampil di halaman
+	 *    bertanggal masa depan akan lolos penyaring naif: lalu tampil di halaman
 	 *    publik sebagai agenda resmi.
 	 *
 	 * 3. **Sebaran chapter dirender sebagai baris tabel, bukan tiga kartu.** Tiga
 	 *    kartu berukuran identik berjajar adalah bentuk yang dibuang diagnosis
 	 *    D-05; barisnya membaca lebih cepat justru karena angkanya sejajar.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 2 Background, Hal 4 dua komunitas, Hal 5 pilar 02
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E3 spread komunitas, §6 E4 baris agenda
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 2 Background, Hal 4 dua komunitas, Hal 5 pilar 02
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E3 spread komunitas, §6 E4 baris agenda
 	 */
 	import { Icon, ICONS } from '$lib/components';
 	import EventListPanel from '$lib/components/EventListPanel.svelte';
 	import { EditorialHero, PhotoFigure, PullQuote, SectionRule } from '$lib/components/editorial';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
+	import { publicContent } from '$lib/stores/publicContent.svelte.js';
 	import { CHAPTERS, COMMUNITIES, CommunityType } from '$lib/domain/constants/community.js';
 	import { foto } from '$lib/data/photos.js';
 	import { formatAngka, frasaHitung } from '$lib/utils/format.js';
-	import { agendaPublik, ringkasSemuaKomunitas } from '../_view-model.js';
+	import { agendaPublik } from '../_view-model.js';
 
 	/** Jumlah kegiatan yang ditampilkan sebagai cuplikan kalender komunitas. */
 	const AGENDA_LIMIT = 4;
 
-	/** Baris agenda yang sengaja ber-thumbnail — satu penyimpangan dalam empat baris. */
+	/** Baris agenda yang sengaja ber-thumbnail: satu penyimpangan dalam empat baris. */
 	const BARIS_THUMBNAIL = 2;
 
 	/** Foto & penekanan naratif tiap komunitas, sejajar urutan `COMMUNITIES`. */
@@ -56,26 +57,36 @@
 		})
 	});
 
-	const komunitasRingkas = $derived(ringkasSemuaKomunitas(catalog.awardees));
-	const anggotaAktif = $derived(catalog.activeAwardees);
+	$effect(() => {
+		void publicContent.loadCommunity();
+	});
+
+	const komunitasRingkas = $derived(
+		COMMUNITIES.map((profil) => {
+			const summary = publicContent.communitySummary?.communities?.find((item) => item.id === profil.id);
+			return {
+				profil,
+				jumlahAnggota: summary?.activeMembers ?? 0,
+				jumlahChapter: summary?.activeChapters ?? 0
+			};
+		})
+	);
 	const agenda = $derived(agendaPublik(catalog.upcomingEvents()));
 
 	/** Sebaran anggota aktif per chapter, lengkap dengan komposisi dua komunitas. */
 	const sebaranChapter = $derived(
 		CHAPTERS.map((def) => {
-			const anggota = anggotaAktif.filter((awardee) => awardee.chapterId === def.id);
+			const summary = publicContent.communitySummary?.chapters?.find((item) => item.id === def.id);
 			return {
 				def,
-				jumlah: anggota.length,
-				jumlahSobi: anggota.filter((awardee) => awardee.community === CommunityType.SOBI).length,
-				jumlahWomenpreneur: anggota.filter(
-					(awardee) => awardee.community === CommunityType.WOMENPRENEUR
-				).length
+				jumlah: summary?.activeMembers ?? 0,
+				jumlahSobi: summary?.sobiMembers ?? 0,
+				jumlahWomenpreneur: summary?.womenpreneurMembers ?? 0
 			};
 		})
 	);
 
-	const adaAnggota = $derived(anggotaAktif.length > 0);
+	const adaAnggota = $derived((publicContent.communitySummary?.activeMembers ?? 0) > 0);
 
 	/**
 	 * Props `PhotoFigure` dari satu kunci manifes foto.
@@ -95,7 +106,7 @@
 </script>
 
 <svelte:head>
-	<title>Dua Komunitas — PFfriends</title>
+	<title>Dua Komunitas: PFriends</title>
 	<meta
 		name="description"
 		content="Profil Sobat Bumi Indonesia dan Womenpreneur Pertamina Foundation, pembagian chapter berbasis batch, serta agenda komunitas terdekat."
@@ -113,7 +124,7 @@
 	secondary={{ label: 'Lihat agenda komunitas', href: '/kalender' }}
 	overlay="flat"
 	height="short"
-	caption="Perbincangan komunitas — foto stok"
+	caption="Perbincangan komunitas: foto stok"
 />
 
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -167,7 +178,7 @@
 							<ul class="mt-3 space-y-2">
 								{#each profil.kebutuhan as butir (butir)}
 									<li class="flex gap-3 text-[15px] leading-[1.6] text-ink-700">
-										<span class="shrink-0 text-ink-600" aria-hidden="true">—</span>
+										<span class="shrink-0 text-ink-600" aria-hidden="true">:</span>
 										<span>{butir}</span>
 									</li>
 								{/each}
@@ -175,7 +186,15 @@
 						</div>
 					</div>
 
-					{#if ringkasan.jumlahAnggota > 0}
+					{#if publicContent.communityLoading}
+						<p class="mt-8 text-[16px] leading-[1.6] text-ink-600">
+							Memuat ringkasan anggota.
+						</p>
+					{:else if publicContent.communityError}
+						<p class="mt-8 text-[16px] leading-[1.6] text-ink-600">
+							Ringkasan anggota belum dapat dimuat. Silakan coba kembali.
+						</p>
+					{:else if ringkasan.jumlahAnggota > 0}
 						<p class="mt-8 text-[16px] leading-[1.6] text-ink-700">
 							<span class="figure-number text-[28px] text-ink-900">
 								{formatAngka(ringkasan.jumlahAnggota)}
@@ -205,7 +224,7 @@
 		<div class="max-w-[66ch]">
 			<p class="text-[16px] leading-[1.68] text-ink-700">
 				Alumni Sobat Bumi keluar dari program dengan bekal pendidikan, keahlian digital, dan
-				jejaring kampus yang luas — tetapi sering tidak tahu ke mana keahlian itu bisa disalurkan
+				jejaring kampus yang luas: tetapi sering tidak tahu ke mana keahlian itu bisa disalurkan
 				setelah kelulusan.
 			</p>
 			<p class="mt-5 text-[16px] leading-[1.68] text-ink-700">
@@ -244,6 +263,15 @@
 			</div>
 
 			<div class="min-w-0">
+				{#if publicContent.communityLoading}
+					<p class="border-t border-ink-200 py-6 text-[15px] text-ink-600">
+						Memuat sebaran chapter.
+					</p>
+				{:else if publicContent.communityError}
+					<p class="border-t border-ink-200 py-6 text-[15px] text-ink-600">
+						Sebaran chapter belum dapat dimuat. Silakan coba kembali.
+					</p>
+				{:else}
 				<ul class="border-t border-ink-200">
 					{#each sebaranChapter as entri (entri.def.id)}
 						<li class="border-b border-ink-200 py-6">
@@ -276,11 +304,12 @@
 						</li>
 					{/each}
 				</ul>
+				{/if}
 
-				{#if !adaAnggota}
+				{#if publicContent.communityLoaded && !adaAnggota}
 					<p class="mt-6 max-w-[58ch] text-[16px] leading-[1.68] text-ink-700">
-						Belum ada chapter yang terisi di peramban ini. Chapter dibuka mengikuti batch penerima
-						manfaat — daftar lebih dulu, dan kamu akan langsung ditautkan ke chapter angkatanmu.
+						Belum ada chapter yang terisi. Chapter dibuka mengikuti batch penerima
+						manfaat: daftar lebih dulu, dan kamu akan langsung ditautkan ke chapter angkatanmu.
 					</p>
 				{/if}
 			</div>

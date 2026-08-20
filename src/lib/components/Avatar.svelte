@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Avatar — potret anggota, atau inisial bila tidak ada foto.
+	 * Avatar: potret anggota, atau inisial bila tidak ada foto.
 	 *
 	 * Props:
 	 * @prop {string} name    Dipakai untuk inisial dan teks alternatif.
@@ -14,13 +14,13 @@
 	 * Cincin tier adalah salah satu dari sedikit tempat warna tier polos memang
 	 * tepat: ia tidak pernah menyentuh glyph, sehingga tidak terikat syarat kontras teks.
 	 *
-	 * KEPUTUSAN V2 — INISIAL DIPERTAHANKAN, DAN ITU BUKAN KEKURANGAN.
+	 * KEPUTUSAN V2: INISIAL DIPERTAHANKAN, DAN ITU BUKAN KEKURANGAN.
 	 *
 	 * Usulan enam `avatar-0X.jpg` sebagai placeholder byline DITOLAK di
 	 * `docs/11` §4.6, dan manifes foto karena itu sengaja tidak memuat satu pun
 	 * berkas wajah. Alasannya bukan estetika: byline "Wulan Panjaitan" dengan foto
 	 * orang asing adalah pernyataan palsu tentang manusia yang dapat
-	 * diidentifikasi, dan tangkapan layar mockup SELALU bocor ke deck presentasi —
+	 * diidentifikasi, dan tangkapan layar mockup SELALU bocor ke deck presentasi :
 	 * penanda `isPlaceholderPhoto` tidak ikut terbawa ke dalam PNG. Koran cetak
 	 * juga memakai nama tanpa foto. Kemanusiaan halaman dibawa oleh foto KEGIATAN,
 	 * tempat tidak ada satu nama pun yang ditempelkan.
@@ -33,7 +33,7 @@
 	 * berganti menjadi Fraunces, inisial dua huruf pada 10–20 px adalah persis
 	 * ukuran tempat serif display terbaca sebagai kesalahan, bukan sebagai pilihan.
 	 *
-	 * @see docs/11-VISUAL-DIRECTION.md — §4.6 keputusan avatar
+	 * @see docs/11-VISUAL-DIRECTION.md: §4.6 keputusan avatar
 	 */
 	import { inisial } from '$lib/utils/format.js';
 	import { gayaTier, kelas, pantauGagalMuat } from './_visual.js';
@@ -57,7 +57,7 @@
 	};
 
 	/**
-	 * Sisi kotak dalam piksel untuk setiap ukuran — angka yang sama dengan kelas
+	 * Sisi kotak dalam piksel untuk setiap ukuran: angka yang sama dengan kelas
 	 * `h-*`/`w-*` di atas. Dipasang sebagai atribut `width`/`height` supaya avatar
 	 * berfoto tidak menggeser tata letak sebelum gambarnya tiba, sesuai gerbang
 	 * `docs/12` §3.3(d) butir 2 yang berlaku untuk SETIAP `<img>`, bukan hanya
@@ -82,8 +82,8 @@
 	const sisi = $derived(SISI_PX[size] ?? SISI_PX.md);
 
 	/**
-	 * Ketahanan runtime: avatar yang berkasnya hilang jatuh ke inisial — cabang
-	 * yang sudah ada di bawah — bukan ke ikon gambar rusak berbentuk lingkaran.
+	 * Ketahanan runtime: avatar yang berkasnya hilang jatuh ke inisial: cabang
+	 * yang sudah ada di bawah: bukan ke ikon gambar rusak berbentuk lingkaran.
 	 */
 	let srcGagal = $state('');
 	const adaGambar = $derived(Boolean(src) && srcGagal !== src);

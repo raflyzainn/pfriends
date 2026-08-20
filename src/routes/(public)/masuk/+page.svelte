@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * MASUK — gerbang peragaan: satu klik pada kartu akun, tanpa mengetik apa pun.
+	 * MASUK: gerbang peragaan: satu klik pada kartu akun, tanpa mengetik apa pun.
 	 *
 	 * Ini MOCKUP. Autentikasinya tiruan, kata sandinya satu untuk seluruh akun, dan
 	 * mengetiknya di depan ruang rapat hanya menambah langkah yang tidak menjelaskan
@@ -17,14 +17,14 @@
 	 * 2. **Alur sesinya tetap alur yang sama.** `session.login()` memanggil
 	 *    `bootstrapDatabase()` lebih dulu, memvalidasi kredensial lewat `AuthService`,
 	 *    menyimpan potret sesi, lalu `session.nextAfterLogin()` yang memutuskan
-	 *    tujuannya — bukan `homePath` yang ditebak di berkas ini. Yang dipangkas
+	 *    tujuannya: bukan `homePath` yang ditebak di berkas ini. Yang dipangkas
 	 *    hanyalah dua kolom isian, bukan penjagaannya.
 	 *
 	 * 3. **Daftar akun dirakit dari repository, bukan dari daftar tulis tangan.**
 	 *    `accountRepository.demoAccounts()` hanya mengembalikan empat baris (satu
 	 *    awardee sorotan, dua verifikator, satu admin), sementara peragaan menuntut
 	 *    lima awardee dari komunitas dan chapter berbeda. Karena itu awardee-nya
-	 *    diambil dari `awardeeRepository.getActive()` — awardee AKTIF dijamin punya
+	 *    diambil dari `awardeeRepository.getActive()`: awardee AKTIF dijamin punya
 	 *    akun berstatus aktif, sehingga tidak ada kartu yang ditolak saat diklik.
 	 *
 	 * 4. **Pengguna yang sudah masuk tidak dipantulkan diam-diam.** Panelnya
@@ -34,7 +34,7 @@
 	 *
 	 * 5. **Formulir manual tetap ada, tetapi dilipat.** Ia dibutuhkan untuk
 	 *    menunjukkan pesan galat kredensial dan tetap menjadi jalan masuk bagi akun
-	 *    yang tidak dipajang sebagai kartu — hanya saja bukan lagi jalur utama.
+	 *    yang tidak dipajang sebagai kartu: hanya saja bukan lagi jalur utama.
 	 */
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -50,7 +50,7 @@
 
 	const DEMO_LOGIN = import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEMO_LOGIN === '1';
 
-	/** Banyaknya kartu awardee yang dipajang — enam, agar grid tiga kolom terisi rata. */
+	/** Banyaknya kartu awardee yang dipajang: enam, agar grid tiga kolom terisi rata. */
 	const JUMLAH_AWARDEE = 6;
 
 	/**
@@ -88,7 +88,7 @@
 	/** Jalur yang ingin dibuka pengguna sebelum ia diminta masuk. */
 	const tujuanDiminta = $derived(page.url?.searchParams?.get('next') ?? '');
 
-	/** Tujuan yang aman bagi peran yang sedang aktif — dipakai panel "sesi aktif". */
+	/** Tujuan yang aman bagi peran yang sedang aktif: dipakai panel "sesi aktif". */
 	const tujuanAman = $derived(session.nextAfterLogin(tujuanDiminta));
 
 	const adaKartu = $derived(kartuStaf.length > 0 || kartuAwardee.length > 0);
@@ -132,7 +132,7 @@
 				keterangan: akun.unit
 			}));
 
-			// Poin tertinggi lebih dulu, seri diputus oleh id — deterministik supaya
+			// Poin tertinggi lebih dulu, seri diputus oleh id: deterministik supaya
 			// naskah peragaan dan tangkapan layar tidak basi tiap kali data dibangun.
 			const terpilih = [...awardee]
 				.sort((a, b) => b.points - a.points || a.id.localeCompare(b.id))
@@ -213,7 +213,7 @@
 	}
 
 	/**
-	 * Mengakhiri sesi tanpa meninggalkan halaman ini — daftar kartu langsung
+	 * Mengakhiri sesi tanpa meninggalkan halaman ini: daftar kartu langsung
 	 * menggantikan panel, siap menerima akun peran berikutnya.
 	 * @returns {void}
 	 */
@@ -230,15 +230,15 @@
 </script>
 
 <svelte:head>
-	<title>Masuk — PFfriends</title>
-	<meta name="description" content="Masuk ke portal komunitas PFfriends Pertamina Foundation." />
+	<title>Masuk: PFriends</title>
+	<meta name="description" content="Masuk ke portal komunitas PFriends Pertamina Foundation." />
 </svelte:head>
 
 <div class="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
 	<header class="text-center">
 		<p class="kicker">Ruang anggota</p>
 		<h1 class="display-editorial mt-4 text-[clamp(28px,4vw,42px)] leading-[1.08] text-heading">
-			{DEMO_LOGIN ? 'Pilih akun untuk masuk' : 'Masuk ke PFfriends'}
+			{DEMO_LOGIN ? 'Pilih akun untuk masuk' : 'Masuk ke PFriends'}
 		</h1>
 		<p class="mx-auto mt-5 max-w-[58ch] text-[16px] leading-[1.65] text-ink-700">
 			{DEMO_LOGIN
@@ -259,7 +259,7 @@
 	{#if !session.ready}
 		<p class="mt-10 text-center text-[15px] text-ink-600" aria-busy="true">Memeriksa sesi…</p>
 	{:else if session.isAuthenticated}
-		<!-- Panel "sesi aktif" — pengganti pantulan senyap. Lihat keputusan 4. -->
+		<!-- Panel "sesi aktif": pengganti pantulan senyap. Lihat keputusan 4. -->
 		<div class="mx-auto mt-10 max-w-2xl rounded-card border border-ink-200 bg-surface p-6 sm:p-8">
 			<p class="kicker">Sesi aktif</p>
 			<h2 class="display-editorial mt-3 text-[24px] text-heading">

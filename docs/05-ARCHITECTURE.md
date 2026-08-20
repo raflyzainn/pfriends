@@ -1,7 +1,7 @@
-# 05 — Arsitektur Perangkat Lunak Pfriends
+# 05: Arsitektur Perangkat Lunak Pfriends
 
 > **Peran dokumen.** Rancangan teknis mengikat untuk implementasi microsite **Pfriends** (Community Connect
-> Initiative — Divisi Corporate Secretary, Pertamina Foundation).
+> Initiative: Divisi Corporate Secretary, Pertamina Foundation).
 > **Sumber kebenaran:** `00-SOURCE-BRIEF.md`. Turunan analisis: `01-BRD-SRS.md`, `02-KPI-MODEL.md`,
 > `03-GAMIFICATION-SPEC.md`, `04-ESG-GOVERNANCE.md`.
 > **Aturan emas yang diwarisi:** seluruh angka poin (1/2/5/8/10/15/15/30/50), ambang tier (25/50/100/150),
@@ -12,7 +12,7 @@
 |---|---|
 | Versi | 1.0 |
 | Tanggal | 20 Juli 2026 |
-| Sifat rilis | Mockup / prototipe fungsional — tanpa backend, arsitektur siap disambung REST API |
+| Sifat rilis | Mockup / prototipe fungsional: tanpa backend, arsitektur siap disambung REST API |
 | Stack | SvelteKit 2.49 · Svelte 5 (runes) · JavaScript + JSDoc · Tailwind CSS 4 · Dexie 4 · ECharts 6 |
 | Adapter | `@sveltejs/adapter-static`, SPA (`fallback: 'index.html'`), `export const ssr = false` |
 | Bahasa | Narasi & UI: **Bahasa Indonesia**. Identifier & istilah domain: **Inggris** |
@@ -29,7 +29,7 @@
 6. [Aturan Clean Code Proyek Ini](#6-aturan-clean-code-proyek-ini)
 7. [Store Svelte 5 Membungkus Domain](#7-store-svelte-5-membungkus-domain)
 8. [Jalur Migrasi Mockup → Produksi](#8-jalur-migrasi-mockup--produksi)
-9. [Lampiran — Peta Ketertelusuran](#9-lampiran--peta-ketertelusuran)
+9. [Lampiran: Peta Ketertelusuran](#9-lampiran--peta-ketertelusuran)
 
 ---
 
@@ -46,7 +46,7 @@
 
 **Arah ketergantungan hanya satu:** Presentation → Application → Domain ← Infrastructure.
 Domain berada di pusat dan **tidak menunjuk ke luar**. Infrastructure menunjuk *ke dalam* karena ia yang
-mengimplementasikan abstraksi milik domain — inilah *Dependency Inversion* yang sebenarnya, bukan sekadar
+mengimplementasikan abstraksi milik domain: inilah *Dependency Inversion* yang sebenarnya, bukan sekadar
 "pakai interface".
 
 ### 1.2 Mengapa domain tidak boleh tahu Svelte maupun Dexie
@@ -55,7 +55,7 @@ Tiga alasan konkret, bukan dogma:
 
 1. **Angka Corsec harus dapat diuji tanpa browser.** `ScoringPolicy`, `TierPolicy`, `CapPolicy` adalah
    terjemahan langsung Hal 11 & Hal 12. Kalau kelas-kelas itu mengimpor `dexie` atau `$state`, mereka hanya
-   bisa dijalankan di dalam browser — verifikasi angka menjadi mahal dan jarang dilakukan. Sebagai kelas
+   bisa dijalankan di dalam browser: verifikasi angka menjadi mahal dan jarang dilakukan. Sebagai kelas
    JavaScript murni, semuanya dapat dieksekusi `node` langsung.
 2. **Mockup ini akan diganti backend-nya.** Dokumen sumber Hal 7 menempatkan integrasi IT pada Februari dan
    microsite pada Mei. Ketika API nyata datang, yang berubah **hanya** isi `src/lib/infrastructure/`.
@@ -71,7 +71,7 @@ Aturan ketergantungan bukan imbauan. Ditegakkan oleh skrip statis:
 ```
 scripts/verify/check-layering.mjs   # gagal (exit 1) bila menemukan impor terlarang lintas lapisan
 scripts/verify/check-magic-numbers.mjs  # gagal bila 25|50|100|150|0.75|0.5 muncul di luar domain/constants
-scripts/verify/compile-all.mjs      # sudah ada — kompilasi seluruh .svelte dengan compiler Svelte 5
+scripts/verify/compile-all.mjs      # sudah ada: kompilasi seluruh .svelte dengan compiler Svelte 5
 ```
 
 `check-layering.mjs` bekerja dengan aturan sederhana: baca setiap `import` di `src/lib/domain/**`, tolak
@@ -86,17 +86,17 @@ kalau specifier-nya bukan path relatif ke dalam `domain/` sendiri. Lalu baca set
 
 ```mermaid
 flowchart TB
-    subgraph P["PRESENTATION — src/routes, src/lib/components, src/lib/charts"]
+    subgraph P["PRESENTATION: src/routes, src/lib/components, src/lib/charts"]
         R1["+page.svelte<br/>Beranda, Poin, Leaderboard, Konsol Admin"]
         C1["Komponen: TierBadge, PointLedgerTable,<br/>KpiCard, EvidenceForm, EChart"]
     end
 
-    subgraph A["APPLICATION — src/lib/stores, src/lib/application"]
+    subgraph A["APPLICATION: src/lib/stores, src/lib/application"]
         S1["Store runes singleton<br/>session · gamification · kpi · esg · community"]
-        S2["container.js — composition root,<br/>merakit policy + service + repository"]
+        S2["container.js: composition root,<br/>merakit policy + service + repository"]
     end
 
-    subgraph D["DOMAIN — src/lib/domain (JavaScript murni)"]
+    subgraph D["DOMAIN: src/lib/domain (JavaScript murni)"]
         VO["Value Objects<br/>Points · Tier · EsgTag · ConsentRecord<br/>DateRange · MemberId"]
         EN["Entities<br/>Member · PointActivity · Story · CommunityEvent<br/>Movement · Reward · Badge · Broadcast<br/>AmplificationRecord · Chapter"]
         PO["Policies (murni, tanpa I/O)<br/>Scoring · Cap · Cooldown · Streak · Tier<br/>FeatureEligibility · EsgEvidence · AntiGaming"]
@@ -105,7 +105,7 @@ flowchart TB
         CT["Constants<br/>scoring-table Hal 11 · tier-table Hal 12<br/>kpi-parameters Hal 6 · esg-taxonomy Hal 10"]
     end
 
-    subgraph I["INFRASTRUCTURE — src/lib/infrastructure"]
+    subgraph I["INFRASTRUCTURE: src/lib/infrastructure"]
         DX["Dexie repositories + mappers"]
         MM["InMemory repositories (uji & SSR-safe)"]
         HT["HTTP repositories (placeholder produksi)"]
@@ -137,8 +137,8 @@ flowchart TB
 flowchart LR
     PRES["Presentation"] -->|"boleh"| APP["Application"]
     APP -->|"boleh"| DOM["Domain"]
-    INFRA["Infrastructure"] -->|"boleh — implementasi interface"| DOM
-    APP -->|"boleh — hanya via container"| INFRA
+    INFRA["Infrastructure"] -->|"boleh: implementasi interface"| DOM
+    APP -->|"boleh: hanya via container"| INFRA
     DOM -->|"DILARANG"| PRES
     DOM -->|"DILARANG"| APP
     DOM -->|"DILARANG"| INFRA
@@ -148,11 +148,11 @@ flowchart LR
 
 Baca diagram ini secara harfiah: **tidak ada satu pun panah keluar dari `Domain`.** Kalau sebuah berkas di
 `src/lib/domain/` butuh `import { browser } from '$app/environment'`, berarti tanggung jawabnya salah tempat
-— pindahkan ke `infrastructure/` dan suntikkan hasilnya sebagai parameter.
+: pindahkan ke `infrastructure/` dan suntikkan hasilnya sebagai parameter.
 
 ### 2.3 Alur satu aksi dari klik sampai IndexedDB
 
-Contoh: anggota menekan "Saya sudah bagikan ke Instagram" (`SHARE_PUBLIC`, 8 pts — Hal 11).
+Contoh: anggota menekan "Saya sudah bagikan ke Instagram" (`SHARE_PUBLIC`, 8 pts: Hal 11).
 
 ```mermaid
 sequenceDiagram
@@ -195,10 +195,10 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 |---|---|
 | `src/app.html` | Kerangka HTML tunggal untuk SPA statis. |
 | `src/app.css` | Token warna Pertamina/tier dalam blok `@theme` dan utility kustom dalam `@utility`. |
-| `src/routes/+layout.js` | Menonaktifkan SSR (`export const ssr = false`) dan prerender — wajib untuk SPA + Dexie. |
+| `src/routes/+layout.js` | Menonaktifkan SSR (`export const ssr = false`) dan prerender: wajib untuk SPA + Dexie. |
 | `src/routes/+layout.svelte` | Kerangka aplikasi: header, navigasi, footer, dan bootstrap seed sekali jalan. |
 
-### 3.2 `src/lib/domain/` — lapisan domain (JavaScript murni, nol dependensi eksternal)
+### 3.2 `src/lib/domain/`: lapisan domain (JavaScript murni, nol dependensi eksternal)
 
 #### `domain/shared/`
 
@@ -261,7 +261,7 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `Story.js` | Cerita/liputan anggota beserta state machine moderasi dan keterkaitan consent. |
 | `CommunityEvent.js` | Kegiatan kalender (upskilling / pertemuan / sharing) beserta kuota dan kehadiran. |
 | `Movement.js` | Gerakan bersama beserta kategori, periode, partisipan, dan tag ESG/SDG. |
-| `ActionReport.js` | Laporan aksi lapangan dari sebuah gerakan — pemasok utama bukti ESG. |
+| `ActionReport.js` | Laporan aksi lapangan dari sebuah gerakan: pemasok utama bukti ESG. |
 | `Content.js` | Konten Pertamina/PF yang dapat diterbitkan dan diamplifikasi. |
 | `Broadcast.js` | Satu peristiwa diseminasi terjadwal beserta daftar penerima dan penanda baca. |
 | `AmplificationRecord.js` | Satu aksi amplifikasi anggota beserta kanal, tingkat bukti, dan status verifikasi. |
@@ -272,9 +272,9 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `RedemptionOrder.js` | Pesanan penukaran beserta siklus status `DIAJUKAN` → `SELESAI`/`DIBATALKAN`. |
 | `EvidenceRecord.js` | Rekaman bukti ESG dengan empat field gerbang Hal 12 dan rantai hash integritas. |
 | `Recognition.js` | Penghargaan TOP Contribution / TOP Awardee beserta periode dan status publikasi. |
-| `AuditLogEntry.js` | Entri jejak audit *append-only* berantai hash — tidak punya method `update`. |
+| `AuditLogEntry.js` | Entri jejak audit *append-only* berantai hash: tidak punya method `update`. |
 
-#### `domain/policies/` — murni, tanpa I/O, menerima snapshot dan mengembalikan keputusan
+#### `domain/policies/`: murni, tanpa I/O, menerima snapshot dan mengembalikan keputusan
 
 | Berkas | Tanggung jawab |
 |---|---|
@@ -296,7 +296,7 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `AccessPolicy.js` | Menjawab "peran ini boleh melakukan aksi ini pada objek ini?" untuk enam peran RBAC. |
 | `SeasonPolicy.js` | Menentukan batas musim kuartalan, carry-over 50%, dan grace period Champion. |
 
-#### `domain/services/` — orkestrasi; boleh memanggil repository, tidak boleh menyentuh Svelte/Dexie
+#### `domain/services/`: orkestrasi; boleh memanggil repository, tidak boleh menyentuh Svelte/Dexie
 
 | Berkas | Tanggung jawab |
 |---|---|
@@ -316,7 +316,7 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `ReachEstimator.js` | Mengestimasi jangkauan organik dan nilai earned media beserta daftar asumsinya. |
 | `SeedPolicyChecker.js` | Memeriksa konsistensi data seed terhadap seluruh policy sebelum aplikasi dijalankan. |
 
-#### `domain/repositories/` — **abstract base class saja**, nol implementasi
+#### `domain/repositories/`: **abstract base class saja**, nol implementasi
 
 | Berkas | Tanggung jawab |
 |---|---|
@@ -331,7 +331,7 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `AmplificationRepository.js` | Kontrak akses aksi amplifikasi termasuk pencarian berdasarkan kunci deduplikasi. |
 | `EvidenceRepository.js` | Kontrak akses bukti ESG termasuk agregasi per pilar dan periode. |
 | `ConsentRepository.js` | Kontrak akses rekaman consent termasuk riwayat versi dan pencabutan. |
-| `AuditLogRepository.js` | Kontrak jejak audit *append-only* — sengaja tidak memiliki `update` maupun `delete`. |
+| `AuditLogRepository.js` | Kontrak jejak audit *append-only*: sengaja tidak memiliki `update` maupun `delete`. |
 | `BadgeRepository.js` | Kontrak akses definisi badge dan pemberian badge per anggota. |
 | `RewardRepository.js` | Kontrak akses katalog penukaran dan pesanan penukaran. |
 | `ChapterRepository.js` | Kontrak akses chapter beserta keanggotaannya. |
@@ -345,12 +345,12 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `EventBus.js` | Interface publikasi/berlangganan peristiwa domain, tanpa implementasi konkret. |
 | `event-names.js` | Daftar beku nama peristiwa (`points.awarded`, `tier.changed`, `story.published`, dst). |
 
-### 3.3 `src/lib/infrastructure/` — satu-satunya lapisan yang tahu Dexie, browser, dan HTTP
+### 3.3 `src/lib/infrastructure/`: satu-satunya lapisan yang tahu Dexie, browser, dan HTTP
 
 | Berkas | Tanggung jawab |
 |---|---|
 | `db/PfriendsDatabase.js` | Membuka koneksi Dexie secara *lazy* dan SSR-safe, mengembalikan `null` di luar browser. |
-| `db/schema.js` | Deklarasi `db.version(n).stores({...})` — hanya field ter-indeks. |
+| `db/schema.js` | Deklarasi `db.version(n).stores({...})`: hanya field ter-indeks. |
 | `db/migrations.js` | Riwayat upgrade skema Dexie antarversi. |
 | `dexie/DexieRepositoryBase.js` | Perilaku bersama repositori Dexie: akses tabel, `put`, `bulkPut`, penanganan galat. |
 | `dexie/DexieMemberRepository.js` | Implementasi `MemberRepository` di atas tabel `members`. |
@@ -380,7 +380,7 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `memory/index.js` | Perakit cepat seluruh repositori memori untuk skenario uji. |
 | `http/HttpClient.js` | Pembungkus `fetch` dengan base URL, header, retry, dan pemetaan galat. |
 | `http/HttpRepositoryBase.js` | Perilaku bersama repositori HTTP: serialisasi, penanganan 4xx/5xx, paginasi. |
-| `http/HttpMemberRepository.js` | **Placeholder produksi** — implementasi `MemberRepository` di atas REST API. |
+| `http/HttpMemberRepository.js` | **Placeholder produksi**: implementasi `MemberRepository` di atas REST API. |
 | `http/dto/README.md` | Catatan kontrak DTO yang harus disepakati dengan Fungsi IT saat integrasi. |
 | `seed/SeedFactory.js` | Fasad pembangkit seluruh data seed deterministik dari satu *seed number*. |
 | `seed/MemberFactory.js` | Membangkitkan anggota fiktif lintas komunitas, pilar, chapter, dan tier. |
@@ -397,7 +397,7 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `system/HashService.js` | SHA-256 via Web Crypto untuk rantai integritas audit dan bukti. |
 | `system/InMemoryEventBus.js` | Implementasi `EventBus` sederhana berbasis peta pendengar. |
 
-### 3.4 `src/lib/application/` — composition root
+### 3.4 `src/lib/application/`: composition root
 
 | Berkas | Tanggung jawab |
 |---|---|
@@ -405,7 +405,7 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `bootstrap.js` | Menyiapkan database, menjalankan seed bila perlu, lalu menandai aplikasi siap. |
 | `errorCatalog.js` | Memetakan kode galat domain menjadi kalimat Bahasa Indonesia yang menjelaskan tindakan. |
 
-### 3.5 `src/lib/stores/` — Svelte 5 runes, satu kelas per store, di-export sebagai singleton
+### 3.5 `src/lib/stores/`: Svelte 5 runes, satu kelas per store, di-export sebagai singleton
 
 | Berkas | Tanggung jawab |
 |---|---|
@@ -425,17 +425,17 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 | `notification.svelte.js` | Antrean pesan toast/inline hasil operasi domain, seluruhnya Bahasa Indonesia. |
 | `theme.svelte.js` | Preferensi tema terang/gelap yang dipersistensi lokal. |
 
-### 3.6 `src/lib/components/` — presentasi murni, tanpa logika bisnis
+### 3.6 `src/lib/components/`: presentasi murni, tanpa logika bisnis
 
 | Berkas | Tanggung jawab |
 |---|---|
 | `Button.svelte`, `Card.svelte`, `Modal.svelte`, `Badge.svelte` | Primitif UI bersama seluruh halaman. |
 | `PageHeader.svelte`, `Header.svelte`, `Footer.svelte`, `Sidebar.svelte`, `BottomNav.svelte` | Kerangka navigasi responsif. |
 | `EmptyState.svelte`, `ErrorState.svelte`, `LoadingState.svelte` | Tiga keadaan non-ideal yang wajib ada di setiap daftar (NFR-028). |
-| `TierBadge.svelte` | Menampilkan tier beserta warna resminya — warna diterima sebagai prop, tidak dihitung sendiri. |
+| `TierBadge.svelte` | Menampilkan tier beserta warna resminya: warna diterima sebagai prop, tidak dihitung sendiri. |
 | `TierProgress.svelte` | Bilah progres menuju ambang berikutnya beserta checklist syarat yang belum terpenuhi. |
 | `PointLedgerTable.svelte` | Tabel riwayat kontribusi beserta label status Bahasa Indonesia. |
-| `ActionCatalogTable.svelte` | Tabel sembilan aksi dan nilai poinnya — data berasal dari store, bukan literal. |
+| `ActionCatalogTable.svelte` | Tabel sembilan aksi dan nilai poinnya: data berasal dari store, bukan literal. |
 | `KpiCard.svelte` | Kartu satu metrik: nilai, target, dan warna status yang diterima dari `MetricResult`. |
 | `EvidenceForm.svelte` | Formulir bukti ESG dengan indikator kelengkapan empat gerbang. |
 | `ConsentChecklist.svelte` | Daftar consent granular beserta status dan tombol pencabutan. |
@@ -466,13 +466,13 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 |---|---|
 | `data/navigation.js` | Definisi menu per peran RBAC. |
 | `data/copy.js` | Teks UI Bahasa Indonesia yang dipakai lebih dari satu tempat. |
-| `data/masterBeneficiaries.js` | Master data penerima manfaat fiktif — penyebut KPI-01. |
+| `data/masterBeneficiaries.js` | Master data penerima manfaat fiktif: penyebut KPI-01. |
 | `utils/format.js` | Pemformatan angka, tanggal, persentase, dan mata uang lokal Indonesia. |
 | `utils/labels.js` | Pemetaan kode domain Inggris → label UI Bahasa Indonesia. |
 | `utils/clipboard.js` | Penyalinan teks ke papan klip beserta umpan balik keberhasilan. |
 | `utils/ics.js` | Pembangkit berkas kalender `.ics` untuk pengingat kegiatan. |
 
-### 3.9 `src/routes/` — peta halaman
+### 3.9 `src/routes/`: peta halaman
 
 | Path | Tanggung jawab |
 |---|---|
@@ -515,25 +515,25 @@ langsung dokumen sumber dan tidak boleh diubah tanpa revisi dokumen Corsec.
 ## 4. Rancangan OOP Detail
 
 Notasi: `#field` = privat (private class field). Seluruh VO memanggil `Object.freeze(this)` di akhir
-konstruktor. Seluruh method domain diberi anotasi JSDoc lengkap — proyek ini JavaScript, bukan TypeScript,
+konstruktor. Seluruh method domain diberi anotasi JSDoc lengkap: proyek ini JavaScript, bukan TypeScript,
 sehingga JSDoc adalah satu-satunya kontrak tipe yang dibaca editor.
 
 ### 4.1 Value Objects
 
 Karakteristik wajib setiap VO di proyek ini:
-**(a)** tidak punya identitas — dua instans dengan nilai sama dianggap sama;
-**(b)** *immutable* — setiap "perubahan" mengembalikan instans baru;
-**(c)** tidak pernah ada dalam keadaan tidak valid — validasi di konstruktor, bukan di pemanggil;
+**(a)** tidak punya identitas: dua instans dengan nilai sama dianggap sama;
+**(b)** *immutable*: setiap "perubahan" mengembalikan instans baru;
+**(c)** tidak pernah ada dalam keadaan tidak valid: validasi di konstruktor, bukan di pemanggil;
 **(d)** punya `equals(other)` dan `toString()`.
 
 ---
 
-#### `Points` — `domain/value-objects/Points.js`
+#### `Points`: `domain/value-objects/Points.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#value: number` (bilangan bulat ≥ 0) |
-| **Invariant** | Selalu bilangan bulat non-negatif. Poin negatif tidak punya makna bisnis — pencabutan dimodelkan sebagai entri `REVOKED` bertanda, bukan sebagai poin negatif. |
+| **Invariant** | Selalu bilangan bulat non-negatif. Poin negatif tidak punya makna bisnis: pencabutan dimodelkan sebagai entri `REVOKED` bertanda, bukan sebagai poin negatif. |
 | **Alasan keberadaan** | Mencegah `number` telanjang beredar. Ketika sebuah method menerima `Points`, mustahil salah mengirimkan jumlah hari atau indeks. Aritmatika cap dan diminishing returns terkumpul di satu tempat sehingga aturan pembulatan konsisten. |
 
 ```js
@@ -545,11 +545,11 @@ static zero()
 get value()
 /** @param {Points} other @returns {Points} */
 plus(other)
-/** @param {Points} other @returns {Points} — tidak pernah di bawah nol */
+/** @param {Points} other @returns {Points}: tidak pernah di bawah nol */
 minus(other)
-/** @param {number} multiplier @returns {Points} — hasil minimal 1 selama multiplier > 0 */
+/** @param {number} multiplier @returns {Points}: hasil minimal 1 selama multiplier > 0 */
 scaledBy(multiplier)
-/** @param {number} remaining @returns {Points} — potong dengan sisa kuota cap */
+/** @param {number} remaining @returns {Points}: potong dengan sisa kuota cap */
 clampTo(remaining)
 /** @param {Points} other @returns {boolean} */
 isAtLeast(other)
@@ -563,46 +563,46 @@ menyimpang suatu saat.
 
 ---
 
-#### `Tier` — `domain/value-objects/Tier.js` **[Hal 12]**
+#### `Tier`: `domain/value-objects/Tier.js` **[Hal 12]**
 
 | Aspek | Detail |
 |---|---|
-| **Properti** | `code`, `label`, `threshold: number`, `color: string`, `benefit: string` — seluruhnya beku |
-| **Invariant** | Hanya lima instans yang boleh ada (`NONE`, `ACTIVE_MEMBER`, `CONTRIBUTOR`, `FEATURED_CANDIDATE`, `CHAMPION`). Konstruktor privat secara konvensi; instansiasi dari luar dilarang. `threshold`, `color`, dan `benefit` diambil dari `tier-table.js` — bukan literal di berkas ini. |
+| **Properti** | `code`, `label`, `threshold: number`, `color: string`, `benefit: string`: seluruhnya beku |
+| **Invariant** | Hanya lima instans yang boleh ada (`NONE`, `ACTIVE_MEMBER`, `CONTRIBUTOR`, `FEATURED_CANDIDATE`, `CHAMPION`). Konstruktor privat secara konvensi; instansiasi dari luar dilarang. `threshold`, `color`, dan `benefit` diambil dari `tier-table.js`: bukan literal di berkas ini. |
 | **Alasan keberadaan** | Tier adalah konsep bisnis, bukan string. Dengan VO, `member.tier.benefit` mengembalikan kalimat resmi Hal 12 tanpa satu pun komponen menyimpan salinan teksnya. Perbandingan tier (`isAtLeast`) menjadi aman dan tidak bergantung pada urutan string. |
 
 ```js
 /** @param {string} code @returns {Tier} */ static fromCode(code)
-/** @param {number} points @returns {Tier} — tier tertinggi yang ambangnya terpenuhi */ static forPoints(points)
-/** @returns {readonly Tier[]} — urut menaik, tanpa NONE */ static ordered()
+/** @param {number} points @returns {Tier}: tier tertinggi yang ambangnya terpenuhi */ static forPoints(points)
+/** @returns {readonly Tier[]}: urut menaik, tanpa NONE */ static ordered()
 /** @param {Tier} other @returns {boolean} */ isAtLeast(other)
 /** @returns {Tier|null} */ next()
-/** @param {number} points @returns {number} — sisa poin menuju ambang berikutnya */ pointsToNext(points)
+/** @param {number} points @returns {number}: sisa poin menuju ambang berikutnya */ pointsToNext(points)
 /** @param {Tier} other @returns {boolean} */ equals(other)
 ```
 
 ---
 
-#### `EsgTag` — `domain/value-objects/EsgTag.js` **[Hal 10]**
+#### `EsgTag`: `domain/value-objects/EsgTag.js` **[Hal 10]**
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#pillar: 'E'\|'S'\|'G'`, `#category: string`, `#label: string` |
 | **Invariant** | `category` harus terdaftar di `esg-taxonomy.js` untuk `pillar` yang bersangkutan. Kombinasi `E` + `mentoring` ditolak karena `mentoring` milik pilar `S`. Ini mencegah tag ngawur yang membuat agregasi ESG tidak dapat dipertanggungjawabkan. |
-| **Alasan keberadaan** | Hal 10 mendefinisikan cakupan per pilar secara spesifik. Kalau tag hanya `string`, laporan ESG akan berisi kategori karangan yang tidak dapat dipetakan ke tabel Hal 10 — persis masalah *evidence integrity* yang ingin dicegah. |
+| **Alasan keberadaan** | Hal 10 mendefinisikan cakupan per pilar secara spesifik. Kalau tag hanya `string`, laporan ESG akan berisi kategori karangan yang tidak dapat dipetakan ke tabel Hal 10: persis masalah *evidence integrity* yang ingin dicegah. |
 
 ```js
 /** @param {'E'|'S'|'G'} pillar @param {string} category @returns {EsgTag} */ static of(pillar, category)
 /** @param {'E'|'S'|'G'} pillar @returns {readonly EsgTag[]} */ static allFor(pillar)
 /** @returns {'E'|'S'|'G'} */ get pillar()
 /** @returns {string} */ get category()
-/** @returns {string} — label Bahasa Indonesia untuk UI */ get label()
+/** @returns {string}: label Bahasa Indonesia untuk UI */ get label()
 /** @param {EsgTag} other @returns {boolean} */ equals(other)
 ```
 
 ---
 
-#### `ConsentRecord` — `domain/value-objects/ConsentRecord.js`
+#### `ConsentRecord`: `domain/value-objects/ConsentRecord.js`
 
 Ditempatkan sebagai **Value Object, bukan Entity**, dengan alasan yang disengaja: dokumen governance
 (04-ESG §5) mensyaratkan jejak *append-only*. Consent tidak pernah "diubah"; ia **digantikan**. Pencabutan
@@ -612,14 +612,14 @@ adalah rantai objek beku yang dapat diaudit, bukan satu baris yang di-`update` b
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id`, `#memberId: MemberId`, `#consentType`, `#scope: readonly string[]`, `#channels: readonly string[]`, `#purpose`, `#policyVersion`, `#statementText`, `#statementHash`, `#status`, `#grantedAt: Date`, `#expiresAt: Date`, `#revokedAt: Date\|null`, `#supersedes: string\|null`, `#isMinor: boolean`, `#guardian: object\|null` |
-| **Invariant** | (1) `expiresAt > grantedAt`. (2) `scope` dan `channels` tidak boleh kosong — consent generik dilarang. (3) `purpose` minimal 20 karakter dan tidak boleh sama dengan salah satu frasa generik terlarang. (4) Bila `isMinor === true`, `guardian` wajib terisi. (5) `statementHash` harus cocok dengan hash `statementText`. (6) Objek beku — tidak ada setter. |
+| **Invariant** | (1) `expiresAt > grantedAt`. (2) `scope` dan `channels` tidak boleh kosong: consent generik dilarang. (3) `purpose` minimal 20 karakter dan tidak boleh sama dengan salah satu frasa generik terlarang. (4) Bila `isMinor === true`, `guardian` wajib terisi. (5) `statementHash` harus cocok dengan hash `statementText`. (6) Objek beku: tidak ada setter. |
 | **Alasan keberadaan** | Consent adalah gerbang ketiga public feature (Hal 12) dan seluruh pilar Governance (Hal 10). Menjadikannya VO beku berarti mustahil ada kode yang "diam-diam" mengaktifkan consent seseorang; satu-satunya cara adalah membuat rekaman baru yang tercatat di audit. |
 
 ```js
 /** @param {ConsentInput} input @returns {ConsentRecord} */ static grant(input)
-/** @param {Date} at @param {string} via @param {string} [reason] @returns {ConsentRecord} — instans baru berstatus dicabut */ revoke(at, via, reason)
-/** @param {ConsentInput} input @returns {ConsentRecord} — versi kebijakan baru, menunjuk yang lama */ supersedeWith(input)
-/** @param {Date} at @returns {boolean} — aktif, belum kedaluwarsa, belum dicabut */ isActiveAt(at)
+/** @param {Date} at @param {string} via @param {string} [reason] @returns {ConsentRecord}: instans baru berstatus dicabut */ revoke(at, via, reason)
+/** @param {ConsentInput} input @returns {ConsentRecord}: versi kebijakan baru, menunjuk yang lama */ supersedeWith(input)
+/** @param {Date} at @returns {boolean}: aktif, belum kedaluwarsa, belum dicabut */ isActiveAt(at)
 /** @param {string} scope @returns {boolean} */ covers(scope)
 /** @param {string} channel @returns {boolean} */ allowsChannel(channel)
 /** @param {ConsentRecord} other @returns {boolean} */ equals(other)
@@ -627,20 +627,20 @@ adalah rantai objek beku yang dapat diaudit, bukan satu baris yang di-`update` b
 
 ---
 
-#### `DateRange` — `domain/value-objects/DateRange.js`
+#### `DateRange`: `domain/value-objects/DateRange.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#start: Date`, `#end: Date` (keduanya inklusif) |
 | **Invariant** | `start <= end`. Keduanya `Date` valid. Instans dibekukan beserta salinan `Date` internal sehingga pemanggil tidak dapat memutasi tanggal dari luar. |
-| **Alasan keberadaan** | Hampir seluruh perhitungan proyek ini berbasis periode: cap harian/mingguan/bulanan, musim kuartalan, periode KPI bulanan, rentang aktivitas ESG, masa berlaku consent. Tanpa VO, setiap kalkulator akan menulis ulang aritmatika tanggal — dan salah satunya pasti keliru soal batas inklusif/eksklusif. |
+| **Alasan keberadaan** | Hampir seluruh perhitungan proyek ini berbasis periode: cap harian/mingguan/bulanan, musim kuartalan, periode KPI bulanan, rentang aktivitas ESG, masa berlaku consent. Tanpa VO, setiap kalkulator akan menulis ulang aritmatika tanggal: dan salah satunya pasti keliru soal batas inklusif/eksklusif. |
 
 ```js
 /** @param {Date} start @param {Date} end @returns {DateRange} */ static of(start, end)
 /** @param {Date} at @param {string} [tz='Asia/Jakarta'] @returns {DateRange} */ static dayOf(at, tz)
-/** @param {Date} at @returns {DateRange} — Minggu Pfriends: Selasa 00:00 s.d. Senin 23:59 WIB */ static pfriendsWeekOf(at)
+/** @param {Date} at @returns {DateRange}: Minggu Pfriends: Selasa 00:00 s.d. Senin 23:59 WIB */ static pfriendsWeekOf(at)
 /** @param {Date} at @returns {DateRange} */ static monthOf(at)
-/** @param {Date} at @returns {DateRange} — kuartal kalender */ static quarterOf(at)
+/** @param {Date} at @returns {DateRange}: kuartal kalender */ static quarterOf(at)
 /** @param {Date} at @returns {boolean} */ contains(at)
 /** @param {DateRange} other @returns {boolean} */ overlaps(other)
 /** @returns {number} */ get durationDays()
@@ -649,7 +649,7 @@ adalah rantai objek beku yang dapat diaudit, bukan satu baris yang di-`update` b
 
 ---
 
-#### `MemberId` — `domain/value-objects/MemberId.js`
+#### `MemberId`: `domain/value-objects/MemberId.js`
 
 | Aspek | Detail |
 |---|---|
@@ -682,7 +682,7 @@ VO identitas lain (`ActivityId`, `StoryId`, `EventId`, `ChapterId`) dibangun dar
 | `SdgGoal` | `number`, `name` | 1 ≤ number ≤ 17 | Menolak nomor SDG di luar rentang resmi |
 | `AmplificationLevel` | `level: 'L0'..'L4'`, `confidence: number` | Lima tingkat; `confidence` 0–1 | Membedakan klaim mandiri dari bukti terverifikasi saat menghitung KPI-04 |
 | `EligibilityVerdict` | `eligible`, `checks[]`, `missing[]` | `eligible === (missing.length === 0)` | Membuat setiap penolakan gerbang selalu menjelaskan *apa* yang kurang (Core Drive #2) |
-| `TierResolution` | `tier`, `locked`, `missing[]`, `honorary` | `locked` hanya terisi bila poin cukup tapi komposisi belum | Membedakan "belum cukup poin" dari "poin cukup tapi komposisi kurang" — dua pesan UI yang berbeda |
+| `TierResolution` | `tier`, `locked`, `missing[]`, `honorary` | `locked` hanya terisi bila poin cukup tapi komposisi belum | Membedakan "belum cukup poin" dari "poin cukup tapi komposisi kurang": dua pesan UI yang berbeda |
 | `MetricResult` | `id`, `value`, `numerator`, `denominator`, `target`, `status`, `period` | `status` hanya dari `ThresholdPolicy`, tidak pernah dihitung komponen | Menjamin warna KPI di seluruh dashboard berasal dari satu aturan |
 | `ReachEstimate` | `gross`, `net`, `assumptions[]` | `assumptions` tidak boleh kosong | Angka estimasi tanpa asumsi tertulis adalah greenwashing; VO memaksa asumsi ikut dibawa |
 | `Rarity` | `code`, `color`, `coinBonus` | Empat tingkat | Menyatukan bonus Koin Tukar per kelangkaan badge |
@@ -691,19 +691,19 @@ VO identitas lain (`ActivityId`, `StoryId`, `EventId`, `ChapterId`) dibangun dar
 
 ### 4.2 Entities
 
-Karakteristik wajib: **(a)** punya identitas stabil; **(b)** melindungi invariant-nya sendiri — tidak ada
+Karakteristik wajib: **(a)** punya identitas stabil; **(b)** melindungi invariant-nya sendiri: tidak ada
 setter publik untuk field yang punya aturan; **(c)** transisi state hanya lewat method bernama sesuai
 peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEvents` untuk efek samping.
 
 ---
 
-#### `Member` — `domain/entities/Member.js`
+#### `Member`: `domain/entities/Member.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id: MemberId`, `#fullName`, `#whatsapp`, `#email`, `#community: CommunityType`, `#pillar: ProgramPillar`, `#batch`, `#region`, `#chapterId`, `#status: MemberStatus`, `#role`, `#lifetimePoints: Points`, `#seasonPoints: Points`, `#previousSeasonPoints: Points`, `#coins: number`, `#streakWeeks: number`, `#freezeTokens: number`, `#profileVisibility`, `#anonymousOnLeaderboard: boolean`, `#businessProfile: BusinessProfile\|null`, `#joinedAt: Date`, `#lastAwardedAt: Date\|null` |
 | **Invariant** | (1) `businessProfile` hanya boleh terisi bila `community === WOMENPRENEUR`. (2) Poin hanya bertambah lewat `addPoints()`; tidak ada setter. (3) `seasonPoints <= lifetimePoints` selalu. (4) `freezeTokens` maksimum 2. (5) Anggota berstatus non-`canEarnPoints` menolak `addPoints()` dengan `InvariantViolation`. (6) `coins` boleh negatif sementara akibat clawback pesanan yang telanjur dipenuhi, dan dipulihkan dari perolehan berikutnya. |
-| **Alasan keberadaan** | Akar agregat komunitas. Semua aturan "siapa boleh apa" berpusat di sini sehingga tidak ada service yang perlu menebak. Perhatikan: `Member` **tidak** menghitung tier-nya sendiri — tier bergantung pada komposisi kontribusi yang hanya diketahui buku besar, jadi perhitungannya milik `TierResolver`. Entitas yang menghitung sesuatu yang datanya tidak ia miliki adalah kebocoran tanggung jawab. |
+| **Alasan keberadaan** | Akar agregat komunitas. Semua aturan "siapa boleh apa" berpusat di sini sehingga tidak ada service yang perlu menebak. Perhatikan: `Member` **tidak** menghitung tier-nya sendiri: tier bergantung pada komposisi kontribusi yang hanya diketahui buku besar, jadi perhitungannya milik `TierResolver`. Entitas yang menghitung sesuatu yang datanya tidak ia miliki adalah kebocoran tanggung jawab. |
 
 ```js
 /** @param {MemberInput} input @returns {Member} */ static register(input)
@@ -711,20 +711,20 @@ peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEven
 /** @param {Points} points @param {Date} at @returns {void} */ addPoints(points, at)
 /** @param {Points} points @param {string} reason @returns {void} */ revokePoints(points, reason)
 /** @param {number} amount @returns {void} */ addCoins(amount)
-/** @param {number} amount @returns {Result<void>} — gagal wajar bila saldo kurang */ spendCoins(amount)
-/** @returns {Points} — seasonPoints + floor(0.5 × previousSeasonPoints) */ activePoints()
-/** @param {SeasonId} next @returns {void} — rotasi musim, carry-over 50% */ rollSeason(next)
+/** @param {number} amount @returns {Result<void>}: gagal wajar bila saldo kurang */ spendCoins(amount)
+/** @returns {Points}: seasonPoints + floor(0.5 × previousSeasonPoints) */ activePoints()
+/** @param {SeasonId} next @returns {void}: rotasi musim, carry-over 50% */ rollSeason(next)
 /** @param {Date} at @returns {void} */ registerWeeklyActivity(at)
 /** @returns {boolean} */ consumeFreezeToken()
 /** @param {string} verifierId @param {Date} at @returns {void} */ verifyMembership(verifierId, at)
 /** @param {string} reason @param {Date} at @returns {void} */ suspend(reason, at)
 /** @param {Date} at @returns {void} */ markDormant(at)
-/** @param {BusinessProfile} profile @returns {void} — menolak bila bukan Womenpreneur */ attachBusinessProfile(profile)
+/** @param {BusinessProfile} profile @returns {void}: menolak bila bukan Womenpreneur */ attachBusinessProfile(profile)
 ```
 
 ---
 
-#### `PointActivity` — `domain/entities/PointActivity.js`
+#### `PointActivity`: `domain/entities/PointActivity.js`
 
 > Entitas ini adalah `PointLedgerEntry` pada `03-GAMIFICATION-SPEC.md` §5.6. Nama `PointActivity` dipakai di
 > seluruh kode; dokumen 03 tetap menjadi rujukan aturan status.
@@ -732,20 +732,20 @@ peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEven
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id`, `#memberId: MemberId`, `#actionCode: ActionCode`, `#actionClass: ActionClass`, `#payload: object`, `#idempotencyKey: string`, `#basePoints: Points`, `#awardedPoints: Points`, `#drMultiplier`, `#streakMultiplier`, `#capped: boolean`, `#capReason`, `#riskScore: number`, `#status: ActivityStatus`, `#requiredVerifier`, `#approvals: Approval[]`, `#rejectionReason`, `#evidenceRefs[]`, `#evidenceDeadline: Date`, `#createdAt: Date`, `#settledAt: Date\|null` |
-| **Invariant** | (1) `awardedPoints <= basePoints` **selalu** — pengali dan cap hanya boleh mengurangi, tidak pernah menambah, sehingga tabel Hal 11 tetap menjadi batas atas. (2) Transisi status hanya lewat method; `#status` tidak punya setter. (3) `REJECTED` wajib disertai `rejectionReason` non-kosong. (4) Entri Kelas D wajib dua `approvals` dari peran berbeda sebelum boleh `AWARDED`. (5) Setelah `AWARDED` atau `REVOKED`, entri tidak dapat berubah lagi kecuali ke `REVOKED`. (6) `idempotencyKey` wajib dan tidak boleh berubah. |
+| **Invariant** | (1) `awardedPoints <= basePoints` **selalu**: pengali dan cap hanya boleh mengurangi, tidak pernah menambah, sehingga tabel Hal 11 tetap menjadi batas atas. (2) Transisi status hanya lewat method; `#status` tidak punya setter. (3) `REJECTED` wajib disertai `rejectionReason` non-kosong. (4) Entri Kelas D wajib dua `approvals` dari peran berbeda sebelum boleh `AWARDED`. (5) Setelah `AWARDED` atau `REVOKED`, entri tidak dapat berubah lagi kecuali ke `REVOKED`. (6) `idempotencyKey` wajib dan tidak boleh berubah. |
 | **Alasan keberadaan** | Ini objek paling penting di sistem. KPI-04 (50% anggota beramplifikasi), tier, badge, leaderboard, dan sebagian bukti ESG semuanya diturunkan dari kumpulan `PointActivity`. Karena itu ia harus *append-only secara semantik*: bahkan aksi yang ditolak atau yang poinnya nol karena cap tetap tersimpan (§5.5), sebab KPI dihitung dari **jumlah aksi**, bukan dari poin. Menghapus entri berarti memalsukan laporan. |
 
 ```js
 /** @param {ActivityInput} input @returns {PointActivity} */ static create(input)
 /** @returns {void} */ toAutoCheck()
 /** @returns {void} */ toUnderReview()
-/** @param {string} reason @returns {void} — AWARDED dengan 0 poin, aksi tetap tercatat */ awardZero(reason)
+/** @param {string} reason @returns {void}: AWARDED dengan 0 poin, aksi tetap tercatat */ awardZero(reason)
 /** @returns {void} */ awardAuto()
 /** @param {string} verifierId @param {string} role @param {string} [note] @returns {void} */ approve(verifierId, role, note)
-/** @param {string} verifierId @param {string} reason @returns {void} — alasan WAJIB */ reject(verifierId, reason)
+/** @param {string} verifierId @param {string} reason @returns {void}: alasan WAJIB */ reject(verifierId, reason)
 /** @param {Date} at @returns {void} */ expire(at)
 /** @param {string} auditorId @param {string} reason @returns {void} */ revoke(auditorId, reason)
-/** @returns {void} — banding satu kali dari REJECTED */ appeal()
+/** @returns {void}: banding satu kali dari REJECTED */ appeal()
 /** @returns {boolean} */ isAwarded()
 /** @returns {boolean} */ countsForKpi()
 /** @returns {boolean} */ hasDualApproval()
@@ -753,13 +753,13 @@ peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEven
 
 ---
 
-#### `Story` — `domain/entities/Story.js`
+#### `Story`: `domain/entities/Story.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id`, `#memberId`, `#title`, `#body`, `#mediaRefs[]`, `#esgTags: EsgTag[]`, `#sdgGoals: SdgGoal[]`, `#state`, `#consentId`, `#sensitivityScan`, `#pfValidation`, `#reviewNotes[]`, `#submittedAt`, `#publishedAt`, `#archivedAt` |
 | **Invariant** | (1) Naskah minimal 300 kata dan minimal satu media sebelum boleh `DIAJUKAN`. (2) Tidak boleh mencapai `TERBIT` tanpa `consentId` yang aktif dan `sensitivityScan === 'CLEAR'`. (3) Setiap perpindahan state mundur (revisi) wajib menyertakan catatan reviewer. (4) `publishedAt` hanya boleh terisi sekali. |
-| **Alasan keberadaan** | Story adalah "story bank" pada Hal 9 dan syarat kedua gerbang public feature Hal 12. Ia juga satu-satunya entitas yang membawa risiko reputasi langsung bagi PF — karena itu invariant-nya sengaja ketat dan tidak dapat dilewati oleh jalur apa pun, termasuk konsol admin. |
+| **Alasan keberadaan** | Story adalah "story bank" pada Hal 9 dan syarat kedua gerbang public feature Hal 12. Ia juga satu-satunya entitas yang membawa risiko reputasi langsung bagi PF: karena itu invariant-nya sengaja ketat dan tidak dapat dilewati oleh jalur apa pun, termasuk konsol admin. |
 
 ```js
 /** @param {StoryInput} input @returns {Story} */ static draft(input)
@@ -775,18 +775,18 @@ peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEven
 
 ---
 
-#### `CommunityEvent` — `domain/entities/CommunityEvent.js`
+#### `CommunityEvent`: `domain/entities/CommunityEvent.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id`, `#title`, `#type` (`UPSKILLING`/`GATHERING`/`SHARING`), `#range: DateRange`, `#chapterId`, `#speakerIds[]`, `#quota: number`, `#registrations[]`, `#waitlist[]`, `#attendanceCode`, `#claimWindow: DateRange`, `#status`, `#participantCount`, `#outcomeNote`, `#evidenceRefs[]` |
-| **Invariant** | (1) `registrations.length <= quota`; kelebihan otomatis masuk `waitlist`. (2) Kehadiran hanya dapat diklaim di dalam `claimWindow` dan hanya sekali per anggota. (3) Status `SELESAI` menolak tersimpan tanpa `participantCount` dan `outcomeNote` — inilah yang membuat sebuah kegiatan sah dihitung untuk KPI-05 dan berpeluang menjadi bukti ESG. |
+| **Invariant** | (1) `registrations.length <= quota`; kelebihan otomatis masuk `waitlist`. (2) Kehadiran hanya dapat diklaim di dalam `claimWindow` dan hanya sekali per anggota. (3) Status `SELESAI` menolak tersimpan tanpa `participantCount` dan `outcomeNote`: inilah yang membuat sebuah kegiatan sah dihitung untuk KPI-05 dan berpeluang menjadi bukti ESG. |
 | **Alasan keberadaan** | Sumber langsung KPI-05 ("2 aktivitas engagement terlaksana") dan pemasok aksi `SESSION_ATTEND` (15 pts). Invariant nomor 3 adalah penerjemahan mandat Hal 9 *"bukti pipeline before dashboard"*: kegiatan tidak dianggap terlaksana sampai buktinya lengkap. |
 
 ```js
 /** @param {EventInput} input @returns {CommunityEvent} */ static schedule(input)
 /** @param {MemberId} memberId @returns {Result<'TERDAFTAR'|'DAFTAR_TUNGGU'>} */ register(memberId)
-/** @param {MemberId} memberId @returns {void} — promosi otomatis dari daftar tunggu */ cancelRegistration(memberId)
+/** @param {MemberId} memberId @returns {void}: promosi otomatis dari daftar tunggu */ cancelRegistration(memberId)
 /** @param {MemberId} memberId @param {string} code @param {Date} at @returns {Result<void>} */ claimAttendance(memberId, code, at)
 /** @param {CompletionInput} input @returns {Result<void>} */ complete(input)
 /** @returns {boolean} */ countsForEngagementKpi()
@@ -794,69 +794,69 @@ peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEven
 
 ---
 
-#### `Movement` — `domain/entities/Movement.js`
+#### `Movement`: `domain/entities/Movement.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id`, `#title`, `#category` (`ENVIRONMENTAL_ACTION`/`COMMUNITY_EDUCATION`/`ECONOMIC_EMPOWERMENT`), `#objective`, `#range: DateRange`, `#region`, `#leaderId: MemberId`, `#participantIds[]`, `#esgTags[]`, `#sdgGoals[]`, `#status`, `#reportIds[]` |
-| **Invariant** | (1) Wajib minimal satu `EsgTag` dan satu `SdgGoal` sebelum boleh `BERJALAN` — tag diwariskan ke seluruh `ActionReport` turunannya. (2) `leaderId` wajib anggota aktif. (3) Usulan dari anggota masuk `MENUNGGU_PERSETUJUAN` dan baru memicu `LEAD_ACTION` (50 pts) ketika disetujui, bukan saat diusulkan. |
-| **Alasan keberadaan** | Pilar 03 Hal 5. Pewarisan tag ESG dari gerakan ke laporan (invariant 1) adalah keputusan arsitektural yang menghemat kerja anggota lapangan sekaligus menjamin tidak ada laporan tanpa tag — gerbang ketiga bukti ESG Hal 12 terpenuhi secara struktural, bukan bergantung pada kedisiplinan pengisi formulir. |
+| **Invariant** | (1) Wajib minimal satu `EsgTag` dan satu `SdgGoal` sebelum boleh `BERJALAN`: tag diwariskan ke seluruh `ActionReport` turunannya. (2) `leaderId` wajib anggota aktif. (3) Usulan dari anggota masuk `MENUNGGU_PERSETUJUAN` dan baru memicu `LEAD_ACTION` (50 pts) ketika disetujui, bukan saat diusulkan. |
+| **Alasan keberadaan** | Pilar 03 Hal 5. Pewarisan tag ESG dari gerakan ke laporan (invariant 1) adalah keputusan arsitektural yang menghemat kerja anggota lapangan sekaligus menjamin tidak ada laporan tanpa tag: gerbang ketiga bukti ESG Hal 12 terpenuhi secara struktural, bukan bergantung pada kedisiplinan pengisi formulir. |
 
 ```js
 /** @param {MovementInput} input @returns {Movement} */ static propose(input)
 /** @param {string} approverId @param {Date} at @returns {Result<void>} */ approve(approverId, at)
 /** @param {string} reason @returns {void} */ decline(reason)
 /** @param {MemberId} memberId @returns {Result<void>} */ join(memberId)
-/** @param {ActionReport} report @returns {Result<void>} — mewariskan tag ESG/SDG */ attachReport(report)
+/** @param {ActionReport} report @returns {Result<void>}: mewariskan tag ESG/SDG */ attachReport(report)
 /** @param {EsgTag[]} tags @param {SdgGoal[]} goals @returns {void} */ tag(tags, goals)
 /** @returns {MovementImpact} */ impactSummary()
 ```
 
 ---
 
-#### `Broadcast` — `domain/entities/Broadcast.js`
+#### `Broadcast`: `domain/entities/Broadcast.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id`, `#contentIds[]`, `#channel`, `#audience`, `#scheduledAt: Date`, `#sentAt: Date\|null`, `#status`, `#recipients: Map<MemberId, {deliveredAt, openedAt}>`, `#lightCta` |
-| **Invariant** | (1) Tidak dapat `sent` dua kali. (2) `openedAt` hanya boleh diisi sekali per anggota — mendukung idempotensi `BROADCAST_VIEW` (1 pt seumur hidup per broadcast). (3) `contentIds` tidak boleh kosong. |
+| **Invariant** | (1) Tidak dapat `sent` dua kali. (2) `openedAt` hanya boleh diisi sekali per anggota: mendukung idempotensi `BROADCAST_VIEW` (1 pt seumur hidup per broadcast). (3) `contentIds` tidak boleh kosong. |
 | **Alasan keberadaan** | Sumber langsung KPI-03 ("diseminasi ≥ 2 kali/bulan") dan pemicu aksi 1 pt. Memisahkan `Broadcast` (peristiwa pengiriman) dari `Content` (materi) penting karena satu konten dapat didiseminasi berkali-kali, sementara KPI-02 menghitung konten dan KPI-03 menghitung peristiwa. Menggabungkan keduanya akan membuat dua KPI mustahil dibedakan. |
 
 ```js
 /** @param {BroadcastInput} input @returns {Broadcast} */ static compose(input)
 /** @param {Date} at @param {MemberId[]} audience @returns {Result<void>} */ send(at, audience)
-/** @param {MemberId} memberId @param {Date} at @returns {boolean} — false bila sudah pernah dibuka */ markOpened(memberId, at)
+/** @param {MemberId} memberId @param {Date} at @returns {boolean}: false bila sudah pernah dibuka */ markOpened(memberId, at)
 /** @returns {number} */ get openRate()
 /** @param {DateRange} period @returns {boolean} */ countsForDisseminationKpi(period)
 ```
 
 ---
 
-#### `AmplificationRecord` — `domain/entities/AmplificationRecord.js`
+#### `AmplificationRecord`: `domain/entities/AmplificationRecord.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id`, `#memberId`, `#contentId`, `#channel`, `#level: AmplificationLevel`, `#proofRefs[]`, `#postUrl`, `#dedupeKey`, `#occurredAt`, `#verificationStatus`, `#verifiedBy`, `#rejectionReason`, `#linkAliveAt: Date\|null`, `#activityId` |
-| **Invariant** | (1) `dedupeKey = hash(memberId + contentId + channel + tanggal)` wajib unik — ditegakkan sebagai indeks unik Dexie, bukan hanya oleh kode. (2) Amplifikasi publik wajib punya `postUrl` atau minimal satu `proofRefs`. (3) `level` tidak boleh dinaikkan tanpa bukti yang sesuai tingkatnya. |
-| **Alasan keberadaan** | KPI-04 ("50% anggota beramplifikasi") adalah KPI yang paling mudah dimanipulasi dan paling sulit dibuktikan — persis keluhan persona Fajar. `AmplificationRecord` memisahkan *klaim* dari *bukti terverifikasi* lewat `level` L0–L4, sehingga dashboard dapat menampilkan angka konservatif (hanya L3–L4) dan angka optimistis secara transparan alih-alih satu angka yang tidak dapat dipertanggungjawabkan. |
+| **Invariant** | (1) `dedupeKey = hash(memberId + contentId + channel + tanggal)` wajib unik: ditegakkan sebagai indeks unik Dexie, bukan hanya oleh kode. (2) Amplifikasi publik wajib punya `postUrl` atau minimal satu `proofRefs`. (3) `level` tidak boleh dinaikkan tanpa bukti yang sesuai tingkatnya. |
+| **Alasan keberadaan** | KPI-04 ("50% anggota beramplifikasi") adalah KPI yang paling mudah dimanipulasi dan paling sulit dibuktikan: persis keluhan persona Fajar. `AmplificationRecord` memisahkan *klaim* dari *bukti terverifikasi* lewat `level` L0–L4, sehingga dashboard dapat menampilkan angka konservatif (hanya L3–L4) dan angka optimistis secara transparan alih-alih satu angka yang tidak dapat dipertanggungjawabkan. |
 
 ```js
 /** @param {AmplificationInput} input @returns {AmplificationRecord} */ static claim(input)
-/** @param {MediaRef} proof @returns {void} — dapat menaikkan level */ attachProof(proof)
+/** @param {MediaRef} proof @returns {void}: dapat menaikkan level */ attachProof(proof)
 /** @param {string} verifierId @param {Date} at @returns {void} */ verify(verifierId, at)
 /** @param {string} verifierId @param {string} reason @returns {void} */ reject(verifierId, reason)
-/** @param {Date} at @param {boolean} alive @returns {void} — hasil link-check jam ke-72 */ recordLinkCheck(at, alive)
+/** @param {Date} at @param {boolean} alive @returns {void}: hasil link-check jam ke-72 */ recordLinkCheck(at, alive)
 /** @returns {boolean} */ countsForAmplificationKpi()
 ```
 
 ---
 
-#### `Chapter` — `domain/entities/Chapter.js`
+#### `Chapter`: `domain/entities/Chapter.js`
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | `#id`, `#name`, `#kind` (`BATCH`/`REGION`/`INTEREST`), `#region`, `#leadMemberId`, `#memberIds: Set<string>`, `#createdAt` |
-| **Invariant** | (1) `leadMemberId` wajib anggota chapter tersebut. (2) Keanggotaan unik — `Set`, bukan array. (3) Chapter tidak dapat dihapus bila masih punya kegiatan berstatus `TERBUKA`. |
+| **Invariant** | (1) `leadMemberId` wajib anggota chapter tersebut. (2) Keanggotaan unik: `Set`, bukan array. (3) Chapter tidak dapat dihapus bila masih punya kegiatan berstatus `TERBUKA`. |
 | **Alasan keberadaan** | Hal 4 menyebut WA Komunitas berisi kumpulan WAG per batch (PF 10, PF 11, PF 12); Hal 5 menyebut "pembagian chapter komunitas"; Hal 9 menyebut "pilot circle". `Chapter` menyatukan ketiganya. Ia juga menjadi unit perbandingan yang adil pada leaderboard kolektif (rata-rata per anggota, bukan total). |
 
 ```js
@@ -875,8 +875,8 @@ peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEven
 |---|---|
 | **`Badge` properti** | `#code`, `#name`, `#family`, `#rarity: Rarity`, `#criteria: BadgeCriteria`, `#seasonLimited: SeasonId\|null` |
 | **`BadgeAward` properti** | `#id`, `#badgeCode`, `#memberId`, `#awardedAt`, `#sourceActivityIds[]` |
-| **Invariant** | (1) `Badge` **tidak pernah** memberi Poin Kontribusi — hanya Koin Tukar; ini menjaga tabel Hal 11 sebagai satu-satunya sumber PK. (2) Kriteria wajib deterministik: dapat dihitung ulang dari buku besar kapan saja. (3) `BadgeAward` dicabut hanya bila entri sumbernya `REVOKED`. (4) Badge musiman memeriksa `awardedAt` berada dalam rentang musimnya sehingga tidak dapat diperoleh surut. |
-| **Alasan keberadaan** | Badge memberi pengakuan bertingkat tanpa menyentuh angka Corsec. Memisahkan definisi (`Badge`) dari pemberian (`BadgeAward`) memungkinkan `BadgeEvaluator` menghitung ulang dari nol dan menyelisihkan — tidak ada penghitung inkremental yang bisa melenceng. |
+| **Invariant** | (1) `Badge` **tidak pernah** memberi Poin Kontribusi: hanya Koin Tukar; ini menjaga tabel Hal 11 sebagai satu-satunya sumber PK. (2) Kriteria wajib deterministik: dapat dihitung ulang dari buku besar kapan saja. (3) `BadgeAward` dicabut hanya bila entri sumbernya `REVOKED`. (4) Badge musiman memeriksa `awardedAt` berada dalam rentang musimnya sehingga tidak dapat diperoleh surut. |
+| **Alasan keberadaan** | Badge memberi pengakuan bertingkat tanpa menyentuh angka Corsec. Memisahkan definisi (`Badge`) dari pemberian (`BadgeAward`) memungkinkan `BadgeEvaluator` menghitung ulang dari nol dan menyelisihkan: tidak ada penghitung inkremental yang bisa melenceng. |
 
 ---
 
@@ -886,7 +886,7 @@ peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEven
 |---|---|
 | **`Reward` properti** | `#id`, `#name`, `#category`, `#priceCoins: number`, `#minTier: Tier`, `#monthlyQuota: number\|null`, `#requiresApproval: boolean` |
 | **`RedemptionOrder` properti** | `#id`, `#memberId`, `#rewardId`, `#priceCoins`, `#status`, `#requestedAt`, `#approvedBy`, `#fulfilledAt`, `#cancelledAt` |
-| **Invariant** | (1) Penukaran **tidak pernah** mengurangi Poin Kontribusi — hanya Koin Tukar. Ini menutup masalah nyata: seorang Champion yang menukar hadiah tidak boleh turun menjadi Contributor. (2) Tier diperiksa terhadap **tier aktif**, bukan Gelar Kehormatan. (3) Pembatalan hanya sah selama status `DIAJUKAN`, dan mengembalikan Koin Tukar penuh. (4) Kuota bulanan diperiksa pada saat pengajuan, bukan pemenuhan. |
+| **Invariant** | (1) Penukaran **tidak pernah** mengurangi Poin Kontribusi: hanya Koin Tukar. Ini menutup masalah nyata: seorang Champion yang menukar hadiah tidak boleh turun menjadi Contributor. (2) Tier diperiksa terhadap **tier aktif**, bukan Gelar Kehormatan. (3) Pembatalan hanya sah selama status `DIAJUKAN`, dan mengembalikan Koin Tukar penuh. (4) Kuota bulanan diperiksa pada saat pengajuan, bukan pemenuhan. |
 | **Alasan keberadaan** | Mandat langsung Hal 5 pilar 05 (*"peningkatan poin yang dapat ditukar"*). Pemisahan dua mata uang adalah keputusan arsitektural yang menjaga makna "recognition" Hal 12 tetap utuh. |
 
 ---
@@ -897,7 +897,7 @@ peristiwa bisnis (`verify()`, bukan `setStatus()`); **(d)** mencatat `domainEven
 |---|---|---|
 | `EvidenceRecord` | Empat field gerbang Hal 12 (`activityId`, `outcomeNote` ≥ 200 karakter, ≥1 `EsgTag` **dan** ≥1 `SdgGoal`, ≥1 `mediaRefs` terverifikasi) wajib terisi sebelum status boleh melewati `tidak_lengkap`. `integrityHash` dihitung dari isi + `prevHash`. | Menjadikan gerbang ESG Hal 12 mustahil dilewati secara struktural, bukan sekadar divalidasi di formulir |
 | `Recognition` | Tidak dapat `TERBIT` tanpa consent aktif berlingkup publikasi. TOP Contribution minimal tier Contributor; feature publik minimal tier Featured Candidate. | Menegakkan konsistensi benefit bertingkat Hal 12 pada jalur penghargaan |
-| `AuditLogEntry` | **Append-only** — kelas ini sengaja tidak memiliki method mutasi apa pun. Koreksi ditulis sebagai entri baru bertipe `correction` yang menunjuk entri keliru. `entryHash` mencakup `prevHash`. | Memberi Corsec jawaban yang dapat ditunjuk atas pertanyaan "dasar keputusan ini apa" (Hal 10 Governance) |
+| `AuditLogEntry` | **Append-only**: kelas ini sengaja tidak memiliki method mutasi apa pun. Koreksi ditulis sebagai entri baru bertipe `correction` yang menunjuk entri keliru. `entryHash` mencakup `prevHash`. | Memberi Corsec jawaban yang dapat ditunjuk atas pertanyaan "dasar keputusan ini apa" (Hal 10 Governance) |
 
 ---
 
@@ -908,139 +908,139 @@ policy tidak boleh menyentuh I/O sama sekali.** Kalau sebuah kelas butuh `await`
 
 ---
 
-#### `GamificationEngine` — `domain/services/GamificationEngine.js`
+#### `GamificationEngine`: `domain/services/GamificationEngine.js`
 
 | Aspek | Detail |
 |---|---|
 | **Dependensi (disuntik)** | `scoringPolicy`, `capPolicy`, `cooldownPolicy`, `diminishingReturnsPolicy`, `streakPolicy`, `antiGamingPolicy`, `verificationPolicy`, `pointActivityRepository`, `memberRepository`, `badgeEvaluator`, `questEvaluator`, `auditTrail`, `clock`, `idGenerator`, `eventBus` |
-| **Invariant** | (1) Setiap pemanggilan `submit()` **selalu** menghasilkan tepat satu `PointActivity` tersimpan — bahkan saat ditolak — demi jejak audit. (2) Poin yang dibukukan tidak pernah melebihi `basePoints` dari tabel Hal 11. (3) Pembukuan poin dan penambahan Koin Tukar terjadi bersama-sama atau tidak sama sekali. |
+| **Invariant** | (1) Setiap pemanggilan `submit()` **selalu** menghasilkan tepat satu `PointActivity` tersimpan: bahkan saat ditolak: demi jejak audit. (2) Poin yang dibukukan tidak pernah melebihi `basePoints` dari tabel Hal 11. (3) Pembukuan poin dan penambahan Koin Tukar terjadi bersama-sama atau tidak sama sekali. |
 | **Alasan keberadaan** | Aturan poin melibatkan tujuh policy berbeda yang harus dijalankan dalam urutan tertentu (idempotensi → cooldown → poin dasar → diminishing → streak → cap → risiko). Urutan itu sendiri adalah pengetahuan bisnis. Kalau tersebar, urutannya pasti berbeda antar pemanggil dan hasilnya tidak deterministik. |
 
 ```js
 /** @param {MemberId} memberId @param {string} actionCode @param {object} payload @returns {Promise<PointActivity>} */
 async submit(memberId, actionCode, payload)
-/** @param {MemberId} memberId @param {string} actionCode @returns {Promise<AwardPreview>} — dry-run untuk UI, tidak menulis */
+/** @param {MemberId} memberId @param {string} actionCode @returns {Promise<AwardPreview>}: dry-run untuk UI, tidak menulis */
 async previewAward(memberId, actionCode)
 /** @param {string} activityId @param {MemberId} verifierId @param {'APPROVE'|'REJECT'} decision @param {string} note @returns {Promise<PointActivity>} */
 async verify(activityId, verifierId, decision, note)
-/** @param {string[]} activityIds @param {MemberId} verifierId @returns {Promise<BatchResult>} — verifikasi batch untuk admin */
+/** @param {string[]} activityIds @param {MemberId} verifierId @returns {Promise<BatchResult>}: verifikasi batch untuk admin */
 async verifyBatch(activityIds, verifierId)
 /** @param {string} activityId @param {MemberId} auditorId @param {string} reason @returns {Promise<void>} */
 async revoke(activityId, auditorId, reason)
 /** @param {MemberId} memberId @returns {Promise<PointSummary>} */
 async summaryFor(memberId)
-/** @param {SeasonId} nextSeason @returns {Promise<void>} — rotasi musim seluruh anggota */
+/** @param {SeasonId} nextSeason @returns {Promise<void>}: rotasi musim seluruh anggota */
 async rollSeason(nextSeason)
 ```
 
 ---
 
-#### `TierResolver` — `domain/services/TierResolver.js`
+#### `TierResolver`: `domain/services/TierResolver.js`
 
 | Aspek | Detail |
 |---|---|
 | **Dependensi** | `tierPolicy`, `pointActivityRepository`, `storyRepository`, `memberRepository` |
-| **Invariant** | Selalu mengembalikan `TierResolution` lengkap — tier aktif, tier terkunci (bila poin cukup tapi komposisi belum), daftar syarat yang kurang, dan Gelar Kehormatan. Tidak pernah mengembalikan `null`. |
+| **Invariant** | Selalu mengembalikan `TierResolution` lengkap: tier aktif, tier terkunci (bila poin cukup tapi komposisi belum), daftar syarat yang kurang, dan Gelar Kehormatan. Tidak pernah mengembalikan `null`. |
 | **Alasan keberadaan** | `TierPolicy` murni dan hanya tahu angka; ia butuh statistik (jumlah aksi Kelas C, Kelas D, story terverifikasi, rasio verifikasi) yang hanya bisa diambil dari repository. `TierResolver` adalah lapisan tipis yang merakit statistik itu lalu mendelegasikan keputusan. Pemisahan ini membuat aturan tier dapat diuji tanpa database sama sekali. |
 
 ```js
 /** @param {MemberId} memberId @returns {Promise<TierResolution>} */ async resolve(memberId)
 /** @param {MemberId} memberId @returns {Promise<MemberStats>} */ async statsFor(memberId)
-/** @param {MemberId[]} memberIds @returns {Promise<Map<string, TierResolution>>} — batch untuk leaderboard */ async resolveMany(memberIds)
-/** @param {MemberId} memberId @returns {Promise<TierChange|null>} — mendeteksi kenaikan/penurunan untuk notifikasi */ async detectChange(memberId)
+/** @param {MemberId[]} memberIds @returns {Promise<Map<string, TierResolution>>}: batch untuk leaderboard */ async resolveMany(memberIds)
+/** @param {MemberId} memberId @returns {Promise<TierChange|null>}: mendeteksi kenaikan/penurunan untuk notifikasi */ async detectChange(memberId)
 ```
 
 ---
 
-#### `EsgEvidenceService` — `domain/services/EsgEvidenceService.js`
+#### `EsgEvidenceService`: `domain/services/EsgEvidenceService.js`
 
 | Aspek | Detail |
 |---|---|
 | **Dependensi** | `esgEvidencePolicy`, `consentPolicy`, `sensitiveDataPolicy`, `evidenceRepository`, `movementRepository`, `eventRepository`, `hashService`, `auditTrail`, `clock` |
-| **Invariant** | (1) Record yang tidak lolos empat gerbang Hal 12 **tidak pernah** masuk agregasi — statusnya berhenti di `tidak_lengkap`. (2) Setiap perubahan status menulis entri audit. (3) `integrityHash` dihitung ulang setiap penyimpanan dan dirantai ke record sebelumnya. |
-| **Alasan keberadaan** | Hal 10 memisahkan tegas "KPI Aktivitas membuktikan program berjalan" dari "KPI ESG membuktikan program menciptakan nilai". Service ini adalah penjaga pintu kedua. Ia sengaja tidak punya jalur "paksa terbitkan" — kalau Corsec butuh angka lebih cepat, jawabannya melengkapi bukti, bukan melonggarkan gerbang. |
+| **Invariant** | (1) Record yang tidak lolos empat gerbang Hal 12 **tidak pernah** masuk agregasi: statusnya berhenti di `tidak_lengkap`. (2) Setiap perubahan status menulis entri audit. (3) `integrityHash` dihitung ulang setiap penyimpanan dan dirantai ke record sebelumnya. |
+| **Alasan keberadaan** | Hal 10 memisahkan tegas "KPI Aktivitas membuktikan program berjalan" dari "KPI ESG membuktikan program menciptakan nilai". Service ini adalah penjaga pintu kedua. Ia sengaja tidak punya jalur "paksa terbitkan": kalau Corsec butuh angka lebih cepat, jawabannya melengkapi bukti, bukan melonggarkan gerbang. |
 
 ```js
 /** @param {EvidenceInput} input @returns {Promise<Result<EvidenceRecord>>} */ async submit(input)
-/** @param {EvidenceRecord} record @returns {EligibilityVerdict} — sinkron, delegasi ke policy */ checkGate(record)
+/** @param {EvidenceRecord} record @returns {EligibilityVerdict}: sinkron, delegasi ke policy */ checkGate(record)
 /** @param {string} evidenceId @param {MemberId} verifierId @param {Date} at @returns {Promise<Result<void>>} */ async verify(evidenceId, verifierId, at)
 /** @param {'E'|'S'|'G'} pillar @param {DateRange} period @returns {Promise<EsgAggregate>} */ async aggregateByPillar(pillar, period)
-/** @param {DateRange} period @returns {Promise<EvidencePipelineStatus>} — berapa lengkap, berapa tertahan, di gerbang mana */ async pipelineStatus(period)
+/** @param {DateRange} period @returns {Promise<EvidencePipelineStatus>}: berapa lengkap, berapa tertahan, di gerbang mana */ async pipelineStatus(period)
 /** @param {string} activityId @returns {Promise<EvidenceRecord[]>} */ async findByActivity(activityId)
-/** @returns {Promise<ChainVerification>} — memverifikasi rantai hash utuh */ async verifyIntegrityChain()
+/** @returns {Promise<ChainVerification>}: memverifikasi rantai hash utuh */ async verifyIntegrityChain()
 ```
 
 ---
 
-#### `AmplificationTracker` — `domain/services/AmplificationTracker.js`
+#### `AmplificationTracker`: `domain/services/AmplificationTracker.js`
 
 | Aspek | Detail |
 |---|---|
 | **Dependensi** | `amplificationPolicy`, `amplificationRepository`, `contentRepository`, `memberRepository`, `gamificationEngine`, `clock` |
 | **Invariant** | (1) Deduplikasi ditegakkan sebelum pencatatan; klaim kedua dalam jendela yang sama ditolak. (2) Satu `AmplificationRecord` memicu paling banyak satu `PointActivity`. (3) Perhitungan KPI-04 hanya menghitung anggota dengan minimal satu record terverifikasi, bukan sekadar diklaim. |
-| **Alasan keberadaan** | Hal 4 menyebut "tracking amplifikasi konten" sebagai salah satu dari tiga bentuk kontrol PF. Tracker ini adalah implementasi kontrol tersebut. Ia juga jembatan antara dua dunia: amplifikasi menghasilkan poin (Hal 11) *dan* menghasilkan angka KPI (Hal 6) — dua konsekuensi berbeda dari satu aksi, yang harus dijaga agar tidak saling merusak. |
+| **Alasan keberadaan** | Hal 4 menyebut "tracking amplifikasi konten" sebagai salah satu dari tiga bentuk kontrol PF. Tracker ini adalah implementasi kontrol tersebut. Ia juga jembatan antara dua dunia: amplifikasi menghasilkan poin (Hal 11) *dan* menghasilkan angka KPI (Hal 6): dua konsekuensi berbeda dari satu aksi, yang harus dijaga agar tidak saling merusak. |
 
 ```js
 /** @param {AmplificationInput} input @returns {Promise<Result<AmplificationRecord>>} */ async track(input)
 /** @param {string} recordId @param {MediaRef} proof @returns {Promise<Result<void>>} */ async attachProof(recordId, proof)
 /** @param {string} recordId @param {MemberId} verifierId @param {boolean} approved @param {string} [reason] @returns {Promise<void>} */ async review(recordId, verifierId, approved, reason)
-/** @param {DateRange} period @returns {Promise<AmplificationFunnel>} — terkirim → dibaca → dibagikan → terverifikasi */ async funnelFor(period)
-/** @param {DateRange} period @returns {Promise<Set<string>>} — anggota unik yang beramplifikasi */ async amplifyingMembers(period)
+/** @param {DateRange} period @returns {Promise<AmplificationFunnel>}: terkirim → dibaca → dibagikan → terverifikasi */ async funnelFor(period)
+/** @param {DateRange} period @returns {Promise<Set<string>>}: anggota unik yang beramplifikasi */ async amplifyingMembers(period)
 /** @param {string} contentId @returns {Promise<ContentReach>} */ async reachOfContent(contentId)
 ```
 
 ---
 
-#### `KpiCalculator` — `domain/services/KpiCalculator.js`
+#### `KpiCalculator`: `domain/services/KpiCalculator.js`
 
 | Aspek | Detail |
 |---|---|
 | **Dependensi** | `thresholdPolicy`, `memberRepository`, `contentRepository`, `broadcastRepository`, `amplificationTracker`, `eventRepository`, `movementRepository`, `kpiParameters` |
-| **Invariant** | (1) Setiap metrik mengembalikan `MetricResult` lengkap dengan pembilang dan penyebut — angka tanpa asal-usul dilarang. (2) Status warna **selalu** berasal dari `ThresholdPolicy`, tidak pernah dihitung di sini maupun di komponen. (3) Penyebut nol menghasilkan `MetricResult` berstatus "belum dapat dihitung", bukan `NaN` maupun `0%`. |
+| **Invariant** | (1) Setiap metrik mengembalikan `MetricResult` lengkap dengan pembilang dan penyebut: angka tanpa asal-usul dilarang. (2) Status warna **selalu** berasal dari `ThresholdPolicy`, tidak pernah dihitung di sini maupun di komponen. (3) Penyebut nol menghasilkan `MetricResult` berstatus "belum dapat dihitung", bukan `NaN` maupun `0%`. |
 | **Alasan keberadaan** | Persona Fajar butuh menunjuk angka ke bukti individual. `MetricResult` yang membawa pembilang/penyebut memungkinkan UI menampilkan "150 dari 200 penerima manfaat (75%)" dan menautkannya ke daftar. Ini yang membedakan dashboard yang dapat dipertahankan di rapat dari dashboard yang hanya cantik. |
 
 ```js
-/** @param {DateRange} period @returns {Promise<MetricResult>} — KPI-01, target 75% */ async coverage(period)
-/** @param {DateRange} period @returns {Promise<MetricResult>} — KPI-02, target 1–2 konten/bulan */ async contentVolume(period)
-/** @param {DateRange} period @returns {Promise<MetricResult>} — KPI-03, target ≥2 diseminasi/bulan */ async disseminationFrequency(period)
-/** @param {DateRange} period @returns {Promise<MetricResult>} — KPI-04, target 50% */ async amplificationRate(period)
-/** @param {DateRange} period @returns {Promise<MetricResult>} — KPI-05, target 2 aktivitas */ async engagementActivities(period)
-/** @param {DateRange} period @returns {Promise<MetricResult[]>} — kelima metrik sekaligus */ async coreMetrics(period)
+/** @param {DateRange} period @returns {Promise<MetricResult>}: KPI-01, target 75% */ async coverage(period)
+/** @param {DateRange} period @returns {Promise<MetricResult>}: KPI-02, target 1–2 konten/bulan */ async contentVolume(period)
+/** @param {DateRange} period @returns {Promise<MetricResult>}: KPI-03, target ≥2 diseminasi/bulan */ async disseminationFrequency(period)
+/** @param {DateRange} period @returns {Promise<MetricResult>}: KPI-04, target 50% */ async amplificationRate(period)
+/** @param {DateRange} period @returns {Promise<MetricResult>}: KPI-05, target 2 aktivitas */ async engagementActivities(period)
+/** @param {DateRange} period @returns {Promise<MetricResult[]>}: kelima metrik sekaligus */ async coreMetrics(period)
 ```
 
 ---
 
-#### `LeaderboardService` — `domain/services/LeaderboardService.js`
+#### `LeaderboardService`: `domain/services/LeaderboardService.js`
 
 | Aspek | Detail |
 |---|---|
 | **Dependensi** | `pointActivityRepository`, `memberRepository`, `chapterRepository`, `tierResolver`, `seasonPolicy`, `clock` |
-| **Invariant** | (1) Hanya menghitung `PointActivity` berstatus `AWARDED` — peringkat tidak boleh berubah-ubah setelah verifikasi. (2) Anggota berstatus `DITANGGUHKAN` atau `DORMAN` tidak muncul di papan mana pun. (3) Anggota yang memilih anonim ditampilkan sebagai inisial + chapter, tetapi peringkatnya tetap dihitung. (4) Papan kolektif chapter memakai **rata-rata per anggota aktif**, bukan total. (5) Papan publik hanya menampilkan 20 teratas + posisi pemanggil sendiri — tidak ada papan peringkat terbawah. |
+| **Invariant** | (1) Hanya menghitung `PointActivity` berstatus `AWARDED`: peringkat tidak boleh berubah-ubah setelah verifikasi. (2) Anggota berstatus `DITANGGUHKAN` atau `DORMAN` tidak muncul di papan mana pun. (3) Anggota yang memilih anonim ditampilkan sebagai inisial + chapter, tetapi peringkatnya tetap dihitung. (4) Papan kolektif chapter memakai **rata-rata per anggota aktif**, bukan total. (5) Papan publik hanya menampilkan 20 teratas + posisi pemanggil sendiri: tidak ada papan peringkat terbawah. |
 | **Alasan keberadaan** | Leaderboard naif adalah mesin demotivasi: anggota baru melihat dirinya di peringkat 847 dan tidak pernah kembali. Invariant 4 dan 5 adalah keputusan desain yang menjaga *sense of belonging* (McMillan & Chavis, Hal 5) tetap menjadi tujuan, bukan korban gamifikasi. |
 
 ```js
 /** @param {LeaderboardQuery} query @returns {Promise<LeaderboardPage>} */ async board(query)
-/** @param {MemberId} memberId @param {string} boardId @returns {Promise<SelfPosition>} — posisi relatif, bukan peringkat absolut */ async positionOf(memberId, boardId)
-/** @param {SeasonId} season @returns {Promise<ChapterStanding[]>} — rata-rata per anggota */ async chapterStandings(season)
-/** @param {DateRange} week @returns {Promise<SurgeEntry[]>} — Sorotan Lonjakan Terbesar */ async biggestGains(week)
-/** @param {MemberId} memberId @returns {Promise<LeagueGroup>} — liga 25 peer setara */ async leagueOf(memberId)
+/** @param {MemberId} memberId @param {string} boardId @returns {Promise<SelfPosition>}: posisi relatif, bukan peringkat absolut */ async positionOf(memberId, boardId)
+/** @param {SeasonId} season @returns {Promise<ChapterStanding[]>}: rata-rata per anggota */ async chapterStandings(season)
+/** @param {DateRange} week @returns {Promise<SurgeEntry[]>}: Sorotan Lonjakan Terbesar */ async biggestGains(week)
+/** @param {MemberId} memberId @returns {Promise<LeagueGroup>}: liga 25 peer setara */ async leagueOf(memberId)
 ```
 
 ---
 
-#### `RecognitionService` — `domain/services/RecognitionService.js`
+#### `RecognitionService`: `domain/services/RecognitionService.js`
 
 | Aspek | Detail |
 |---|---|
 | **Dependensi** | `featureEligibilityPolicy`, `tierResolver`, `pointActivityRepository`, `evidenceRepository`, `storyRepository`, `consentRepository`, `recognitionRepository`, `auditTrail`, `clock` |
-| **Invariant** | (1) Skor komposit TOP Contribution dinormalisasi **di dalam komunitas masing-masing** (SOBI dan Womenpreneur terpisah) — bauran aksi keduanya berbeda secara struktural. (2) TOP Contribution minimal tier Contributor; publikasi publik minimal lolos gerbang lima syarat Hal 12. (3) Tidak ada penghargaan terbit tanpa consent aktif. (4) Kuota per periode ditegakkan di service, bukan diserahkan pada kedisiplinan admin. |
-| **Alasan keberadaan** | Hal 5 pilar 05 menyebut dua bentuk penghargaan yang sifatnya berbeda: TOP Contribution (berbasis skor, di dalam komunitas) dan TOP Awardee dengan karir bagus (berbasis kurasi, di luar komunitas). Menyatukan keduanya dalam satu mekanisme akan salah — alumni dengan karir cemerlang mungkin baru aktif di Pfriends. Service ini menjaga dua jalur itu tetap terpisah dengan aturan masing-masing. |
+| **Invariant** | (1) Skor komposit TOP Contribution dinormalisasi **di dalam komunitas masing-masing** (SOBI dan Womenpreneur terpisah): bauran aksi keduanya berbeda secara struktural. (2) TOP Contribution minimal tier Contributor; publikasi publik minimal lolos gerbang lima syarat Hal 12. (3) Tidak ada penghargaan terbit tanpa consent aktif. (4) Kuota per periode ditegakkan di service, bukan diserahkan pada kedisiplinan admin. |
+| **Alasan keberadaan** | Hal 5 pilar 05 menyebut dua bentuk penghargaan yang sifatnya berbeda: TOP Contribution (berbasis skor, di dalam komunitas) dan TOP Awardee dengan karir bagus (berbasis kurasi, di luar komunitas). Menyatukan keduanya dalam satu mekanisme akan salah: alumni dengan karir cemerlang mungkin baru aktif di Pfriends. Service ini menjaga dua jalur itu tetap terpisah dengan aturan masing-masing. |
 
 ```js
 /** @param {DateRange} period @param {CommunityType} community @returns {Promise<CompositeScore[]>} */ async rankContribution(period, community)
-/** @param {DateRange} period @returns {Promise<Recognition[]>} — TOP Contribution bulanan, kuota per komunitas */ async awardMonthlyTop(period)
-/** @param {MemberId} memberId @returns {Promise<EligibilityVerdict>} — gerbang lima syarat Hal 12 */ async checkFeatureEligibility(memberId)
-/** @param {NominationInput} input @returns {Promise<Result<Recognition>>} — TOP Awardee, jalur kurasi */ async nominateAwardee(input)
+/** @param {DateRange} period @returns {Promise<Recognition[]>}: TOP Contribution bulanan, kuota per komunitas */ async awardMonthlyTop(period)
+/** @param {MemberId} memberId @returns {Promise<EligibilityVerdict>}: gerbang lima syarat Hal 12 */ async checkFeatureEligibility(memberId)
+/** @param {NominationInput} input @returns {Promise<Result<Recognition>>}: TOP Awardee, jalur kurasi */ async nominateAwardee(input)
 /** @param {string} recognitionId @param {MemberId} approverId @returns {Promise<Result<void>>} */ async publish(recognitionId, approverId)
 ```
 
@@ -1050,7 +1050,7 @@ async rollSeason(nextSeason)
 
 | Service | Invariant kunci | Alasan keberadaan |
 |---|---|---|
-| `BadgeEvaluator` | Selalu menghitung ulang dari nol berdasarkan buku besar lalu menyelisihkan — tidak ada penghitung inkremental | Penghitung inkremental pasti melenceng setelah clawback; rekomputasi penuh selalu benar |
+| `BadgeEvaluator` | Selalu menghitung ulang dari nol berdasarkan buku besar lalu menyelisihkan: tidak ada penghitung inkremental | Penghitung inkremental pasti melenceng setelah clawback; rekomputasi penuh selalu benar |
 | `QuestEvaluator` | Progres hanya dari entri `AWARDED`; hadiah quest **tidak pernah** berupa Poin Kontribusi | Menjaga tabel Hal 11 sebagai satu-satunya sumber PK, tanpa inflasi tersembunyi |
 | `MembershipService` | Pendaftar hanya menjadi `AKTIF` setelah dicocokkan dengan master data; nomor WA & email unik | KPI-01 (75%) hanya sah bila penyebut dan pembilangnya tervalidasi |
 | `StoryModerationService` | Lima gerbang publikasi dijalankan berurutan; tidak ada jalur pintas untuk admin | Story adalah satu-satunya entitas berisiko reputasi langsung bagi PF |
@@ -1064,18 +1064,18 @@ async rollSeason(nextSeason)
 
 Policy adalah kelas **murni**: tanpa `async`, tanpa repository, tanpa `Date.now()` internal (waktu selalu
 disuntik sebagai parameter). Konsekuensinya seluruh policy dapat diuji dengan `node` tanpa browser dan
-tanpa data — inilah yang membuat verifikasi angka Corsec menjadi murah.
+tanpa data: inilah yang membuat verifikasi angka Corsec menjadi murah.
 
 ---
 
-#### `FeatureEligibilityPolicy` — `domain/policies/FeatureEligibilityPolicy.js` **[Hal 12]**
+#### `FeatureEligibilityPolicy`: `domain/policies/FeatureEligibilityPolicy.js` **[Hal 12]**
 
 > **Minimum for public feature: 100 points + verified story + consent + PF validation + no sensitive-data concern.**
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | Tidak ada state. Ambang `100` dibaca dari `tier-table.js` (`Tier.FEATURED_CANDIDATE.threshold`), bukan literal. |
-| **Invariant** | (1) Kelima syarat **konjungtif** — satu gagal berarti seluruhnya gagal; tidak ada pembobotan, tidak ada "hampir memenuhi". (2) Selalu mengembalikan `EligibilityVerdict` yang menyebutkan syarat mana yang gagal, bukan sekadar `false`. (3) Tidak melakukan I/O — seluruh fakta diterima sebagai snapshot. |
+| **Invariant** | (1) Kelima syarat **konjungtif**: satu gagal berarti seluruhnya gagal; tidak ada pembobotan, tidak ada "hampir memenuhi". (2) Selalu mengembalikan `EligibilityVerdict` yang menyebutkan syarat mana yang gagal, bukan sekadar `false`. (3) Tidak melakukan I/O: seluruh fakta diterima sebagai snapshot. |
 | **Alasan keberadaan** | Ini gerbang paling sensitif di sistem: ia menentukan wajah dan cerita siapa yang tampil di kanal resmi Pertamina Foundation. Menuliskannya sebagai satu kelas kecil yang dapat dibaca dalam 30 detik dan diuji dalam satu berkas adalah bentuk penghormatan terhadap risiko itu. Menyebarkannya sebagai lima `if` di konsol admin akan berarti suatu saat ada yang lolos. |
 
 ```js
@@ -1087,7 +1087,7 @@ tanpa data — inilah yang membuat verifikasi angka Corsec menjadi murah.
  */
 evaluate(snapshot)
 
-/** @returns {readonly string[]} — lima label syarat, untuk checklist UI */
+/** @returns {readonly string[]}: lima label syarat, untuk checklist UI */
 requirements()
 ```
 
@@ -1103,14 +1103,14 @@ Kelima pemeriksaan, apa adanya:
 
 ---
 
-#### `EsgEvidencePolicy` — `domain/policies/EsgEvidencePolicy.js` **[Hal 12]**
+#### `EsgEvidencePolicy`: `domain/policies/EsgEvidencePolicy.js` **[Hal 12]**
 
 > **Minimum for ESG evidence: documented activity + outcome note + ESG/SDG tag + evidence source.**
 
 | Aspek | Detail |
 |---|---|
 | **Properti** | Tidak ada state. Panjang minimum `outcomeNote` dan jumlah minimum lampiran dibaca dari `kpi-parameters.js`. |
-| **Invariant** | (1) Keempat syarat konjungtif. (2) Syarat ketiga menuntut **dua hal sekaligus**: minimal satu `EsgTag` **dan** minimal satu `SdgGoal` — frasa "ESG/SDG tag" pada dokumen sumber tidak boleh dibaca sebagai "salah satu". (3) `outcomeNote` harus menjelaskan *perubahan yang terjadi*, bukan deskripsi acara; ditegakkan lewat panjang minimum dan pemeriksaan bahwa isinya bukan salinan `deskripsi`. |
+| **Invariant** | (1) Keempat syarat konjungtif. (2) Syarat ketiga menuntut **dua hal sekaligus**: minimal satu `EsgTag` **dan** minimal satu `SdgGoal`: frasa "ESG/SDG tag" pada dokumen sumber tidak boleh dibaca sebagai "salah satu". (3) `outcomeNote` harus menjelaskan *perubahan yang terjadi*, bukan deskripsi acara; ditegakkan lewat panjang minimum dan pemeriksaan bahwa isinya bukan salinan `deskripsi`. |
 | **Alasan keberadaan** | Hal 10 menutup dengan kalimat yang menjadi alasan seluruh dokumen 04 ada: *"KPI Aktivitas membuktikan bahwa program berjalan. KPI ESG membuktikan bahwa program menciptakan nilai."* Policy ini adalah perbedaan antara laporan kegiatan dan bukti dampak. Ia sengaja tidak punya mode longgar. |
 
 ```js
@@ -1122,16 +1122,16 @@ Kelima pemeriksaan, apa adanya:
  */
 evaluate(snapshot)
 
-/** @param {object} snapshot @returns {number} — 0..1, untuk bilah kelengkapan di formulir */
+/** @param {object} snapshot @returns {number}: 0..1, untuk bilah kelengkapan di formulir */
 completeness(snapshot)
 ```
 
 ---
 
-#### `AntiGamingPolicy` — `domain/policies/AntiGamingPolicy.js`
+#### `AntiGamingPolicy`: `domain/policies/AntiGamingPolicy.js`
 
 > **Catatan penempatan.** Ringkasan tugas mendaftar `AntiGamingPolicy` bersama domain service. Kelas ini
-> ditempatkan di `policies/` karena ia tidak melakukan I/O dan tidak mengoordinasi objek lain — ia menerima
+> ditempatkan di `policies/` karena ia tidak melakukan I/O dan tidak mengoordinasi objek lain: ia menerima
 > `RiskContext` (dirakit oleh `GamificationEngine` dari repository) dan mengembalikan skor. Menempatkannya
 > di `services/` akan melanggar batas yang justru ingin ditegakkan dokumen ini. Konsumennya tetap
 > `GamificationEngine`, jadi tidak ada perubahan pada alur.
@@ -1139,7 +1139,7 @@ completeness(snapshot)
 | Aspek | Detail |
 |---|---|
 | **Properti** | Bobot delapan sinyal, dibaca dari konstanta beku |
-| **Invariant** | (1) Skor selalu dalam 0–100. (2) Skor > 80 → penolakan otomatis; 41–80 → wajib tinjauan manusia meski Kelas A; 0–40 → jalur normal. (3) Setiap skor **selalu** disertai daftar sinyal yang memicunya — penolakan tanpa alasan yang dapat dijelaskan tidak boleh terjadi pada komunitas beneficiary. |
+| **Invariant** | (1) Skor selalu dalam 0–100. (2) Skor > 80 → penolakan otomatis; 41–80 → wajib tinjauan manusia meski Kelas A; 0–40 → jalur normal. (3) Setiap skor **selalu** disertai daftar sinyal yang memicunya: penolakan tanpa alasan yang dapat dijelaskan tidak boleh terjadi pada komunitas beneficiary. |
 | **Alasan keberadaan** | Terjemahan teknis dari satu kalimat Hal 11: *"Points should reward meaningful contribution, not spammy activity."* Tanpa policy ini, kalimat itu hanya slogan; dengan policy ini, ia menjadi kendala yang dapat diuji. |
 
 ```js
@@ -1154,7 +1154,7 @@ completeness(snapshot)
 
 | Policy | Method inti | Invariant kunci | Alasan keberadaan |
 |---|---|---|---|
-| `ScoringPolicy` | `basePointsFor(code)`, `classOf(code)`, `idempotencyKey(memberId, code, payload)` | Tabel Hal 11 dibaca dari `scoring-table.js` yang beku; kode tak dikenal melempar galat | Satu-satunya pintu menuju angka poin — mustahil ada jalur lain |
+| `ScoringPolicy` | `basePointsFor(code)`, `classOf(code)`, `idempotencyKey(memberId, code, payload)` | Tabel Hal 11 dibaca dari `scoring-table.js` yang beku; kode tak dikenal melempar galat | Satu-satunya pintu menuju angka poin: mustahil ada jalur lain |
 | `CapPolicy` | `evaluate({actionCode, klass, requested, usage})` | Mengembalikan kuota terketat di antara seluruh batas; Kelas D dikecualikan dari cap harian/mingguan global | Mencegah grinding volume tanpa menghukum kepemimpinan yang justru ingin didorong |
 | `CooldownPolicy` | `isSatisfied(code, lastAt, now)` | Waktu selalu parameter, tidak pernah `Date.now()` internal | Membuat aturan jeda dapat diuji deterministik |
 | `DiminishingReturnsPolicy` | `multiplierFor(klass, occurrence)` | Kelas C dan D tidak pernah dikenai penurunan | Aksi bernilai tinggi maksimal 1×/hari, jadi penurunan tidak relevan dan hanya akan membingungkan |
@@ -1171,9 +1171,9 @@ completeness(snapshot)
 
 ---
 
-### 4.5 Repository — Interface & Implementasi
+### 4.5 Repository: Interface & Implementasi
 
-#### Kontrak dasar — `domain/repositories/Repository.js`
+#### Kontrak dasar: `domain/repositories/Repository.js`
 
 JavaScript tidak punya `interface`, jadi kontrak diwujudkan sebagai **abstract base class** yang melempar
 bila method tidak dioverride. Ini bukan sekadar dokumentasi: implementasi yang lupa satu method akan gagal
@@ -1182,7 +1182,7 @@ keras saat pertama dipanggil, bukan mengembalikan `undefined` diam-diam.
 ```js
 /**
  * Kontrak dasar seluruh repository. Kelas ini TIDAK boleh diinstansiasi langsung.
- * Domain hanya mengenal kelas ini dan turunannya — tidak pernah kelas Dexie/HTTP.
+ * Domain hanya mengenal kelas ini dan turunannya: tidak pernah kelas Dexie/HTTP.
  */
 export class Repository {
 	constructor() {
@@ -1205,10 +1205,10 @@ export class Repository {
 }
 ```
 
-#### Kontrak spesifik — contoh `PointActivityRepository`
+#### Kontrak spesifik: contoh `PointActivityRepository`
 
 Kontrak ini menarik karena ia yang paling menentukan performa dan kebenaran. `usageSnapshot()` sengaja
-mengembalikan satu objek berisi seluruh angka yang dibutuhkan `CapPolicy` — bukan enam query terpisah.
+mengembalikan satu objek berisi seluruh angka yang dibutuhkan `CapPolicy`: bukan enam query terpisah.
 Alasannya bukan performa semata: `CapPolicy` harus melihat potret konsisten pada satu titik waktu, dan
 enam query berurutan tidak menjamin itu.
 
@@ -1224,7 +1224,7 @@ export class PointActivityRepository extends Repository {
 	async countAcceptedIn(memberId, actionCode, day) { throw new NotImplemented('countAcceptedIn'); }
 
 	/**
-	 * Potret pemakaian kuota untuk CapPolicy — satu panggilan, satu titik waktu.
+	 * Potret pemakaian kuota untuk CapPolicy: satu panggilan, satu titik waktu.
 	 * @param {MemberId} memberId @param {string} actionCode @param {ActionClass} klass @param {Date} at
 	 * @returns {Promise<UsageSnapshot>}
 	 */
@@ -1239,12 +1239,12 @@ export class PointActivityRepository extends Repository {
 	/** @param {MemberId} memberId @param {DateRange} [period] @returns {Promise<MemberStats>} */
 	async statsFor(memberId, period) { throw new NotImplemented('statsFor'); }
 
-	/** @param {DateRange} period @returns {Promise<Map<string, number>>} — memberId → PK, untuk leaderboard */
+	/** @param {DateRange} period @returns {Promise<Map<string, number>>}: memberId → PK, untuk leaderboard */
 	async pointsByMember(period) { throw new NotImplemented('pointsByMember'); }
 }
 ```
 
-#### Implementasi InMemory — `infrastructure/memory/`
+#### Implementasi InMemory: `infrastructure/memory/`
 
 Bukan sekadar alat uji. Ia dipakai **saat aplikasi berjalan** sebelum Dexie siap (SSR/hidrasi awal) dan
 sebagai referensi kebenaran: kalau `DexiePointActivityRepository` dan `InMemoryPointActivityRepository`
@@ -1274,11 +1274,11 @@ export class InMemoryPointActivityRepository extends PointActivityRepository {
 }
 ```
 
-Perhatikan `buildUsageSnapshot` — fungsi murni di `domain/services/usage.js` yang dipakai **kedua**
+Perhatikan `buildUsageSnapshot`: fungsi murni di `domain/services/usage.js` yang dipakai **kedua**
 implementasi. Logika agregasi cap adalah aturan bisnis, jadi ia tinggal di domain; repository hanya
 bertugas menyediakan barisnya.
 
-#### Implementasi Dexie — `infrastructure/dexie/`
+#### Implementasi Dexie: `infrastructure/dexie/`
 
 ```js
 export class DexiePointActivityRepository extends PointActivityRepository {
@@ -1313,9 +1313,9 @@ export class DexiePointActivityRepository extends PointActivityRepository {
 
 **Mapper wajib, bukan opsional.** Entitas domain punya private fields, VO, dan `Date`; IndexedDB butuh
 objek datar yang dapat diserialisasi. Menyimpan entitas langsung akan membuat skema penyimpanan terikat
-pada bentuk internal kelas — dan setiap refactor domain menjadi migrasi database. Mapper memutus ikatan itu.
+pada bentuk internal kelas: dan setiap refactor domain menjadi migrasi database. Mapper memutus ikatan itu.
 
-#### Skema Dexie — `infrastructure/db/schema.js`
+#### Skema Dexie: `infrastructure/db/schema.js`
 
 ```js
 export const SCHEMA_V1 = {
@@ -1344,10 +1344,10 @@ export const SCHEMA_V1 = {
 ```
 
 Perhatikan dua indeks unik (`&idempotencyKey`, `&dedupeKey`). Keduanya menegakkan aturan bisnis di lapisan
-penyimpanan sehingga tetap berlaku bahkan bila ada bug di kode aplikasi — pertahanan berlapis, bukan
+penyimpanan sehingga tetap berlaku bahkan bila ada bug di kode aplikasi: pertahanan berlapis, bukan
 kepercayaan pada satu jalur.
 
-#### Dependency Inversion dalam praktik — `application/container.js`
+#### Dependency Inversion dalam praktik: `application/container.js`
 
 ```js
 /**
@@ -1378,7 +1378,7 @@ class Container {
 		}));
 	}
 
-	/** @returns {PointActivityRepository} — tipe deklarasinya ABSTRAK, isinya konkret */
+	/** @returns {PointActivityRepository}: tipe deklarasinya ABSTRAK, isinya konkret */
 	get pointActivityRepository() {
 		return this.#once('pointActivityRepository', () =>
 			DATA_SOURCE === 'dexie'
@@ -1406,7 +1406,7 @@ abstraksi yang dimiliki modul tingkat tinggi.
 ## 5. Pola Desain yang Dipakai
 
 Enam pola berikut dipakai karena menyelesaikan masalah spesifik proyek ini. Pola yang tidak menyelesaikan
-masalah nyata sengaja tidak dipakai — proyek ini tidak butuh CQRS, event sourcing penuh, maupun mediator.
+masalah nyata sengaja tidak dipakai: proyek ini tidak butuh CQRS, event sourcing penuh, maupun mediator.
 
 ### 5.1 Repository
 
@@ -1416,7 +1416,7 @@ Tiga sumber data untuk aturan bisnis yang sama.
 **Penerapan:** abstract base class di `domain/repositories/`, implementasi di `infrastructure/{dexie,memory,http}/`.
 Domain hanya mengenal abstraksinya.
 
-**Yang didapat:** dokumen sumber Hal 7 menempatkan integrasi IT pada Februari dan microsite pada Mei —
+**Yang didapat:** dokumen sumber Hal 7 menempatkan integrasi IT pada Februari dan microsite pada Mei :
 artinya sumber data memang akan berganti dalam masa hidup proyek. Tanpa pola ini, penggantian itu berarti
 menyentuh setiap berkas yang membaca data.
 
@@ -1426,7 +1426,7 @@ bukan CRUD telanjang.
 
 ---
 
-### 5.2 Strategy — aturan skoring
+### 5.2 Strategy: aturan skoring
 
 **Masalah:** perhitungan poin bukan satu rumus, melainkan rantai transformasi: poin dasar → diminishing
 returns → pengali streak → pemotongan cap. Setiap tahap punya aturan sendiri yang bisa berubah independen,
@@ -1436,7 +1436,7 @@ dan sebagian di antaranya berbeda per kelas aksi (Kelas C/D tidak kena diminishi
 mengembalikan pengali atau kuota). `GamificationEngine` menjalankannya berurutan.
 
 **Yang didapat:** ketika Corsec memutuskan mengubah cap harian dari 40 menjadi 50, yang berubah adalah satu
-angka di `cap-table.js` — dan `ScoringPolicy` yang memegang angka kanonik Hal 11 sama sekali tidak tersentuh.
+angka di `cap-table.js`: dan `ScoringPolicy` yang memegang angka kanonik Hal 11 sama sekali tidak tersentuh.
 Pemisahan ini melindungi angka yang tidak boleh berubah dari angka yang boleh berubah.
 
 **Yang dihindari:** satu method `hitungPoin()` sepanjang 150 baris berisi seluruh cabang. Itu bekerja, tapi
@@ -1444,10 +1444,10 @@ mustahil diuji per aturan dan mustahil dijelaskan kepada Corsec baris per baris.
 
 ---
 
-### 5.3 Factory — seed
+### 5.3 Factory: seed
 
 **Masalah:** mockup butuh data yang **konsisten dengan seluruh aturan**. Anggota bertier Champion harus
-benar-benar punya ≥150 poin aktif, ≥1 aksi Kelas D, ≥5 aksi Kelas C, dan rasio verifikasi ≥90% — kalau tidak,
+benar-benar punya ≥150 poin aktif, ≥1 aksi Kelas D, ≥5 aksi Kelas C, dan rasio verifikasi ≥90%: kalau tidak,
 dashboard akan menampilkan angka yang bertentangan dengan halaman tier di sebelahnya.
 
 **Penerapan:** `SeedFactory` sebagai fasad yang memanggil factory per entitas. Setiap factory membangkitkan
@@ -1457,7 +1457,7 @@ bukan dengan menyuntik objek mentah ke database.
 **Yang didapat:** data seed dijamin tidak melanggar invariant apa pun, karena ia melewati jalur yang sama
 dengan data nyata. `SeedPolicyChecker` menjalankan pemeriksaan akhir dan gagal keras bila ada kontradiksi.
 
-**Yang dihindari:** berkas `mockData.js` berisi objek literal dengan `tier: 'CHAMPION', points: 87` — tidak
+**Yang dihindari:** berkas `mockData.js` berisi objek literal dengan `tier: 'CHAMPION', points: 87`: tidak
 konsisten, dan tidak akan ketahuan sampai ada yang membuka dua halaman bersamaan.
 
 ---
@@ -1482,19 +1482,19 @@ membuat seluruh policy mustahil diuji dengan `node`. Reaktivitas berhenti di bat
 
 ---
 
-### 5.5 Specification / Policy — kelayakan
+### 5.5 Specification / Policy: kelayakan
 
 **Masalah:** gerbang Hal 12 bukan validasi formulir. Ia keputusan bisnis dengan konsekuensi reputasi, dan
 harus dapat dijawab dalam tiga konteks berbeda: menampilkan checklist ke anggota, menyaring kandidat di
 konsol admin, dan menghitung berapa anggota yang *hampir* memenuhi syarat untuk laporan Corsec.
 
-**Penerapan:** setiap gerbang adalah kelas policy yang mengembalikan `EligibilityVerdict` — bukan `boolean`.
+**Penerapan:** setiap gerbang adalah kelas policy yang mengembalikan `EligibilityVerdict`: bukan `boolean`.
 Verdict membawa daftar `checks` (setiap syarat beserta status lulus/gagal) dan `missing` (label syarat yang
 gagal).
 
 **Yang didapat:** satu policy melayani ketiga konteks. UI anggota merender `checks` sebagai checklist; konsol
 admin memfilter berdasarkan `eligible`; laporan menghitung distribusi `missing` untuk tahu gerbang mana yang
-paling sering menghambat. Dan yang paling penting: anggota selalu diberi tahu *apa* yang kurang — sesuai
+paling sering menghambat. Dan yang paling penting: anggota selalu diberi tahu *apa* yang kurang: sesuai
 prinsip §1.1 dokumen gamifikasi bahwa checklist harus menampilkan kekurangan, bukan sekadar "belum memenuhi
 syarat".
 
@@ -1509,7 +1509,7 @@ menjawab "kenapa tidak lolos".
 koin tukar, ambang tier, skor risiko, jumlah peserta, nomor SDG. Seluruhnya `number`. Tertukar satu saja
 dan sistem menghasilkan angka yang salah tanpa peringatan apa pun.
 
-**Penerapan:** `Points`, `Tier`, `EsgTag`, `SdgGoal`, `MemberId`, `DateRange`, dan seterusnya — masing-masing
+**Penerapan:** `Points`, `Tier`, `EsgTag`, `SdgGoal`, `MemberId`, `DateRange`, dan seterusnya: masing-masing
 memvalidasi dirinya di konstruktor dan membekukan diri.
 
 **Yang didapat:** `Points` tidak dapat menerima nilai negatif, `SdgGoal` tidak dapat bernilai 23, `EsgTag`
@@ -1540,15 +1540,15 @@ tidak punya invariant yang berarti. VO dibuat ketika ada aturan untuk dilindungi
 
 | Aturan | Batas | Alasan |
 |---|---|---|
-| Panjang fungsi/method — domain | **≤ 20 baris** isi | Policy dan entitas harus dapat dibaca utuh tanpa menggulir; kalau lebih, ada aturan yang belum dipisah |
-| Panjang fungsi/method — service | **≤ 35 baris** isi | Orkestrasi wajar lebih panjang, tetapi di atas 35 baris biasanya ada langkah yang layak jadi method privat |
-| Panjang fungsi — komponen Svelte | **≤ 25 baris** per handler | Handler panjang di komponen hampir selalu berarti logika bisnis bocor |
+| Panjang fungsi/method: domain | **≤ 20 baris** isi | Policy dan entitas harus dapat dibaca utuh tanpa menggulir; kalau lebih, ada aturan yang belum dipisah |
+| Panjang fungsi/method: service | **≤ 35 baris** isi | Orkestrasi wajar lebih panjang, tetapi di atas 35 baris biasanya ada langkah yang layak jadi method privat |
+| Panjang fungsi: komponen Svelte | **≤ 25 baris** per handler | Handler panjang di komponen hampir selalu berarti logika bisnis bocor |
 | Jumlah parameter | **≤ 3**; lebih dari itu → satu objek bernama | `submit(memberId, actionCode, payload)` masih terbaca; enam parameter posisional tidak |
 | Kedalaman nesting | **≤ 3** | Gunakan *early return*; `if` bersarang empat tingkat menyembunyikan cabang yang tidak diuji |
-| Panjang berkas | **≤ 300 baris** (domain), **≤ 250 baris** (komponen) | Ambang praktis, bukan hukum — tetapi berkas yang melewatinya wajib ditinjau apakah punya lebih dari satu tanggung jawab |
+| Panjang berkas | **≤ 300 baris** (domain), **≤ 250 baris** (komponen) | Ambang praktis, bukan hukum: tetapi berkas yang melewatinya wajib ditinjau apakah punya lebih dari satu tanggung jawab |
 | Jumlah method publik per kelas | **≤ 10** | Kelas dengan 20 method publik hampir pasti dua kelas |
 
-### 6.2 Penamaan — Indonesia vs Inggris
+### 6.2 Penamaan: Indonesia vs Inggris
 
 Aturan ini tegas karena kalau tidak, kode akan menjadi campuran yang tidak terbaca oleh siapa pun.
 
@@ -1558,15 +1558,15 @@ Aturan ini tegas karena kalau tidak, kode akan menjadi campuran yang tidak terba
 | Method & properti domain | **Inggris** | `activePoints()`, `isEligible`, `submittedAt` | `poinAktif()`, `layakTidak` |
 | Nilai enum & kode | **Inggris** | `SHARE_PUBLIC`, `UNDER_REVIEW`, `FEATURED_CANDIDATE` | `BAGIKAN_PUBLIK`, `SEDANG_DITINJAU` |
 | Nama tabel & field Dexie | **Inggris** | `pointActivities`, `verificationStatus` | `aktivitasPoin`, `statusVerifikasi` |
-| Nama store & method store | **Inggris untuk kelas, Indonesia untuk aksi UI** | `class GamificationStore { async ajukanAksi() }` | — |
+| Nama store & method store | **Inggris untuk kelas, Indonesia untuk aksi UI** | `class GamificationStore { async ajukanAksi() }` |: |
 | Teks UI, label, pesan galat | **Bahasa Indonesia** | `"Aksi tercatat. Batas poin harian sudah tercapai."` | `"Daily cap reached"` |
 | Nama route | **Bahasa Indonesia** | `/kalender`, `/gerakan`, `/tukar` | `/calendar`, `/movements` |
-| Komentar kode | Bebas — konsisten per berkas | Keduanya diterima | Campuran dalam satu berkas |
+| Komentar kode | Bebas: konsisten per berkas | Keduanya diterima | Campuran dalam satu berkas |
 | Nama komponen Svelte | **Inggris** | `TierProgress.svelte`, `EvidenceForm.svelte` | `ProgresTier.svelte` |
 
 **Alasan pemisahan ini.** Istilah domain diambil langsung dari dokumen sumber yang memang berbahasa Inggris
 (`Featured Candidate`, `Share PF content to public social media`, `outcome note`). Menerjemahkannya ke dalam
-kode akan memutus ketertelusuran ke dokumen Corsec — dan ketertelusuran itu justru inti proyek ini.
+kode akan memutus ketertelusuran ke dokumen Corsec: dan ketertelusuran itu justru inti proyek ini.
 Sebaliknya, pengguna akhir adalah alumni beasiswa dan pelaku UMKM di seluruh Indonesia; antarmuka wajib
 Bahasa Indonesia (NFR-025). Jembatan antara keduanya adalah `utils/labels.js`:
 
@@ -1585,7 +1585,7 @@ export const LABEL_STATUS_AKTIVITAS = Object.freeze({
 ```
 
 Istilah tier (`Active Member`, `Contributor`, `Featured Candidate`, `Champion`) **tetap dalam Bahasa Inggris
-di UI** karena itu nama resmi yang ditetapkan Hal 12 — sama seperti nama program tidak diterjemahkan.
+di UI** karena itu nama resmi yang ditetapkan Hal 12: sama seperti nama program tidak diterjemahkan.
 Ini pengecualian yang sudah diakui NFR-025.
 
 ### 6.3 Larangan magic number
@@ -1613,7 +1613,7 @@ array, penambahan counter). Segala hal lain berasal dari konstanta.
 ```js
 // domain/constants/tier-table.js
 /**
- * AMBANG DAN BENEFIT TIER — KANONIK, Hal 12 dokumen sumber.
+ * AMBANG DAN BENEFIT TIER: KANONIK, Hal 12 dokumen sumber.
  * PERINGATAN: nilai di berkas ini tidak boleh diubah tanpa revisi dokumen Corsec.
  * Setiap perubahan wajib disertai referensi halaman dokumen yang merevisinya.
  */
@@ -1625,7 +1625,7 @@ export const TIER_TABLE = Object.freeze({
 });
 ```
 
-`Object.freeze` bertingkat, bukan hanya di level luar — tanpa itu, `TIER_TABLE.CHAMPION.threshold = 999`
+`Object.freeze` bertingkat, bukan hanya di level luar: tanpa itu, `TIER_TABLE.CHAMPION.threshold = 999`
 tetap berhasil.
 
 ### 6.4 Penanganan error
@@ -1635,9 +1635,9 @@ sumber pengalaman pengguna yang buruk sekaligus bug yang sulit dilacak.
 
 | Jenis | Contoh | Mekanisme | Sampai ke pengguna? |
 |---|---|---|---|
-| **Pelanggaran invariant** (bug programmer) | `Points.of(-5)`, `ActionCode` tak dikenal, repository abstrak diinstansiasi | `throw new InvariantViolation(...)` | Tidak — ditangkap store, dicatat, ditampilkan sebagai galat umum |
-| **Kegagalan bisnis wajar** | Cap harian tercapai, Koin Tukar kurang, kuota event penuh, gerbang belum terpenuhi | `Result.fail(code, detail)` — **bukan** exception | Ya — dengan kalimat yang menjelaskan dan menyarankan tindakan |
-| **Kegagalan infrastruktur** | IndexedDB tidak tersedia, kuota penyimpanan habis, jaringan mati | `throw new InfrastructureError(...)` dari lapisan infra, ditangkap store | Ya — sebagai keadaan galat halaman dengan opsi coba lagi |
+| **Pelanggaran invariant** (bug programmer) | `Points.of(-5)`, `ActionCode` tak dikenal, repository abstrak diinstansiasi | `throw new InvariantViolation(...)` | Tidak: ditangkap store, dicatat, ditampilkan sebagai galat umum |
+| **Kegagalan bisnis wajar** | Cap harian tercapai, Koin Tukar kurang, kuota event penuh, gerbang belum terpenuhi | `Result.fail(code, detail)`: **bukan** exception | Ya: dengan kalimat yang menjelaskan dan menyarankan tindakan |
+| **Kegagalan infrastruktur** | IndexedDB tidak tersedia, kuota penyimpanan habis, jaringan mati | `throw new InfrastructureError(...)` dari lapisan infra, ditangkap store | Ya: sebagai keadaan galat halaman dengan opsi coba lagi |
 
 **Mengapa `Result` untuk kegagalan bisnis.** Cap harian tercapai bukan kesalahan; itu hasil normal yang
 sudah diantisipasi. Melemparkan exception untuk hal normal memaksa setiap pemanggil membungkus `try/catch`
@@ -1652,12 +1652,12 @@ if (hasil.isFailure) {
 ```
 
 **Katalog pesan.** `application/errorCatalog.js` memetakan kode domain → kalimat Bahasa Indonesia yang
-menyebutkan penyebab **dan** langkah perbaikan (NFR-027). Domain tidak pernah menyusun kalimat UI — ia hanya
+menyebutkan penyebab **dan** langkah perbaikan (NFR-027). Domain tidak pernah menyusun kalimat UI: ia hanya
 mengembalikan kode dan detail terstruktur.
 
 ```js
 export const PESAN_GALAT = Object.freeze({
-	DAILY_CAP:       (d) => `Aksi tercatat. Batas poin harian sudah tercapai — poin berikutnya kembali besok.`,
+	DAILY_CAP:       (d) => `Aksi tercatat. Batas poin harian sudah tercapai: poin berikutnya kembali besok.`,
 	COOLDOWN:        (d) => `Tunggu ${d.sisaMenit} menit lagi sebelum melakukan aksi serupa.`,
 	DUPLICATE:       () => `Aksi ini sudah pernah tercatat. Poin hanya diberikan sekali.`,
 	INSUFFICIENT_COINS: (d) => `Koin Tukar Anda kurang ${d.kurang}. Kumpulkan lewat kontribusi berikutnya.`,
@@ -1672,7 +1672,7 @@ export const PESAN_GALAT = Object.freeze({
 2. Domain tidak pernah `console.log`. Ia melempar atau mengembalikan `Result`; keputusan mencatat ada di
    lapisan luar.
 3. Pesan galat tidak pernah menyalahkan pengguna. Bandingkan *"Input tidak valid"* dengan *"Catatan hasil
-   perlu minimal 200 karakter agar dapat menjadi bukti ESG — jelaskan perubahan yang terjadi setelah
+   perlu minimal 200 karakter agar dapat menjadi bukti ESG: jelaskan perubahan yang terjadi setelah
    kegiatan."*
 
 ### 6.5 Aturan komentar
@@ -1680,9 +1680,9 @@ export const PESAN_GALAT = Object.freeze({
 | Aturan | Ketentuan |
 |---|---|
 | JSDoc | **Wajib** pada seluruh method publik domain dan seluruh `$props()` komponen |
-| Komentar "apa" | Dilarang — `// tambah poin` di atas `addPoints()` adalah kebisingan |
-| Komentar "kenapa" | Didorong — terutama pada keputusan yang tampak aneh tapi disengaja |
-| Penanda sumber | **Wajib** — setiap konstanta dan policy kanonik menyebut halaman dokumen sumbernya |
+| Komentar "apa" | Dilarang: `// tambah poin` di atas `addPoints()` adalah kebisingan |
+| Komentar "kenapa" | Didorong: terutama pada keputusan yang tampak aneh tapi disengaja |
+| Penanda sumber | **Wajib**: setiap konstanta dan policy kanonik menyebut halaman dokumen sumbernya |
 | TODO | Wajib menyertakan konteks dan pemilik: `// TODO(integrasi-IT): ganti dengan endpoint master data` |
 
 Contoh komentar yang berharga:
@@ -1706,10 +1706,10 @@ Store adalah **adaptor**, bukan tempat logika. Empat aturan yang mengikat:
 2. Store **tidak pernah** mengimpor `dexie` maupun repository konkret. Ia mengambil service dari `container`.
 3. Store bertanggung jawab atas hal yang memang miliknya: keadaan pemuatan (`memuat`), keadaan galat,
    dan penerjemahan kode domain menjadi pesan Bahasa Indonesia.
-4. `$derived` di store hanya boleh berisi transformasi presentasi (memformat, mengurutkan, memfilter) —
+4. `$derived` di store hanya boleh berisi transformasi presentasi (memformat, mengurutkan, memfilter) :
    bukan aturan bisnis. Kalau sebuah `$derived` mengandung angka, itu tanda ada aturan yang bocor.
 
-### 7.2 Contoh — `src/lib/stores/gamification.svelte.js`
+### 7.2 Contoh: `src/lib/stores/gamification.svelte.js`
 
 ```js
 import { container } from '$lib/application/container.js';
@@ -1718,7 +1718,7 @@ import { notification } from './notification.svelte.js';
 import { session } from './session.svelte.js';
 
 /**
- * Store gamifikasi — LAPISAN TIPIS di atas GamificationEngine & TierResolver.
+ * Store gamifikasi: LAPISAN TIPIS di atas GamificationEngine & TierResolver.
  * Tidak ada satu pun aturan poin, ambang tier, atau angka di berkas ini.
  */
 class GamificationStore {
@@ -1736,13 +1736,13 @@ class GamificationStore {
 	/** @type {string|null} */
 	galat = $state(null);
 
-	// ── Turunan presentasi saja — tidak ada aturan bisnis di sini ──────────────
+	// ── Turunan presentasi saja: tidak ada aturan bisnis di sini ──────────────
 	tier = $derived(this.tierResolution?.tier ?? null);
 	tierTerkunci = $derived(this.tierResolution?.locked ?? null);
 	syaratKurang = $derived(this.tierResolution?.missing ?? []);
 	poinAktif = $derived(this.ringkasan?.active ?? 0);
 
-	/** Riwayat terbaru di atas — urutan tampilan, bukan aturan bisnis. */
+	/** Riwayat terbaru di atas: urutan tampilan, bukan aturan bisnis. */
 	riwayatTerbaru = $derived(
 		[...this.riwayat].sort((a, b) => b.createdAt - a.createdAt).slice(0, 20)
 	);
@@ -1870,7 +1870,7 @@ export const gamification = new GamificationStore();
 
 **Perhatikan apa yang tidak ada di komponen ini:** tidak ada angka 25/50/100/150, tidak ada kode warna, tidak
 ada perhitungan persentase, tidak ada aturan kapan progres disembunyikan. Seluruhnya datang dari VO `Tier`
-dan store. Komponen ini hanya menentukan tata letak dan gaya — yang memang tanggung jawabnya.
+dan store. Komponen ini hanya menentukan tata letak dan gaya: yang memang tanggung jawabnya.
 
 ### 7.4 Bootstrap sekali jalan
 
@@ -1890,7 +1890,7 @@ onMount(async () => {
 ```
 
 `bootstrap()` ada di lapisan Application dan merupakan satu-satunya tempat Dexie disentuh dari luar
-`infrastructure/`. Ia idempoten — dijalankan berkali-kali tidak menduplikasi seed, karena menandai versinya
+`infrastructure/`. Ia idempoten: dijalankan berkali-kali tidak menduplikasi seed, karena menandai versinya
 di tabel `meta`.
 
 ---
@@ -1903,7 +1903,7 @@ Migrasi ke backend nyata **tidak boleh menyentuh satu baris pun** di `src/lib/do
 berarti ada aturan bisnis yang bocor ke infrastruktur dan itu adalah bug arsitektur yang wajib diperbaiki
 sebelum migrasi.
 
-### 8.2 Empat titik sambung — dan hanya empat
+### 8.2 Empat titik sambung: dan hanya empat
 
 ```mermaid
 flowchart LR
@@ -1924,7 +1924,7 @@ flowchart LR
 
 | # | Titik sambung | Yang dikerjakan | Perkiraan dampak |
 |---|---|---|---|
-| **1** | `infrastructure/http/*Repository.js` | Tulis implementasi baru dari kontrak yang sudah ada di `domain/repositories/`. Kontraknya tidak berubah — hanya isinya. | Satu berkas baru per repository |
+| **1** | `infrastructure/http/*Repository.js` | Tulis implementasi baru dari kontrak yang sudah ada di `domain/repositories/`. Kontraknya tidak berubah: hanya isinya. | Satu berkas baru per repository |
 | **2** | `application/container.js` | Ubah pemilihan implementasi dari `dexie` menjadi `http`, atau hibrida (baca dari API, cache di Dexie). | Beberapa baris |
 | **3** | `infrastructure/http/dto/` | Mapper dari bentuk JSON API ke entitas domain. Bila API memakai penamaan berbeda, penyesuaian terjadi **di sini**, bukan di domain. | Satu mapper per entitas |
 | **4** | `stores/session.svelte.js` | Ganti masuk simulasi dengan alur autentikasi nyata (SSO Pertamina, FUT-12). | Satu store |
@@ -1935,7 +1935,7 @@ Migrasi tidak harus sekaligus. Container mendukung pemilihan per repository, seh
 mengikuti kesiapan API dari Fungsi IT:
 
 ```js
-/** Peta sumber data per repository — memungkinkan migrasi bertahap per modul. */
+/** Peta sumber data per repository: memungkinkan migrasi bertahap per modul. */
 const SUMBER_DATA = {
 	member:          'http',    // sudah tersedia dari master data PF
 	pointActivity:   'dexie',   // masih lokal, API belum ada
@@ -1951,7 +1951,7 @@ Urutan migrasi yang disarankan, mengikuti milestone Hal 7 dan prinsip *"bukti pi
 |---|---|---|
 | 1 | `MemberRepository`, `ChapterRepository` | Master data penerima manfaat adalah milestone Januari; ia juga penyebut KPI-01 |
 | 2 | `ContentRepository`, `BroadcastRepository` | Diseminasi butuh konten resmi dari Corsec, bukan seed |
-| 3 | `PointActivityRepository`, `AmplificationRepository` | Buku besar dan amplifikasi — inti pipeline bukti |
+| 3 | `PointActivityRepository`, `AmplificationRepository` | Buku besar dan amplifikasi: inti pipeline bukti |
 | 4 | `StoryRepository`, `EvidenceRepository`, `ConsentRepository` | Governance dan bukti ESG, membutuhkan penyimpanan berkas nyata |
 | 5 | `AuditLogRepository` | Terakhir karena butuh keputusan retensi 5 tahun dari Corsec |
 
@@ -1994,40 +1994,40 @@ arsitektur di awal, bukan penulisan ulang di akhir.
 | # | Butir | Berdampak pada |
 |---|---|---|
 | 1 | Bentuk endpoint master data penerima manfaat (pencocokan berdasarkan apa?) | `MembershipService`, KPI-01 |
-| 2 | Apakah perhitungan poin dilakukan di server atau tetap di klien | Bila di server, `GamificationEngine` menjadi klien tipis — tetapi kontrak repository tetap sama |
+| 2 | Apakah perhitungan poin dilakukan di server atau tetap di klien | Bila di server, `GamificationEngine` menjadi klien tipis: tetapi kontrak repository tetap sama |
 | 3 | Penyimpanan berkas bukti (foto, PDF) dan kebijakan strip EXIF | `EvidenceRecord`, `SensitiveDataPolicy` |
 | 4 | Skema autentikasi (SSO korporat vs OTP WhatsApp) | `session.svelte.js`, `AccessPolicy` |
 | 5 | Retensi dan lokasi penyimpanan `AuditLog` | `AuditLogRepository` |
 | 6 | Apakah `dedupeKey` dan `idempotencyKey` ditegakkan di database server | Bila tidak, `AmplificationTracker` perlu penanganan balapan |
 
 Enam butir ini melengkapi daftar konfirmasi Corsec yang sudah ada di `02-KPI-MODEL.md` (Lampiran) dan
-`04-ESG-GOVERNANCE.md` (§10) — daftar tersebut bersifat kebijakan, daftar ini bersifat teknis.
+`04-ESG-GOVERNANCE.md` (§10): daftar tersebut bersifat kebijakan, daftar ini bersifat teknis.
 
 ---
 
-## 9. Lampiran — Peta Ketertelusuran
+## 9. Lampiran: Peta Ketertelusuran
 
 ### 9.1 Dokumen sumber → artefak kode
 
 | Halaman sumber | Isi | Artefak kode |
 |---|---|---|
-| Hal 4 — kontrol PF | Penyebaran informasi | `Broadcast`, `Content`, `content.svelte.js`, `/admin/konten` |
-| Hal 4 — kontrol PF | Tracking amplifikasi konten | `AmplificationRecord`, `AmplificationTracker`, `AmplificationPolicy` |
-| Hal 4 — kontrol PF | Pengerjaan gamifikasi | `GamificationEngine`, `PointActivity`, `TierResolver` |
-| Hal 5 — pilar 01 | Open Community Ecosystem | `Member`, `MembershipService`, `/daftar`, `/aturan`, `/direktori` |
-| Hal 5 — pilar 02 | Kalender & chapter | `CommunityEvent`, `Chapter`, `/kalender` |
-| Hal 5 — pilar 03 | Movement-Based Program | `Movement`, `ActionReport`, `/gerakan` |
-| Hal 5 — pilar 04 | Diseminasi & amplifikasi | `Broadcast`, `AmplificationTracker`, `/konten` |
-| Hal 5 — pilar 05 | Recognition & gamifikasi | `RecognitionService`, `Reward`, `RedemptionOrder`, `/penghargaan`, `/tukar` |
-| Hal 5 — pilar 06 | Community Journalism | `Story`, `StoryModerationService`, `/cerita`, `/tantangan` |
+| Hal 4: kontrol PF | Penyebaran informasi | `Broadcast`, `Content`, `content.svelte.js`, `/admin/konten` |
+| Hal 4: kontrol PF | Tracking amplifikasi konten | `AmplificationRecord`, `AmplificationTracker`, `AmplificationPolicy` |
+| Hal 4: kontrol PF | Pengerjaan gamifikasi | `GamificationEngine`, `PointActivity`, `TierResolver` |
+| Hal 5: pilar 01 | Open Community Ecosystem | `Member`, `MembershipService`, `/daftar`, `/aturan`, `/direktori` |
+| Hal 5: pilar 02 | Kalender & chapter | `CommunityEvent`, `Chapter`, `/kalender` |
+| Hal 5: pilar 03 | Movement-Based Program | `Movement`, `ActionReport`, `/gerakan` |
+| Hal 5: pilar 04 | Diseminasi & amplifikasi | `Broadcast`, `AmplificationTracker`, `/konten` |
+| Hal 5: pilar 05 | Recognition & gamifikasi | `RecognitionService`, `Reward`, `RedemptionOrder`, `/penghargaan`, `/tukar` |
+| Hal 5: pilar 06 | Community Journalism | `Story`, `StoryModerationService`, `/cerita`, `/tantangan` |
 | Hal 6 | Lima KPI aktivitas | `KpiCalculator`, `kpi-parameters.js`, `/admin/kpi` |
 | Hal 6 | Dampak & jangkauan | `ReachEstimator`, `ReachEstimate`, `ReachProjectionChart` |
 | Hal 9 | Broadcast-first + pilot circle + story bank | `Broadcast`, `Chapter`, `Story` |
 | Hal 9 | Bukti pipeline before dashboard | `EsgEvidenceService.pipelineStatus()`, urutan fase implementasi |
 | Hal 10 | Tiga pilar ESG | `EsgTag`, `EvidenceRecord`, `esg-taxonomy.js`, `/admin/esg` |
 | Hal 10 | Governance | `ConsentRecord`, `AuditLogEntry`, `AuditTrailService`, `/admin/audit` |
-| **Hal 11** | **Sembilan nilai poin** | **`scoring-table.js` — satu-satunya sumber** |
-| **Hal 12** | **Empat ambang tier + benefit** | **`tier-table.js` — satu-satunya sumber** |
+| **Hal 11** | **Sembilan nilai poin** | **`scoring-table.js`: satu-satunya sumber** |
+| **Hal 12** | **Empat ambang tier + benefit** | **`tier-table.js`: satu-satunya sumber** |
 | **Hal 12** | **Gerbang public feature** | **`FeatureEligibilityPolicy`** |
 | **Hal 12** | **Gerbang ESG evidence** | **`EsgEvidencePolicy`** |
 

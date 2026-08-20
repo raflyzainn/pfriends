@@ -1,8 +1,8 @@
 /**
- * KONSTANTA ALUR EDITORIAL — peta transisi cerita dan kegiatan sebagai DATA.
+ * KONSTANTA ALUR EDITORIAL: peta transisi cerita dan kegiatan sebagai DATA.
  *
  * Tanggung jawab: menyatakan transisi status mana yang sah, dan oleh peran apa.
- * Sebelum berkas ini ada, legalitas transisi tersebar di store dan di halaman —
+ * Sebelum berkas ini ada, legalitas transisi tersebar di store dan di halaman :
  * artinya ia hidup sebagai tombol yang dirender atau tidak dirender. Tombol yang
  * tidak dirender tetap dapat dipanggil, sehingga itu bukan kontrol.
  *
@@ -16,13 +16,13 @@
  * 2. **Kegiatan memakai SATU sumbu status.** Usulan `DIUSULKAN`/`DITOLAK` hidup di
  *    `EventStatus` yang sama dengan `TERJADWAL`/`SELESAI`, bukan pada sumbu
  *    publikasi terpisah. Dua sumbu menuntut dua peta metadata dan dua helper yang
- *    harus dijaga sinkron oleh banyak paket sekaligus — biaya yang tidak sebanding
+ *    harus dijaga sinkron oleh banyak paket sekaligus: biaya yang tidak sebanding
  *    dengan satu kasus tepi yang tidak muncul di data mana pun.
  * 3. **Angka SLA hanya ada di sini.** Komponen dan service dilarang menulis
  *    literal hari kerja.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.2 kontrak export dan peta transisi wajib
- * @see docs/10-REVISION-SPEC.md — §5.2 state machine cerita, §5.3 tabel transisi, §5.6 SLA
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.2 kontrak export dan peta transisi wajib
+ * @see docs/10-REVISION-SPEC.md: §5.2 state machine cerita, §5.3 tabel transisi, §5.6 SLA
  */
 
 import { EventStatus } from '../entities/CommunityEvent.js';
@@ -39,13 +39,13 @@ import { UserRole } from './roles.js';
  * Peta transisi naskah cerita.
  *
  * Yang sengaja TIDAK ada, beserta alasannya:
- * - `DIAJUKAN → DISETUJUI` (melompati review) — menghapus satu-satunya titik
+ * - `DIAJUKAN → DISETUJUI` (melompati review): menghapus satu-satunya titik
  *   tempat checklist data sensitif benar-benar dijalankan.
- * - `DISETUJUI → PERLU_REVISI` — persetujuan sudah mengunci validasi PF. Temuan
+ * - `DISETUJUI → PERLU_REVISI`: persetujuan sudah mengunci validasi PF. Temuan
  *   baru ditangani lewat arsip, supaya jejak persetujuan lama tidak terhapus.
- * - ADMIN sebagai aktor review/persetujuan/penerbitan — keputusan konten milik
+ * - ADMIN sebagai aktor review/persetujuan/penerbitan: keputusan konten milik
  *   Verifikator; Admin membaca, mengekspor, dan memegang jalur banding.
- * - Transisi apa pun keluar dari `DIARSIPKAN` — terminal. Naskah yang hidup
+ * - Transisi apa pun keluar dari `DIARSIPKAN`: terminal. Naskah yang hidup
  *   kembali adalah naskah baru dengan id baru.
  * @type {Readonly<Record<string, readonly Transition[]>>}
  */
@@ -113,7 +113,7 @@ export const EVENT_TRANSITIONS = Object.freeze({
 			to: EventStatus.SELESAI,
 			by: Object.freeze([UserRole.VERIFIER, UserRole.ADMIN])
 		}),
-		// Pembatalan mendadak saat kegiatan sudah berjalan tetap harus mungkin —
+		// Pembatalan mendadak saat kegiatan sudah berjalan tetap harus mungkin :
 		// `cancelEvent` melayani TERJADWAL maupun BERLANGSUNG.
 		Object.freeze({
 			to: EventStatus.DIBATALKAN,
@@ -126,7 +126,7 @@ export const EVENT_TRANSITIONS = Object.freeze({
 });
 
 /**
- * SLA dalam hari kerja. Satu-satunya sumber angka SLA — dilarang literal di
+ * SLA dalam hari kerja. Satu-satunya sumber angka SLA: dilarang literal di
  * komponen maupun service.
  * @type {Readonly<Record<string, number>>}
  */
@@ -154,7 +154,7 @@ function transisiSah(peta, from, role) {
 /**
  * Status tujuan cerita yang boleh dituju seorang peran dari status tertentu.
  *
- * Dipakai untuk MERENDER tombol keputusan, bukan hanya untuk memvalidasinya —
+ * Dipakai untuk MERENDER tombol keputusan, bukan hanya untuk memvalidasinya :
  * dengan begitu daftar tombol tidak pernah berbeda dari daftar transisi.
  *
  * @param {string} from Status cerita saat ini.
@@ -212,7 +212,7 @@ function terminal(peta, status) {
 }
 
 /**
- * Apakah status cerita ini terminal — tidak ada lagi transisi keluar bagi peran mana pun.
+ * Apakah status cerita ini terminal: tidak ada lagi transisi keluar bagi peran mana pun.
  * @param {string} status Salah satu STORY_STATUS.
  * @returns {boolean}
  */
@@ -221,7 +221,7 @@ export function isStoryTerminal(status) {
 }
 
 /**
- * Apakah status kegiatan ini terminal — tidak ada lagi transisi keluar bagi peran mana pun.
+ * Apakah status kegiatan ini terminal: tidak ada lagi transisi keluar bagi peran mana pun.
  * @param {string} status Salah satu EventStatus.
  * @returns {boolean}
  */

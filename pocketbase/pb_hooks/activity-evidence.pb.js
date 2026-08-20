@@ -1,5 +1,5 @@
-const SCORE = { SHARE_PUBLIC: 8, STORY_SUBMIT: 10, SESSION_ATTEND: 15, KNOWLEDGE_QA: 15, SPEAKER_MENTOR: 30, LEAD_ACTION: 50 };
-const DAILY_CAP = { SHARE_PUBLIC: 2, STORY_SUBMIT: 1, SESSION_ATTEND: 2, KNOWLEDGE_QA: 2, SPEAKER_MENTOR: 1, LEAD_ACTION: 1 };
+const SCORE = { SHARE_PRIVATE: 5, SHARE_PUBLIC: 8, STORY_SUBMIT: 10, SESSION_ATTEND: 15, KNOWLEDGE_QA: 15, SPEAKER_MENTOR: 30, LEAD_ACTION: 50 };
+const DAILY_CAP = { SHARE_PRIVATE: 3, SHARE_PUBLIC: 2, STORY_SUBMIT: 1, SESSION_ATTEND: 2, KNOWLEDGE_QA: 2, SPEAKER_MENTOR: 1, LEAD_ACTION: 1 };
 
 onRecordCreateRequest((e) => {
 	if (!e.auth || e.auth.getString('role') !== 'AWARDEE') throw new ForbiddenError('Hanya Awardee yang dapat mengirim bukti.');
@@ -19,7 +19,9 @@ onRecordCreateRequest((e) => {
 		if (!['TERJADWAL','BERLANGSUNG','SELESAI'].includes(event.getString('status')) || new Date(event.getString('endsAt')) > new Date()) throw new BadRequestError('Bukti hadir baru dapat dikirim setelah event selesai.');
 		const participant = e.app.findFirstRecordByFilter('event_participants', 'event = {:event} && owner = {:owner}', { event: eventId, owner: e.auth.id });
 		e.record.set('eventParticipant', participant.id); e.record.set('activityDate', event.getString('endsAt')); e.record.set('title', `Kehadiran: ${event.getString('title')}`); e.record.set('description', `Bukti kehadiran pada event ${event.getString('title')}.`);
-	} else { e.record.set('event', ''); e.record.set('eventParticipant', ''); }
+	} else if (['SHARE_PRIVATE','SHARE_PUBLIC'].includes(e.record.getString('activityType'))) {
+		const id=e.record.getString('broadcast'); if(!id) throw new BadRequestError('Bukti share wajib terhubung ke kabar.'); const broadcast=e.app.findRecordById('broadcasts',id); if(broadcast.getString('status')!=='TERKIRIM') throw new BadRequestError('Kabar belum diterbitkan.'); const isPublic=e.record.getString('activityType')==='SHARE_PUBLIC'; if(isPublic&&!e.record.getString('externalUrl')) throw new BadRequestError('Tautan unggahan wajib diisi.'); e.record.set('title',`${isPublic?'Share publik':'Share WhatsApp'}: ${broadcast.getString('title')}`); e.record.set('description',`Bukti amplifikasi kabar ${broadcast.getString('title')}.`); e.record.set('event',''); e.record.set('eventParticipant','');
+	} else { e.record.set('event', ''); e.record.set('eventParticipant', ''); e.record.set('broadcast',''); }
 	e.next();
 }, 'activity_submissions');
 
@@ -27,7 +29,7 @@ onRecordUpdateRequest((e) => {
 	if (!e.auth || e.auth.id !== e.record.getString('owner') || e.record.original().getString('status') !== 'NEEDS_REVISION') {
 		throw new ForbiddenError('Pengajuan ini tidak dapat diperbarui.');
 	}
-	for (const field of ['owner','awardeeId','awardeeName','activityType','event','eventParticipant','status','revisionCount','reviewer','reviewNote','reviewStartedAt','reviewedAt','awardedPoints']) {
+	for (const field of ['owner','awardeeId','awardeeName','activityType','event','eventParticipant','broadcast','status','revisionCount','reviewer','reviewNote','reviewStartedAt','reviewedAt','awardedPoints']) {
 		e.record.set(field, e.record.original().get(field));
 	}
 	e.record.set('status', 'SUBMITTED');
@@ -77,8 +79,8 @@ routerAdd('POST', '/api/pfriends/activity-submissions/{id}/start-review', (e) =>
 }, $apis.requireAuth('users'));
 
 routerAdd('POST', '/api/pfriends/activity-submissions/{id}/review', (e) => {
-	const score = { SHARE_PUBLIC: 8, STORY_SUBMIT: 10, SESSION_ATTEND: 15, KNOWLEDGE_QA: 15, SPEAKER_MENTOR: 30, LEAD_ACTION: 50 };
-	const dailyCap = { SHARE_PUBLIC: 2, STORY_SUBMIT: 1, SESSION_ATTEND: 2, KNOWLEDGE_QA: 2, SPEAKER_MENTOR: 1, LEAD_ACTION: 1 };
+	const score = { SHARE_PRIVATE: 5, SHARE_PUBLIC: 8, STORY_SUBMIT: 10, SESSION_ATTEND: 15, KNOWLEDGE_QA: 15, SPEAKER_MENTOR: 30, LEAD_ACTION: 50 };
+	const dailyCap = { SHARE_PRIVATE: 3, SHARE_PUBLIC: 2, STORY_SUBMIT: 1, SESSION_ATTEND: 2, KNOWLEDGE_QA: 2, SPEAKER_MENTOR: 1, LEAD_ACTION: 1 };
 	if (!e.auth || e.auth.getString('role') !== 'VERIFIER' || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya Verifikator aktif yang dapat memutuskan bukti.');
 	const body = new DynamicModel({ decision: '', note: '' });
 	e.bindBody(body);
@@ -105,6 +107,7 @@ routerAdd('POST', '/api/pfriends/activity-submissions/{id}/review', (e) => {
 			const points = capped ? 0 : score[type];
 			const ledger = new Record(tx.findCollectionByNameOrId('verified_point_activities'));
 			ledger.set('submission', id); ledger.set('user', submission.getString('owner')); ledger.set('source', 'EVIDENCE'); ledger.set('awardeeId', awardeeId); ledger.set('activityType', type); ledger.set('points', points); ledger.set('capReason', capped ? 'DAILY_CAP' : ''); ledger.set('occurredAt', submission.getString('activityDate')); ledger.set('awardedAt', now); ledger.set('status', 'AWARDED');
+			if (submission.getString('broadcast')) ledger.set('broadcast', submission.getString('broadcast'));
 			tx.save(ledger);
 			submission.set('status', 'APPROVED'); submission.set('awardedPoints', points);
 		}

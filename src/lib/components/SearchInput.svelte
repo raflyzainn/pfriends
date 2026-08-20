@@ -1,11 +1,11 @@
 <script>
 	/**
-	 * SearchInput — kolom pencarian dengan debounce internal.
+	 * SearchInput: kolom pencarian dengan debounce internal.
 	 *
 	 * Props:
 	 * @prop {string} value                Dapat di-`bind`.
 	 * @prop {string} placeholder
-	 * @prop {(q:string)=>void} oninput    Kontrak 09 §5 — dipanggil setiap ketikan.
+	 * @prop {(q:string)=>void} oninput    Kontrak 09 §5: dipanggil setiap ketikan.
 	 * @prop {(q:string)=>void} onSearch   Dipanggil setelah debounce.
 	 * @prop {number} debounceMs
 	 * @prop {'sm'|'md'} size
@@ -13,7 +13,7 @@
 	 * @prop {string} class
 	 *
 	 * Debounce hidup di dalam komponen supaya setiap halaman tidak perlu menulis
-	 * ulang timer yang sama — dan supaya tidak ada halaman yang lupa memasangnya
+	 * ulang timer yang sama: dan supaya tidak ada halaman yang lupa memasangnya
 	 * lalu menyaring 60 anggota pada setiap penekanan tombol.
 	 */
 	import Icon from './Icon.svelte';

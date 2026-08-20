@@ -1,24 +1,24 @@
 /**
- * ENTITY — Kegiatan Komunitas.
+ * ENTITY: Kegiatan Komunitas.
  *
  * Tanggung jawab: merepresentasikan satu agenda pada Kalender Komunitas (Hal 5
- * pilar 02) — upskilling, pertemuan komunitas, atau sharing session.
+ * pilar 02): upskilling, pertemuan komunitas, atau sharing session.
  *
  * Kegiatan adalah sumber langsung KPI-05 Hal 6 ("2 aktivitas engagement
  * terlaksana") sekaligus pemasok aksi `SESSION_ATTEND`. Kata kunci Hal 6 adalah
- * "terlaksana", bukan "terjadwal" — itulah sebabnya `countsForEngagementKpi`
+ * "terlaksana", bukan "terjadwal": itulah sebabnya `countsForEngagementKpi`
  * menuntut bukti dan kuorum, bukan sekadar status selesai. Kegiatan yang
  * diselenggarakan tanpa jejak apa pun tidak dapat dipertanggungjawabkan sebagai
  * capaian program.
  *
  * Sejak V2 entitas ini juga membawa jejak alur editorial: pengusul, peninjau, waktu
- * terbit. Modelnya SATU sumbu status — usulan dan eksekusi hidup pada `EventStatus`
+ * terbit. Modelnya SATU sumbu status: usulan dan eksekusi hidup pada `EventStatus`
  * yang sama; sumbu publikasi terpisah dicabut karena menuntut indeks basis data
  * kedua dan dua peta metadata yang harus dijaga sinkron oleh banyak paket paralel.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 02, Hal 6 KPI aktivitas engagement
- * @see docs/02-KPI-MODEL.md — M-05 Aktivitas Engagement Terlaksana
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.2 satu sumbu EventStatus, §4.1 L3-b field baru
+ * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 02, Hal 6 KPI aktivitas engagement
+ * @see docs/02-KPI-MODEL.md: M-05 Aktivitas Engagement Terlaksana
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.2 satu sumbu EventStatus, §4.1 L3-b field baru
  */
 
 import { KPI_PARAMETERS } from '../constants/kpi-targets.js';
@@ -46,7 +46,7 @@ export const EVENT_TYPE_META = Object.freeze({
 });
 
 /**
- * Status siklus hidup kegiatan — SATU sumbu, mencakup usulan sekaligus eksekusi.
+ * Status siklus hidup kegiatan: SATU sumbu, mencakup usulan sekaligus eksekusi.
  *
  * `DRAFT` dan `DIUSULKAN` adalah tahap sebelum kegiatan menjadi agenda resmi;
  * `TERJADWAL` berarti usulan sudah disetujui dan terbit ke kalender publik.
@@ -68,7 +68,7 @@ export const EventStatus = Object.freeze({
  *
  * Flag `publik` adalah SATU-SATUNYA sumber kebenaran atas "boleh tampil di kalender
  * publik". Penyaring lama `status !== 'DIBATALKAN'` benar selama usulan belum ada,
- * dan bocor pada hari pertama `DIUSULKAN` masuk ke enum ini — komponen dilarang
+ * dan bocor pada hari pertama `DIUSULKAN` masuk ke enum ini: komponen dilarang
  * menyusun penyaringnya sendiri; pakai `isPubliclyVisible`.
  *
  * Setiap nilai `EventStatus` WAJIB punya entri di sini: konstruktor melempar untuk
@@ -84,7 +84,7 @@ export const EVENT_STATUS_META = Object.freeze({
 	[EventStatus.SELESAI]: Object.freeze({ code: EventStatus.SELESAI, label: 'Selesai', badgeColor: 'green', publik: true }),
 	[EventStatus.DITOLAK]: Object.freeze({ code: EventStatus.DITOLAK, label: 'Ditolak', badgeColor: 'red', publik: false }),
 	// Kegiatan yang dibatalkan hilang dari agenda publik, tetapi tetap tersimpan pada
-	// riwayat internal — pembatalan adalah fakta yang perlu dapat ditelusuri.
+	// riwayat internal: pembatalan adalah fakta yang perlu dapat ditelusuri.
 	[EventStatus.DIBATALKAN]: Object.freeze({ code: EventStatus.DIBATALKAN, label: 'Dibatalkan', badgeColor: 'slate', publik: false })
 });
 
@@ -369,12 +369,12 @@ export class CommunityEvent {
 		return this.#data.publishedAt === null ? null : new Date(this.#data.publishedAt.getTime());
 	}
 
-	/** @returns {readonly string[]} Data pribadi — dilarang tampil di zona publik. */
+	/** @returns {readonly string[]} Data pribadi: dilarang tampil di zona publik. */
 	get registeredAwardeeIds() {
 		return this.#data.registeredAwardeeIds;
 	}
 
-	/** @returns {readonly string[]} Data pribadi — dilarang tampil di zona publik. */
+	/** @returns {readonly string[]} Data pribadi: dilarang tampil di zona publik. */
 	get attendeeAwardeeIds() {
 		return this.#data.attendeeAwardeeIds;
 	}
@@ -437,7 +437,7 @@ export class CommunityEvent {
 
 	/**
 	 * Gerbang TUNGGAL visibilitas publik kegiatan. Penyaring buatan sendiri di komponen
-	 * akan membocorkan usulan mentah sebagai agenda resmi — kebocoran yang tidak
+	 * akan membocorkan usulan mentah sebagai agenda resmi: kebocoran yang tidak
 	 * tertangkap gerbang statis mana pun karena kodenya tetap sah.
 	 * @returns {boolean}
 	 */
@@ -447,7 +447,7 @@ export class CommunityEvent {
 
 	/**
 	 * Kunci bulan kalender waktu lokal, mis. '2026-07'. Ada di entity supaya grid bulan
-	 * tidak menghitung tanggalnya sendiri — perhitungan yang tersebar adalah sumber
+	 * tidak menghitung tanggalnya sendiri: perhitungan yang tersebar adalah sumber
 	 * klasik selisih satu hari antar tampilan.
 	 * @returns {string}
 	 */
@@ -481,7 +481,7 @@ export class CommunityEvent {
 	 *
 	 * Tiga syarat serentak sesuai definisi operasional docs/02 M-05: berstatus
 	 * selesai, punya minimal satu lampiran bukti, dan jumlah hadir mencapai
-	 * kuorum. Syarat kedua dan ketiga adalah penerjemahan kata "terlaksana" —
+	 * kuorum. Syarat kedua dan ketiga adalah penerjemahan kata "terlaksana" :
 	 * tanpa keduanya yang terhitung hanyalah niat menyelenggarakan.
 	 * @returns {boolean}
 	 */

@@ -1,12 +1,12 @@
 /**
- * SERVICE — Penentu Tier.
+ * SERVICE: Penentu Tier.
  *
  * Tanggung jawab: menerjemahkan sejumlah poin menjadi tier dan progres menuju
  * tier berikutnya.
  *
  * Keputusan yang mengikat (kontrak build K-3): **tier ditentukan MURNI oleh
  * ambang poin** 25/50/100/150 dari Hal 12. Tidak ada syarat kualitatif apa pun
- * yang ikut menentukan tier — tidak komposisi kontribusi, tidak rasio verifikasi,
+ * yang ikut menentukan tier: tidak komposisi kontribusi, tidak rasio verifikasi,
  * tidak jumlah aksi kelas tertentu. Godaan untuk menambahkannya besar dan
  * argumennya masuk akal, tetapi akibatnya fatal saat demo: seorang anggota dengan
  * 50 poin yang belum menjadi Contributor tidak punya penjelasan yang dapat
@@ -17,8 +17,8 @@
  * Statis dan tanpa dependensi: penentuan tier hanya butuh satu angka, sehingga
  * tidak ada alasan kelas ini menyentuh repository atau menerima injeksi apa pun.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 12 Scoring Tiers and Feature Threshold
- * @see docs/09-BUILD-CONTRACT.md — K-3
+ * @see docs/00-SOURCE-BRIEF.md: Hal 12 Scoring Tiers and Feature Threshold
+ * @see docs/09-BUILD-CONTRACT.md: K-3
  */
 
 import { TIER_TABLE } from '../constants/tier-table.js';
@@ -77,7 +77,7 @@ export class TierResolver {
 	 *
 	 * `gained` dan `needed` dihitung relatif terhadap RENTANG tier berjalan, bukan
 	 * terhadap nol. Anggota dengan 60 poin melihat "10 dari 50 poin menuju
-	 * Featured Candidate", bukan "60 dari 100" — bar yang selalu dimulai dari
+	 * Featured Candidate", bukan "60 dari 100": bar yang selalu dimulai dari
 	 * ambang tier saat ini terasa jujur dan tidak pernah terlihat mundur setelah
 	 * naik tier.
 	 *
@@ -117,7 +117,7 @@ export class TierResolver {
 
 	/**
 	 * Sebaran awardee per tier, urut menaik. Dipakai konsol admin untuk melihat
-	 * apakah komunitas benar-benar mengerucut — sebaran yang gemuk di tier atas
+	 * apakah komunitas benar-benar mengerucut: sebaran yang gemuk di tier atas
 	 * adalah tanda ambangnya terlalu longgar, bukan tanda komunitas yang hebat.
 	 *
 	 * @param {readonly {points: number}[]} awardees Awardee yang dihitung.

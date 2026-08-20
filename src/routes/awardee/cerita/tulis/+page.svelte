@@ -1,10 +1,10 @@
 <script>
 	/**
-	 * HALAMAN — Komposer Cerita (`/awardee/cerita/tulis`).
+	 * HALAMAN: Komposer Cerita (`/awardee/cerita/tulis`).
 	 *
 	 * Tanggung jawab: mengubah satu aksi lapangan menjadi naskah yang layak masuk
 	 * antrean tinjauan, dan membuat setiap syarat kelayakannya terlihat SAMBIL
-	 * penulis mengetik — bukan sesudah ia menekan kirim.
+	 * penulis mengetik: bukan sesudah ia menekan kirim.
 	 *
 	 * ENAM KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
@@ -12,10 +12,10 @@
 	 *    sini.** Halaman membangun `Story` kandidat dari isian formulir pada setiap
 	 *    perubahan, lalu bertanya kepada entity. Menyalin ketiga syaratnya ke dalam
 	 *    ekspresi turunan akan melahirkan gerbang kedua yang cepat berselisih dengan
-	 *    gerbang pertama — dan yang dilihat penulis adalah versi halaman, sementara
+	 *    gerbang pertama: dan yang dilihat penulis adalah versi halaman, sementara
 	 *    yang menolak kiriman adalah versi domain.
 	 * 2. **Naskah kandidat SELALU terbentuk, bahkan saat formulir masih kosong.**
-	 *    Field wajib entity diisi nilai singgahan (`—`) supaya konstruktor tidak
+	 *    Field wajib entity diisi nilai singgahan (`:`) supaya konstruktor tidak
 	 *    melempar, dan justru dengan begitu `isSubmittable` menjawab "belum" karena
 	 *    alasan yang benar: jumlah kata belum cukup. Kelengkapan per field adalah
 	 *    urusan `Validator`, bukan urusan konstruktor entity.
@@ -26,19 +26,19 @@
 	 *    sama berulang kali.
 	 * 4. **Consent diperiksa DUA lapis.** Pernyataan izin pada formulir ini saja
 	 *    tidak cukup: awardee yang sudah mencabut consent programnya di `/awardee/
-	 *    profil` tidak dapat menerbitkan apa pun, dan itu harus terbaca di sini —
+	 *    profil` tidak dapat menerbitkan apa pun, dan itu harus terbaca di sini :
 	 *    bukan menjadi kejutan di ujung antrean tinjauan.
 	 * 5. **Pengiriman melewati `editorial.submitStory`, bukan repository.** Store
 	 *    meneruskannya ke `ContentReviewService`, satu-satunya tempat peta transisi
 	 *    `DRAFT/PERLU_REVISI → DIAJUKAN` ditegakkan. Menyimpan langsung ke
 	 *    repository melewati peta itu tanpa jejak.
-	 * 6. **Poin dibaca dari `poinUntuk(ActivityType.STORY_SUBMIT)` — nol angka
+	 * 6. **Poin dibaca dari `poinUntuk(ActivityType.STORY_SUBMIT)`: nol angka
 	 *    literal**, dan baru diajukan SESUDAH naskah benar-benar diterima domain.
 	 *    Urutan sebaliknya menjanjikan poin atas naskah yang ditolak.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 Submit story, Hal 12 empat gerbang bukti ESG
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-05 kriteria selesai butir 1, 2, 4, 5
-	 * @see docs/10-REVISION-SPEC.md — §5.2 state machine cerita
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 11 Submit story, Hal 12 empat gerbang bukti ESG
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-05 kriteria selesai butir 1, 2, 4, 5
+	 * @see docs/10-REVISION-SPEC.md: §5.2 state machine cerita
 	 */
 
 	import { onMount } from 'svelte';
@@ -58,7 +58,7 @@
 	import { formatAngka, potongTeks } from '$lib/utils/format.js';
 	import RequirementList from '../../_components/RequirementList.svelte';
 
-	/** Nilai poin pengiriman cerita — dari tabel kanonik, tidak pernah ditulis literal. */
+	/** Nilai poin pengiriman cerita: dari tabel kanonik, tidak pernah ditulis literal. */
 	const POIN_CERITA = poinUntuk(ActivityType.STORY_SUBMIT);
 
 	/** Nama parameter kueri yang menunjuk naskah yang sedang diperbaiki. */
@@ -66,11 +66,11 @@
 
 	/**
 	 * Nilai singgahan untuk field wajib entity yang belum diisi penulis. Lihat
-	 * keputusan 2 pada blok pembuka — ia tidak pernah ikut tersimpan, karena naskah
+	 * keputusan 2 pada blok pembuka: ia tidak pernah ikut tersimpan, karena naskah
 	 * dengan judul kosong sudah ditahan `Validator` jauh sebelum tombol kirim
 	 * meneruskannya ke domain.
 	 */
-	const SINGGAHAN = '—';
+	const SINGGAHAN = ':';
 
 	/** Batas panjang ringkasan yang dipotong otomatis dari isi naskah. */
 	const PANJANG_RINGKASAN = 160;
@@ -95,19 +95,19 @@
 	 * Aturan per field.
 	 *
 	 * Hanya syarat KELENGKAPAN dan BENTUK yang tinggal di sini. Syarat KELAYAKAN
-	 * KIRIM — panjang naskah, lampiran, tag ESG — dijawab `Story.isSubmittable`;
+	 * KIRIM: panjang naskah, lampiran, tag ESG: dijawab `Story.isSubmittable`;
 	 * menuliskannya dua kali berarti dua gerbang yang harus dijaga sinkron.
 	 */
 	const validator = new Validator({
 		title: [
 			Rule.required('Judul Blog wajib diisi.'),
-			Rule.minLength(10, 'Judul terlalu pendek untuk menerangkan isi tulisan — minimal 10 karakter.'),
+			Rule.minLength(10, 'Judul terlalu pendek untuk menerangkan isi tulisan: minimal 10 karakter.'),
 			Rule.maxLength(120, 'Judul maksimal 120 karakter agar utuh terbaca pada kartu Blog.')
 		],
 		summary: [Rule.maxLength(200, 'Ringkasan maksimal 200 karakter.')],
 		body: [Rule.required('Isi Blog wajib diisi.')],
 		outcomeNote: [
-			Rule.required('Catatan hasil wajib diisi — tuliskan perubahan yang terjadi, bukan jalannya acara.')
+			Rule.required('Catatan hasil wajib diisi: tuliskan perubahan yang terjadi, bukan jalannya acara.')
 		],
 		location: [Rule.required('Lokasi aktivitas wajib diisi.')],
 		activityDate: [
@@ -119,7 +119,7 @@
 			Rule.min(1, 'Jumlah peserta minimal 1 orang.')
 		],
 		evidence: [
-			Rule.required('Sumber bukti wajib diisi — nama berkas dokumentasi atau tautan album.')
+			Rule.required('Sumber bukti wajib diisi: nama berkas dokumentasi atau tautan album.')
 		]
 	});
 
@@ -153,7 +153,7 @@
 	 *
 	 * Sengaja BUKAN `$state`: naskah kandidat dibangun ulang pada setiap ketukan
 	 * tombol, dan membentuk identitas baru di dalamnya akan menghasilkan id yang
-	 * berubah-ubah selama penulis mengetik — sesuatu yang tidak pernah terlihat
+	 * berubah-ubah selama penulis mengetik: sesuatu yang tidak pernah terlihat
 	 * sampai dua kiriman beruntun tersimpan sebagai dua baris berbeda.
 	 * @type {string}
 	 */
@@ -197,7 +197,7 @@
 	 * Naskah kandidat dari isian formulir saat ini.
 	 *
 	 * Inilah objek yang ditanya "sudah layak dikirim?" dan, bila layak, objek yang
-	 * benar-benar dikirim ke domain. Satu objek untuk kedua peran — tidak ada
+	 * benar-benar dikirim ke domain. Satu objek untuk kedua peran: tidak ada
 	 * kemungkinan yang diperiksa berbeda dari yang dikirim.
 	 * @type {import('$lib/domain/entities/Story.js').Story|null}
 	 */
@@ -242,7 +242,7 @@
 
 	const jumlahKata = $derived(naskah?.wordCount ?? 0);
 
-	/** Consent program awardee — dikelola di `/awardee/profil`, dibaca di sini. */
+	/** Consent program awardee: dikelola di `/awardee/profil`, dibaca di sini. */
 	const consentProgramAktif = $derived(awardee?.consentActive === true);
 
 	const consentLengkap = $derived(consentProgramAktif && formConsent);
@@ -251,7 +251,7 @@
 	 * Syarat pengiriman beserta status pemenuhannya.
 	 *
 	 * Tiga syarat pertama adalah `Story.isSubmittable` yang dipecah menjadi kalimat
-	 * — nilai kebenarannya tetap dibaca dari getter entity, yang dipecah hanyalah
+	 *: nilai kebenarannya tetap dibaca dari getter entity, yang dipecah hanyalah
 	 * penjelasannya. Syarat keempat adalah consent, yang berada di luar entity
 	 * karena menyangkut hak yang dapat dicabut penulis kapan saja.
 	 * @type {{key: string, label: string, terpenuhi: boolean, hint: string}[]}
@@ -281,7 +281,7 @@
 			terpenuhi: consentLengkap,
 			hint: consentProgramAktif
 				? 'centang pernyataan izin publikasi di bagian bawah formulir'
-				: 'consent program Anda sedang tidak aktif — aktifkan kembali di halaman Profil sebelum mengirim naskah'
+				: 'consent program Anda sedang tidak aktif: aktifkan kembali di halaman Profil sebelum mengirim naskah'
 		}
 	]);
 
@@ -377,7 +377,7 @@
 	/**
 	 * Mengirim naskah ke antrean tinjauan, lalu mengajukan poinnya.
 	 *
-	 * Poin diajukan SESUDAH domain menerima naskah — lihat keputusan 6 pada blok
+	 * Poin diajukan SESUDAH domain menerima naskah: lihat keputusan 6 pada blok
 	 * pembuka. Kuota harian hanya membatasi poin, bukan hak menulis: naskah kedua
 	 * pada hari yang sama tetap masuk antrean, yang tidak diperoleh hanyalah poin
 	 * keduanya.
@@ -411,7 +411,7 @@
 </script>
 
 <svelte:head>
-	<title>{modeRevisi ? 'Perbaiki tulisan' : 'Tulis Blog Baru'} — PFfriends</title>
+	<title>{modeRevisi ? 'Perbaiki tulisan' : 'Tulis Blog Baru'}: PFriends</title>
 </svelte:head>
 
 <PageHeader
@@ -427,7 +427,7 @@
 		<EmptyState
 			iconPath={ICONS.user}
 			title="Sesi anggota belum termuat"
-			message="Komposer Blog membutuhkan identitas penulis. Masuk kembali sebagai anggota PFfriends untuk melanjutkan."
+			message="Komposer Blog membutuhkan identitas penulis. Masuk kembali sebagai anggota PFriends untuk melanjutkan."
 			actionLabel="Ke halaman Masuk"
 			actionHref="/masuk"
 		/>
@@ -700,7 +700,7 @@
 					<input type="checkbox" bind:checked={formConsent} class="mt-0.5 h-4 w-4 shrink-0" />
 					<span class="text-[13px] leading-relaxed text-ink-700">
 						Saya mengizinkan Pertamina Foundation memublikasikan tulisan ini beserta nama saya, dan
-						memastikan tidak ada data pribadi orang lain — nomor telepon, NIK, alamat rumah — di
+						memastikan tidak ada data pribadi orang lain: nomor telepon, NIK, alamat rumah: di
 						dalam naskah maupun buktinya.
 					</span>
 				</label>
@@ -750,15 +750,15 @@
 				<p class="text-sm font-semibold text-ink-800">Setelah kamu mengirim</p>
 				<ol class="mt-2.5 space-y-2 text-[13px] leading-relaxed text-ink-600">
 					<li>
-						<span class="font-medium text-ink-800">1. Antrean tinjauan</span> — verifikator mengambil
+						<span class="font-medium text-ink-800">1. Antrean tinjauan</span>: verifikator mengambil
 						naskah sesuai urutan masuk, yang paling lama menunggu lebih dulu.
 					</li>
 					<li>
-						<span class="font-medium text-ink-800">2. Keputusan</span> — disetujui, atau dikembalikan
+						<span class="font-medium text-ink-800">2. Keputusan</span>: disetujui, atau dikembalikan
 						dengan catatan perbaikan yang wajib tertulis.
 					</li>
 					<li>
-						<span class="font-medium text-ink-800">3. Terbit</span> — tulisan tayang di ruang publik dan
+						<span class="font-medium text-ink-800">3. Terbit</span>: tulisan tayang di ruang publik dan
 						masuk story bank untuk laporan ESG.
 					</li>
 				</ol>

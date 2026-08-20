@@ -1,19 +1,19 @@
 /**
- * REPOSITORY — Katalog Penukaran Poin (Hal 5 pilar 05).
+ * REPOSITORY: Katalog Penukaran Poin (Hal 5 pilar 05).
  *
  * Tanggung jawab: akses data item yang dapat ditukar awardee dengan Koin Tukar,
  * beserta rekaman penukarannya.
  *
  * Perhatikan pembagian tabel: `rewards` adalah katalog (definisi item), sedangkan
  * `redemptions` adalah peristiwa penukaran. Menggabungkan keduanya akan membuat
- * riwayat penukaran seorang awardee hilang begitu item ditarik dari katalog —
+ * riwayat penukaran seorang awardee hilang begitu item ditarik dari katalog :
  * padahal justru riwayat itulah bukti bahwa poin benar-benar dapat ditukar.
  *
  * PENUKARAN ADALAH SATU TRANSAKSI, DAN PERAKITANNYA TINGGAL DI SINI.
  * Sebelumnya sebuah komponen halaman merakit penukaran sendiri: memanggil
  * `awardeeRepository.update()` untuk memotong koin, lalu `saveRedemption()` untuk
  * menaruh barisnya, dan tidak pernah menyentuh pencacah kuota sama sekali. Tiga
- * cacat sekaligus lahir dari sana — kuota bulanan yang tidak pernah berkurang,
+ * cacat sekaligus lahir dari sana: kuota bulanan yang tidak pernah berkurang,
  * potongan koin yang dapat berhasil sementara pencatatannya gagal, dan aturan
  * bisnis yang hidup di dalam berkas `.svelte`. Kini ketiga tabel ditulis di dalam
  * SATU transaksi Dexie `rw`, dan kelayakannya diperiksa ulang atas baris yang
@@ -21,13 +21,13 @@
  * menembus kuota, karena penukaran kedua membaca pencacah yang sudah naik.
  *
  * Transaksi itu pula yang menjelaskan mengapa repository ini menyentuh tabel
- * `awardees` — bukan karena batas repository kabur, melainkan karena Dexie menuntut
+ * `awardees`: bukan karena batas repository kabur, melainkan karena Dexie menuntut
  * seluruh tabel sebuah transaksi disebutkan pada satu pemanggilan. Memecahnya
  * menjadi dua repository berarti memecahnya menjadi dua transaksi, dan atomisitas
  * yang menjadi seluruh tujuan method ini hilang.
  *
  * @see src/lib/domain/entities/Reward.js
- * @see docs/03-GAMIFICATION-SPEC.md — §10 katalog penukaran
+ * @see docs/03-GAMIFICATION-SPEC.md: §10 katalog penukaran
  */
 
 import { Awardee } from '$lib/domain/entities/Awardee.js';
@@ -48,7 +48,7 @@ export { RedemptionStatus, REDEMPTION_STATUS_META };
  */
 
 /**
- * Hasil penolakan yang seragam — seluruh jalur gagal memakai bentuk yang sama
+ * Hasil penolakan yang seragam: seluruh jalur gagal memakai bentuk yang sama
  * supaya pemanggil tidak perlu membedakan "gagal karena data" dari "gagal karena
  * aturan". Keduanya sama-sama berarti: tidak ada yang berubah.
  * @param {string} reason
@@ -68,7 +68,7 @@ export class RewardRepository extends DexieRepository {
 	}
 
 	/**
-	 * Item yang masih dapat ditukar, diurutkan dari yang termurah — awardee bertier
+	 * Item yang masih dapat ditukar, diurutkan dari yang termurah: awardee bertier
 	 * rendah harus melihat sesuatu yang terjangkau lebih dulu, bukan deretan hadiah
 	 * yang belum mungkin diraihnya.
 	 * @param {Date} [pada] Waktu acuan pembacaan kuota bulanan; default sekarang.
@@ -142,7 +142,7 @@ export class RewardRepository extends DexieRepository {
 	/**
 	 * Mencatat satu penukaran baru apa adanya.
 	 *
-	 * TIDAK memotong koin dan TIDAK menaikkan pencacah kuota — ia hanya menaruh
+	 * TIDAK memotong koin dan TIDAK menaikkan pencacah kuota: ia hanya menaruh
 	 * baris. Dipakai proses seed dan jalur administratif yang memang sudah mengurus
 	 * dua hal itu sendiri. Untuk penukaran yang dilakukan anggota, pakai
 	 * {@link RewardRepository#redeem}; jalur ini akan meninggalkan kuota dan saldo
@@ -158,7 +158,7 @@ export class RewardRepository extends DexieRepository {
 	}
 
 	/**
-	 * Menukarkan Koin Tukar seorang anggota dengan satu item katalog — ATOMIK.
+	 * Menukarkan Koin Tukar seorang anggota dengan satu item katalog: ATOMIK.
 	 *
 	 * Satu transaksi `rw` atas tiga tabel mengerjakan empat hal yang wajib berhasil
 	 * atau gagal bersama-sama: membaca ulang katalog dan anggota, memeriksa
@@ -167,14 +167,14 @@ export class RewardRepository extends DexieRepository {
 	 *
 	 * Kelayakan diperiksa atas baris yang dibaca DI DALAM transaksi, bukan atas
 	 * objek yang sudah dipegang halaman. Jeda antara kartu dirender dan tombol
-	 * ditekan cukup panjang untuk membuat pemeriksaan pertama basi — saldo bisa saja
+	 * ditekan cukup panjang untuk membuat pemeriksaan pertama basi: saldo bisa saja
 	 * sudah terpakai di tab lain, dan kuota bisa saja sudah diambil anggota lain.
 	 * Pemotongan koin ganda tidak akan pernah bisa dibatalkan.
 	 *
 	 * Nomor urut penukaran juga dihitung di dalam transaksi, bukan dari panjang
 	 * daftar yang sedang tampil di layar. Dua klik beruntun pada daftar yang sama
 	 * menghasilkan nomor yang sama, dan `put` yang kedua akan MENIMPA penukaran
-	 * pertama alih-alih menambahkannya — kehilangan yang senyap.
+	 * pertama alih-alih menambahkannya: kehilangan yang senyap.
 	 *
 	 * @param {object} permintaan
 	 * @param {string} permintaan.awardeeId
@@ -204,7 +204,7 @@ export class RewardRepository extends DexieRepository {
 			const kelayakan = reward.canBeRedeemedBy(awardee, monthKey);
 			if (!kelayakan.allowed) return ditolak(kelayakan.reason ?? 'Penukaran belum dapat diproses.');
 
-			// Melempar RangeError bila kuota habis — jaring kedua di bawah pemeriksaan
+			// Melempar RangeError bila kuota habis: jaring kedua di bawah pemeriksaan
 			// kelayakan, dan sengaja dibiarkan melempar: sampai di sini artinya dua
 			// pembacaan kuota berbeda pendapat, dan transaksi wajib batal seluruhnya.
 			const rewardSesudah = reward.withRedemptionRecorded(monthKey);

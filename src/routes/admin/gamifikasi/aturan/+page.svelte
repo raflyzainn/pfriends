@@ -1,9 +1,9 @@
 <script>
 	/**
-	 * HALAMAN — Konfigurasi Gamifikasi.
+	 * HALAMAN: Konfigurasi Gamifikasi.
 	 *
-	 * Tanggung jawab: satu tempat untuk MENYETEL sistem poin — nilai poin tiap
-	 * aksi, batas hariannya, dan ambang tiap jenjang — lalu memperlihatkan akibat
+	 * Tanggung jawab: satu tempat untuk MENYETEL sistem poin: nilai poin tiap
+	 * aksi, batas hariannya, dan ambang tiap jenjang: lalu memperlihatkan akibat
 	 * setelan itu sebelum disimpan.
 	 *
 	 * ── Perubahan sikap dibanding versi sebelumnya ───────────────────────────
@@ -11,7 +11,7 @@
 	 * Versi sebelumnya menyatakan tabel skor "baca saja": nilai poin adalah angka
 	 * kanonik dokumen sumber, dan mengubahnya lewat antarmuka dianggap membuat
 	 * poin yang sudah dibukukan tidak lagi dapat dijelaskan asalnya. Kekhawatiran
-	 * itu benar, tetapi jalan keluarnya keliru — ia menutup seluruh penyetelan,
+	 * itu benar, tetapi jalan keluarnya keliru: ia menutup seluruh penyetelan,
 	 * padahal yang perlu dijaga hanyalah poin yang SUDAH tercatat.
 	 *
 	 * Karena itu tiga penjagaan dipasang menggantikan larangan tadi:
@@ -19,7 +19,7 @@
 	 * 1. **Poin yang sudah dibukukan tidak pernah dihitung ulang.** Setiap entri
 	 *    buku besar menyimpan nilai poinnya sendiri pada saat kejadian, sehingga
 	 *    setelan baru hanya berlaku untuk perolehan berikutnya. Konfigurasi yang
-	 *    berlaku surut akan mengubah saldo orang yang sudah menerima haknya —
+	 *    berlaku surut akan mengubah saldo orang yang sudah menerima haknya :
 	 *    dan itu, bukan penyetelannya, yang mustahil dijelaskan.
 	 * 2. **Nilai kanonik selalu terlihat di sebelah nilai setelan.** Kolom
 	 *    "Kanonik" tidak pernah hilang, dan satu tombol mengembalikan seluruhnya.
@@ -34,9 +34,9 @@
 	 * memang bersama data demo yang lain supaya ikut bersih ketika data dimuat
 	 * ulang.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 tabel skor, Hal 12 ambang jenjang
-	 * @see src/lib/domain/constants/scoring-table.js — nilai kanonik
-	 * @see src/lib/domain/constants/tier-table.js — ambang kanonik
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 11 tabel skor, Hal 12 ambang jenjang
+	 * @see src/lib/domain/constants/scoring-table.js: nilai kanonik
+	 * @see src/lib/domain/constants/tier-table.js: ambang kanonik
 	 */
 	import { AdminGamificationNav, Button, Card, DummyBadge, Icon, PageHeader, StatTile, StatusBadge, ICONS } from '$lib/components';
 	import TierDistributionChart from '$lib/charts/TierDistributionChart.svelte';
@@ -53,16 +53,16 @@
 
 	/** Label kelas verifikasi aksi. */
 	const LABEL_KELAS = Object.freeze({
-		[ActionClass.A]: 'A — otomatis',
-		[ActionClass.B]: 'B — bukti ringan',
-		[ActionClass.C]: 'C — perlu bukti',
-		[ActionClass.D]: 'D — validasi PF'
+		[ActionClass.A]: 'A: otomatis',
+		[ActionClass.B]: 'B: bukti ringan',
+		[ActionClass.C]: 'C: perlu bukti',
+		[ActionClass.D]: 'D: validasi PF'
 	});
 
 	/**
 	 * Satu bulan khas seorang anggota aktif, dipakai sebagai contoh perhitungan.
 	 *
-	 * Bauran ini dipilih supaya menyentuh keempat kelas verifikasi sekaligus —
+	 * Bauran ini dipilih supaya menyentuh keempat kelas verifikasi sekaligus :
 	 * contoh yang hanya berisi aksi ringan tidak akan pernah memperlihatkan akibat
 	 * perubahan nilai poin kontribusi bermakna, dan justru di situlah setelan
 	 * paling sering digeser.
@@ -77,7 +77,7 @@
 		Object.freeze({ type: ActivityType.SESSION_ATTEND, jumlah: 1 })
 	]);
 
-	/** Setelan bawaan — salinan nilai kanonik Hal 11 dan Hal 12. */
+	/** Setelan bawaan: salinan nilai kanonik Hal 11 dan Hal 12. */
 	function konfigurasiKanonik() {
 		return {
 			poin: Object.fromEntries(SCORING_TABLE.map((aturan) => [aturan.type, aturan.points])),
@@ -116,7 +116,7 @@
 	let menyimpan = $state(false);
 
 	// Setelan tersimpan dibaca sekali saat halaman dibuka. Bila belum pernah ada,
-	// nilai kanonik yang sudah terpasang di atas tetap berlaku — halaman tidak
+	// nilai kanonik yang sudah terpasang di atas tetap berlaku: halaman tidak
 	// perlu menunggu apa pun untuk dapat dibaca.
 	$effect(() => {
 		let dibatalkan = false;
@@ -322,7 +322,7 @@
 <PageHeader
 	eyebrow="Konsol Corporate Secretary"
 	title="Konfigurasi Gamifikasi"
-	subtitle="Nilai poin tiap aksi, batas hariannya, dan ambang tiap jenjang dapat disetel di sini. Setelan berlaku untuk perolehan poin berikutnya — poin yang sudah dibukukan menyimpan nilainya sendiri dan tidak pernah dihitung ulang."
+	subtitle="Nilai poin tiap aksi, batas hariannya, dan ambang tiap jenjang dapat disetel di sini. Setelan berlaku untuk perolehan poin berikutnya: poin yang sudah dibukukan menyimpan nilainya sendiri dan tidak pernah dihitung ulang."
 >
 	{#snippet actions()}
 		<Button variant="secondary" size="sm" iconPath={ICONS.refresh} onclick={kembalikanKanonik}>
@@ -418,7 +418,7 @@
 		<div class="min-w-0">
 			<h2 class="text-base font-bold text-heading">Nilai poin per aksi</h2>
 			<p class="mt-1 max-w-3xl text-sm text-ink-600">
-				Kolom kanonik adalah angka Hal 11 dan tidak pernah ikut berubah — ia acuan untuk menilai
+				Kolom kanonik adalah angka Hal 11 dan tidak pernah ikut berubah: ia acuan untuk menilai
 				seberapa jauh setelan sudah bergeser.
 			</p>
 		</div>
@@ -437,7 +437,7 @@
 	<div class="overflow-x-auto">
 		<table class="w-full min-w-max border-collapse text-left">
 			<caption class="sr-only">
-				Setelan nilai poin dan batas harian untuk sembilan aksi berpoin PFfriends, berdampingan
+				Setelan nilai poin dan batas harian untuk sembilan aksi berpoin PFriends, berdampingan
 				dengan nilai kanonik dokumen sumber.
 			</caption>
 
@@ -621,7 +621,7 @@
 		<h2 class="text-base font-bold text-heading">Contoh perhitungan satu bulan</h2>
 		<p class="mt-1 max-w-3xl text-sm text-ink-600">
 			Bauran aksi seorang anggota aktif dalam sebulan, dihitung dua kali: dengan nilai kanonik dan
-			dengan setelan yang sedang di formulir. Contoh ini mengabaikan batas harian — bauran di bawah
+			dengan setelan yang sedang di formulir. Contoh ini mengabaikan batas harian: bauran di bawah
 			tersebar sepanjang bulan sehingga tidak satu pun batasnya tersentuh.
 		</p>
 	</div>
@@ -663,7 +663,7 @@
 								: 'text-brand-700'}"
 						>
 							{baris.subtotalDraf === baris.subtotalKanonik
-								? '—'
+								? ':'
 								: formatBertanda(baris.subtotalDraf - baris.subtotalKanonik)}
 						</td>
 					</tr>
@@ -690,7 +690,7 @@
 							: 'text-brand-700'}"
 					>
 						{totalContohDraf === totalContohKanonik
-							? '—'
+							? ':'
 							: formatBertanda(totalContohDraf - totalContohKanonik)}
 					</td>
 				</tr>

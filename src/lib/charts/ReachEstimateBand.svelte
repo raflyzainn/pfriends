@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * ReachEstimateBand (C-18) — pita estimasi jangkauan organik per bulan.
+	 * ReachEstimateBand (C-18): pita estimasi jangkauan organik per bulan.
 	 *
 	 * Props:
 	 * @prop {{monthKey:string,label:string,min:number,max:number,mid:number}[]} data
@@ -9,7 +9,7 @@
 	 *
 	 * Ini satu-satunya chart dasbor yang TIDAK menggambarkan pengukuran. Angkanya
 	 * hasil perkalian jumlah pengamplifikasi dengan rentang ukuran jaringan sosial
-	 * Hal 6 — bukan jumlah orang yang terbukti melihat konten. Karena itu ia
+	 * Hal 6: bukan jumlah orang yang terbukti melihat konten. Karena itu ia
 	 * memakai dua penanda sekaligus, dan keduanya wajib:
 	 *
 	 *   1. Garis titik tengah PUTUS-PUTUS (CH-3).
@@ -19,12 +19,12 @@
 	 * putih beresolusi rendah, dan lencana sendirian tidak menjelaskan garis mana
 	 * yang diestimasi bila kelak chart ini memuat deret terukur.
 	 *
-	 * Pita dibentuk dari dua seri bertumpuk — batas bawah transparan, lalu
+	 * Pita dibentuk dari dua seri bertumpuk: batas bawah transparan, lalu
 	 * selisihnya berarea. Menggambar dua garis lalu "mengisi di antaranya" tidak
 	 * mungkin pada ECharts tanpa trik `stack` ini.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-18, §7.5 CH-3
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 6 Dampak Inisiatif
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-18, §7.5 CH-3
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 6 Dampak Inisiatif
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import Icon from '$lib/components/Icon.svelte';
@@ -126,7 +126,7 @@
 	/>
 
 	<p class="mt-2 text-xs leading-relaxed text-ink-600">
-		Pita menunjukkan rentang jangkauan yang masuk akal setelah didiskon tumpang tindih audiens —
+		Pita menunjukkan rentang jangkauan yang masuk akal setelah didiskon tumpang tindih audiens :
 		bukan jumlah orang yang terbukti melihat konten. Lebar pita adalah ketidakpastiannya, dan
 		lebarnya memang disengaja.
 	</p>

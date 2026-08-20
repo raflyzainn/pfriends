@@ -1,11 +1,11 @@
 <script>
 	/**
-	 * KALENDER KOMUNITAS — pilar 02 sebagai destinasi publik.
+	 * KALENDER KOMUNITAS: pilar 02 sebagai destinasi publik.
 	 *
 	 * Halaman ini memindahkan agenda komunitas keluar dari zona ter-login. Hal 5
 	 * dokumen sumber menempatkan Kalender Komunitas sebagai salah satu dari empat
 	 * pilar, dan sampai gelombang ini ia hanya dapat dilihat orang yang sudah punya
-	 * akun — persis kebalikan dari fungsinya sebagai undangan.
+	 * akun: persis kebalikan dari fungsinya sebagai undangan.
 	 *
 	 * LIMA KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
@@ -18,7 +18,7 @@
 	 * 2. **Tampilan baku ditentukan LEBAR LAYAR, bukan preferensi tetap.** Grid
 	 *    bulan berisi 35 sel; di 375 px ia menjadi kotak-kotak 45 px yang tidak
 	 *    memuat apa pun selain angka. Ponsel karena itu membuka daftar, layar lebar
-	 *    membuka grid — dan keduanya tetap dapat ditukar manual.
+	 *    membuka grid: dan keduanya tetap dapat ditukar manual.
 	 *
 	 * 3. **Bulan yang ditampilkan adalah state MILIK HALAMAN, bukan milik kalender.**
 	 *    `MonthCalendar` sengaja tidak menyimpan bulannya sendiri, sehingga grid dan
@@ -33,8 +33,8 @@
 	 *    chapter, tombol bulan berikutnya mati tanpa penjelasan dan terbaca sebagai
 	 *    kerusakan.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-08 kriteria selesai 1–6
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 02 Kalender Komunitas
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-08 kriteria selesai 1–6
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 02 Kalender Komunitas
 	 */
 	import { browser } from '$app/environment';
 	import { EventListPanel, MonthCalendar, SectionRule, Icon, ICONS } from '$lib/components';
@@ -89,13 +89,13 @@
 	 * `catalog.events`.
 	 *
 	 * Keduanya bertanya kepada fungsi yang sama (`kegiatanTampilPublik`), jadi ini
-	 * bukan aturan kedua yang harus dijaga sinkron — melainkan satu aturan yang
+	 * bukan aturan kedua yang harus dijaga sinkron: melainkan satu aturan yang
 	 * ditegakkan dua kali, di batas store dan sekali lagi di `saringKegiatan()`.
 	 * Halaman publik tidak punya alasan memegang daftar mentah sama sekali.
 	 */
 	const terbit = $derived(catalog.publishedEvents);
 
-	/** Seluruh agenda publik, tanpa penyaring — sumber batas navigasi bulan. */
+	/** Seluruh agenda publik, tanpa penyaring: sumber batas navigasi bulan. */
 	const agendaLengkap = $derived(keAgenda(kegiatanPublik(terbit)));
 
 	/** Agenda yang lolos penyaring dan boleh dilihat siapa pun. */
@@ -117,11 +117,11 @@
 	/**
 	 * Penjelasan aturan inklusif penyaring chapter & komunitas.
 	 *
-	 * Tanpa kalimat ini penyaring terbaca rusak: sebagian besar agenda PFfriends
+	 * Tanpa kalimat ini penyaring terbaca rusak: sebagian besar agenda PFriends
 	 * terbuka untuk seluruh chapter dan kedua komunitas, sehingga memilih satu
 	 * chapter sering tidak mengurangi daftar sama sekali. Yang salah bukan
 	 * penyaringnya, melainkan asumsi pembaca bahwa "Chapter PF 11" berarti "hanya
-	 * PF 11" — dan asumsi itu hanya dapat diperbaiki dengan mengatakannya.
+	 * PF 11": dan asumsi itu hanya dapat diperbaiki dengan mengatakannya.
 	 */
 	const catatanInklusif = $derived.by(() => {
 		const bagian = [];
@@ -193,10 +193,10 @@
 </script>
 
 <svelte:head>
-	<title>Kalender Komunitas · PFfriends</title>
+	<title>Kalender Komunitas · PFriends</title>
 	<meta
 		name="description"
-		content="Agenda upskilling, pertemuan komunitas, dan sharing session PFfriends yang terbuka untuk umum."
+		content="Agenda upskilling, pertemuan komunitas, dan sharing session PFriends yang terbuka untuk umum."
 	/>
 </svelte:head>
 
@@ -211,8 +211,8 @@
 				Kalender Komunitas
 			</h1>
 			<p class="mt-6 max-w-[52ch] text-[18px] leading-[1.6] text-ink-600">
-				Upskilling, pertemuan chapter, dan sharing session yang dijalankan anggota PFfriends. Terbuka
-				untuk siapa pun yang ingin menyimak — tanpa akun, tanpa pendaftaran di halaman ini.
+				Upskilling, pertemuan chapter, dan sharing session yang dijalankan anggota PFriends. Terbuka
+				untuk siapa pun yang ingin menyimak: tanpa akun, tanpa pendaftaran di halaman ini.
 			</p>
 		</div>
 
@@ -450,7 +450,7 @@
 								grid di sebelah.
 							{:else}
 								Tidak ada kegiatan pada {labelBulan}. Gunakan panah bulan di atas grid untuk
-								menelusuri bulan lain — kegiatan terdekat ada di
+								menelusuri bulan lain: kegiatan terdekat ada di
 								{formatTanggal(agenda[0].startsAt, 'panjang')}.
 							{/if}
 						</p>
@@ -486,7 +486,7 @@
 			<p class="max-w-[60ch] text-[15px] leading-[1.7] text-ink-600 lg:col-span-8">
 				Halaman ini memuat agenda yang sudah disetujui verifikator. Usulan kegiatan yang masih
 				ditinjau tidak pernah tampil di sini. Pendaftaran peserta, daftar hadir, dan dokumentasi
-				pelaksanaan berada di ruang anggota — kalender publik sengaja berhenti pada informasi acara.
+				pelaksanaan berada di ruang anggota: kalender publik sengaja berhenti pada informasi acara.
 			</p>
 			<p class="lg:col-span-4 lg:justify-self-end">
 				<a

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN — Profil Saya.
+	 * HALAMAN: Profil Saya.
 	 *
 	 * Tanggung jawab: menampilkan identitas awardee, capaian gamifikasinya,
 	 * kontribusi yang dapat naik menjadi bukti ESG, dan kendali penuh atas
@@ -15,25 +15,25 @@
 	 *
 	 * Yang juga dijaga: mencabut consent TIDAK menurunkan poin maupun tier
 	 * (docs/04 §4.5). Menghukum penggunaan hak privasi dengan kehilangan capaian
-	 * akan membuat panel ini tidak pernah dipakai — dan bukti governance yang tidak
+	 * akan membuat panel ini tidak pernah dipakai: dan bukti governance yang tidak
 	 * pernah dipakai bukan bukti apa pun.
 	 *
 	 * Pencabutan memakai `ConsentRecord.revoke()` yang mengembalikan instans BARU
 	 * berstatus DICABUT lengkap dengan waktu dan cara pencabutannya. Rekaman itulah
-	 * yang disimpan — halaman ini tidak pernah menyunting rekaman lama di tempat.
+	 * yang disimpan: halaman ini tidak pernah menyunting rekaman lama di tempat.
 	 *
-	 * **Yang berubah pada G5.** Sebelumnya pencabutan hanya menulis ke dua tabel —
-	 * `consents` dan `awardees` — dan tidak menyentuh `stories` sama sekali. Kalimat
+	 * **Yang berubah pada G5.** Sebelumnya pencabutan hanya menulis ke dua tabel :
+	 * `consents` dan `awardees`: dan tidak menyentuh `stories` sama sekali. Kalimat
 	 * di bawah menjanjikan konten terbit "ditarik dari publik", sementara naskahnya
 	 * tetap tayang dan tetap dapat disetujui verifikator. Sekarang pencabutan
 	 * memanggil `editorial.applyConsentRevocation()`, yang meneruskannya ke
-	 * `ContentReviewService.withdrawOnConsentRevoked()` — satu-satunya jalur yang
+	 * `ContentReviewService.withdrawOnConsentRevoked()`: satu-satunya jalur yang
 	 * berwenang mengubah status cerita. Halaman ini TIDAK menulis tabel `stories`
 	 * sendiri: jalur kedua ke tabel yang sama akan melewati peta transisi, alasan
 	 * arsip, dan jejak audit sekaligus.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 10 Governance, Hal 12 gate fitur publik
-	 * @see docs/04-ESG-GOVERNANCE.md — §4 rancangan consent record, §4.5 dampak pencabutan
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 10 Governance, Hal 12 gate fitur publik
+	 * @see docs/04-ESG-GOVERNANCE.md: §4 rancangan consent record, §4.5 dampak pencabutan
 	 */
 	import {
 		Avatar,
@@ -143,7 +143,7 @@
 	/**
 	 * Ringkasan kontribusi yang layak naik menjadi bukti ESG.
 	 * Peta `ESG_ELIGIBLE_ACTIVITIES` yang memutuskan aksi mana yang berhak, bukan
-	 * halaman ini — aksi amplifikasi tidak boleh berubah menjadi klaim dampak.
+	 * halaman ini: aksi amplifikasi tidak boleh berubah menjadi klaim dampak.
 	 */
 	const ringkasanEsg = $derived.by(() => {
 		/** @type {Map<string, number>} */
@@ -179,7 +179,7 @@
 	 *
 	 * Dipisahkan dari "punya persetujuan aktif apa pun" dengan sengaja. Setiap
 	 * awardee selalu memegang `PENGOLAHAN_DATA_INTERNAL` sejak mendaftar, sehingga
-	 * "masih ada consent yang aktif" akan hampir selalu benar — dan menjadikannya
+	 * "masih ada consent yang aktif" akan hampir selalu benar: dan menjadikannya
 	 * dasar penarikan konten berarti mencabut persetujuan publikasi cerita tidak
 	 * pernah menarik satu naskah pun.
 	 * @type {string}
@@ -188,7 +188,7 @@
 
 	/**
 	 * Menyusun kalimat kedua toast pencabutan: apa yang benar-benar terjadi pada
-	 * naskah penulis. Kalimatnya menyebut angka, bukan janji — pengguna yang diberi
+	 * naskah penulis. Kalimatnya menyebut angka, bukan janji: pengguna yang diberi
 	 * tahu "konten ditarik" tanpa jumlah tidak punya cara memeriksa bahwa itu benar.
 	 *
 	 * @param {{withdrawn: number, blocked: number}} kaskade
@@ -214,12 +214,12 @@
 	 * Mencabut sebuah persetujuan, lalu menjalankan konsekuensinya sampai tuntas.
 	 *
 	 * Tiga tulisan berurutan, dan urutannya bukan kebetulan:
-	 * 1. Rekaman consent baru berstatus DICABUT disimpan — jejak audit lebih dulu,
+	 * 1. Rekaman consent baru berstatus DICABUT disimpan: jejak audit lebih dulu,
 	 *    supaya kegagalan pada langkah berikutnya tetap meninggalkan bukti bahwa
 	 *    penulis pernah menyatakan kehendaknya.
 	 * 2. `consentActive` pada awardee disegarkan, karena gerbang fitur publik dan
 	 *    laporan tata kelola membacanya.
-	 * 3. Kaskade penarikan naskah lewat store editorial — hanya bila persetujuan
+	 * 3. Kaskade penarikan naskah lewat store editorial: hanya bila persetujuan
 	 *    yang mendasari publikasi cerita benar-benar sudah tidak ada lagi.
 	 *
 	 * @returns {Promise<void>}
@@ -242,7 +242,7 @@
 				(entri) => entri.consentType === CONSENT_DASAR_CERITA && entri.isAktif()
 			);
 
-			let akibat = 'Tulisanmu tidak terpengaruh — dasar publikasi Blog-mu masih aktif.';
+			let akibat = 'Tulisanmu tidak terpengaruh: dasar publikasi Blog-mu masih aktif.';
 			if (!dasarCeritaAktif) {
 				const kaskade = await editorial.applyConsentRevocation(id);
 				if (!kaskade.ok) {
@@ -275,7 +275,7 @@
 </script>
 
 <svelte:head>
-	<title>Profil Saya · PFfriends</title>
+	<title>Profil Saya · PFriends</title>
 </svelte:head>
 
 {#if !awardee}
@@ -432,8 +432,8 @@
 				</p>
 				<p class="mt-1 text-[11px] leading-relaxed text-ink-600">
 					{#if poinFiturPublikTerpenuhi}
-						Ambang {formatAngka(AMBANG_FITUR_PUBLIK)} poin sudah terpenuhi. Syarat lainnya — Blog
-						terverifikasi, consent aktif, validasi PF, dan bebas data sensitif — dinilai tim Corsec.
+						Ambang {formatAngka(AMBANG_FITUR_PUBLIK)} poin sudah terpenuhi. Syarat lainnya: Blog
+						terverifikasi, consent aktif, validasi PF, dan bebas data sensitif: dinilai tim Corsec.
 					{:else}
 						Butuh {frasaHitung(AMBANG_FITUR_PUBLIK - gamification.points, 'poin')} lagi, ditambah Blog
 						terverifikasi, consent aktif, validasi PF, dan bebas data sensitif.
@@ -463,7 +463,7 @@
 		{#if lencanaTerkumpul.length === 0}
 			<EmptyState
 				title="Belum ada lencana terkumpul"
-				message="Lencana terbuka sendiri begitu kriterianya terpenuhi — mulai dari membaca kabar mingguan secara rutin."
+				message="Lencana terbuka sendiri begitu kriterianya terpenuhi: mulai dari membaca kabar mingguan secara rutin."
 				iconPath={ICONS.badge}
 				size="sm"
 			/>
@@ -526,7 +526,7 @@
 			Setiap persetujuan berlaku terpisah dan dapat kamu cabut kapan saja. Mencabut persetujuan
 			<span class="font-semibold text-ink-800">tidak mengurangi poin maupun menurunkan tier</span>.
 			Begitu persetujuan publikasi Blog-mu dicabut, tulisan yang sudah terbit ditarik dari kanal
-			publik saat itu juga dan diarsipkan sebagai jejak audit — bukan dihapus — sedangkan naskah
+			publik saat itu juga dan diarsipkan sebagai jejak audit: bukan dihapus: sedangkan naskah
 			yang masih di antrean berhenti dapat disetujui siapa pun.
 		</p>
 
@@ -658,7 +658,7 @@
 				</li>
 				<li class="flex items-start gap-2">
 					<span class="mt-0.5 shrink-0 text-ink-450"><Icon path={ICONS.info} size={14} /></span>
-					Rekaman persetujuan lama tetap tersimpan sebagai jejak audit — itu kewajiban tata kelola,
+					Rekaman persetujuan lama tetap tersimpan sebagai jejak audit: itu kewajiban tata kelola,
 					bukan penyimpanan data pribadimu.
 				</li>
 			</ul>

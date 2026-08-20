@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * CoverageGaugeChart (C-01) — meteran cakupan registrasi penerima manfaat.
+	 * CoverageGaugeChart (C-01): meteran cakupan registrasi penerima manfaat.
 	 *
 	 * Props:
 	 * @prop {import('$lib/domain/services/KpiCalculator.js').KpiSnapshotRow|null} kpi
@@ -10,7 +10,7 @@
 	 *
 	 * Busur dibagi tiga zona warna yang DITURUNKAN dari target dan ambang kuning
 	 * KPI-nya (`zonaMeteran`), bukan dari tiga angka yang ditulis di sini. Bila
-	 * target coverage kelak direvisi, batas zona ikut bergeser dengan sendirinya —
+	 * target coverage kelak direvisi, batas zona ikut bergeser dengan sendirinya :
 	 * meteran yang batas warnanya dipatok manual akan terus menghijau pada capaian
 	 * yang sebenarnya sudah di bawah target baru.
 	 *
@@ -18,7 +18,7 @@
 	 * mana", garis menjawab "harus sampai mana"; menggabungkan keduanya menjadi
 	 * satu isyarat membuat pembaca menebak batasnya dari perubahan rona.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-01, §7.5 CH-4/CH-6/CH-7
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-01, §7.5 CH-4/CH-6/CH-7
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import { targetKpi } from '$lib/domain/constants/kpi-targets.js';
@@ -26,7 +26,7 @@
 
 	let { kpi = null, height = '260px', loading = false } = $props();
 
-	/** Nilai maksimum busur — meteran persen selalu berhenti di 100. */
+	/** Nilai maksimum busur: meteran persen selalu berhenti di 100. */
 	const MAKS_BUSUR = 100;
 
 	const definisi = $derived(kpi ? targetKpi(kpi.id) : null);
@@ -84,7 +84,7 @@
 				},
 				// Penanda target sebagai seri kedua, bukan `markLine`: meteran ECharts
 				// tidak punya sumbu kartesian, sehingga `markLine` di atasnya diabaikan
-				// diam-diam — garis targetnya hilang tanpa satu pun galat.
+				// diam-diam: garis targetnya hilang tanpa satu pun galat.
 				{
 					name: 'Target',
 					type: 'gauge',

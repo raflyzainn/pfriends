@@ -1,4 +1,4 @@
-# Roadmap Migrasi Data Dummy ke PocketBase — PFfriends
+# Roadmap Migrasi Data Dummy ke PocketBase: PFriends
 
 > Audit terakhir 19 Agustus 2026: backend sudah mencakup PocketBase Auth, **Registrasi
 > Awardee**, vertical slice **Bukti Keaktifan**, serta **gamifikasi dan redemption server-side**. Sistem masih hybrid:
@@ -8,11 +8,11 @@
 > `docs/17-REGISTRASI-AWARDEE.md`, `docs/18-GAMIFIKASI-SERVER.md`, `docs/20-KOIN-REWARD-DAN-PENUKARAN.md`, serta
 > `CHECKLIST-MIGRASI-HALAMAN.md`.
 
-Dokumen ini menjelaskan kondisi PFfriends saat ini dan rencana bertahap untuk memindahkan data demo dari IndexedDB/Dexie ke backend PocketBase tanpa menulis ulang domain dan tampilan yang sudah ada.
+Dokumen ini menjelaskan kondisi PFriends saat ini dan rencana bertahap untuk memindahkan data demo dari IndexedDB/Dexie ke backend PocketBase tanpa menulis ulang domain dan tampilan yang sudah ada.
 
 ## 1. Ringkasan proyek
 
-PFfriends adalah microsite **Community Connect Initiative** milik Corporate Secretary Pertamina Foundation. Produk ini menghubungkan alumni/awardee, komunitas Sobat Bumi dan PFpreneur/Womenpreneur, serta tim internal Pertamina Foundation dalam satu ekosistem.
+PFriends adalah microsite **Community Connect Initiative** milik Corporate Secretary Pertamina Foundation. Produk ini menghubungkan alumni/awardee, komunitas Sobat Bumi dan PFpreneur/Womenpreneur, serta tim internal Pertamina Foundation dalam satu ekosistem.
 
 Fitur utamanya meliputi:
 
@@ -82,7 +82,7 @@ Masalah yang masih harus diselesaikan sebelum produksi:
 
 ### 2.1 Audit cakupan backend aktual
 
-Audit ini berdasarkan migration, hooks, adapter/repository, dan store yang dipakai aplikasi—bukan hanya berdasarkan keberadaan halaman.
+Audit ini berdasarkan migration, hooks, adapter/repository, dan store yang dipakai aplikasi:bukan hanya berdasarkan keberadaan halaman.
 
 | Area | Status | Sumber data aktual | Kekurangan utama |
 |---|---|---|---|
@@ -93,14 +93,14 @@ Audit ini berdasarkan migration, hooks, adapter/repository, dan store yang dipak
 | Profil/direktori Awardee | **Backend untuk Jejaring** | profil aktif, field Jejaring, statistik, filter, dan gamifikasi ringkas dari endpoint PocketBase tersanitasi | consent versioned dan administrasi profil lanjutan belum backend penuh |
 | Akun demo/admin awardee | **Hybrid** | sesi memakai PocketBase; `AccountRepository` masih Dexie | pengelolaan akun, lock/unlock, role, dan audit admin belum backend |
 | Consent profil dan publikasi | **Belum backend** | Dexie `consents`; registrasi hanya menyimpan snapshot consent | grant/revoke/versioning dan dampak takedown belum server-side |
-| Cerita/editorial | **Belum backend** | Dexie `stories` | draft, review, publish, file, slug, audit, dan rule publik belum PocketBase |
+| Cerita/editorial | **Hybrid** | baca publik memakai PocketBase `stories`; workflow privat masih Dexie | draft, review, publish, file unggahan, dan audit workflow belum PocketBase |
 | Kegiatan/kalender/attendance | **Backend** | `events`, `event_participants`, `activity_submissions`, ledger poin | event sengaja tanpa seed; reminder dan ekspor peserta belum ada |
-| Gerakan dan laporan dampak | **Belum backend** | Dexie `movements` | partisipasi, laporan, evidence, validasi ESG/SDG, dan agregat belum PocketBase |
-| Kabar/broadcast engagement | **Belum backend** | Dexie `broadcasts` | publikasi, read/claim, jadwal, dan engagement belum PocketBase |
+| Gerakan dan laporan dampak | **Hybrid** | collection `movements` dan agregat metode pengukuran sudah PocketBase; UI gerakan masih Dexie | partisipasi, laporan, evidence, validasi ESG/SDG, dan workflow belum backend |
+| Kabar/broadcast engagement | **Backend** | PocketBase `broadcasts`, `broadcast_engagements`, bukti dan ledger | notifikasi eksternal dan worker pengiriman email/WA belum tersedia |
 | Badge, tier, streak, leaderboard | **Backend untuk ledger bukti** | `gamification_profiles`, `badges`, `awardee_badges` + endpoint server | sumber poin engagement/konten belum backend dan quest belum tersedia |
 | Reward dan redemption | **Backend** | `coin_accounts`, `coin_transactions`, `rewards`, `redemptions` + endpoint transaksional | CRUD katalog tersedia untuk Admin/Verifikator; job expiry belum tersedia |
 | Forum | **Belum persistence** | state lokal halaman | channel, thread/message, moderasi, realtime, dan akses belum dirancang sebagai collection |
-| KPI/Admin dashboard | **Hybrid** | agregat gamifikasi Verifikator dari PocketBase; widget lain Dexie | KPI konten/admin, snapshot, audit, dan ekspor belum ada |
+| KPI/Admin dashboard | **Hybrid** | potret dampak publik dan agregat gamifikasi Verifikator dari PocketBase; widget lain Dexie | KPI admin, audit, snapshot historis, dan ekspor belum ada |
 | Notifikasi | **Belum backend** | toast UI | inbox, email/WhatsApp, realtime, retry, dan preference belum ada |
 | Operasional produksi | **Belum** | runtime lokal | staging/prod, backup/restore, monitoring, rate limit, secret rotation, dan runbook belum ada |
 
@@ -206,19 +206,19 @@ Estimasi berikut memakai satu developer full-time sebagai patokan awal. Sesuaika
 
 | Fase | Status audit | Catatan |
 |---|---|---|
-| 0 — Discovery/baseline | **Sebagian** | dokumentasi dan gerbang verifikasi tersedia, tetapi matriks route → operasi → rule belum lengkap |
-| 1 — Fondasi PocketBase | **Selesai untuk lokal** | migration, hooks, client, seed, dan launcher tersedia; staging/production belum |
-| 2 — Auth/RBAC | **Sebagian besar** | auth/session/RBAC berjalan; reset password, email verification, dan SSO belum |
-| 3 — Referensi/read-only | **Belum** | hampir seluruh katalog publik dan internal masih Dexie |
-| 4 — Profil/consent/upload | **Sebagian** | profil hasil registrasi dan protected evidence tersedia; edit profil/consent umum belum |
-| 5 — Workflow | **Sebagian** | registrasi, bukti keaktifan, kegiatan, peserta, attendance, dan poin hadir sudah server-side; cerita belum |
-| 6 — Gamifikasi/reward | **Sebagian** | ledger bukti, tier, streak, badge, leaderboard, dan agregat Verifikator sudah server-side; koin, reward/redemption, quest, dan sumber poin lain belum |
-| 7 — Migrasi/cutover | **Belum** | seed demo PocketBase baru mencakup akun; belum ada import/rekonsiliasi semua data |
-| 8 — Hardening produksi | **Belum** | belum ada deployment production, observability, rate limit, atau restore drill |
+| 0: Discovery/baseline | **Sebagian** | dokumentasi dan gerbang verifikasi tersedia, tetapi matriks route → operasi → rule belum lengkap |
+| 1: Fondasi PocketBase | **Selesai untuk lokal** | migration, hooks, client, seed, dan launcher tersedia; staging/production belum |
+| 2: Auth/RBAC | **Sebagian besar** | auth/session/RBAC berjalan; reset password, email verification, dan SSO belum |
+| 3: Referensi/read-only | **Sebagian** | cerita publik, kalender, leaderboard, agregat komunitas, dan beberapa katalog sudah PocketBase; katalog lain masih Dexie |
+| 4: Profil/consent/upload | **Sebagian** | profil hasil registrasi dan protected evidence tersedia; edit profil/consent umum belum |
+| 5: Workflow | **Sebagian** | registrasi, bukti keaktifan, kegiatan, peserta, attendance, dan poin hadir sudah server-side; cerita belum |
+| 6: Gamifikasi/reward | **Sebagian** | ledger bukti, tier, streak, badge, leaderboard, dan agregat Verifikator sudah server-side; koin, reward/redemption, quest, dan sumber poin lain belum |
+| 7: Migrasi/cutover | **Sebagian** | seed demo PocketBase sudah mencakup akun, gamifikasi, Kabar, dan 29 cerita; rekonsiliasi semua domain belum selesai |
+| 8: Hardening produksi | **Belum** | belum ada deployment production, observability, rate limit, atau restore drill |
 
 Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya lingkup fase tersebut sudah tersedia untuk runtime lokal sesuai acceptance criteria yang telah diuji.
 
-### Fase 0 — Discovery dan baseline (2–3 hari)
+### Fase 0: Discovery dan baseline (2–3 hari)
 
 - Bekukan daftar route, use case, repository method, entity field, enum, dan state transition yang sudah ada.
 - Jalankan dan simpan baseline `npm run verify` serta tes browser yang relevan.
@@ -228,7 +228,7 @@ Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya li
 
 **Definition of done:** inventaris operasi lengkap; tidak ada aksi UI yang belum memiliki pemilik data dan aturan akses.
 
-### Fase 1 — Fondasi PocketBase dan skema versioned (3–5 hari)
+### Fase 1: Fondasi PocketBase dan skema versioned (3–5 hari)
 
 - Satukan binary dan runtime lokal di `pocketbase/`; commit `pocketbase/pb_migrations/` dan `pocketbase/pb_hooks/`, tetapi abaikan binary serta `pb_data/` dari Git.
 - Buat migration untuk collection, field, index, dan API rules awal dalam kondisi locked.
@@ -238,7 +238,7 @@ Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya li
 
 **Definition of done:** instance baru bisa dibangun hanya dari migration; tidak bergantung pada klik manual dashboard.
 
-### Fase 2 — Autentikasi dan RBAC nyata (4–6 hari)
+### Fase 2: Autentikasi dan RBAC nyata (4–6 hari)
 
 - Migrasikan `accounts` menjadi auth collection `users`; gunakan password PocketBase, bukan `PasswordHash` demo.
 - Implementasikan login, logout, refresh auth, pemulihan password, locked/inactive account, dan session hydration.
@@ -248,7 +248,7 @@ Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya li
 
 **Definition of done:** manipulasi state browser tidak dapat membuka record yang tidak berhak melalui API.
 
-### Fase 3 — Data referensi dan fitur read-only (3–5 hari)
+### Fase 3: Data referensi dan fitur read-only (3–5 hari)
 
 - Migrasikan chapter, badges, rewards, broadcasts, movements, events published, stories published, dan awardee directory.
 - Implementasikan repository PocketBase untuk `getAll`, `getById`, `query`, pagination, filter, sort, dan expand relation.
@@ -257,7 +257,7 @@ Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya li
 
 **Definition of done:** seluruh halaman read-only membaca data bersama dari PocketBase; dua browser melihat hasil yang sama.
 
-### Fase 4 — Profil, consent, dan upload (4–6 hari)
+### Fase 4: Profil, consent, dan upload (4–6 hari)
 
 - Migrasikan edit profil dengan ownership rule dan allowlist field.
 - Implementasikan versioned consent, revoke flow, dan dampaknya terhadap publikasi.
@@ -266,7 +266,7 @@ Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya li
 
 **Definition of done:** user hanya dapat mengubah field miliknya yang diizinkan; file sensitif tidak dapat diakses publik.
 
-### Fase 5 — Workflow editorial dan kegiatan (5–8 hari)
+### Fase 5: Workflow editorial dan kegiatan (5–8 hari)
 
 - Implementasikan create/update draft cerita, submit, review, revisi, approve, publish, reject, archive/takedown.
 - Implementasikan proposal dan persetujuan kegiatan, pendaftaran peserta, attendance, pembatalan, dan SLA.
@@ -275,7 +275,7 @@ Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya li
 
 **Definition of done:** seluruh positive/negative test workflow lama lulus terhadap backend; tidak ada status yang bisa dilompati lewat request manual.
 
-### Fase 6 — Gamifikasi, ledger, leaderboard, dan reward (6–10 hari)
+### Fase 6: Gamifikasi, ledger, leaderboard, dan reward (6–10 hari)
 
 - Jadikan `point_activities` ledger immutable dan `idempotencyKey` unik.
 - Jalankan scoring, cap, streak, tier, dan pemberian badge di server; frontend hanya menampilkan hasil/preview.
@@ -285,7 +285,7 @@ Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya li
 
 **Definition of done:** concurrent request tidak menggandakan poin/redemption; total awardee selalu dapat direkonsiliasi dengan ledger.
 
-### Fase 7 — Migrasi seed, rekonsiliasi, dan cutover (3–5 hari)
+### Fase 7: Migrasi seed, rekonsiliasi, dan cutover (3–5 hari)
 
 - Ubah generator seed menjadi import script satu kali yang hanya boleh berjalan di local/staging.
 - Import collection dalam urutan dependency: referensi -> users/awardees -> consent -> konten/kegiatan/gerakan -> partisipasi -> ledger -> badge/redemption.
@@ -295,7 +295,7 @@ Status **selesai** di tabel ini tidak berarti aplikasi siap produksi; artinya li
 
 **Definition of done:** rekonsiliasi 100%, tidak ada orphan/duplikat, dan hasil seed staging konsisten dengan baseline yang disetujui.
 
-### Fase 8 — Hardening dan produksi (4–7 hari)
+### Fase 8: Hardening dan produksi (4–7 hari)
 
 - Uji API rules per role dengan request langsung, bukan hanya klik UI.
 - Tambahkan rate limiting, log, monitoring uptime/error, backup terjadwal, dan uji restore.
@@ -392,7 +392,7 @@ Frontend memakai `.env` untuk alamat PocketBase; kredensial superuser hanya dibu
 
 ## 10. Cara menjalankan fondasi PocketBase
 
-### Terminal 1 — PocketBase
+### Terminal 1: PocketBase
 
 ```powershell
 npm run pb:serve
@@ -410,7 +410,7 @@ VITE_PB_URL=http://127.0.0.1:8090
 
 Jangan menaruh password, token superuser, encryption key, atau secret SMTP pada `VITE_*` karena seluruh nilai tersebut dapat masuk bundle browser.
 
-### Terminal 2 — SvelteKit
+### Terminal 2: SvelteKit
 
 ```powershell
 npm install
@@ -423,7 +423,7 @@ Target akhirnya sebaiknya memiliki satu perintah orchestration, misalnya `npm ru
 
 Fondasi dan vertical slice pertama sudah selesai, sehingga “sprint pertama” lama tidak lagi relevan. Urutan berikut memprioritaskan penghapusan sumber kebenaran ganda sebelum menambah fitur baru.
 
-### Prioritas 1 — Selesaikan profil dan consent
+### Prioritas 1: Selesaikan profil dan consent
 
 1. Kunci data dictionary profil Awardee dan matriks visibilitas field.
 2. Tambahkan endpoint edit profil dengan allowlist field dan ownership rule.
@@ -433,7 +433,7 @@ Fondasi dan vertical slice pertama sudah selesai, sehingga “sprint pertama” 
 
 **Alasan:** auth dan registrasi sudah membuat profil backend, tetapi setelah approval pengguna masih kembali ke data profil hybrid. Ini celah konsistensi terdekat pada journey yang baru selesai dibangun.
 
-### Prioritas 2 — Migrasikan katalog read-only
+### Prioritas 2: Migrasikan katalog read-only
 
 1. Buat collection referensi `chapters`, `badges`, `rewards`, dan setting publik yang benar-benar dibutuhkan.
 2. Migrasikan `stories`, `events`, `movements`, dan `broadcasts` berstatus publik sebagai read-only lebih dulu.
@@ -442,21 +442,21 @@ Fondasi dan vertical slice pertama sudah selesai, sehingga “sprint pertama” 
 
 **Alasan:** dua browser saat ini masih dapat melihat katalog berbeda karena seed Dexie per perangkat.
 
-### Prioritas 3 — Workflow cerita dan kegiatan
+### Prioritas 3: Workflow cerita dan kegiatan
 
 1. Pindahkan draft/submit/review/publish cerita ke endpoint transaksional dan audit server.
 2. ~~Pindahkan proposal/approval/cancel kegiatan serta peserta dan attendance ke collection terpisah.~~ Selesai melalui `events`, `event_participants`, dan bukti hadir terhubung.
-3. Tegakkan self-approval, status transition, checklist sensitivitas, dan SLA di hook—bukan hanya UI.
+3. Tegakkan self-approval, status transition, checklist sensitivitas, dan SLA di hook:bukan hanya UI.
 4. Simpan cover/dokumentasi sebagai protected/public file sesuai status konten.
 
-### Prioritas 4 — Lanjutkan gamifikasi server-side ke reward dan sumber poin lain
+### Prioritas 4: Lanjutkan gamifikasi server-side ke reward dan sumber poin lain
 
 1. Pertahankan `verified_point_activities` sebagai sumber kebenaran bukti keaktifan dan perluas menjadi ledger tunggal saat konten/engagement backend tersedia.
 2. Tier, streak, 14 badge, rekonsiliasi, leaderboard, dan agregat gamifikasi Verifikator sudah server-side.
 3. Reward/redemption atomik, koin, saldo, kuota, idempotensi, Pesanan Saya, workflow Verifikator, pemantauan Admin, CRUD katalog, dan refund sudah selesai; berikutnya tambahkan job expiry bila dibutuhkan.
 4. Migrasikan sumber poin konten/engagement dengan idempotency dan cap server; setelah itu pensiunkan simulator serta repository gamifikasi Dexie yang tersisa.
 
-### Prioritas 5 — Auth staf dan hardening produksi
+### Prioritas 5: Auth staf dan hardening produksi
 
 1. Implementasikan SSO OAuth Verifikator/Admin dan pemetaan claim role.
 2. Tambahkan reset password/verifikasi email Awardee, notifikasi, dan kebijakan akun terkunci.
@@ -475,7 +475,7 @@ Fondasi dan vertical slice pertama sudah selesai, sehingga “sprint pertama” 
 
 ### Masih perlu keputusan bisnis/operasional
 
-- Apakah PocketBase diterima untuk beban dan tingkat kritikalitas produksi PFfriends?
+- Apakah PocketBase diterima untuk beban dan tingkat kritikalitas produksi PFriends?
 - Siapa sumber data awardee nyata dan bagaimana proses cleansing/import-nya?
 - Field profil mana yang publik, sesama Awardee, Verifikator, dan Admin?
 - Berapa kebijakan retensi untuk PII, consent, bukti, audit log, dan akun nonaktif?

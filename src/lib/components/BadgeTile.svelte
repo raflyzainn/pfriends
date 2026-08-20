@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * BadgeTile — satu keping koleksi lencana.
+	 * BadgeTile: satu keping koleksi lencana.
 	 *
 	 * Props:
 	 * @prop {{code:string,name:string,family?:string,rarity:string,criteria?:string}} badge
@@ -15,7 +15,7 @@
 	 * menghapus seluruh daya tariknya. Kriteria unlock selalu ikut ditampilkan
 	 * sebagai tooltip agar pengguna tahu langkah konkretnya.
 	 *
-	 * Hanya kelangkaan LEGENDARIS yang berkilau — kelangkaan harus terasa langka.
+	 * Hanya kelangkaan LEGENDARIS yang berkilau: kelangkaan harus terasa langka.
 	 */
 	import Icon from './Icon.svelte';
 	import { ICONS } from '$lib/data/icons.js';
@@ -42,8 +42,8 @@
 
 	const judul = $derived(
 		dimiliki
-			? `${badge?.name} — ${rarity.label}${awardedAt ? ` · diraih ${formatTanggal(awardedAt, 'pendek')}` : ''}`
-			: `${badge?.name} — belum diraih. ${badge?.criteria ?? ''}`.trim()
+			? `${badge?.name}: ${rarity.label}${awardedAt ? ` · diraih ${formatTanggal(awardedAt, 'pendek')}` : ''}`
+			: `${badge?.name}: belum diraih. ${badge?.criteria ?? ''}`.trim()
 	);
 
 	const gayaWadah = $derived(

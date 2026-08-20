@@ -1,5 +1,5 @@
 /**
- * UTILITAS iCalendar — satu kegiatan komunitas menjadi berkas `.ics` yang sah.
+ * UTILITAS iCalendar: satu kegiatan komunitas menjadi berkas `.ics` yang sah.
  *
  * Tanggung jawab: menerjemahkan `CommunityEvent` (atau hasil `toJSON()`-nya)
  * menjadi satu `VCALENDAR` berisi satu `VEVENT`, lalu menyerahkannya ke peramban
@@ -9,7 +9,7 @@
  *
  * 1. **Waktu ditulis sebagai jam dinding + `TZID=Asia/Jakarta`, BUKAN sebagai UTC
  *    (`…Z`).** Seluruh aplikasi memperlakukan komponen jam sebuah `Date` sebagai
- *    Waktu Indonesia Barat — `view-model.js` menempelkan suffiks "WIB" tetap, dan
+ *    Waktu Indonesia Barat: `view-model.js` menempelkan suffiks "WIB" tetap, dan
  *    kalender bulan mengelompokkan tanggal memakai `getDate()` lokal. Bila berkas
  *    ini justru mengubah jam dinding itu menjadi instan UTC menurut zona laptop
  *    penyaji, kegiatan yang tertulis "19.00 WIB" di layar akan mendarat di jam
@@ -18,13 +18,13 @@
  *
  * 2. **`VTIMEZONE` ikut ditulis, tidak hanya `TZID`.** RFC 5545 §3.2.19 menuntut
  *    setiap `TZID` yang dirujuk punya definisinya di dalam kalender yang sama.
- *    Aplikasi yang tidak mengenal basis data zona waktu IANA akan menolak — atau
- *    diam-diam menganggap waktunya mengambang — bila blok itu tidak ada.
+ *    Aplikasi yang tidak mengenal basis data zona waktu IANA akan menolak: atau
+ *    diam-diam menganggap waktunya mengambang: bila blok itu tidak ada.
  *    Asia/Jakarta tidak mengenal waktu musim panas sejak 1964, jadi satu komponen
  *    `STANDARD` +07:00 sudah menggambarkan zona ini secara utuh dan jujur.
  *
  * 3. **`DTSTAMP` tetap UTC.** Berbeda dengan `DTSTART`, properti ini WAJIB berupa
- *    waktu UTC menurut RFC 5545 §3.8.7.2 — ia menandai kapan berkasnya dibuat,
+ *    waktu UTC menurut RFC 5545 §3.8.7.2: ia menandai kapan berkasnya dibuat,
  *    bukan kapan acaranya berlangsung.
  *
  * 4. **Nol `ATTENDEE`, nol `ORGANIZER`, nol kuota.** Berkas `.ics` berpindah tangan
@@ -44,8 +44,8 @@
  *    tanpa penjelasan. Lebih baik pemanggil tahu lebih awal bahwa tanggalnya
  *    tidak sah.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak `buatIcs` / `unduhIcs`
- * @see https://www.rfc-editor.org/rfc/rfc5545 — §3.1 pelipatan, §3.3.11 escaping TEXT
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak `buatIcs` / `unduhIcs`
+ * @see https://www.rfc-editor.org/rfc/rfc5545: §3.1 pelipatan, §3.3.11 escaping TEXT
  */
 
 import { browser } from '$app/environment';
@@ -72,7 +72,7 @@ const CRLF = '\r\n';
  */
 const KONTROL_TERLARANG = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g;
 
-/** Encoder tunggal — membuat satu instans per baris adalah pemborosan tanpa alasan. */
+/** Encoder tunggal: membuat satu instans per baris adalah pemborosan tanpa alasan. */
 const ENCODER = new TextEncoder();
 
 /**
@@ -98,7 +98,7 @@ const STATUS_ICS = Object.freeze({
  *
  * Urutan penggantian tidak dapat ditukar: garis miring terbalik harus digandakan
  * LEBIH DULU, jika tidak garis miring yang baru saja disisipkan untuk koma akan
- * ikut digandakan pada langkah berikutnya. Titik dua sengaja TIDAK di-escape —
+ * ikut digandakan pada langkah berikutnya. Titik dua sengaja TIDAK di-escape :
  * ia hanya bermakna khusus pada pemisah nama properti, bukan di dalam nilainya.
  *
  * @param {unknown} nilai
@@ -117,7 +117,7 @@ function escapeTeks(nilai) {
  * Melipat satu baris konten agar tidak melebihi 75 oktet, memakai CRLF + satu
  * spasi sebagai penanda sambungan.
  *
- * Baris sambungan membawa spasi pelipat yang ikut dihitung terhadap batas — itulah
+ * Baris sambungan membawa spasi pelipat yang ikut dihitung terhadap batas: itulah
  * sebabnya penghitung dimulai dari 1, bukan 0, setelah pemotongan pertama.
  * Pemotongan dilakukan pada batas titik kode (`for…of`), bukan unit UTF-16, supaya
  * pasangan pengganti emoji tidak terbelah menjadi dua oktet tak bermakna.
@@ -158,7 +158,7 @@ function dua(angka) {
 }
 
 /**
- * Cap waktu UTC berformat `YYYYMMDDTHHMMSSZ` — dipakai `DTSTAMP`.
+ * Cap waktu UTC berformat `YYYYMMDDTHHMMSSZ`: dipakai `DTSTAMP`.
  * @param {Date} tanggal
  * @returns {string}
  */
@@ -219,7 +219,7 @@ function blokZonaWaktu() {
 /**
  * Menyusun isi `DESCRIPTION` dari bagian-bagian yang memang publik.
  *
- * Narasumber ikut karena ia informasi acara — pada data Pfriends ia ditulis
+ * Narasumber ikut karena ia informasi acara: pada data Pfriends ia ditulis
  * sebagai peran ("Tim komunikasi Pertamina Foundation"), bukan kontak pribadi.
  * Tidak ada nomor telepon, surel, maupun nama pendaftar yang boleh masuk ke sini.
  *
@@ -268,7 +268,7 @@ function tautanDetail(event, origin) {
  * sehingga fungsi ini tidak perlu tahu bentuk mana yang sedang ia terima.
  *
  * Fungsi ini adalah PEMFORMAT, bukan gerbang visibilitas. Penyaring publik tunggal
- * tetap `CommunityEvent.isPubliclyVisible` di sisi pemanggil — menaruh gerbang
+ * tetap `CommunityEvent.isPubliclyVisible` di sisi pemanggil: menaruh gerbang
  * kedua di sini akan menghasilkan dua aturan yang harus dijaga sinkron.
  *
  * @param {any} event `CommunityEvent` atau hasil `toJSON()`-nya.

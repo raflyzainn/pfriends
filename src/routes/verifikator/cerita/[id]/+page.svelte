@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN `/verifikator/cerita/[id]` — meja peninjauan satu submission blog.
+	 * HALAMAN `/verifikator/cerita/[id]`: meja peninjauan satu submission blog.
 	 *
 	 * Tanggung jawab: menempatkan naskah utuh berdampingan dengan KETIGA gerbang
 	 * keputusan, lalu menawarkan tepat keputusan yang sah dari keadaan naskah itu.
@@ -31,9 +31,9 @@
 	 *    `story.authorId` selalu menunjuk orang lain. Pemeriksaan ini pertahanan
 	 *    berlapis untuk data yang lolos invarian karena kekeliruan migrasi kelak.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §6.4 detail peninjauan, §5.3 tabel transisi, US-R16
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 12 minimum for public feature & minimum for ESG evidence
-	 * @see docs/04-ESG-GOVERNANCE.md — §6 checklist data sensitif 21 butir
+	 * @see docs/10-REVISION-SPEC.md: §6.4 detail peninjauan, §5.3 tabel transisi, US-R16
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 12 minimum for public feature & minimum for ESG evidence
+	 * @see docs/04-ESG-GOVERNANCE.md: §6 checklist data sensitif 21 butir
 	 */
 	import { page } from '$app/state';
 	import { EmptyState, PageHeader, StatusBadge, ICONS } from '$lib/components';
@@ -75,10 +75,10 @@
 		naskah ? (catalog.awardees.find((awardee) => awardee.id === naskah.authorId) ?? null) : null
 	);
 
-	/** Gerbang 1 — kelayakan fitur publik; `null` bila penulisnya tidak ditemukan. */
+	/** Gerbang 1: kelayakan fitur publik; `null` bila penulisnya tidak ditemukan. */
 	const gerbangSatu = $derived(naskah ? gerbangFiturPublik(penulis, naskah, sekarang) : null);
 
-	/** Gerbang 2 — kesiapan bukti ESG. */
+	/** Gerbang 2: kesiapan bukti ESG. */
 	const gerbangDua = $derived(naskah ? gerbangBuktiEsg(naskah) : null);
 
 	/**
@@ -106,7 +106,7 @@
 	 *
 	 * Sengaja TIDAK diketik ulang sebagai kalimat tetap. Rumusan yang ditulis lepas
 	 * mengeja ambang kontribusinya sebagai angka di dalam teks, dan angka itu akan
-	 * tetap berbunyi demikian pada hari `AMBANG_FITUR_PUBLIK` berubah — persis jenis
+	 * tetap berbunyi demikian pada hari `AMBANG_FITUR_PUBLIK` berubah: persis jenis
 	 * pergeseran yang dilarang A-1. Merangkainya dari daftar syarat membuat judul
 	 * panel mustahil berselisih dengan isi panelnya sendiri.
 	 *

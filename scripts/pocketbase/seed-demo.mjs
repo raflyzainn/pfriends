@@ -11,9 +11,10 @@ const password = process.env.PB_SUPERUSER_PASSWORD;
 if (!email || !password) throw new Error('PB_SUPERUSER_EMAIL dan PB_SUPERUSER_PASSWORD wajib diisi.');
 const pb = new PocketBase(url);
 await pb.collection('_superusers').authWithPassword(email, password);
-const { accounts, awardees, activities, rewards, redemptions } = buildSeed();
+const { accounts, awardees, activities, stories, movements, rewards, redemptions } = buildSeed();
 let created = 0;
 const usersByAwardeeId = new Map();
+const usersByLegacyAccountId = new Map();
 const recordsByAwardeeId = new Map();
 for (const account of accounts) {
 	let existing = null;
@@ -23,6 +24,7 @@ for (const account of accounts) {
 		? await pb.collection('users').update(existing.id, data)
 		: await pb.collection('users').create(data);
 	if (!existing) created++;
+	usersByLegacyAccountId.set(account.id, user.id);
 	if (account.role === 'AWARDEE' && account.awardeeId) usersByAwardeeId.set(account.awardeeId, user.id);
 }
 let profilesCreated = 0;
@@ -41,7 +43,8 @@ for (const awardee of awardees) {
 		status: awardee.status === 'AKTIF' ? 'AKTIF' : 'NONAKTIF', joinedAt: awardee.joinedAt,
 		occupation: awardee.occupation || '', bio: awardee.bio || '', skills: awardee.skills || [],
 		openToMentoring: Boolean(awardee.openToMentoring), businessEmployees: business?.employees || 0,
-		businessGrowthPercent: business?.growthPercent || 0
+		businessGrowthPercent: business?.growthPercent || 0,
+		consentActive: Boolean(awardee.consentActive)
 	};
 	const record = existing
 		? await pb.collection('awardees').update(existing.id, data)
@@ -64,6 +67,76 @@ for (const activity of awardedActivities) {
 	};
 	if (existing) await pb.collection('verified_point_activities').update(existing.id, data);
 	else { await pb.collection('verified_point_activities').create(data); ledgerCreated++; }
+}
+
+let movementsCreated = 0;
+for (const movement of movements) {
+	let existing = null;
+	try { existing = await pb.collection('movements').getFirstListItem(pb.filter('legacyId = {:id}', { id: movement.id })); } catch (error) { if (error?.status !== 404) throw error; }
+	const data = {
+		legacyId: movement.id,
+		slug: movement.slug,
+		title: movement.title,
+		category: movement.category,
+		status: movement.status,
+		objective: movement.objective,
+		description: movement.description || '',
+		region: movement.region || '',
+		leaderLegacyId: movement.leaderId || '',
+		leaderName: movement.leaderName || '',
+		startsAt: movement.startsAt,
+		endsAt: movement.endsAt,
+		targetParticipants: movement.targetParticipants || 0,
+		participantIds: movement.participantIds || [],
+		esgTags: movement.esgTags || [],
+		reportIds: movement.reportIds || [],
+		impact: movement.impact || null
+	};
+	if (existing) await pb.collection('movements').update(existing.id, data);
+	else { await pb.collection('movements').create(data); movementsCreated++; }
+}
+
+let storiesCreated = 0;
+for (const story of stories) {
+	const author = recordsByAwardeeId.get(story.authorId);
+	if (!author) continue;
+	let existing = null;
+	try { existing = await pb.collection('stories').getFirstListItem(pb.filter('legacyId = {:id}', { id: story.id })); } catch (error) { if (error?.status !== 404) throw error; }
+	const data = {
+		legacyId: story.id,
+		slug: story.slug,
+		author: author.id,
+		authorLegacyId: story.authorId,
+		authorName: story.authorName,
+		title: story.title,
+		summary: story.summary || '',
+		body: story.body,
+		status: story.status,
+		community: story.community,
+		chapterId: story.chapterId || '',
+		esgTags: story.esgTags || [],
+		mediaRefs: story.mediaRefs || [],
+		outcome: story.outcome || null,
+		location: story.location || '',
+		activityDate: story.activityDate || '',
+		participantCount: story.participantCount || 0,
+		sensitivityScan: story.sensitivityScan,
+		pfValidation: story.pfValidation || null,
+		consentActive: Boolean(story.consentActive),
+		consentLegacyId: story.consentId || '',
+		reviewNotes: story.reviewNotes || [],
+		reviewer: story.reviewerId ? (usersByLegacyAccountId.get(story.reviewerId) || '') : '',
+		reviewedAt: story.reviewedAt || '',
+		publishedBy: story.publishedById ? (usersByLegacyAccountId.get(story.publishedById) || '') : '',
+		revisionCount: story.revisionCount || 0,
+		submittedAt: story.submittedAt || '',
+		publishedAt: story.publishedAt || '',
+		archivedAt: story.archivedAt || '',
+		archiveReason: story.archiveReason || '',
+		views: story.views || 0
+	};
+	if (existing) await pb.collection('stories').update(existing.id, data);
+	else { await pb.collection('stories').create(data); storiesCreated++; }
 }
 
 async function findOne(collection, filter, params) {
@@ -145,4 +218,4 @@ for (const awardeeData of awardees) {
 	await upsert('coin_accounts', 'awardee = {:id}', { id: awardee.id }, { awardee: awardee.id, user: awardee.user, balance, lifetimeEarned, lifetimeSpent, recalculatedAt: new Date().toISOString() });
 }
 
-console.log(`Seed PocketBase selesai: akun ${created} dibuat/${accounts.length - created} diperbarui; profil ${profilesCreated} dibuat/${awardees.length - profilesCreated} diperbarui; ledger ${ledgerCreated} dibuat/${awardedActivities.length - ledgerCreated} diperbarui; reward ${rewards.length}; penukaran ${redemptions.length}.`);
+console.log(`Seed PocketBase selesai: akun ${created} dibuat/${accounts.length - created} diperbarui; profil ${profilesCreated} dibuat/${awardees.length - profilesCreated} diperbarui; ledger ${ledgerCreated} dibuat/${awardedActivities.length - ledgerCreated} diperbarui; cerita ${storiesCreated} dibuat/${stories.length - storiesCreated} diperbarui; gerakan ${movementsCreated} dibuat/${movements.length - movementsCreated} diperbarui; reward ${rewards.length}; penukaran ${redemptions.length}.`);

@@ -2,7 +2,7 @@
 
 ## Tujuan
 
-Fitur ini adalah vertical slice backend pertama PFfriends. Awardee mengirim bukti aktivitas, Verifikator meninjau, lalu PocketBase membukukan poin kanonik ketika bukti disetujui. Pengajuan yang belum layak dikembalikan dengan catatan dan dapat dikirim ulang.
+Fitur ini adalah vertical slice backend pertama PFriends. Awardee mengirim bukti aktivitas, Verifikator meninjau, lalu PocketBase membukukan poin kanonik ketika bukti disetujui. Pengajuan yang belum layak dikembalikan dengan catatan dan dapat dikirim ulang.
 
 ## Arsitektur
 

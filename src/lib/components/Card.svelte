@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Card — permukaan dasar seluruh konten.
+	 * Card: permukaan dasar seluruh konten.
 	 *
 	 * Props:
 	 * @prop {'default'|'flush'|'interactive'|'highlight'} variant

@@ -1,25 +1,25 @@
 <script module>
 	/**
-	 * INVARIAN OVERLAY — konstanta modul, sengaja TIDAK dapat dioper lewat props.
+	 * INVARIAN OVERLAY: konstanta modul, sengaja TIDAK dapat dioper lewat props.
 	 *
 	 * Opasitas navy tidak pernah turun di bawah 0.88 di mana pun teks putih berdiri.
 	 * Kasus terburuk yang mungkin adalah foto putih polos di bawah teks; pada 0.88
 	 * warna efektifnya `#1F507F` dan di atasnya putih 7.64:1, putih/88 6.34:1,
-	 * putih/75 5.09:1 — ketiganya lolos AA untuk teks kecil (docs/11 §10.3).
+	 * putih/75 5.09:1: ketiganya lolos AA untuk teks kecil (docs/11 §10.3).
 	 * Menjadikannya prop berarti satu halaman mana pun bisa menurunkannya dan
-	 * memecahkan kontras tanpa satu gerbang pun berubah merah — itulah sebabnya
+	 * memecahkan kontras tanpa satu gerbang pun berubah merah: itulah sebabnya
 	 * nilai ini hidup di sini, bukan di daftar props (docs/12 §2.13).
 	 *
 	 * KOREKSI GERBANG G3-A. Stop tengah versi pertama (`0.86` di 34%, `0.55` di 58%)
 	 * MELANGGAR invarian yang ditulis kalimat pertama blok ini. Kolom teks adalah
 	 * `lg:col-span-6` di dalam `max-w-7xl`, sehingga tepi kanannya mendarat di
-	 * ~48–49% lebar viewport pada setiap lebar layar ≥1024 px — bukan di 34%.
+	 * ~48–49% lebar viewport pada setiap lebar layar ≥1024 px: bukan di 34%.
 	 * Rasio sungguhan di tepi itu: standfirst putih/88 3.75:1 dan byline putih/75
 	 * 4.07:1, keduanya GAGAL AA. Stop dipindah ke `0.88` sampai 50% agar seluruh
 	 * kolom teks berdiri di atas opasitas penuh; peluruhan ke 0.15 tetap terjadi
 	 * di paruh kanan, tempat subjek foto berada.
 	 *
-	 * Gradasi horizontal E1: pekat di kiri (zona teks), nyaris bening di kanan —
+	 * Gradasi horizontal E1: pekat di kiri (zona teks), nyaris bening di kanan :
 	 * di sanalah subjek foto harus jatuh. Asimetri itu adalah rancangannya, bukan
 	 * kelalaian. Bila crop meleset, GANTI FOTONYA; jangan menambah overlay.
 	 * @type {string}
@@ -31,7 +31,7 @@
 	const OVERLAY_FLAT = 'linear-gradient(90deg, rgb(0 62 126 / 0.88) 0%, rgb(0 62 126 / 0.88) 100%)';
 
 	/**
-	 * Overlay rata 0.86 untuk tata letak SATU KOLOM — pada satu kolom, gradasi
+	 * Overlay rata 0.86 untuk tata letak SATU KOLOM: pada satu kolom, gradasi
 	 * horizontal memotong judul.
 	 *
 	 * KOREKSI GERBANG G3-A. Versi pertama menukar overlay ini dengan gradien di
@@ -43,7 +43,7 @@
 	const OVERLAY_MOBILE = 'linear-gradient(90deg, rgb(0 62 126 / 0.86) 0%, rgb(0 62 126 / 0.86) 100%)';
 
 	/**
-	 * Ambang foto potret — SATU sumber kebenaran untuk `<source media>` dan untuk
+	 * Ambang foto potret: SATU sumber kebenaran untuk `<source media>` dan untuk
 	 * `matchMedia` yang menukar `alt`. Dua string yang harus selalu sama adalah
 	 * cacat yang menunggu terjadi: begitu salah satu berubah, alt yang diumumkan
 	 * tidak lagi menggambarkan foto yang tampil, dan tidak ada gerbang yang merah.
@@ -54,7 +54,7 @@
 
 <script>
 	/**
-	 * EditorialHero — hero foto lebar penuh dengan overlay navy yang benar.
+	 * EditorialHero: hero foto lebar penuh dengan overlay navy yang benar.
 	 *
 	 * Tanggung jawab: E1 beranda, pita penutup E7, hero `/tentang`, hero `/komunitas`.
 	 * Menggantikan hero yang hari ini ditulis langsung di dalam `+page.svelte` dan
@@ -64,7 +64,7 @@
 	 *
 	 * 1. **`image` dan `imageMobile` adalah KUNCI MANIFES, bukan jalur berkas.**
 	 *    Kontrak §2.13 menyatakan kredit dibaca komponen lewat `foto(key).credit`
-	 *    dan BUKAN dioper sebagai prop — itu hanya mungkin bila komponen memegang
+	 *    dan BUKAN dioper sebagai prop: itu hanya mungkin bila komponen memegang
 	 *    kuncinya. Contoh: `image="hero-komunitas"`.
 	 *
 	 * 2. **`foto(image) === null` ATAU berkasnya gagal dimuat → hero TETAP TAMPIL,
@@ -78,17 +78,17 @@
 	 *    manifes hanya menjadi cadangan bila prop dikosongkan.
 	 *
 	 * 4. **Kapsi berdiri di atas SCRIM LOKALNYA SENDIRI.** `docs/11` §6 E1
-	 *    menempatkan kapsi di kanan bawah — tepat di zona overlay 0.15, tempat
+	 *    menempatkan kapsi di kanan bawah: tepat di zona overlay 0.15, tempat
 	 *    teks putih apa pun GAGAL kontras. Scrim navy 0.88 di belakang blok kapsi
 	 *    memulihkan penempatan yang dirancang tanpa mengorbankan keterbacaan:
 	 *    putih/88 di atasnya 6.36:1 ✓.
 	 *
-	 * 5. **Foto hero adalah LCP.** `priority` di-hardcode `true` di sini —
+	 * 5. **Foto hero adalah LCP.** `priority` di-hardcode `true` di sini :
 	 *    `fetchpriority="high"`, tanpa `loading="lazy"`. Sebuah hero yang di-lazy
 	 *    menunda persis elemen yang sedang diukur.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak props FINAL
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E1, §8.8, §4.2 nilai overlay, §10.3 kontras
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak props FINAL
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E1, §8.8, §4.2 nilai overlay, §10.3 kontras
 	 */
 	import { foto } from '$lib/data/photos.js';
 	import { kelas, pantauGagalMuat } from '../_visual.js';
@@ -142,8 +142,8 @@
 	/**
 	 * Ketahanan runtime (`docs/12` §3.3(d) butir 4). `foto(key) === null` menutup
 	 * kasus build; nilai ini menutup kasus berkas yang hilang SETELAH build. Hero
-	 * yang gagal memuat fotonya berubah menjadi pita navy tipografis — persis
-	 * cabang yang sudah ada untuk `utama === null` — bukan ikon gambar rusak
+	 * yang gagal memuat fotonya berubah menjadi pita navy tipografis: persis
+	 * cabang yang sudah ada untuk `utama === null`: bukan ikon gambar rusak
 	 * setinggi 640 px di puncak halaman.
 	 */
 	let srcGagal = $state('');
@@ -154,18 +154,18 @@
 	const altMobil = $derived(altMobile || altUtama);
 
 	/**
-	 * KOREKSI GERBANG G3-A — `altMobile` tadinya prop mati.
+	 * KOREKSI GERBANG G3-A: `altMobile` tadinya prop mati.
 	 *
 	 * `<picture>` hanya memiliki SATU atribut `alt`, milik `<img>`-nya; `<source>`
 	 * tidak menerima `alt`. Versi pertama menghitung `altMobil` lalu tidak pernah
 	 * memakainya, sehingga prop yang dijanjikan kontrak §2.13 secara struktural
 	 * tidak dapat berpengaruh: pembaca layar di ponsel mengumumkan deskripsi foto
-	 * LANSKAP untuk foto POTRET yang sebenarnya tampil — dan tidak ada gerbang
+	 * LANSKAP untuk foto POTRET yang sebenarnya tampil: dan tidak ada gerbang
 	 * yang berubah merah karenanya.
 	 *
 	 * Dua `<img>` yang saling disembunyikan `hidden` bukan jalan keluarnya:
-	 * peramban tetap mengunduh keduanya dan hero — satu-satunya elemen LCP
-	 * halaman — membayar dua kali. Yang dipakai: tetap satu `<img>`, `alt`-nya
+	 * peramban tetap mengunduh keduanya dan hero: satu-satunya elemen LCP
+	 * halaman: membayar dua kali. Yang dipakai: tetap satu `<img>`, `alt`-nya
 	 * ditukar mengikuti media query yang SAMA dengan `<source>` (`MEDIA_POTRET`).
 	 *
 	 * Nilai awal `false` sengaja: prerender adapter-static tidak punya viewport,
@@ -200,7 +200,7 @@
 </script>
 
 <section class={kelas('relative isolate w-full overflow-hidden bg-pertamina-navy', className)}>
-	<!-- Keying rule merah tepi atas — penanda "program & institusi" (docs/11 §4.3). -->
+	<!-- Keying rule merah tepi atas: penanda "program & institusi" (docs/11 §4.3). -->
 	<span
 		class="keyline absolute inset-x-0 top-0 z-20 bg-pertamina-red"
 		aria-hidden="true"
@@ -225,7 +225,7 @@
 		</picture>
 
 		<!-- Overlay: multiply agar warna asli foto bertahan; tanpa duotone, tanpa blur.
-		     Titik tukar `lg` mengikuti `lg:grid-cols-12` di bawah — selama tata
+		     Titik tukar `lg` mengikuti `lg:grid-cols-12` di bawah: selama tata
 		     letaknya satu kolom, overlaynya WAJIB rata. -->
 		<span
 			class="absolute inset-0 -z-10 hidden lg:block"

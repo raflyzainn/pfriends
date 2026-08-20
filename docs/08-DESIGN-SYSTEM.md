@@ -1,11 +1,11 @@
-# 08 — Design System (Pfriends)
+# 08: Design System (Pfriends)
 
 > **Ruang lingkup:** bahasa visual + inventaris komponen untuk microsite Pfriends.
 > **Turunan dari:** `00-SOURCE-BRIEF.md` (Hal 11–12 + Catatan Desain Visual), `03-GAMIFICATION-SPEC.md` (tier, badge, rarity),
 > `04-ESG-GOVERNANCE.md` (pilar E/S/G).
-> **Acuan gaya:** repo `Enduro` — `src/app.css`, `src/lib/components/*`, `src/lib/charts/_chartTheme.js`.
+> **Acuan gaya:** repo `Enduro`: `src/app.css`, `src/lib/components/*`, `src/lib/charts/_chartTheme.js`.
 > **Aturan emas:** warna tier (`#2E7CD6` / `#7CB342` / `#E53935` / `#F0B429`) dan ambang (25/50/100/150)
-> adalah **identitas kanonik dari Hal 12 — tidak boleh diganti**. Yang boleh ditambah adalah *turunan* untuk keterbacaan.
+> adalah **identitas kanonik dari Hal 12: tidak boleh diganti**. Yang boleh ditambah adalah *turunan* untuk keterbacaan.
 
 ---
 
@@ -26,7 +26,7 @@ di atas latar putih:
 | `#F0B429` | Champion | **1.86** ✗ | **1.86** ✗ |
 
 Hal yang sama berlaku untuk dua warna brand Pertamina: merah `#ED1C24` = **4.38** ✗ dan hijau `#009B4C` = **3.63** ✗
-sebagai teks di atas putih. (Perhatikan: Enduro memakai `text-pertamina-red` untuk teks kecil — itu **tidak** lolos AA
+sebagai teks di atas putih. (Perhatikan: Enduro memakai `text-pertamina-red` untuk teks kecil: itu **tidak** lolos AA
 dan sebaiknya tidak ditiru.)
 
 Menaikkan kontras dengan cara mengganti warna slide akan merusak identitas yang sudah disetujui Corsec.
@@ -34,9 +34,9 @@ Karena itu setiap warna beridentitas punya **tiga varian**:
 
 | Sufiks | Fungsi | Boleh untuk teks? |
 |---|---|---|
-| *(polos)* — mis. `tier-champion` | **Identitas.** Fill chip, dot, bar progres, seri chart, garis aksen | **Tidak** |
-| `-ink` — mis. `tier-champion-ink` | **Teks & ikon.** Versi gelap sehue, lolos AA di putih/tint/kanvas | **Ya** |
-| `-tint` — mis. `tier-champion-tint` | **Latar lembut** chip & panel | Sebagai latar |
+| *(polos)*: mis. `tier-champion` | **Identitas.** Fill chip, dot, bar progres, seri chart, garis aksen | **Tidak** |
+| `-ink`: mis. `tier-champion-ink` | **Teks & ikon.** Versi gelap sehue, lolos AA di putih/tint/kanvas | **Ya** |
+| `-tint`: mis. `tier-champion-tint` | **Latar lembut** chip & panel | Sebagai latar |
 
 Aturan praktis: **warna polos tidak pernah menyentuh glyph.** Chip tier = latar `-tint` + teks `-ink` + dot warna polos.
 Pola ini memberi warna slide porsi visual terbesar (dot + bar + chart) sekaligus membuat setiap huruf lolos AA.
@@ -45,19 +45,19 @@ Pola ini memberi warna slide porsi visual terbesar (dot + bar + chart) sekaligus
 
 Slide menyebut "sans-serif geometric (Poppins/Inter-like)". Dipilih **Plus Jakarta Sans**, bukan Inter, dengan alasan:
 karakternya geometrik-humanis (lebih dekat ke render slide daripada Inter yang lebih netral-grotesk), ia punya
-rentang bobot 200–800 + tabular figures, dan asalnya Indonesia (Tokotype, ditugaskan Pemprov DKI Jakarta) —
+rentang bobot 200–800 + tabular figures, dan asalnya Indonesia (Tokotype, ditugaskan Pemprov DKI Jakarta) :
 relevan untuk produk komunitas Pertamina Foundation. Inter tetap ditaruh sebagai fallback pertama sehingga
 bila font gagal dimuat, tampilan turun ke gaya Enduro, bukan ke Times.
 
 ### 0.3 Terang saja (light-only)
 
 Mengikuti Enduro. Tidak ada dark mode di mockup ini. Token sudah dicek terhadap `ink-900` bila nanti dibutuhkan
-(fill tier di atas `#0F1B2D`: 4.09 / 6.90 / 4.09 / 9.27 — biru & merah hanya lolos AA Large), tapi jangan
+(fill tier di atas `#0F1B2D`: 4.09 / 6.90 / 4.09 / 9.27: biru & merah hanya lolos AA Large), tapi jangan
 membangun dark mode sebelum diminta.
 
 ---
 
-## 1. Palet warna — blok `@theme` siap tempel
+## 1. Palet warna: blok `@theme` siap tempel
 
 Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utility otomatis
 (`bg-tier-champion`, `text-tier-champion-ink`, `border-ink-200`, …).
@@ -71,23 +71,23 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 @theme {
 	/* ══════════ BRAND PERTAMINA ══════════
 	   -ink = varian teks lolos AA. Warna polos HANYA untuk fill/aksen. */
-	--color-pertamina-red: #ed1c24;        /* fill saja — 4.38 sbg teks ✗   */
-	--color-pertamina-red-ink: #b91820;    /* teks   — 6.53 ✓               */
+	--color-pertamina-red: #ed1c24;        /* fill saja: 4.38 sbg teks ✗   */
+	--color-pertamina-red-ink: #b91820;    /* teks  : 6.53 ✓               */
 	--color-pertamina-red-dark: #991b1b;   /* hover fill                    */
 	--color-pertamina-red-tint: #fee2e2;
 
-	--color-pertamina-blue: #0c4da2;       /* teks & fill — 8.08 ✓          */
-	--color-pertamina-navy: #003e7e;       /* teks & fill — 10.55 ✓         */
+	--color-pertamina-blue: #0c4da2;       /* teks & fill: 8.08 ✓          */
+	--color-pertamina-navy: #003e7e;       /* teks & fill: 10.55 ✓         */
 	--color-pertamina-navy-dark: #002a55;
 	--color-pertamina-navy-tint: #dbeafe;
 
-	--color-pertamina-green: #009b4c;      /* fill saja — 3.63 sbg teks ✗   */
-	--color-pertamina-green-ink: #0e7c52;  /* teks   — 5.22 ✓               */
+	--color-pertamina-green: #009b4c;      /* fill saja: 3.63 sbg teks ✗   */
+	--color-pertamina-green-ink: #0e7c52;  /* teks  : 5.22 ✓               */
 	--color-pertamina-green-tint: #e3f5ec;
 
-	--color-heading: #12355b;              /* judul  — 12.46 ✓ (warna slide) */
+	--color-heading: #12355b;              /* judul : 12.46 ✓ (warna slide) */
 
-	/* ══════════ TIER — KANONIK HAL 12, JANGAN UBAH NILAI POLOSNYA ══════════ */
+	/* ══════════ TIER: KANONIK HAL 12, JANGAN UBAH NILAI POLOSNYA ══════════ */
 	--color-tier-active: #2e7cd6;          /* Active Member · 25 pts        */
 	--color-tier-active-fill: #2c77cd;     /* chip solid + teks putih 4.54 ✓ */
 	--color-tier-active-ink: #1c5fa8;      /* teks 6.46 ✓                   */
@@ -107,15 +107,15 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 	--color-tier-champion-tint: #fdf6e5;
 
 	/* ══════════ PILAR ESG ══════════ */
-	--color-esg-e: #009b4c;                /* Environmental — hijau brand   */
+	--color-esg-e: #009b4c;                /* Environmental: hijau brand   */
 	--color-esg-e-ink: #0e7c52;            /* 5.22 ✓                        */
 	--color-esg-e-tint: #e3f5ec;
 
-	--color-esg-s: #0c4da2;                /* Social — biru brand           */
+	--color-esg-s: #0c4da2;                /* Social: biru brand           */
 	--color-esg-s-ink: #0c4da2;            /* 8.08 ✓ (polos sudah aman)     */
 	--color-esg-s-tint: #e4edf8;
 
-	--color-esg-g: #6d4aa8;                /* Governance — ungu             */
+	--color-esg-g: #6d4aa8;                /* Governance: ungu             */
 	--color-esg-g-ink: #6d4aa8;            /* 6.57 ✓ (polos sudah aman)     */
 	--color-esg-g-tint: #ede7f6;
 
@@ -133,14 +133,14 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 	--color-ink-50: #f8fafc;
 	--color-ink-100: #f1f5f9;
 	--color-ink-200: #e2e8f0;   /* garis kartu, track progres            */
-	--color-ink-300: #cbd5e1;   /* divider — dekoratif saja              */
-	--color-ink-400: #94a3b8;   /* ikon dekoratif, placeholder — 2.56 ✗  */
-	--color-ink-450: #7d8b9d;   /* batas kontrol form — 3.47 ✓ (1.4.11)  */
-	--color-ink-500: #64748b;   /* teks sekunder di PUTIH — 4.76 ✓       */
-	--color-ink-600: #475569;   /* teks sekunder di KANVAS — 7.00 ✓      */
-	--color-ink-700: #334155;   /* body                — 10.35 ✓        */
-	--color-ink-800: #1e293b;   /* judul               — 14.63 ✓        */
-	--color-ink-900: #0f1b2d;   /* angka besar         — 17.28 ✓        */
+	--color-ink-300: #cbd5e1;   /* divider: dekoratif saja              */
+	--color-ink-400: #94a3b8;   /* ikon dekoratif, placeholder: 2.56 ✗  */
+	--color-ink-450: #7d8b9d;   /* batas kontrol form: 3.47 ✓ (1.4.11)  */
+	--color-ink-500: #64748b;   /* teks sekunder di PUTIH: 4.76 ✓       */
+	--color-ink-600: #475569;   /* teks sekunder di KANVAS: 7.00 ✓      */
+	--color-ink-700: #334155;   /* body               : 10.35 ✓        */
+	--color-ink-800: #1e293b;   /* judul              : 14.63 ✓        */
+	--color-ink-900: #0f1b2d;   /* angka besar        : 17.28 ✓        */
 
 	/* ══════════ SEMANTIK ══════════ */
 	--color-success: #047857;   /* 5.48 ✓ */
@@ -153,7 +153,7 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 	--color-info-tint: #e0f2fe;
 
 	/* ══════════ PERMUKAAN ══════════ */
-	--color-canvas: #f5f6f7;    /* latar aplikasi — persis catatan slide */
+	--color-canvas: #f5f6f7;    /* latar aplikasi: persis catatan slide */
 	--color-surface: #ffffff;
 
 	/* ══════════ TIPOGRAFI ══════════ */
@@ -163,9 +163,9 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 
 	/* ══════════ RADIUS ══════════ */
 	--radius-chip: 9999px;
-	--radius-control: 0.625rem;  /* 10px — input, tombol sm/md */
-	--radius-card: 1rem;         /* 16px — kartu standar       */
-	--radius-panel: 1.25rem;     /* 20px — kartu besar, modal  */
+	--radius-control: 0.625rem;  /* 10px: input, tombol sm/md */
+	--radius-card: 1rem;         /* 16px: kartu standar       */
+	--radius-panel: 1.25rem;     /* 20px: kartu besar, modal  */
 
 	/* ══════════ SHADOW ══════════ */
 	--shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04);
@@ -187,7 +187,7 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 
 	body {
 		background: var(--color-canvas);
-		/* Aura brand sangat halus — meniru Enduro, dijaga tetap tipis agar teks tetap lolos AA */
+		/* Aura brand sangat halus: meniru Enduro, dijaga tetap tipis agar teks tetap lolos AA */
 		background-image:
 			radial-gradient(circle at 0% 0%, rgb(237 28 36 / 0.04) 0%, transparent 38%),
 			radial-gradient(circle at 100% 100%, rgb(12 77 162 / 0.04) 0%, transparent 38%);
@@ -210,7 +210,7 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 		color: var(--color-ink-900);
 	}
 
-	/* Fokus terlihat di SEMUA kontrol — jangan pernah outline:none tanpa pengganti */
+	/* Fokus terlihat di SEMUA kontrol: jangan pernah outline:none tanpa pengganti */
 	:where(a, button, input, select, textarea, [tabindex]):focus-visible {
 		outline: 2px solid var(--color-pertamina-blue);
 		outline-offset: 2px;
@@ -269,7 +269,7 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 	font-weight: 700;
 }
 
-/* Label mikro uppercase — gaya khas portal Pertamina */
+/* Label mikro uppercase: gaya khas portal Pertamina */
 @utility label-micro {
 	font-size: 0.625rem;      /* 10px */
 	line-height: 1;
@@ -279,7 +279,7 @@ Tempel apa adanya ke `src/app.css` (Tailwind 4). Setiap token menghasilkan utili
 	color: var(--color-ink-500);
 }
 
-/* Kilau tipis untuk kartu Champion — sekali pakai, jangan disebar */
+/* Kilau tipis untuk kartu Champion: sekali pakai, jangan disebar */
 @utility sheen-champion {
 	background-image: linear-gradient(
 		135deg,
@@ -374,11 +374,11 @@ Dihitung dengan rumus relative-luminance resmi. **AA teks normal ≥ 4.5**, **AA
 | `ink-900` pada `tier-contributor` #7CB342 | **6.90** ✓ | hijau & kuning pakai **teks gelap** |
 | `ink-900` pada `tier-champion` #F0B429 | **9.27** ✓ | idem |
 
-> Hijau dan kuning tidak punya versi solid berteks putih — mustahil tanpa merusak warna. Solusinya bukan
+> Hijau dan kuning tidak punya versi solid berteks putih: mustahil tanpa merusak warna. Solusinya bukan
 > memaksa putih, tapi membalik polaritas: **fill terang + teks `ink-900`**. Hasilnya justru kontras terbaik
 > di seluruh sistem (9.27).
 
-### 2.5 Yang GAGAL — daftar larangan eksplisit
+### 2.5 Yang GAGAL: daftar larangan eksplisit
 
 | Kombinasi | Rasio | Boleh dipakai untuk |
 |---|---:|---|
@@ -399,7 +399,7 @@ Dihitung dengan rumus relative-luminance resmi. **AA teks normal ≥ 4.5**, **AA
 ### 3.1 Pemuatan
 
 ```html
-<!-- src/app.html — di dalam <head> -->
+<!-- src/app.html: di dalam <head> -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
@@ -430,13 +430,13 @@ Skala 1.200 (minor third) dibulatkan ke kelipatan yang enak dibaca. Kolom "Kelas
 | Angka chip (poin) | 13px / 1.0 | 700 | -0.01em | kontekstual | `numeric text-[13px]` |
 | Tombol | 14px / 1.0 | 600 | 0 | kontekstual | `text-sm font-semibold` |
 
-¹ `ink-500` = 4.76 di **putih** tapi **4.40 di kanvas** `#F5F6F7` — gagal AA. Aturan: caption & label mikro
+¹ `ink-500` = 4.76 di **putih** tapi **4.40 di kanvas** `#F5F6F7`: gagal AA. Aturan: caption & label mikro
 di atas kartu putih pakai `ink-500`; bila diletakkan langsung di kanvas, naikkan ke **`ink-600`**.
 
 ### 3.3 Aturan angka
 
 Semua angka yang bisa berubah (poin, peringkat, saldo KT, persentase KPI, hitungan anggota) **wajib**
-`font-variant-numeric: tabular-nums` — tersedia lewat utility `numeric` atau `tabular-nums`.
+`font-variant-numeric: tabular-nums`: tersedia lewat utility `numeric` atau `tabular-nums`.
 Tanpa ini, angka pada leaderboard dan timer akan bergeser horizontal setiap kali nilainya berubah.
 
 Format lokal Indonesia di seluruh UI: `value.toLocaleString('id-ID')` → `1.250` bukan `1,250`.
@@ -447,7 +447,7 @@ Format lokal Indonesia di seluruh UI: `value.toLocaleString('id-ID')` → `1.250
 
 ### 4.1 Spacing
 
-Basis **4px**. Gunakan hanya langkah berikut — jangan improvisasi nilai arbitrer.
+Basis **4px**. Gunakan hanya langkah berikut: jangan improvisasi nilai arbitrer.
 
 | Token | px | Dipakai untuk |
 |---|---|---|
@@ -478,7 +478,7 @@ Aturan bersarang: elemen anak selalu radius lebih kecil dari induk (kartu 16 →
 
 ### 4.3 Shadow
 
-Bayangan di sistem ini **halus dan berlapis satu** — bukan efek dramatis. Kedalaman terutama disampaikan
+Bayangan di sistem ini **halus dan berlapis satu**: bukan efek dramatis. Kedalaman terutama disampaikan
 lewat border, bukan blur.
 
 | Token | Dipakai untuk |
@@ -489,7 +489,7 @@ lewat border, bukan blur.
 | `shadow-modal` | dialog |
 | `shadow-toast` | toast poin |
 
-Jangan menumpuk shadow pada elemen bersarang — hanya kontainer terluar yang boleh punya bayangan.
+Jangan menumpuk shadow pada elemen bersarang: hanya kontainer terluar yang boleh punya bayangan.
 
 ### 4.4 Border
 
@@ -498,7 +498,7 @@ Jangan menumpuk shadow pada elemen bersarang — hanya kontainer terluar yang bo
 | Garis kartu | `border-ink-100` | tenang, sesuai catatan slide "border tipis abu" |
 | Kartu hover | `border-ink-200` | umpan balik tanpa geser layout |
 | Divider dekoratif | `border-ink-200` / `ink-300` | tidak membawa makna |
-| **Batas kontrol form** | **`border-ink-450`** | 3.47 ✓ — wajib WCAG 1.4.11 |
+| **Batas kontrol form** | **`border-ink-450`** | 3.47 ✓: wajib WCAG 1.4.11 |
 | Garis aksen kiri kartu | `2px solid var(--color-tier-*)` | kanal warna identitas |
 | Fokus | `outline 2px pertamina-blue` + offset 2px | 8.08 ✓ di semua latar terang |
 
@@ -509,7 +509,7 @@ Border selalu **1px** kecuali garis aksen kiri (2px) dan ring fokus (2px).
 ## 5. Inventaris komponen
 
 Lokasi: `src/lib/components/`. Semua komponen **Svelte 5 runes**, JavaScript + JSDoc (bukan TypeScript).
-Semua props lewat `$props()` dengan nilai default. Komponen bersifat **presentational** — tidak boleh
+Semua props lewat `$props()` dengan nilai default. Komponen bersifat **presentational**: tidak boleh
 mengimpor repository/Dexie, tidak boleh menghitung aturan domain (tier, kelayakan, poin). Nilai
 turunan dihitung di store/service, komponen hanya menerima dan menggambar.
 
@@ -600,7 +600,7 @@ let {
 ```
 **Tampilan.** Lingkaran; bila `src` kosong → inisial (maks 2 huruf) di atas latar `ink-100`, teks `ink-600`,
 `font-semibold`. Ukuran: xs 24, sm 32, md 40, lg 56, xl 80 px. Bila `showRing` → `ring-2 ring-offset-2`
-berwarna tier polos — ini salah satu tempat warna tier polos memang tepat karena tidak menyentuh teks.
+berwarna tier polos: ini salah satu tempat warna tier polos memang tepat karena tidak menyentuh teks.
 
 #### `Icon.svelte`
 ```js
@@ -612,7 +612,7 @@ let {
 } = $props();
 ```
 **Tampilan.** `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-stroke-linejoin="round">`. Selalu mewarisi `currentColor` — tidak pernah punya warna sendiri.
+stroke-linejoin="round">`. Selalu mewarisi `currentColor`: tidak pernah punya warna sendiri.
 
 ### 5.2 Gamifikasi
 
@@ -649,8 +649,8 @@ let {
 } = $props();
 ```
 **Tampilan.** Pil dengan ikon 14px + angka `numeric` + satuan. **PK** (Poin Kontribusi) memakai
-`pertamina-navy` di latar `pertamina-navy-tint` dan ikon kilat — warna "prestasi". **KT** (Koin Tukar)
-memakai `rarity-epik-ink` di latar `tier-champion-tint` dan ikon koin — warna "mata uang". Perbedaan
+`pertamina-navy` di latar `pertamina-navy-tint` dan ikon kilat: warna "prestasi". **KT** (Koin Tukar)
+memakai `rarity-epik-ink` di latar `tier-champion-tint` dan ikon koin: warna "mata uang". Perbedaan
 warna **dan** ikon ini penting: dua mata uang tidak boleh tertukar secara visual (§2.2 spec gamifikasi).
 Bila `delta` diisi → superskrip `+N` hijau `success` dengan animasi `point-pop`.
 
@@ -689,9 +689,9 @@ let {
 **Tampilan.** Komponen paling penting di produk ini. Susunan vertikal:
 1. Baris atas: `TierBadge` tier sekarang + `PointsChip` poin aktif.
 2. Rel bertanda 4 ambang **25 / 50 / 100 / 150** dengan jarak **proporsional terhadap nilai**
-   (bukan jarak sama rata) — supaya jarak Featured→Champion terbaca sebagaimana adanya.
+   (bukan jarak sama rata): supaya jarak Featured→Champion terbaca sebagaimana adanya.
    Titik yang sudah lewat = warna tier terisi; yang belum = `ink-300` kosong.
-3. Teks sisa: "**30 poin lagi** menuju Contributor" — angka `numeric font-bold`, sisanya `ink-600`.
+3. Teks sisa: "**30 poin lagi** menuju Contributor": angka `numeric font-bold`, sisanya `ink-600`.
 4. Bila `locked`: panel `warning-tint` + checklist `requirements`. Setiap baris memakai ikon centang
    (`success`) atau lingkaran kosong (`ink-450`) + label + `hint` sebagai baris kedua `text-xs ink-600`.
    **Checklist selalu menyatakan apa yang kurang dan tindakan konkretnya**, tidak pernah sekadar
@@ -713,9 +713,9 @@ let {
 **Tampilan.** Kotak `rounded-card` `aspect-square` berisi medali SVG 40px + nama badge 12px semibold +
 label rarity `label-micro` berwarna `rarity-*-ink`.
 **Dimiliki:** latar putih, border `rarity-*` 20% opasitas, medali berwarna penuh.
-**Belum:** `grayscale opacity-45`, medali `ink-300`, kriteria unlock tampil sebagai `title`/tooltip —
+**Belum:** `grayscale opacity-45`, medali `ink-300`, kriteria unlock tampil sebagai `title`/tooltip :
 badge terkunci **tetap terlihat**, karena katalog yang terlihat adalah pendorong utama Core Drive #4.
-Hanya `LEGENDARIS` yang memperoleh `sheen-champion` + ring 2px. Rarity lain tidak berkilau — kelangkaan
+Hanya `LEGENDARIS` yang memperoleh `sheen-champion` + ring 2px. Rarity lain tidak berkilau: kelangkaan
 harus terasa langka.
 
 #### `LeaderboardRow.svelte`
@@ -737,7 +737,7 @@ Lalu `Avatar sm` → nama (`text-sm font-semibold ink-800`) + baris kedua komuni
 `PointsChip` di ujung kanan.
 `isCurrentUser` → latar `pertamina-navy-tint`, border kiri 2px `pertamina-blue`, dan **row menempel
 (`sticky`) di bawah daftar** bila posisinya di luar viewport, supaya pengguna selalu tahu posisinya sendiri.
-`delta` → panah kecil ↑ `success` / ↓ `ink-500`. Penurunan peringkat **tidak** diwarnai merah — memalukan
+`delta` → panah kecil ↑ `success` / ↓ `ink-500`. Penurunan peringkat **tidak** diwarnai merah: memalukan
 dan bukan kesalahan.
 
 #### `RewardCard.svelte`
@@ -753,7 +753,7 @@ let {
 berisi nama, `PointsChip KT` sebagai harga, dan baris syarat. Bila `userTier` di bawah `minTier` → tombol
 nonaktif + `TierBadge locked` + teks "Perlu tier Contributor". Bila `balanceKt < priceKt` → tombol nonaktif +
 "Kurang **120 KT**". Sisa kuota rendah (<20%) → `StatusBadge amber` "Sisa 3". Ketiga penghalang ini
-dinyatakan **eksplisit dengan angkanya** — tidak pernah tombol mati tanpa penjelasan.
+dinyatakan **eksplisit dengan angkanya**: tidak pernah tombol mati tanpa penjelasan.
 
 ### 5.3 Kartu domain
 
@@ -768,7 +768,7 @@ let {
 **Tampilan.** `grid` = kartu tegak: `Avatar lg` di tengah, nama, headline 1 baris (`line-clamp-1`),
 `TierBadge soft`, lalu strip statistik 3 kolom (Poin / Badge / Chapter) dipisah `divide-x divide-ink-100`.
 `list` = baris horizontal ringkas untuk direktori. Komunitas ditandai `StatusBadge`: SOBI `navy`,
-Womenpreneur `purple` — **dua komunitas harus selalu bisa dibedakan sekilas** karena seluruh nilai
+Womenpreneur `purple`: **dua komunitas harus selalu bisa dibedakan sekilas** karena seluruh nilai
 platform ini adalah mempertemukan keduanya.
 
 #### `StoryCard.svelte`
@@ -808,7 +808,7 @@ let {
 ```
 **Tampilan.** Kartu berkarakter paling "gerakan": garis aksen kiri 2px `esg-*`, ikon pilar dalam kotak
 `rounded-xl` berlatar `esg-*-tint`, judul, deret chip SDG (`StatusBadge sm outline`), lalu **dua metrik
-berdampingan** — peserta bergabung dan jumlah lokasi — dengan `ProgressBar` menuju target.
+berdampingan**: peserta bergabung dan jumlah lokasi: dengan `ProgressBar` menuju target.
 Bahasa mengedepankan kolektif ("**248** dari 500 orang bergerak"), bukan individu.
 
 #### `KpiCard.svelte`
@@ -836,7 +836,7 @@ let {
 } = $props();
 ```
 **Tampilan.** Ubin ringkas untuk baris ringkasan: ikon 20px dalam kotak 36px `rounded-xl` berlatar
-`accent` 10% opasitas, `label-micro`, angka `numeric text-2xl`. Lebih ringan dari `KpiCard` — dipakai
+`accent` 10% opasitas, `label-micro`, angka `numeric text-2xl`. Lebih ringan dari `KpiCard`: dipakai
 4–6 buah sebaris di puncak dashboard.
 
 ### 5.4 Navigasi & kerangka
@@ -851,7 +851,7 @@ let {
 ```
 **Tampilan.** Bar tinggi 56px, `bg-white/85 backdrop-blur border-b border-ink-100 sticky top-0 z-30`.
 Kiri: tombol menu (mobile) + logo. Kanan: `PointsChip PK` + `PointsChip KT` (**selalu terlihat di semua
-halaman** — saldo yang terlihat adalah pengingat progres paling murah), lonceng notifikasi dengan titik
+halaman**: saldo yang terlihat adalah pengingat progres paling murah), lonceng notifikasi dengan titik
 `pertamina-red`, lalu `Avatar sm` bertier-ring yang membuka menu.
 
 #### `Sidebar.svelte`
@@ -880,7 +880,7 @@ let {
 **Tampilan.** Khusus mobile (`lg:hidden`), `fixed bottom-0`, tinggi 56px + `env(safe-area-inset-bottom)`,
 `bg-white/95 backdrop-blur border-t border-ink-100`. Maksimum **5 item**. Item aktif: ikon `pertamina-red-ink`
 + label 10px semibold + titik 4px di atas ikon. Non-aktif `ink-500`. Sasaran sentuh minimum 44×44px.
-Anggota komunitas mengakses microsite ini terutama dari ponsel lewat tautan WhatsApp — `BottomNav`
+Anggota komunitas mengakses microsite ini terutama dari ponsel lewat tautan WhatsApp: `BottomNav`
 adalah navigasi utama, bukan pelengkap.
 
 #### `Footer.svelte`
@@ -969,7 +969,7 @@ let {
 **Tampilan.** Kepala `bg-ink-50` + `label-micro` + `sticky top-0`. Baris tinggi 48px, `border-b border-ink-100`,
 hover `bg-ink-50`. Kolom `numeric` otomatis rata kanan + `tabular-nums`. Kolom sortable menampilkan panah
 saat aktif. `loading` → 5 baris `Skeleton`. Kosong → `EmptyState` di dalam badan tabel.
-Di mobile membungkus dalam `overflow-x-auto` — **halaman tidak boleh bergulir horizontal**, hanya tabelnya.
+Di mobile membungkus dalam `overflow-x-auto`: **halaman tidak boleh bergulir horizontal**, hanya tabelnya.
 
 #### `Timeline.svelte`
 ```js
@@ -1004,13 +1004,13 @@ Di mobile (<640px) tampil sebagai **sheet** yang menempel di bawah dengan sudut 
 
 #### `Toast.svelte` + `PointToast.svelte`
 ```js
-// Toast.svelte — generik, digerakkan store
+// Toast.svelte: generik, digerakkan store
 let {
 	/** @type {{id:string,type:'success'|'error'|'info'|'warning',message:string,description?:string}[]} */ toasts = [],
 	/** @type {(id:string)=>void} */ onDismiss = undefined
 } = $props();
 
-// PointToast.svelte — khusus perolehan poin
+// PointToast.svelte: khusus perolehan poin
 let {
 	/** @type {number} */ points = 0,
 	/** @type {string} */ reason = '',
@@ -1020,11 +1020,11 @@ let {
 } = $props();
 ```
 **Tampilan.** Menumpuk di kanan bawah desktop / atas mobile, lebar maks 380px, `rounded-card shadow-toast`,
-auto-tutup 4 detik (**tidak** auto-tutup bila memuat kenaikan tier atau badge — momen itu layak dibaca).
+auto-tutup 4 detik (**tidak** auto-tutup bila memuat kenaikan tier atau badge: momen itu layak dibaca).
 `PointToast`: "**+15 PK**" `numeric text-2xl` `pertamina-navy` dengan animasi `point-pop`, alasan di
 bawahnya, dan total baru. Bila `tierUnlocked` → kartu melebar menampilkan `TierBadge solid` + kalimat
 benefit persis Hal 12. Bila `badgeUnlocked` → `BadgeTile sm`.
-Aksesibilitas: kontainer `aria-live="polite"` (bukan `assertive` — perolehan poin bukan darurat).
+Aksesibilitas: kontainer `aria-live="polite"` (bukan `assertive`: perolehan poin bukan darurat).
 
 #### `EmptyState.svelte`
 ```js
@@ -1061,7 +1061,7 @@ let {
 ```
 **Tampilan.** Pembungkus tipis, sama seperti Enduro: impor `echarts` dinamis di dalam `$effect`,
 `ResizeObserver` untuk resize, `dispose()` saat dibongkar, `backgroundColor: 'transparent'`.
-Saat `loading` → `Skeleton variant="chart"`. Tidak boleh ada logika chart apa pun di sini —
+Saat `loading` → `Skeleton variant="chart"`. Tidak boleh ada logika chart apa pun di sini :
 setiap chart konkret tinggal di `src/lib/charts/`.
 
 ---
@@ -1069,7 +1069,7 @@ setiap chart konkret tinggal di `src/lib/charts/`.
 ## 6. Pola visual gamifikasi
 
 Ketegangan yang harus diselesaikan: gamifikasi perlu terasa memberi imbalan, tetapi ini produk BUMN yang
-dilihat pemangku kepentingan Pertamina — ia tidak boleh terlihat seperti gim ponsel. Tujuh aturan berikut
+dilihat pemangku kepentingan Pertamina: ia tidak boleh terlihat seperti gim ponsel. Tujuh aturan berikut
 adalah cara menyelesaikannya secara konkret.
 
 **1. Warna beridentitas, bentuk yang menenangkan.**
@@ -1080,7 +1080,7 @@ Kecerahan datang dari warna; ketenangan datang dari geometri.
 **2. Satu kejutan per layar, maksimal.**
 Hanya elemen berperingkat tertinggi di suatu layar yang boleh bergerak atau berkilau. Bila `PointToast`
 sedang tampil, kartu tier tidak ikut beranimasi. Kilau (`sheen-champion`) hanya untuk Champion dan badge
-Legendaris. Bila semuanya menonjol, tidak ada yang menonjol — dan halaman terlihat murahan.
+Legendaris. Bila semuanya menonjol, tidak ada yang menonjol: dan halaman terlihat murahan.
 
 **3. Progres selalu dinyatakan sebagai jarak, bukan sebagai status.**
 "**30 poin lagi** menuju Contributor" mengalahkan "Anda Active Member". Yang pertama menyebut langkah
@@ -1092,23 +1092,23 @@ tindakan konkret yang bisa diambil hari ini. Chip abu + gembok, **bukan** merah.
 untuk kesalahan; tidak memenuhi syarat bukan kesalahan.
 
 **5. Angka mendapat perlakuan tipografis, bukan perlakuan dekoratif.**
-Poin terlihat penting karena besar, tebal, tabular, dan rapat (`numeric`) — bukan karena diberi bayangan
+Poin terlihat penting karena besar, tebal, tabular, dan rapat (`numeric`): bukan karena diberi bayangan
 neon. Ini juga yang membuatnya konsisten dengan `KpiCard` di portal Pertamina lain.
 
 **6. Dua mata uang tidak boleh tertukar.**
-PK biru-navy + ikon kilat; KT emas + ikon koin. Berbeda **warna dan bentuk** sekaligus — bukan warna saja,
+PK biru-navy + ikon kilat; KT emas + ikon koin. Berbeda **warna dan bentuk** sekaligus: bukan warna saja,
 karena ±8% pria mengalami defisiensi penglihatan warna. Aturan yang sama berlaku untuk tier: setiap chip
 tier selalu memuat **nama tier sebagai teks**, tidak pernah hanya dot berwarna.
 
 **7. Perayaan sebanding dengan kelangkaan.**
 Poin rutin (+1, +2) → toast kecil, otomatis hilang. Aksi bermakna (+15, +30) → toast dengan alasan.
 Kenaikan tier atau badge Epik/Legendaris → modal dengan tombol tutup manual, satu animasi masuk, dan
-kalimat benefit resmi dari Hal 12. Tidak pernah confetti — tepat di sinilah batas antara "dihargai secara
+kalimat benefit resmi dari Hal 12. Tidak pernah confetti: tepat di sinilah batas antara "dihargai secara
 profesional" dan "gim ponsel".
 
 **Yang tidak boleh dibangun:** confetti, maskot, suara, emoji sebagai ikon UI utama, bilah XP berkilau,
 countdown mendesak berwarna merah, animasi berulang tanpa henti (kecuali skeleton), dan **peringkat
-terbawah yang disorot** — leaderboard hanya menampilkan 20 teratas plus posisi pengguna sendiri, tidak
+terbawah yang disorot**: leaderboard hanya menampilkan 20 teratas plus posisi pengguna sendiri, tidak
 pernah "juru kunci".
 
 ---
@@ -1145,7 +1145,7 @@ export const legend = {
 
 export const grid = { left: 8, right: 24, top: 36, bottom: 8, containLabel: true };
 
-/** Palet seri kategorikal — urutan tetap, 8 hue yang saling terbedakan */
+/** Palet seri kategorikal: urutan tetap, 8 hue yang saling terbedakan */
 export const series = [
 	'#0C4DA2', // 1 biru Pertamina
 	'#ED1C24', // 2 merah Pertamina
@@ -1157,7 +1157,7 @@ export const series = [
 	'#64748B'  // 8 abu
 ];
 
-/** Palet beridentitas — pakai HANYA bila kategorinya memang tier/pilar/rarity */
+/** Palet beridentitas: pakai HANYA bila kategorinya memang tier/pilar/rarity */
 export const tierPalette = ['#2E7CD6', '#7CB342', '#E53935', '#F0B429'];
 export const esgPalette  = { E: '#009B4C', S: '#0C4DA2', G: '#6D4AA8' };
 export const rarityPalette = ['#B08D57', '#9AA5B1', '#F0B429', '#2E7CD6'];
@@ -1184,7 +1184,7 @@ export const palette = {
 | **Bar** | `barMaxWidth: 28`, `borderRadius: [6, 6, 0, 0]` (vertikal) atau `[0, 6, 6, 0]` (horizontal). |
 | **Pie/donat** | Selalu donat (`radius: ['58%', '80%']`), `padAngle` kecil, label di luar dengan garis penunjuk. Jangan pie penuh. |
 | **Animasi** | `animationDuration: 600`, `animationEasing: 'cubicOut'`. Nonaktifkan bila `prefers-reduced-motion`. |
-| **Kosong** | Bila tak ada data, **jangan** render chart — tampilkan `EmptyState sm`. |
+| **Kosong** | Bila tak ada data, **jangan** render chart: tampilkan `EmptyState sm`. |
 | **Aksesibilitas** | Chart tidak boleh jadi satu-satunya sumber informasi. Setiap chart didampingi ringkasan teks atau tabel yang bisa dibuka. |
 
 ---
@@ -1195,7 +1195,7 @@ export const palette = {
 
 - `viewBox="0 0 24 24"`, `fill="none"`, `stroke="currentColor"`, `stroke-width="1.8"`,
   `stroke-linecap="round"`, `stroke-linejoin="round"`.
-- Ikon **selalu** mewarisi warna dari induk lewat `currentColor` — jangan pernah menetapkan `stroke` literal.
+- Ikon **selalu** mewarisi warna dari induk lewat `currentColor`: jangan pernah menetapkan `stroke` literal.
 
 | Ukuran | Dipakai untuk |
 |---|---|
@@ -1215,10 +1215,10 @@ bolt, coin, search, filter, plus, check, x, chevron-down, chevron-right, arrow-l
 bell, lock, upload, camera, link, whatsapp, share, star, map-pin, clock, sparkles, document, logout`.
 
 **Ilustrasi.** Tidak ada karakter atau maskot. Ilustrasi spot dibuat dari bentuk geometris sederhana
-dengan garis 1.5px dalam warna brand pada opasitas rendah — sekadar memberi ruang bernapas pada
+dengan garis 1.5px dalam warna brand pada opasitas rendah: sekadar memberi ruang bernapas pada
 empty state, bukan menarik perhatian.
 
-**Emoji.** Boleh untuk konten buatan pengguna. **Tidak boleh** sebagai ikon UI — emoji tampil berbeda
+**Emoji.** Boleh untuk konten buatan pengguna. **Tidak boleh** sebagai ikon UI: emoji tampil berbeda
 di tiap platform dan langsung menurunkan kesan profesional.
 
 ---
@@ -1237,7 +1237,7 @@ tombol `mt-5`.
 
 | Konteks | Judul | Penjelas | Aksi |
 |---|---|---|---|
-| Belum ada aktivitas | Belum ada aktivitas | Poin pertama Anda menunggu — mulai dari membaca broadcast minggu ini. | Lihat Broadcast |
+| Belum ada aktivitas | Belum ada aktivitas | Poin pertama Anda menunggu: mulai dari membaca broadcast minggu ini. | Lihat Broadcast |
 | Badge kosong | Koleksi badge masih kosong | Ada 20 badge yang bisa dikumpulkan. "Salam Kenal" bisa diraih hari ini dengan melengkapi profil. | Lengkapi Profil |
 | Pencarian nihil | Tidak ada hasil untuk "{q}" | Coba kata kunci lain atau hapus sebagian filter. | Hapus Filter |
 | Belum ada story | Belum ada cerita di sini | Cerita Anda bisa jadi yang pertama tayang di kanal Pertamina Foundation. | Tulis Cerita |
@@ -1250,7 +1250,7 @@ beserta angkanya.
 
 ### 9.2 Skeleton
 
-Skeleton dipakai untuk pemuatan **>300ms**. Di bawah itu tidak usah — kedipannya justru terasa lebih lambat.
+Skeleton dipakai untuk pemuatan **>300ms**. Di bawah itu tidak usah: kedipannya justru terasa lebih lambat.
 
 - Latar `ink-100`, kilau `shimmer` 1.6s, `rounded-6px` (atau mengikuti radius elemen aslinya).
 - Skeleton harus **meniru tata letak akhir**: jumlah baris, tinggi, dan lebar yang sama. Pergeseran
@@ -1270,11 +1270,11 @@ Varian `Skeleton.svelte`: `text` (n baris), `title` (satu blok 24px), `avatar`, 
 
 Diperiksa sebelum setiap komponen dianggap selesai.
 
-- [ ] Setiap pasangan teks/latar ≥ **4.5:1** (≥3.0 untuk teks ≥24px atau ≥18.66px bold) — pakai tabel §2.
+- [ ] Setiap pasangan teks/latar ≥ **4.5:1** (≥3.0 untuk teks ≥24px atau ≥18.66px bold): pakai tabel §2.
 - [ ] Tidak ada warna polos `tier-*`, `pertamina-red`, `pertamina-green`, atau `ink-400` yang menyentuh teks.
 - [ ] Batas kontrol form memakai `ink-450` (3.47 ✓), bukan `ink-300`.
 - [ ] Fokus terlihat pada semua elemen interaktif; `outline` tidak pernah dihapus tanpa pengganti.
-- [ ] Informasi tidak pernah disampaikan lewat warna saja — selalu ada teks, ikon, atau pola pendamping.
+- [ ] Informasi tidak pernah disampaikan lewat warna saja: selalu ada teks, ikon, atau pola pendamping.
 - [ ] Sasaran sentuh ≥ 44×44px di mobile.
 - [ ] `ProgressBar` punya `role="progressbar"` + `aria-valuenow/min/max` + label teks.
 - [ ] Modal: fokus terperangkap, Esc menutup, fokus kembali ke pemicu.

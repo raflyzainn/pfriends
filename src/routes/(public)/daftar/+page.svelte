@@ -27,12 +27,12 @@
 </script>
 
 <svelte:head>
-	<title>Daftar Awardee · PFfriends</title>
-	<meta name="description" content="Registrasi Awardee Sobat Bumi dan PFpreneur di PFfriends." />
+	<title>Daftar Awardee · PFriends</title>
+	<meta name="description" content="Registrasi Awardee Sobat Bumi dan PFpreneur di PFriends." />
 </svelte:head>
 
 <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
-	<p class="kicker">Keanggotaan PFfriends</p>
+	<p class="kicker">Keanggotaan PFriends</p>
 	<h1 class="display-editorial mt-3 text-4xl text-heading sm:text-5xl">Registrasi Awardee</h1>
 	<p class="mt-4 max-w-2xl text-base leading-relaxed text-ink-600">
 		Isi data diri dan lampirkan bukti bahwa Anda merupakan alumni Sobat Bumi atau penerima manfaat PFpreneur. Verifikator akan memeriksa data sebelum akun memperoleh akses penuh.
@@ -59,6 +59,6 @@
 	</Card>
 
 	<p class="mt-6 text-center text-sm text-ink-600">
-		Sudah memiliki akun? <a class="font-semibold text-brand-700 underline" href="/masuk">Masuk ke PFfriends</a>
+		Sudah memiliki akun? <a class="font-semibold text-brand-700 underline" href="/masuk">Masuk ke PFriends</a>
 	</p>
 </section>

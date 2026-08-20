@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * AdminPublikasiTrend — ritme publikasi bulanan zona admin.
+	 * AdminPublikasiTrend: ritme publikasi bulanan zona admin.
 	 *
 	 * Props:
 	 * @prop {{label:string,terbit:number,konten:number,jangkauan:number}[]} data
@@ -9,16 +9,16 @@
 	 * @prop {boolean} loading
 	 *
 	 * Dua batang untuk CACAH (blog terbit, konten terdiseminasi) dan satu garis
-	 * untuk ESTIMASI jangkauan pada sumbu kanan. Skalanya memang tidak sebanding —
-	 * belasan naskah berhadapan dengan puluhan ribu orang — dan memaksanya ke satu
+	 * untuk ESTIMASI jangkauan pada sumbu kanan. Skalanya memang tidak sebanding :
+	 * belasan naskah berhadapan dengan puluhan ribu orang: dan memaksanya ke satu
 	 * sumbu membuat kedua batang rata di dasar chart lalu berhenti terbaca.
 	 *
 	 * Garis jangkauan digambar PUTUS-PUTUS memakai `garisEstimasi` dari tema. Itu
 	 * satu-satunya penanda yang terbaca tanpa legenda dan tanpa warna, dan angka
-	 * jangkauan memang hasil model — bukan hasil pengukuran. Batang boleh dibaca
+	 * jangkauan memang hasil model: bukan hasil pengukuran. Batang boleh dibaca
 	 * sebagai fakta; garis tidak.
 	 *
-	 * Tanpa data, `option` bernilai `null` — bukan batang bernilai nol (CH-4).
+	 * Tanpa data, `option` bernilai `null`: bukan batang bernilai nol (CH-4).
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import {

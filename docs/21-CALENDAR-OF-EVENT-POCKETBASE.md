@@ -1,4 +1,4 @@
-# Calendar of Event — PocketBase
+# Calendar of Event: PocketBase
 
 ## Status implementasi
 

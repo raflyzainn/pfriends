@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * VerifSebaranChapter — dari chapter dan komunitas mana kontribusi datang.
+	 * VerifSebaranChapter: dari chapter dan komunitas mana kontribusi datang.
 	 *
 	 * Props:
 	 * @prop {{label:string, value:number}[]} data
@@ -13,7 +13,7 @@
 	 *    pembaca tidak perlu menjumlahkan potongan sendiri untuk tahu "dari berapa".
 	 * 2. **Label potongan dimatikan; keterangannya hidup sebagai daftar teks di
 	 *    bawah chart.** Enam label yang menggantung di tepi donat saling bertindih
-	 *    pada lebar ponsel, dan yang tertutup justru potongan terkecil — persis
+	 *    pada lebar ponsel, dan yang tertutup justru potongan terkecil: persis
 	 *    chapter yang paling perlu diperhatikan.
 	 * 3. **Palet kategorikal `series` dipakai apa adanya, tanpa heksadesimal baru.**
 	 *    Urutannya tetap, sehingga warna sebuah chapter tidak berpindah ketika

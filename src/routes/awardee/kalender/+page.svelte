@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN — Kalender Komunitas (`/awardee/kalender`).
+	 * HALAMAN: Kalender Komunitas (`/awardee/kalender`).
 	 *
 	 * Pilar 02 Hal 5: kalender kegiatan upskilling, pertemuan komunitas, dan sharing
 	 * session, dibagi per chapter.
@@ -9,29 +9,29 @@
 	 * **hadir**. Mendaftar adalah niat, dan niat tidak berpoin. Hadir adalah
 	 * kontribusi yang benar-benar terjadi, dan itulah yang dihargai Hal 11 dengan 15
 	 * poin. Karena itu tab "Mendatang" hanya menawarkan pendaftaran, sedangkan tombol
-	 * "Hadiri" baru muncul pada kegiatan yang waktunya sudah berjalan — sesuatu yang
+	 * "Hadiri" baru muncul pada kegiatan yang waktunya sudah berjalan: sesuatu yang
 	 * belum terjadi tidak dapat dihadiri.
 	 *
 	 * Bukti kehadiran diambil dari dokumentasi kegiatan itu sendiri (daftar hadir dan
 	 * foto pelaksanaan yang dilampirkan panitia), bukan dikarang di sisi awardee.
 	 * Kegiatan yang belum berdokumentasi tetap menerima klaim, tetapi poinnya
-	 * menunggu — persis perilaku `GamificationEngine` untuk aksi berbukti, dan
+	 * menunggu: persis perilaku `GamificationEngine` untuk aksi berbukti, dan
 	 * halaman ini menjelaskannya alih-alih menyembunyikannya.
 	 *
 	 * Sejak V2 halaman ini punya tab ketiga, **"Usulan saya"**. Awardee bukan lagi
 	 * sekadar peserta agenda yang disusun orang lain: ia boleh mengusulkan kegiatan
 	 * lewat `ContentReviewService.proposeEvent`, dan berhak melihat status usulannya
-	 * beserta catatan verifikator — termasuk ketika usulannya ditolak. Usulan yang
+	 * beserta catatan verifikator: termasuk ketika usulannya ditolak. Usulan yang
 	 * hilang tanpa kabar adalah cara tercepat menghentikan orang mengusulkan lagi.
 	 *
 	 * Perhatikan pemisahan sumber data: tab agenda membaca `catalog.publishedEvents`
 	 * (sudah lewat gerbang `isPubliclyVisible`), tab usulan membaca
-	 * `editorial.myEvents`. Keduanya sengaja tidak digabung — usulan mentah tidak
+	 * `editorial.myEvents`. Keduanya sengaja tidak digabung: usulan mentah tidak
 	 * boleh pernah ikut tampil sebagai agenda resmi (risiko R-09).
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 02, Hal 11 Attend online session 15 pts
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.14 route /awardee/kalender, §3.5 WP-05 butir 3
-	 * @see docs/10-REVISION-SPEC.md — §5.4 alur usulan kegiatan
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 02, Hal 11 Attend online session 15 pts
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.14 route /awardee/kalender, §3.5 WP-05 butir 3
+	 * @see docs/10-REVISION-SPEC.md: §5.4 alur usulan kegiatan
 	 */
 
 	import { onMount } from 'svelte';
@@ -64,7 +64,7 @@
 	import EventProposalForm from '../_components/EventProposalForm.svelte';
 	import ProposalStatusCard from '../_components/ProposalStatusCard.svelte';
 
-	/** Nilai poin kehadiran — dibaca dari tabel kanonik, tidak pernah ditulis literal. */
+	/** Nilai poin kehadiran: dibaca dari tabel kanonik, tidak pernah ditulis literal. */
 	const POIN_HADIR = poinUntuk(ActivityType.SESSION_ATTEND);
 
 	/**
@@ -93,7 +93,7 @@
 
 	const awardee = $derived(session.awardee);
 
-	/** Sisa kuota klaim kehadiran hari ini — rancangan anti-spam, bukan hukuman. */
+	/** Sisa kuota klaim kehadiran hari ini: rancangan anti-spam, bukan hukuman. */
 	const kuotaHadir = $derived(gamification.usageFor(ActivityType.SESSION_ATTEND));
 
 	const opsiJenis = [
@@ -104,7 +104,7 @@
 	/**
 	 * Agenda resmi, sudah tersaring gerbang publik.
 	 *
-	 * Sumbernya `catalog.publishedEvents` — yang menerapkan `isPubliclyVisible` —
+	 * Sumbernya `catalog.publishedEvents`: yang menerapkan `isPubliclyVisible` :
 	 * BUKAN `catalog.events` mentah. Sejak kegiatan punya status `DIUSULKAN`, daftar
 	 * mentah memuat usulan yang belum diputuskan siapa pun, dan menampilkannya di
 	 * tab "Mendatang" berarti mengumumkan agenda yang belum tentu terjadi. Usulan
@@ -134,7 +134,7 @@
 	 * Usulan kegiatan milik akun yang sedang masuk, terbaru lebih dulu.
 	 *
 	 * Dibaca dari `editorial.myEvents`, yang menyaring lewat `proposedBy` pada
-	 * repository — bukan dengan menyaring daftar katalog di sini. Usulan orang lain
+	 * repository: bukan dengan menyaring daftar katalog di sini. Usulan orang lain
 	 * bukan urusan halaman ini, dan penyaring yang ditulis di antarmuka akan
 	 * membocorkannya pada hari pertama seseorang mengubah urutan `{#each}`.
 	 */
@@ -207,7 +207,7 @@
 
 	/**
 	 * Nama chapter penyelenggara. Kegiatan tanpa chapter terbuka untuk semua batch,
-	 * dan itu perlu dikatakan — bukan dibiarkan kosong.
+	 * dan itu perlu dikatakan: bukan dibiarkan kosong.
 	 * @param {import('$lib/domain/entities/CommunityEvent.js').CommunityEvent} kegiatan
 	 * @returns {string}
 	 */
@@ -247,7 +247,7 @@
 		toast.push({
 			type: ToastType.INFO,
 			title: 'Belum ada sesi awardee',
-			message: 'Masuk sebagai awardee PFfriends untuk mendaftar dan mencatat kehadiran.'
+			message: 'Masuk sebagai awardee PFriends untuk mendaftar dan mencatat kehadiran.'
 		});
 		return false;
 	}
@@ -297,7 +297,7 @@
 	 * Urutannya disengaja: mesin gamifikasi memutuskan lebih dulu, dan daftar hadir
 	 * kegiatan baru diperbarui bila aksinya benar-benar diterima. Membalik urutan itu
 	 * akan menghasilkan awardee yang tercatat hadir pada kegiatan yang klaimnya
-	 * ditolak kuota harian — dua halaman yang saling membantah.
+	 * ditolak kuota harian: dua halaman yang saling membantah.
 	 *
 	 * @param {import('$lib/domain/entities/CommunityEvent.js').CommunityEvent} kegiatan
 	 * @returns {Promise<void>}
@@ -325,13 +325,13 @@
 </script>
 
 <svelte:head>
-	<title>Calendar of Event — PFfriends</title>
+	<title>Calendar of Event: PFriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 02 · Kalender Komunitas"
 	title="Calendar of Event"
-	subtitle="Upskilling, pertemuan chapter, dan sharing session PFfriends. Daftar untuk mengamankan kursi, catat kehadiranmu setelah sesi berjalan — dan usulkan sendiri kegiatan yang belum ada."
+	subtitle="Upskilling, pertemuan chapter, dan sharing session PFriends. Daftar untuk mengamankan kursi, catat kehadiranmu setelah sesi berjalan: dan usulkan sendiri kegiatan yang belum ada."
 />
 
 <div class="mt-5 flex flex-wrap items-center gap-3">
@@ -433,13 +433,13 @@
 			<EmptyState
 				icon={ICONS.calendar}
 				title="Belum ada kegiatan terjadwal"
-				message="Agenda baru biasanya diumumkan awal bulan lewat Kabar PFfriends. Sementara menunggu, kamu bisa menelusuri kegiatan yang sudah berlangsung."
+				message="Agenda baru biasanya diumumkan awal bulan lewat Kabar PFriends. Sementara menunggu, kamu bisa menelusuri kegiatan yang sudah berlangsung."
 				actionLabel="Lihat kegiatan lampau"
 				onAction={() => (tabAktif = TAB_LAMPAU)}
 			/>
 		</div>
 	{:else}
-		<!-- Dua penjaga lebar, keduanya pada butir grid — bukan di dalam `EventCard`,
+		<!-- Dua penjaga lebar, keduanya pada butir grid: bukan di dalam `EventCard`,
 		     yang komponen bersama dan bukan milik paket ini.
 
 		     `min-w-0`: butir grid berbaku `min-width: auto`, sehingga kartu tidak pernah
@@ -450,7 +450,7 @@
 		     yang induk `inline-flex`-nya tidak ber-`min-w-0`, jadi pemotongannya tidak
 		     pernah aktif dan nama tempat yang panjang tetap menjulur ~78 px. Menahannya di
 		     tepi kartu membuat luberan itu tidak lagi merambat ke dokumen. Bayangan kartu
-		     tidak terpotong — `overflow` hanya mengurung keturunan, bukan kotak elemennya
+		     tidak terpotong: `overflow` hanya mengurung keturunan, bukan kotak elemennya
 		     sendiri. Akar masalahnya dilaporkan ke pemilik `EventCard`. -->
 		<div class="mt-6 grid gap-4 md:grid-cols-2 [&>*]:min-w-0 [&>*]:overflow-hidden">
 			{#each mendatang as kegiatan (kegiatan.id)}
@@ -487,7 +487,7 @@
 					<EmptyState
 						icon={ICONS.user}
 						title="Sesi awardee belum termuat"
-						message="Masuk sebagai awardee PFfriends untuk mengusulkan kegiatan dan melihat status usulanmu."
+						message="Masuk sebagai awardee PFriends untuk mengusulkan kegiatan dan melihat status usulanmu."
 						actionLabel="Ke halaman Masuk"
 						actionHref="/masuk"
 					/>
@@ -499,7 +499,7 @@
 					<EmptyState
 						icon={ICONS.calendar}
 						title="Kamu belum pernah mengusulkan kegiatan"
-						message="Kegiatan komunitas tidak harus datang dari Pertamina Foundation. Usulkan kelas, pertemuan, atau sharing session yang kamu butuhkan lewat formulir di samping — verifikator akan memutuskannya beserta alasannya."
+						message="Kegiatan komunitas tidak harus datang dari Pertamina Foundation. Usulkan kelas, pertemuan, atau sharing session yang kamu butuhkan lewat formulir di samping: verifikator akan memutuskannya beserta alasannya."
 						size="sm"
 					/>
 				</div>
@@ -632,7 +632,7 @@
 	{#if kuotaHadir?.exhausted}
 		<p class="mt-4 text-[13px] leading-relaxed text-ink-600">
 			Kuota klaim kehadiran hari ini sudah penuh ({kuotaHadir.cap} sesi). Batas ini menjaga agar poin
-			tetap menandai kontribusi yang sungguh terjadi — kegiatan lain dapat diklaim besok.
+			tetap menandai kontribusi yang sungguh terjadi: kegiatan lain dapat diklaim besok.
 		</p>
 	{/if}
 {/if}

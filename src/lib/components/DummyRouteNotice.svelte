@@ -6,6 +6,7 @@
 	const path = $derived(page.url.pathname);
 	const message = $derived.by(() => {
 		if (['/masuk', '/daftar', '/pendaftaran/status'].includes(path)) return '';
+		if (path === '/' || path.startsWith('/cerita') || path.startsWith('/komunitas') || path.startsWith('/metode-pengukuran')) return '';
 		if (path.startsWith('/awardee/bukti-keaktifan')) return '';
 		if (path.startsWith('/awardee/direktori')) return '';
 		if (path.startsWith('/awardee/penghargaan')) return '';
@@ -13,8 +14,10 @@
 		if (path.startsWith('/verifikator/bukti-keaktifan') || path.startsWith('/verifikator/pendaftaran')) return '';
 		if (path.startsWith('/verifikator/gamifikasi')) return '';
 		if (path.startsWith('/admin/pendaftaran')) return '';
+		if (path.startsWith('/admin/broadcast')) return '';
 		if (path === '/verifikator') return ''; // Ditandai per-widget karena sumbernya campuran.
 		if (path.startsWith('/verifikator/kegiatan')) return '';
+		if (path.startsWith('/verifikator/kabar')) return '';
 		if (path.startsWith('/verifikator/cerita')) return 'Antrean dan keputusan pada halaman ini masih memakai data lokal Dexie.';
 		if (path.startsWith('/admin/gamifikasi')) return '';
 		if (path.startsWith('/admin')) return 'Data KPI dan pengelolaan akun pada halaman ini masih memakai data lokal Dexie.';

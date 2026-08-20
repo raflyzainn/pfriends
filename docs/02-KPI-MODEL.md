@@ -1,4 +1,4 @@
-# 02 — Model Pengukuran KPI "Pfriends"
+# 02: Model Pengukuran KPI "Pfriends"
 
 > **Turunan langsung dari** `00-SOURCE-BRIEF.md` (Hal 6, 9, 10, 11, 12).
 > Semua angka target, poin, dan threshold di dokumen ini **identik** dengan sumber. Setiap angka yang
@@ -53,7 +53,7 @@ MERAH  : ach <  0.80          (intervensi diperlukan)
 ```
 
 Untuk metrik berbasis **cacah bilangan kecil** (target 1–2 unit), aturan di atas dibulatkan ke bawah
-menjadi tangga diskrit — dijabarkan per metrik di bagian 2.
+menjadi tangga diskrit: dijabarkan per metrik di bagian 2.
 
 ### 1.3 Registry Parameter (satu tempat, tidak boleh hardcode di komponen)
 
@@ -74,23 +74,23 @@ Diimplementasikan sebagai `src/lib/domain/kpi/KpiParameters.js` (objek beku / `O
 | `WINDOW_ANGGOTA_AKTIF` | `90` hari | **`[ASUMSI]`** |
 | `KUORUM_ENGAGEMENT` | `10` peserta | **`[ASUMSI]`** |
 | `DEDUP_WINDOW_AMPLIFIKASI` | `24` jam | **`[ASUMSI]`** |
-| `CAP_AMPLIFIKASI_HARIAN` | `5` event/anggota/hari | **`[ASUMSI]`** — turunan catatan anti-spam Hal 11 |
+| `CAP_AMPLIFIKASI_HARIAN` | `5` event/anggota/hari | **`[ASUMSI]`**: turunan catatan anti-spam Hal 11 |
 | `OVERLAP_JARINGAN` (δ) | `0.30` | **`[ASUMSI]`** |
-| `SATURASI_KONTEN` | `>6` konten/bulan → flag spam | **`[ASUMSI]`** — turunan catatan anti-spam Hal 11 |
+| `SATURASI_KONTEN` | `>6` konten/bulan → flag spam | **`[ASUMSI]`**: turunan catatan anti-spam Hal 11 |
 
 ---
 
 ## 2. Lima Metrik Inti (Hal 6)
 
-### M-01 — Coverage Registrasi Penerima Manfaat
+### M-01: Coverage Registrasi Penerima Manfaat
 
 > *"75% dari penerima manfaat Pertamina Foundation terdata dalam komunitas Pfriends."*
 
 | Aspek | Isi |
 |---|---|
-| **Definisi operasional** | Proporsi penerima manfaat pada master registry PF (hasil pengumpulan & validasi database PFpreneur + PFprestasi, Hal 7 Januari) yang telah memiliki akun Pfriends berstatus terverifikasi **dan** telah memberikan persetujuan data (consent). Akun tanpa consent **tidak dihitung** — konsekuensi langsung pilar Governance Hal 10. |
+| **Definisi operasional** | Proporsi penerima manfaat pada master registry PF (hasil pengumpulan & validasi database PFpreneur + PFprestasi, Hal 7 Januari) yang telah memiliki akun Pfriends berstatus terverifikasi **dan** telah memberikan persetujuan data (consent). Akun tanpa consent **tidak dihitung**: konsekuensi langsung pilar Governance Hal 10. |
 | **Numerator** | `‖{ m ∈ M : m.status = 'verified' ∧ m.consent = true }‖` |
-| **Denominator** | `‖B‖` — total penerima manfaat pada master registry, snapshot awal periode |
+| **Denominator** | `‖B‖`: total penerima manfaat pada master registry, snapshot awal periode |
 | **Frekuensi refresh** | Harian (mockup: reaktif langsung dari Dexie) |
 | **Sumber data** | Dexie `beneficiaryRegistry` (denominator), `members` (numerator) |
 | **Granularitas irisan** | Segmen (SOBI / PFpreneur), batch (PF 10, PF 11, PF 12, …), provinsi |
@@ -106,12 +106,12 @@ CVG(p) = ‖{ m ∈ M : verified ∧ consent }‖ / ‖B‖ × 100%
 | 🔴 Merah | `CVG < 60%` | `ach < 0.80` |
 
 **Catatan integritas:** `‖B‖` harus dibekukan sebagai snapshot per periode. Jika denominator ikut
-bertambah tiap kali data baru masuk, coverage akan terlihat stagnan meski numerator naik — jebakan
+bertambah tiap kali data baru masuk, coverage akan terlihat stagnan meski numerator naik: jebakan
 pengukuran yang umum. Simpan `registrySnapshotId` pada tiap hasil perhitungan.
 
 ---
 
-### M-02 — Volume Konten Terdiseminasi
+### M-02: Volume Konten Terdiseminasi
 
 > *"1–2 konten Pertamina dan/atau PF terdiseminasi di forum komunitas Pfriends dalam satu bulan."*
 
@@ -119,9 +119,9 @@ pengukuran yang umum. Simpan `registrySnapshotId` pada tiap hasil perhitungan.
 |---|---|
 | **Definisi operasional** | Cacah **item konten unik** bersumber Pertamina dan/atau Pertamina Foundation yang berstatus `published` ke forum komunitas dalam bulan berjalan. Menghitung *aset konten*, bukan peristiwa pengirimannya (lihat M-03 untuk peristiwa). Satu konten yang dikirim ulang 3 kali tetap dihitung **1**. |
 | **Numerator** | `‖C(p)‖` |
-| **Denominator** | — (metrik cacah absolut, bukan rasio) |
+| **Denominator** |: (metrik cacah absolut, bukan rasio) |
 | **Frekuensi refresh** | Harian, akumulasi berjalan dalam bulan (`month-to-date`) |
-| **Sumber data** | Dexie `contents` — filter `source ∈ {PERTAMINA, PF}`, `status = 'published'`, `publishedAt ∈ p` |
+| **Sumber data** | Dexie `contents`: filter `source ∈ {PERTAMINA, PF}`, `status = 'published'`, `publishedAt ∈ p` |
 
 ```
 VKT(p) = ‖{ c ∈ contents : c.source ∈ {PERTAMINA, PF}
@@ -136,23 +136,23 @@ VKT(p) = ‖{ c ∈ contents : c.source ∈ {PERTAMINA, PF}
 | 🔴 Merah | `VKT = 0` | Tidak ada diseminasi konten |
 
 **Flag saturasi (indikator terpisah, bukan warna KPI):** bila `VKT > 6` **`[ASUMSI]`**, dashboard
-menampilkan lencana peringatan *"risiko over-posting"*. Dasar: catatan Hal 11 — *"Points should reward
+menampilkan lencana peringatan *"risiko over-posting"*. Dasar: catatan Hal 11: *"Points should reward
 meaningful contribution, not spammy activity."* Volume tinggi tanpa kenaikan `AR` (M-04) adalah sinyal
 kelelahan audiens, bukan prestasi.
 
 ---
 
-### M-03 — Frekuensi Diseminasi
+### M-03: Frekuensi Diseminasi
 
 > *"Melakukan diseminasi informasi ke komunitas minimal 2 kali dalam satu bulan."*
 
 | Aspek | Isi |
 |---|---|
-| **Definisi operasional** | Cacah **hari kalender unik** yang memiliki minimal satu broadcast berstatus `sent`. Dihitung per hari — bukan per broadcast — supaya satu batch berisi 5 pesan yang dikirim serentak dalam 10 menit tidak dihitung sebagai 5 kali diseminasi. Ini metrik **ritme komunikasi**, sedangkan M-02 metrik **stok konten**. |
+| **Definisi operasional** | Cacah **hari kalender unik** yang memiliki minimal satu broadcast berstatus `sent`. Dihitung per hari: bukan per broadcast: supaya satu batch berisi 5 pesan yang dikirim serentak dalam 10 menit tidak dihitung sebagai 5 kali diseminasi. Ini metrik **ritme komunikasi**, sedangkan M-02 metrik **stok konten**. |
 | **Numerator** | `‖{ d ∈ hari(p) : ∃ b ∈ D(p), tanggal(b.sentAt) = d }‖` |
-| **Denominator** | — (metrik cacah absolut) |
+| **Denominator** |: (metrik cacah absolut) |
 | **Frekuensi refresh** | Harian (`month-to-date`) |
-| **Sumber data** | Dexie `broadcasts` — filter `status = 'sent'`, `sentAt ∈ p` |
+| **Sumber data** | Dexie `broadcasts`: filter `status = 'sent'`, `sentAt ∈ p` |
 
 ```
 FD(p) = ‖ { d ∈ hari(p) : ∃ b ∈ broadcasts,
@@ -165,7 +165,7 @@ FD(p) = ‖ { d ∈ hari(p) : ∃ b ∈ broadcasts,
 | 🟡 Kuning | `FD = 1` |
 | 🔴 Merah | `FD = 0` |
 
-**Metrik pendamping — keteraturan ritme** (opsional, tampil sebagai teks kecil di kartu):
+**Metrik pendamping: keteraturan ritme** (opsional, tampil sebagai teks kecil di kartu):
 
 ```
 Jarak_rata2 = mean( selisih hari antar tanggal diseminasi berurutan )
@@ -176,13 +176,13 @@ komunitas. Nilai `Jarak_rata2` mendekati 15 hari menandakan kadens yang sehat.
 
 ---
 
-### M-04 — Amplification Rate
+### M-04: Amplification Rate
 
 > *"50% anggota komunitas ikut melakukan amplifikasi informasi Pertamina dan/atau PF."*
 
 | Aspek | Isi |
 |---|---|
-| **Definisi operasional** | Proporsi anggota aktif yang melakukan **minimal satu** aksi amplifikasi terhitung (level L2 ke atas, lihat bagian 5) dalam periode. Dihitung berbasis **anggota unik**, bukan jumlah share — 1 anggota yang membagikan 20 kali tetap dihitung sebagai 1 amplifier. |
+| **Definisi operasional** | Proporsi anggota aktif yang melakukan **minimal satu** aksi amplifikasi terhitung (level L2 ke atas, lihat bagian 5) dalam periode. Dihitung berbasis **anggota unik**, bukan jumlah share: 1 anggota yang membagikan 20 kali tetap dihitung sebagai 1 amplifier. |
 | **Numerator** | `‖{ u ∈ M_aktif(p) : ampCount(u, p) ≥ 1 }‖` |
 | **Denominator** | `‖M_aktif(p)‖` |
 | **Frekuensi refresh** | Harian (`month-to-date`) |
@@ -198,26 +198,26 @@ AR(p) = ‖{ u ∈ M_aktif(p) : ampCount(u, p) >= 1 }‖ / ‖M_aktif(p)‖ × 1
 | 🟡 Kuning | `40% ≤ AR < 50%` |
 | 🔴 Merah | `AR < 40%` |
 
-**Dua varian denominator — tampilkan keduanya, jangan pilih diam-diam:**
+**Dua varian denominator: tampilkan keduanya, jangan pilih diam-diam:**
 
 | Varian | Denominator | Penggunaan |
 |---|---|---|
-| `AR_aktif` | `‖M_aktif(p)‖` | **KPI utama** — mengukur kesehatan komunitas yang benar-benar hidup |
-| `AR_total` | `‖M‖` (seluruh anggota terverifikasi) | **Angka tata kelola** — selalu ≤ `AR_aktif`; dilaporkan ke stakeholder eksternal agar tidak terkesan membesarkan hasil dengan memperkecil denominator |
+| `AR_aktif` | `‖M_aktif(p)‖` | **KPI utama**: mengukur kesehatan komunitas yang benar-benar hidup |
+| `AR_total` | `‖M‖` (seluruh anggota terverifikasi) | **Angka tata kelola**: selalu ≤ `AR_aktif`; dilaporkan ke stakeholder eksternal agar tidak terkesan membesarkan hasil dengan memperkecil denominator |
 
 Selisih besar antara keduanya adalah diagnosis penting: banyak anggota terdaftar yang sudah dorman.
 
 ---
 
-### M-05 — Aktivitas Engagement Terlaksana
+### M-05: Aktivitas Engagement Terlaksana
 
 > *"2 aktivitas engagement komunitas terlaksana."*
 
 | Aspek | Isi |
 |---|---|
-| **Definisi operasional** | Cacah kegiatan komunitas (upskilling, sharing session, pertemuan komunitas, movement-based action — Hal 5) berstatus `completed` yang memenuhi **gerbang bukti**: minimal 1 lampiran dokumentasi **dan** jumlah hadir ≥ kuorum. Kegiatan yang dijadwalkan tetapi tidak terbukti terlaksana **tidak dihitung** — kata kunci pada sumber adalah *"terlaksana"*, bukan *"terjadwal"*. |
+| **Definisi operasional** | Cacah kegiatan komunitas (upskilling, sharing session, pertemuan komunitas, movement-based action: Hal 5) berstatus `completed` yang memenuhi **gerbang bukti**: minimal 1 lampiran dokumentasi **dan** jumlah hadir ≥ kuorum. Kegiatan yang dijadwalkan tetapi tidak terbukti terlaksana **tidak dihitung**: kata kunci pada sumber adalah *"terlaksana"*, bukan *"terjadwal"*. |
 | **Numerator** | `‖{ e ∈ E(p) : status='completed' ∧ ‖e.evidence‖ ≥ 1 ∧ e.attendees ≥ KUORUM }‖` |
-| **Denominator** | — (metrik cacah absolut) |
+| **Denominator** |: (metrik cacah absolut) |
 | **Frekuensi refresh** | Mingguan (kegiatan berdurasi; bukti sering menyusul beberapa hari) |
 | **Sumber data** | Dexie `events`, `eventAttendance`, `evidences` |
 
@@ -233,7 +233,7 @@ AE(p) = ‖{ e ∈ events : e.status = 'completed'
 | 🟡 Kuning | `AE = 1` |
 | 🔴 Merah | `AE = 0` |
 
-> **⚠ AMBIGUITAS SUMBER — wajib dikonfirmasi ke Corsec.**
+> **⚠ AMBIGUITAS SUMBER: wajib dikonfirmasi ke Corsec.**
 > Hal 6 menulis *"2 aktivitas engagement komunitas terlaksana"* **tanpa menyebut periode**, sementara empat
 > objective lainnya eksplisit bulanan. Dokumen ini **tidak menebak**. Implementasi memakai parameter
 > `periodMode` dengan tiga mode terpilih di konfigurasi:
@@ -262,7 +262,7 @@ AE(p) = ‖{ e ∈ events : e.status = 'completed'
 
 ## 3. Model Dampak Inisiatif: Reach & Earned Media
 
-### 3.1 Rekonsiliasi Angka Sumber (penting — baca sebelum implementasi)
+### 3.1 Rekonsiliasi Angka Sumber (penting: baca sebelum implementasi)
 
 Hal 6 menyatakan:
 - 1 anggota rata-rata memiliki **25–500** jaringan sosial;
@@ -276,7 +276,7 @@ Perkalian langsung menghasilkan batas bawah yang **tidak sama** dengan yang tert
 | Atas | `100 × 500 = 50.000` | **50.000** | ✅ |
 
 Dokumen ini **tidak mengubah angka sumber**. Sebagai gantinya, model memperkenalkan **koefisien
-eksposur** `α` — proporsi jaringan yang benar-benar melihat konten. Koefisien ini memang eksis di dunia
+eksposur** `α`: proporsi jaringan yang benar-benar melihat konten. Koefisien ini memang eksis di dunia
 nyata (jangkauan organik media sosial jauh di bawah 100% pengikut), dan dengan `α` kedua angka Hal 6
 tereproduksi **persis**:
 
@@ -316,7 +316,7 @@ eksposur penuh)*. **`[ASUMSI]`** `α ∈ [0,10 ; 1,00]`.
 Menjumlahkan jaringan mereka tanpa diskon menghitung orang yang sama berkali-kali. Batas bawah
 `δ = 0` hanya sah jika seluruh anggota punya audiens yang benar-benar terpisah.
 
-**Aturan penyajian yang tegas — dua angka, dua fungsi berbeda:**
+**Aturan penyajian yang tegas: dua angka, dua fungsi berbeda:**
 
 | Angka | Formula | Dipakai untuk |
 |---|---|---|
@@ -328,16 +328,16 @@ angka perencanaan adalah kesalahan analitik yang paling sering terjadi pada lapo
 
 ### 3.3 Earned Media Value (EMV)
 
-Dua basis perhitungan. **Jangan pernah menjumlahkan keduanya** — keduanya mengukur peristiwa yang sama
+Dua basis perhitungan. **Jangan pernah menjumlahkan keduanya**: keduanya mengukur peristiwa yang sama
 dari sudut berbeda; menjumlahkannya adalah *double counting*.
 
-**Basis A — nilai setara impresi (sekunder, batas atas optimistis):**
+**Basis A: nilai setara impresi (sekunder, batas atas optimistis):**
 
 ```
 EMV_impresi = (Reach_neto / 1.000) × CPM_pasar
 ```
 
-**Basis B — nilai setara engagement (PRIMER, direkomendasikan):**
+**Basis B: nilai setara engagement (PRIMER, direkomendasikan):**
 
 ```
 ER_komunitas = ER_brand × k          , k ∈ [2 ; 3]        ← Hal 6
@@ -363,7 +363,7 @@ Hal 6: *"Earned media dari komunitas bisa menurunkan kebutuhan paid media hingga
 Penghematan = Belanja_paid_baseline × s          , s ∈ [0,05 ; 0,20]
 ```
 
-**Aturan pembatas wajib (guardrail) — mencegah klaim berlebih:**
+**Aturan pembatas wajib (guardrail): mencegah klaim berlebih:**
 
 ```
 Penghematan_klaim = min( Penghematan,
@@ -373,7 +373,7 @@ Penghematan_klaim = min( Penghematan,
 
 Penghematan tidak boleh diklaim melebihi nilai yang benar-benar dihasilkan komunitas (`EMV`), dan
 tidak boleh melewati plafon 20% yang ditetapkan sumber. Kata *"hingga"* pada Hal 6 menandakan
-**batas atas**, bukan nilai harapan — implementasi harus menghormati itu.
+**batas atas**, bukan nilai harapan: implementasi harus menghormati itu.
 
 ### 3.5 Skenario Referensi (validasi implementasi)
 
@@ -390,7 +390,7 @@ Uji regresi wajib: dengan `A = 100`, hasil berikut harus tereproduksi tepat.
 
 Setiap kartu reach/EMV di dashboard **wajib** memiliki ikon informasi yang membuka panel asumsi berisi
 tabel ini beserta nilai parameter yang sedang dipakai. Angka estimasi tanpa asumsi yang terlihat akan
-diperlakukan pembaca sebagai fakta terukur — risiko kredibilitas yang tidak sepadan.
+diperlakukan pembaca sebagai fakta terukur: risiko kredibilitas yang tidak sepadan.
 
 | # | Asumsi | Status |
 |---|---|---|
@@ -399,14 +399,14 @@ diperlakukan pembaca sebagai fakta terukur — risiko kredibilitas yang tidak se
 | 3 | Tumpang tindih audiens `δ = 0,30` | **`[ASUMSI]`** |
 | 4 | Amplifikasi terkonfirmasi = benar-benar tayang | Lemah pada level L2, kuat pada L4 (bagian 5) |
 | 5 | `CPM`/`CPE` pasar mewakili nilai yang setara | Input eksternal, perlu rate card |
-| 6 | Reach organik tidak menurun seiring frekuensi posting | **Tidak realistis** — pantau lewat flag saturasi M-02 |
+| 6 | Reach organik tidak menurun seiring frekuensi posting | **Tidak realistis**: pantau lewat flag saturasi M-02 |
 
 ---
 
 ## 4. KPI Aktivitas vs KPI ESG (Hal 10)
 
 > *"KPI Aktivitas membuktikan bahwa program **berjalan**. KPI ESG membuktikan bahwa program
-> **menciptakan nilai**."* — Hal 10
+> **menciptakan nilai**."*: Hal 10
 
 Hal 9 mempertegas arah: **"Amplification KPI → Engagement KPI + ESG evidence KPI"**. Artinya KPI
 amplifikasi tunggal dipecah menjadi dua lapis yang berbeda sifat.
@@ -420,13 +420,13 @@ amplifikasi tunggal dipecah menjadi dua lapis yang berbeda sifat.
 | Sumber angka | Log sistem, otomatis | Bukti terkurasi + validasi manusia |
 | Horizon waktu | Harian–bulanan | Kuartalan–tahunan |
 | Syarat verifikasi | Tidak ada (sistem yang mencatat) | **Wajib 4 unsur** (lihat 4.2) |
-| Bisa dimanipulasi? | **Ya** — volume mudah dinaikkan | Sulit — butuh bukti dan persetujuan |
+| Bisa dimanipulasi? | **Ya**: volume mudah dinaikkan | Sulit: butuh bukti dan persetujuan |
 | Konsumen | Tim operasional Corsec | Manajemen, auditor, pelaporan keberlanjutan |
 | Mode kegagalan | Angka bagus, dampak nihil | Dampak nyata tidak terdokumentasi |
 | Contoh | M-02, M-03, jumlah klik | Jam mentoring tervalidasi, aksi lingkungan berbukti |
 
 **Konsekuensi desain:** M-01 sampai M-05 seluruhnya adalah **KPI Aktivitas**. Kelimanya tidak
-membuktikan penciptaan nilai — dan dashboard tidak boleh menyiratkan sebaliknya. Karena itu dashboard
+membuktikan penciptaan nilai: dan dashboard tidak boleh menyiratkan sebaliknya. Karena itu dashboard
 dipisah menjadi dua tab dengan judul eksplisit, bukan digabung dalam satu grid.
 
 ### 4.2 Gerbang Bukti ESG (Hal 12)
@@ -450,13 +450,13 @@ layakESG(r) = r.aktivitasTerdokumentasi
 
 Bandingkan dengan gerbang **public feature** Hal 12 yang berbeda dan lebih ketat:
 `100 poin + verified story + consent + PF validation + no sensitive-data concern`.
-Keduanya diimplementasi sebagai dua kelas policy terpisah — jangan digabung.
+Keduanya diimplementasi sebagai dua kelas policy terpisah: jangan digabung.
 
 ### 4.3 Katalog KPI ESG per Pilar
 
 Diturunkan langsung dari kolom *Bukti/Metrik* Hal 10.
 
-#### Environmental — *climate literacy, clean energy campaign, waste reduction, local environmental action*
+#### Environmental: *climate literacy, clean energy campaign, waste reduction, local environmental action*
 
 | ID | KPI | Formula | Sumber data |
 |---|---|---|---|
@@ -466,7 +466,7 @@ Diturunkan langsung dari kolom *Bukti/Metrik* Hal 10.
 | E-04 | Rasio laporan beroutcome | `count(action WITH outcomeNote) / count(action)` | `esgRecords` |
 | E-05 | Kelengkapan dokumentasi foto | `count(action WITH ≥1 foto) / count(action)` | `evidences` |
 
-#### Social — *alumni progress, mentoring hours, business growth, event completion*
+#### Social: *alumni progress, mentoring hours, business growth, event completion*
 
 | ID | KPI | Formula | Sumber data |
 |---|---|---|---|
@@ -476,7 +476,7 @@ Diturunkan langsung dari kolom *Bukti/Metrik* Hal 10.
 | S-04 | Event completion rate | `count(event completed) / count(event scheduled)` | `events` |
 | S-05 | Rasio mentor aktif | `count(member sbg mentor ∈ p) / ‖M_aktif‖` | `mentoringSessions` |
 
-#### Governance — *consent, approval, data quality, evidence integrity, escalation protocol*
+#### Governance: *consent, approval, data quality, evidence integrity, escalation protocol*
 
 | ID | KPI | Formula | Sumber data |
 |---|---|---|---|
@@ -514,8 +514,8 @@ kepastian, melainkan **memberi tingkat keyakinan** pada tiap bukti dan menyataka
 | **L4** | Tervalidasi admin | Admin menyetujui bukti L3 | Sangat tinggi | ✅ **Ya (kelas ESG)** | Poin **settled** |
 
 **Kebijakan poin (kelas `AmplificationPolicy`):**
-- L2/L3 memberikan poin berstatus `pending` — terlihat oleh anggota, sudah masuk papan peringkat.
-- L4 mengubah status menjadi `settled` — final, memenuhi syarat bukti ESG.
+- L2/L3 memberikan poin berstatus `pending`: terlihat oleh anggota, sudah masuk papan peringkat.
+- L4 mengubah status menjadi `settled`: final, memenuhi syarat bukti ESG.
 - Penolakan admin **membatalkan** poin dan mencatat alasan pada `auditLog`.
 - Poin mengikuti Hal 11 apa adanya: **5 pts** share ke WA/jaringan privat, **8 pts** share ke media
   sosial publik. Tingkat bukti mengatur *kapan* poin diberikan, **bukan** besarnya.
@@ -553,19 +553,19 @@ Tervalidasi (L4)
 **Metrik turunan:**
 
 ```
-(a) Amplification Rate  — KPI M-04, level L2+
+(a) Amplification Rate : KPI M-04, level L2+
     AR(p) = ‖{u : ampCount_L2+(u,p) >= 1}‖ / ‖M_aktif(p)‖ × 100%
 
-(b) Amplification Rate tervalidasi — kelas ESG, level L4
+(b) Amplification Rate tervalidasi: kelas ESG, level L4
     AR_verified(p) = ‖{u : ampCount_L4(u,p) >= 1}‖ / ‖M_aktif(p)‖ × 100%
 
-(c) Kedalaman amplifikasi — rata-rata share per pengamplifikasi
+(c) Kedalaman amplifikasi: rata-rata share per pengamplifikasi
     AD(p) = ‖A(p)‖ / ‖{u : ampCount(u,p) >= 1}‖
 
-(d) Rasio amplifikasi per konten — mengurutkan konten terbaik
+(d) Rasio amplifikasi per konten: mengurutkan konten terbaik
     CAR(c) = ‖amplifier unik konten c‖ / ‖penerima konten c‖ × 100%
 
-(e) Indeks keyakinan — bagian bukti kuat dari total
+(e) Indeks keyakinan: bagian bukti kuat dari total
     CI(p) = ‖event L3 ∪ L4‖ / ‖event L2 ∪ L3 ∪ L4‖ × 100%
 ```
 
@@ -585,7 +585,7 @@ sebesar 10% berarti KPI ditopang hampir seluruhnya oleh laporan mandiri tanpa bu
 | `evidences` | `id, amplificationId, fileRef, perceptualHash, uploadedAt, reviewStatus, reviewerId, reviewedAt, rejectReason` |
 | `auditLog` | `id, actorId, action, entityType, entityId, before, after, timestamp` |
 
-`dedupeKey = hash(memberId + contentId + channel + tanggalHari)` — dijadikan indeks unik di Dexie
+`dedupeKey = hash(memberId + contentId + channel + tanggalHari)`: dijadikan indeks unik di Dexie
 sehingga aturan deduplikasi ditegakkan di lapisan penyimpanan, bukan bergantung pada disiplin kode.
 
 ---
@@ -601,7 +601,7 @@ Empat tab, memisahkan secara tegas apa yang **terjadi** dari apa yang **bernilai
 | **3. Komunitas** | Anggota, poin, tier, sebaran | Apakah komunitas hidup? |
 | **4. ESG & Dampak** | Bukti ESG, reach, EMV, SROI | Apakah tercipta nilai? |
 
-### 6.1 Kartu KPI — Tab Ringkasan
+### 6.1 Kartu KPI: Tab Ringkasan
 
 Komponen `KpiCard.svelte` (pola mengikuti Enduro).
 
@@ -622,42 +622,42 @@ Kolom **Sumbu X / Sumbu Y / Seri** dapat disalin langsung ke `option` ECharts. S
 memakai wrapper `EChart.svelte` (`{ option, height }`) dan token dari `_chartTheme.js`
 (`tip`, `legend`, `axisLabel`, `palette`) sesuai konvensi repo Enduro.
 
-#### Tab 1 — Ringkasan
+#### Tab 1: Ringkasan
 
 | ID | Komponen | Tipe | Sumbu X | Sumbu Y | Seri | Metrik |
 |---|---|---|---|---|---|---|
-| C-01 | `CoverageGaugeChart.svelte` | **gauge** | — | — | 1 seri `gauge`, `value = CVG`, `min 0` `max 100`, `axisLine.lineStyle.color = [[0.60,merah],[0.75,kuning],[1,hijau]]`, `markLine` di 75 | M-01 |
+| C-01 | `CoverageGaugeChart.svelte` | **gauge** |: |: | 1 seri `gauge`, `value = CVG`, `min 0` `max 100`, `axisLine.lineStyle.color = [[0.60,merah],[0.75,kuning],[1,hijau]]`, `markLine` di 75 | M-01 |
 | C-02 | `CoverageSegmentBar.svelte` | **bar** (horizontal) | `type:'value'`, 0–100 (%) | `type:'category'`: SOBI, PFpreneur, PF 10, PF 11, PF 12 | S1 `bar` Terdaftar %, S2 `bar` sisa (stack, abu), `markLine` vertikal di 75 | M-01 |
 | C-03 | `DisseminationComboChart.svelte` | **bar + line** | `type:'category'`: Jan–Jul 2026 | Kiri `value` jumlah konten; kanan `value` jumlah hari | S1 `bar` Konten (M-02), S2 `line` Hari diseminasi (M-03, `yAxisIndex:1`), `markLine` di 2 | M-02, M-03 |
 | C-04 | `AmplificationTrendLine.svelte` | **line** | `type:'category'`: bulan | `type:'value'` 0–100 (%) | S1 `line` `AR_aktif`, S2 `line` `AR_verified` (putus-putus), S3 `markLine` target 50% | M-04 |
-| C-05 | `KpiRadarChart.svelte` | **radar** | — | `indicator`: 5 metrik inti, `max:100` (dinormalisasi ke % capaian) | S1 Target (100 semua, abu putus-putus), S2 Aktual (`areaStyle`) | M-01…M-05 |
+| C-05 | `KpiRadarChart.svelte` | **radar** |: | `indicator`: 5 metrik inti, `max:100` (dinormalisasi ke % capaian) | S1 Target (100 semua, abu putus-putus), S2 Aktual (`areaStyle`) | M-01…M-05 |
 
-#### Tab 2 — Amplifikasi
+#### Tab 2: Amplifikasi
 
 | ID | Komponen | Tipe | Sumbu X | Sumbu Y | Seri | Metrik |
 |---|---|---|---|---|---|---|
-| C-06 | `AmplificationFunnelChart.svelte` | **funnel** | — | — | 1 seri `funnel`, `sort:'descending'`, data: Terkirim → Dibuka → Share intent → Dikonfirmasi → Berbukti → Tervalidasi; label menampilkan nilai + rasio konversi | 5.4 |
-| C-07 | `ChannelSplitPie.svelte` | **pie** (donut, `radius:['45%','70%']`) | — | — | 1 seri `pie`: WA privat, WA komunitas, Instagram, LinkedIn, TikTok, Facebook/X; `center` menampilkan total share | 5.4 |
+| C-06 | `AmplificationFunnelChart.svelte` | **funnel** |: |: | 1 seri `funnel`, `sort:'descending'`, data: Terkirim → Dibuka → Share intent → Dikonfirmasi → Berbukti → Tervalidasi; label menampilkan nilai + rasio konversi | 5.4 |
+| C-07 | `ChannelSplitPie.svelte` | **pie** (donut, `radius:['45%','70%']`) |: |: | 1 seri `pie`: WA privat, WA komunitas, Instagram, LinkedIn, TikTok, Facebook/X; `center` menampilkan total share | 5.4 |
 | C-08 | `ContentPerformanceScatter.svelte` | **scatter** | `type:'value'` Jangkauan penerima | `type:'value'` `CAR` per konten (%) | 1 seri `scatter`, `symbolSize` ∝ poin dihasilkan, warna per jenis konten, `markLine` rata-rata di kedua sumbu (kuadran) | 5.4(d) |
 | C-09 | `EvidenceLevelStackedBar.svelte` | **bar bertumpuk** | `type:'category'`: bulan | `type:'value'` jumlah event | S1 L2 Dikonfirmasi, S2 L3 Berbukti, S3 L4 Tervalidasi (`stack:'ev'`); garis tambahan indeks keyakinan `CI` di sumbu kanan | 5.4(e) |
 | C-10 | `AmplificationHeatmap.svelte` | **heatmap** | `type:'category'`: tanggal 1–31 | `type:'category'`: Sen–Min | 1 seri `heatmap`, `value = jumlah event`, `visualMap` kontinu, palet hijau | 5.4 |
 
-#### Tab 3 — Komunitas
+#### Tab 3: Komunitas
 
 | ID | Komponen | Tipe | Sumbu X | Sumbu Y | Seri | Metrik |
 |---|---|---|---|---|---|---|
 | C-11 | `TierDistributionBar.svelte` | **bar** | `type:'category'`: `0–24`, `25–49`, `50–99`, `100–149`, `150+` | `type:'value'` jumlah anggota | 1 seri `bar` dengan `itemStyle.color` per tier: abu, **biru `#2E7CD6`**, **hijau `#7CB342`**, **merah `#E53935`**, **kuning `#F0B429`** (Hal 12) | Hal 12 |
-| C-12 | `TierFunnelChart.svelte` | **funnel** | — | — | 1 seri `funnel`: Active Member (25) → Contributor (50) → Featured Candidate (100) → Champion (150); label memuat manfaat tiap tier | Hal 12 |
+| C-12 | `TierFunnelChart.svelte` | **funnel** |: |: | 1 seri `funnel`: Active Member (25) → Contributor (50) → Featured Candidate (100) → Champion (150); label memuat manfaat tiap tier | Hal 12 |
 | C-13 | `PointSourceStackedBar.svelte` | **bar bertumpuk** (horizontal) | `type:'value'` total poin | `type:'category'`: bulan | Satu seri per jenis aksi Hal 11 (9 seri: 1/2/5/8/10/15/15/30/50 pts), `stack:'poin'` | Hal 11 |
-| C-14 | `MemberGrowthArea.svelte` | **line** (`areaStyle`) | `type:'category'`: bulan | `type:'value'` jumlah anggota | S1 Anggota kumulatif, S2 Anggota aktif, S3 Pengamplifikasi — bertumpuk sebagai corong keterlibatan | M-01, M-04 |
-| C-15 | `MemberProvinceMap.svelte` | **map** (peta Indonesia) | — | — | 1 seri `map`, `visualMap` jumlah anggota per provinsi; pakai ulang `IndonesiaMap.svelte` dari Enduro | M-01 |
+| C-14 | `MemberGrowthArea.svelte` | **line** (`areaStyle`) | `type:'category'`: bulan | `type:'value'` jumlah anggota | S1 Anggota kumulatif, S2 Anggota aktif, S3 Pengamplifikasi: bertumpuk sebagai corong keterlibatan | M-01, M-04 |
+| C-15 | `MemberProvinceMap.svelte` | **map** (peta Indonesia) |: |: | 1 seri `map`, `visualMap` jumlah anggota per provinsi; pakai ulang `IndonesiaMap.svelte` dari Enduro | M-01 |
 
-#### Tab 4 — ESG & Dampak
+#### Tab 4: ESG & Dampak
 
 | ID | Komponen | Tipe | Sumbu X | Sumbu Y | Seri | Metrik |
 |---|---|---|---|---|---|---|
-| C-16 | `EsgPillarRadar.svelte` | **radar** | — | — | `indicator`: Environmental, Social, Governance (`max:100`); S1 Target, S2 Aktual | Bagian 4.3 |
-| C-17 | `EsgEvidenceGateBar.svelte` | **bar** (horizontal) | `type:'value'` jumlah record | `type:'category'`: Terdokumentasi, +Outcome note, +Tag ESG/SDG, +Evidence source, **Layak ESG** | 1 seri `bar` menurun — memperlihatkan penyusutan di tiap gerbang | Hal 12 |
+| C-16 | `EsgPillarRadar.svelte` | **radar** |: |: | `indicator`: Environmental, Social, Governance (`max:100`); S1 Target, S2 Aktual | Bagian 4.3 |
+| C-17 | `EsgEvidenceGateBar.svelte` | **bar** (horizontal) | `type:'value'` jumlah record | `type:'category'`: Terdokumentasi, +Outcome note, +Tag ESG/SDG, +Evidence source, **Layak ESG** | 1 seri `bar` menurun: memperlihatkan penyusutan di tiap gerbang | Hal 12 |
 | C-18 | `ReachEstimateBand.svelte` | **line** dengan pita | `type:'category'`: bulan | `type:'value'` estimasi orang terjangkau | S1 batas bawah (transparan), S2 selisih (`stack`, `areaStyle`) → membentuk pita pesimis–optimis, S3 `line` titik tengah tegas | Bagian 3.2 |
 | C-19 | `EmvBarChart.svelte` | **bar + line** | `type:'category'`: bulan | Kiri `value` Rp | S1 `bar` `EMV_engagement`, S2 `line` plafon penghematan paid media, `markLine` batas 20% | Bagian 3.3–3.4 |
 | C-20 | `SroiWaterfallChart.svelte` | **bar** (waterfall via `stack` + seri transparan) | `type:'category'`: Nilai kotor → −Deadweight → −Atribusi → −Drop-off → **Nilai neto** | `type:'value'` Rp | S1 seri pembantu transparan, S2 seri nilai berwarna | Bagian 7 |
@@ -672,7 +672,7 @@ memakai wrapper `EChart.svelte` (`{ option, height }`) dan token dari `_chartThe
 | Kondisi kosong | Semua chart menangani nol data dengan pesan kosong yang eksplisit, **bukan** grafik nol yang menyesatkan |
 | Drill-down | Setiap `series.data` menyertakan `recordIds` supaya klik dapat membuka daftar bukti (lihat bagian 7.3) |
 | Bahasa | Seluruh label, legenda, dan tooltip berbahasa Indonesia |
-| Aksesibilitas | Jangan mengandalkan warna saja — sertakan angka pada label atau tooltip |
+| Aksesibilitas | Jangan mengandalkan warna saja: sertakan angka pada label atau tooltip |
 
 ---
 
@@ -689,7 +689,7 @@ Bentuk dasar:
 SROI = PV(Nilai Sosial yang Tercipta) / PV(Investasi)
 ```
 
-Disajikan sebagai rasio (mis. **1 : 3,2** — setiap Rp1 menghasilkan Rp3,20 nilai sosial).
+Disajikan sebagai rasio (mis. **1 : 3,2**: setiap Rp1 menghasilkan Rp3,20 nilai sosial).
 
 **Bentuk lengkap dengan penyesuaian standar:**
 
@@ -710,7 +710,7 @@ SROI = Nilai_neto / Total_Investasi
 | **Drop-off** | Berapa peluruhan manfaat per tahun berikutnya? | 0,25 |
 | **Displacement** | Berapa yang sekadar berpindah, bukan tercipta? | 0,10 |
 
-**Tanpa keempat penyesuaian ini, angka SROI tidak layak dilaporkan** — inilah yang membedakan SROI
+**Tanpa keempat penyesuaian ini, angka SROI tidak layak dilaporkan**: inilah yang membedakan SROI
 dari sekadar penjumlahan manfaat.
 
 ### 7.2 Proxy Nilai untuk Pfriends
@@ -724,14 +724,14 @@ dari sekadar penjumlahan manfaat.
 | Aksi lingkungan | E-01, E-02 | Peserta × proxy nilai aksi | Environmental |
 | Pengembangan karier alumni | S-02 | Δ pendapatan teratribusi | Social |
 
-Seluruh **nilai proxy** adalah input eksternal — **`[ASUMSI]`** sampai Corsec menetapkan sumber
+Seluruh **nilai proxy** adalah input eksternal: **`[ASUMSI]`** sampai Corsec menetapkan sumber
 rujukannya. Mockup memakai nilai placeholder yang ditandai jelas di UI.
 
-### 7.3 "Bukti Pipeline Before Dashboard" — Arti Operasional
+### 7.3 "Bukti Pipeline Before Dashboard": Arti Operasional
 
 Frasa Hal 9 adalah **perintah urutan pengerjaan**: pipeline bukti dibangun **sebelum** dashboard,
 bukan sesudahnya. Dashboard SROI yang dibangun di atas data yang tidak dapat ditelusuri menghasilkan
-angka yang tidak dapat dipertahankan saat diaudit — dan justru merusak kredibilitas program yang
+angka yang tidak dapat dipertahankan saat diaudit: dan justru merusak kredibilitas program yang
 sebenarnya berkinerja baik.
 
 **Prinsip yang mengikat:**
@@ -749,18 +749,18 @@ sebenarnya berkinerja baik.
 | **F3** | Alur validasi admin, terima/tolak, alasan | C-09, C-17, G-02, G-06 | Mengubah laporan mandiri jadi bukti |
 | **F4** | Tag ESG/SDG, outcome note, kegiatan | K-05, C-16, seluruh E-xx & S-xx | Gerbang bukti ESG Hal 12 |
 | **F5** | Mesin agregasi + dashboard KPI | C-05, C-10…C-15, C-21 | Agregat baru bermakna bila masukannya sahih |
-| **F6** | Model reach, EMV, **SROI** | C-18, C-19, **C-20** | **Terakhir** — paling banyak asumsi, paling butuh bukti kuat |
+| **F6** | Model reach, EMV, **SROI** | C-18, C-19, **C-20** | **Terakhir**: paling banyak asumsi, paling butuh bukti kuat |
 
 **Konsekuensi yang harus dipatuhi developer:**
 
-1. **Kartu SROI adalah fitur paling akhir**, bukan yang paling awal — meski paling menarik secara visual.
+1. **Kartu SROI adalah fitur paling akhir**, bukan yang paling awal: meski paling menarik secara visual.
 2. Setiap tile dashboard mendeklarasikan `requiredPipelineStage`; bila tahapnya belum ada, tile
    menampilkan status *"Menunggu pipeline bukti"* alih-alih angka nol yang menyesatkan.
-3. Gamifikasi (F2) memang berjalan lebih dulu dari ESG (F4) — sesuai timeline Hal 7 (Juni: gamifikasi;
+3. Gamifikasi (F2) memang berjalan lebih dulu dari ESG (F4): sesuai timeline Hal 7 (Juni: gamifikasi;
    Juli: diseminasi konten profil anggota). Yang dilarang adalah **melaporkan nilai ESG** sebelum
    pipeline bukti berdiri.
 4. Kelas `SroiCalculator` **wajib** mengembalikan objek berisi `{ nilai, asumsi[], kelengkapanBukti% }`
-   — bukan sekadar bilangan. UI **wajib** menampilkan `kelengkapanBukti%` bersanding dengan rasio SROI.
+  : bukan sekadar bilangan. UI **wajib** menampilkan `kelengkapanBukti%` bersanding dengan rasio SROI.
 
 ---
 
@@ -771,7 +771,7 @@ objek hasil yang sudah jadi dan me-render-nya.
 
 ```
 src/lib/domain/kpi/
-  KpiParameters.js          # Object.freeze — seluruh konstanta bagian 1.3
+  KpiParameters.js          # Object.freeze: seluruh konstanta bagian 1.3
   MetricDefinition.js       # Entity: id, nama, target, unit, formula, periodMode
   MetricResult.js           # Value Object (immutable): nilai, numerator, denominator,
                             #   status warna, periode, registrySnapshotId
@@ -785,15 +785,15 @@ src/lib/domain/kpi/
   AmplificationPolicy.js    # Level L0–L4, poin pending/settled, aturan anti-manipulasi 5.3
   EsgEvidencePolicy.js      # Gerbang 4 unsur Hal 12
   PublicFeaturePolicy.js    # Gerbang public feature Hal 12 (TERPISAH dari EsgEvidencePolicy)
-  ReachEstimator.js         # Bagian 3.2 — mengembalikan {bruto, neto, asumsi[]}
+  ReachEstimator.js         # Bagian 3.2: mengembalikan {bruto, neto, asumsi[]}
   EarnedMediaCalculator.js  # Bagian 3.3–3.4 termasuk guardrail
-  SroiCalculator.js         # Bagian 7.1 — mengembalikan {nilai, asumsi[], kelengkapanBukti}
+  SroiCalculator.js         # Bagian 7.1: mengembalikan {nilai, asumsi[], kelengkapanBukti}
 
 src/lib/domain/repositories/   # Interface (dependency inversion)
   MemberRepository.js  ContentRepository.js  AmplificationRepository.js
   EvidenceRepository.js  EventRepository.js
 
-src/lib/infrastructure/dexie/  # Implementasi konkret — satu-satunya lapisan yang tahu Dexie
+src/lib/infrastructure/dexie/  # Implementasi konkret: satu-satunya lapisan yang tahu Dexie
 ```
 
 **Aturan yang mengikat:**
@@ -808,7 +808,7 @@ src/lib/infrastructure/dexie/  # Implementasi konkret — satu-satunya lapisan y
 
 ---
 
-## Lampiran — Daftar Butir yang Perlu Konfirmasi Corsec
+## Lampiran: Daftar Butir yang Perlu Konfirmasi Corsec
 
 | # | Butir | Rujukan | Dampak |
 |---|---|---|---|

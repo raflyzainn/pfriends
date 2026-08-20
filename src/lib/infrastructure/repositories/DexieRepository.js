@@ -5,8 +5,8 @@
  * dan memetakan baris mentah basis data menjadi instans entity.
  *
  * Kelas ini ada supaya tujuh repository konkret tidak menyalin plumbing yang sama
- * tujuh kali. Yang berbeda antar-repository hanyalah tiga hal — nama tabel, kelas
- * entity, dan nama kolom kunci — sehingga ketiganya diangkat menjadi parameter
+ * tujuh kali. Yang berbeda antar-repository hanyalah tiga hal: nama tabel, kelas
+ * entity, dan nama kolom kunci: sehingga ketiganya diangkat menjadi parameter
  * konstruktor dan sisanya diwarisi.
  *
  * Dua perilaku yang perlu diketahui pemanggil:
@@ -15,11 +15,11 @@
  *    lalu mengembalikan koleksi kosong, bukan melempar. Halaman yang diprerender
  *    tetap terbentuk dengan empty state yang layak, dan terisi setelah hidrasi.
  * 2. **Kriteria tak dikenal diabaikan.** Sesuai butir 3 catatan kontrak Repository,
- *    `query({ tidakDikenal: 1 })` mengembalikan seluruh data, bukan melempar —
+ *    `query({ tidakDikenal: 1 })` mengembalikan seluruh data, bukan melempar :
  *    supaya penambahan kriteria baru di masa depan tidak memecah repository lama.
  *
- * @see src/lib/domain/repositories/Repository.js — kontrak yang diimplementasikan
- * @see docs/09-BUILD-CONTRACT.md — K-1 (tanpa mapper, tanpa DI container)
+ * @see src/lib/domain/repositories/Repository.js: kontrak yang diimplementasikan
+ * @see docs/09-BUILD-CONTRACT.md: K-1 (tanpa mapper, tanpa DI container)
  */
 
 import { Repository } from '$lib/domain/repositories/Repository.js';
@@ -45,7 +45,7 @@ export class DexieRepository extends Repository {
 	 * @param {string} config.tableName Nama tabel pada skema `db.js`.
 	 * @param {EntityFactory|null} config.entity Kelas entity ber-`from()`; `null` untuk baris polos.
 	 * @param {string} [config.keyPath] Nama kolom kunci primer; default `'id'`.
-	 * @param {readonly string[]} [config.indexedFields] Field yang punya indeks Dexie —
+	 * @param {readonly string[]} [config.indexedFields] Field yang punya indeks Dexie :
 	 *   dipakai `query()` untuk memilih jalur kueri tercepat.
 	 * @throws {TypeError} bila nama tabel kosong.
 	 */
@@ -102,7 +102,7 @@ export class DexieRepository extends Repository {
 
 	/**
 	 * Bentuk yang layak disimpan Dexie. Entity dibekukan dan memakai field privat,
-	 * sehingga wajib melewati `toJSON()` sebelum masuk IndexedDB — structured clone
+	 * sehingga wajib melewati `toJSON()` sebelum masuk IndexedDB: structured clone
 	 * tidak dapat menyalin instans kelas beserta field privatnya.
 	 * @protected
 	 * @param {any} entity
@@ -135,7 +135,7 @@ export class DexieRepository extends Repository {
 	}
 
 	/**
-	 * Menyimpan entity. Memakai `put` — bukan `add` — supaya penyimpanan bersifat
+	 * Menyimpan entity. Memakai `put`: bukan `add`: supaya penyimpanan bersifat
 	 * idempoten: menyimpan ulang entity yang sudah ada memperbaruinya alih-alih
 	 * melempar ConstraintError. Seed dan aksi awardee sama-sama mengandalkan ini.
 	 * @param {any} entity
@@ -201,8 +201,8 @@ export class DexieRepository extends Repository {
 	 * Pencarian berdasarkan kriteria kesetaraan.
 	 *
 	 * Satu kriteria terindeks dipakai sebagai jalur kueri Dexie, sisanya disaring di
-	 * memori. Pemilahan ini yang membuat `query({ awardeeId })` — kueri terpanas di
-	 * sistem, dipanggil setiap kali buku besar poin dibaca — tidak pernah memindai
+	 * memori. Pemilahan ini yang membuat `query({ awardeeId })`: kueri terpanas di
+	 * sistem, dipanggil setiap kali buku besar poin dibaca: tidak pernah memindai
 	 * seluruh tabel.
 	 *
 	 * Kriteria yang dikenal lapisan domain hari ini: `{ awardeeId }`, `{ status }`,

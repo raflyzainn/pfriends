@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * LAYOUT ZONA AWARDEE — kerangka yang membungkus seluruh halaman awardee.
+	 * LAYOUT ZONA AWARDEE: kerangka yang membungkus seluruh halaman awardee.
 	 *
 	 * Tanggung jawab: memasang `ZoneGuard`, menyiapkan data yang dibutuhkan hampir
 	 * setiap halaman zona ini (katalog isi komunitas + keadaan gamifikasi), lalu
@@ -10,18 +10,18 @@
 	 *
 	 * Sebelumnya zona ini memakai `Header` + bilah tab mendatar, sementara dua zona
 	 * ter-login lainnya memakai `Sidebar` + bilah atas. Tiga kerangka untuk tiga
-	 * zona berarti tiga tempat yang perlahan berbeda perilaku — dan peraga yang
+	 * zona berarti tiga tempat yang perlahan berbeda perilaku: dan peraga yang
 	 * berpindah dari layar admin ke layar awardee melihat dua aplikasi berbeda.
 	 * Kini polanya satu: `Sidebar` bersama untuk desktop, laci yang sama untuk
 	 * ponsel, `BottomNav` sebagai pelengkap sentuh.
 	 *
 	 * `BottomNav` DIPERTAHANKAN meski Sidebar sudah punya laci. Awardee membuka
 	 * microsite ini terutama dari tautan WhatsApp di ponsel, dan navigasi utamanya
-	 * harus terjangkau ibu jari tanpa membuka laci lebih dulu — itu perbedaan nyata
+	 * harus terjangkau ibu jari tanpa membuka laci lebih dulu: itu perbedaan nyata
 	 * dengan admin/verifikator yang bekerja di depan laptop.
 	 *
 	 * Penjagaan akses TIDAK ditulis di sini. Sejak V2 ia milik `ZoneGuard`, yang
-	 * membedakan tiga keadaan — belum siap, tamu, dan peran keliru — dengan tiga
+	 * membedakan tiga keadaan: belum siap, tamu, dan peran keliru: dengan tiga
 	 * perlakuan berbeda. Layout yang menulis penjaganya sendiri berarti empat zona
 	 * dengan empat penjaga yang perlahan berbeda perilaku.
 	 *
@@ -30,8 +30,8 @@
 	 * setiap halaman berarti membuka transaksi IndexedDB yang sama berulang kali
 	 * untuk hasil yang identik, dan setiap perpindahan akan berkedip.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 ZoneGuard & navigation.js, §2.14 route zona awardee
-	 * @see docs/07-UX-SITEMAP.md — §1.2 poin dan tier sebagai lapisan persisten
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 ZoneGuard & navigation.js, §2.14 route zona awardee
+	 * @see docs/07-UX-SITEMAP.md: §1.2 poin dan tier sebagai lapisan persisten
 	 */
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';

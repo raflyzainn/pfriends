@@ -1,19 +1,19 @@
 <script>
 	/**
-	 * HALAMAN — Baca & Amplifikasi Kabar.
+	 * HALAMAN: Baca & Amplifikasi Kabar.
 	 *
 	 * Tanggung jawab: menyajikan isi satu kabar, lalu menyediakan tiga jalur
 	 * amplifikasi beserta poinnya persis seperti tabel Hal 11.
 	 *
 	 * Ini mesin utama KPI Hal 6 ("50% awardee melakukan amplifikasi"), dan karena
-	 * itu tidak ada halaman "Amplifikasi" tersendiri — amplifikasi adalah aksi DI
+	 * itu tidak ada halaman "Amplifikasi" tersendiri: amplifikasi adalah aksi DI
 	 * ATAS konten, bukan destinasi (07-UX §1.2 butir 4). Menaruhnya di halaman
 	 * terpisah berarti menambah satu ketukan pada langkah yang paling ingin
 	 * dipermudah.
 	 *
 	 * Satu keputusan yang membentuk halaman ini: **bagikan ke media sosial publik
 	 * meminta tautan bukti LEBIH DULU, bukan sesudah poin diberikan.** Tanpa
-	 * tautan, mesin mencatat aksinya sebagai menunggu bukti dengan poin nol —
+	 * tautan, mesin mencatat aksinya sebagai menunggu bukti dengan poin nol :
 	 * jujur, tetapi mengecewakan bila awardee baru mengetahuinya setelah menekan.
 	 * Meminta buktinya di muka membuat janji poin di tombol selalu benar.
 	 *
@@ -23,10 +23,11 @@
 	 * sebagai sudah diklaim, yang berulang menyimpan konteksnya di catatan dan
 	 * bukti agar setiap kejadian tetap tercatat sebagai baris tersendiri.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 tabel skor, Hal 6 KPI amplifikasi
-	 * @see docs/03-GAMIFICATION-SPEC.md — §5.2 kunci idempotensi per aksi
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 11 tabel skor, Hal 6 KPI amplifikasi
+	 * @see docs/03-GAMIFICATION-SPEC.md: §5.2 kunci idempotensi per aksi
 	 */
 	import { page } from '$app/state';
+	import { startBroadcast } from '$lib/infrastructure/pocketbase/broadcasts.js';
 	import {
 		Button,
 		Card,
@@ -41,11 +42,12 @@
 	import { ActivityType, aturanSkor } from '$lib/domain/constants/scoring-table.js';
 	import { catalog, CatalogKind } from '$lib/stores/catalog.svelte.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
+	import { activitySubmissions } from '$lib/stores/activity-submissions.svelte.js';
 	import { toast } from '$lib/stores/toast.svelte.js';
 	import { formatRelatif, formatTanggal, frasaHitung } from '$lib/utils/format.js';
 
 	/**
-	 * Panjang minimum tanggapan agar dianggap bermakna (docs/03 §5.2 — balasan
+	 * Panjang minimum tanggapan agar dianggap bermakna (docs/03 §5.2 - balasan
 	 * ≥ 20 karakter, bukan emoji atau satu kata). Ini ambang MUTU tanggapan, bukan
 	 * angka gamifikasi, sehingga tempatnya memang di halaman yang memungutnya.
 	 */
@@ -65,7 +67,7 @@
 	 * Dua jalur pencocokan karena dua jenis aksi menyimpan konteksnya secara
 	 * berbeda: yang sekali-per-kabar merujuk lewat `refId`, yang boleh berulang
 	 * menyimpan judul kabar di catatannya. Pencocokan judul hanya berjalan bila
-	 * judulnya memang ada — tanpa penjaga itu, judul kosong akan mencocoki
+	 * judulnya memang ada - tanpa penjaga itu, judul kosong akan mencocoki
 	 * seluruh isi buku besar sekaligus.
 	 */
 	const kontribusiKabarIni = $derived.by(() => {
@@ -76,7 +78,7 @@
 		});
 	});
 
-	/** Sisa kuota harian dua aksi amplifikasi — dibaca sekali, dipakai di beberapa tempat. */
+	/** Sisa kuota harian dua aksi amplifikasi - dibaca sekali, dipakai di beberapa tempat. */
 	const kuotaBagikanPribadi = $derived(gamification.usageFor(ActivityType.SHARE_PRIVATE));
 	const kuotaBagikanPublik = $derived(gamification.usageFor(ActivityType.SHARE_PUBLIC));
 
@@ -108,6 +110,19 @@
 
 	/** @type {string} Pesan galat pada dialog bukti. */
 	let galatBukti = $state('');
+	let berkasBukti = $state.raw([]);
+	let jenisBukti = $state('SHARE_PUBLIC');
+	let sisaBaca = $state(15);
+	let sesiDimulai = $state('');
+
+	$effect(() => {
+		if (!kabar || bacaSelesai || sesiDimulai === kabar.id) return;
+		sesiDimulai = kabar.id;
+		startBroadcast(kabar.id).then(({ unlockAt }) => {
+			const perbarui = () => (sisaBaca = Math.max(0, Math.ceil((new Date(unlockAt).getTime() - Date.now()) / 1000)));
+			perbarui(); const timer = setInterval(perbarui, 500); setTimeout(() => clearInterval(timer), 17000);
+		}).catch((error) => toast.error('Sesi baca gagal dimulai', error.message));
+	});
 
 	const PLATFORM = ['Instagram', 'LinkedIn', 'X', 'Facebook', 'TikTok', 'YouTube'];
 
@@ -115,12 +130,12 @@
 
 	/**
 	 * Teks siap salin untuk dibagikan awardee. Disusun dari isi kabar, bukan
-	 * dikarang di sini — awardee yang harus menulis ulang ringkasannya sendiri
+	 * dikarang di sini - awardee yang harus menulis ulang ringkasannya sendiri
 	 * adalah gesekan yang langsung menurunkan angka amplifikasi.
 	 */
 	const teksBagikan = $derived(
 		kabar
-			? `${kabar.title}\n\n${kabar.summary}\n\nSelengkapnya: ${kabar.ctaLink || 'https://pertaminafoundation.org/pfriends'}\n\n#PFfriends #PertaminaFoundation`
+			? `${kabar.title}\n\n${kabar.summary}\n\nSelengkapnya: ${kabar.ctaLink || 'https://pertaminafoundation.org/pfriends'}\n\n#PFriends #PertaminaFoundation`
 			: ''
 	);
 
@@ -161,14 +176,16 @@
 	 * adalah dua amplifikasi yang sah, dan keduanya berhak menjadi dua baris
 	 * terpisah di buku besar.
 	 */
-	async function bagikanKeWhatsApp() {
+	function bagikanKeWhatsApp() {
 		if (!kabar) return;
-		await gamification.perform(ActivityType.SHARE_PRIVATE, {
-			note: `Dibagikan ke jaringan pribadi — ${kabar.title}`
-		});
+		jenisBukti = 'SHARE_PRIVATE'; platformBukti = 'WhatsApp'; tautanBukti = ''; berkasBukti = []; galatBukti = '';
+		window.open(`https://wa.me/?text=${encodeURIComponent(teksBagikan)}`, '_blank', 'noopener,noreferrer');
+		dialogBuktiTerbuka = true;
 	}
 
 	function bukaDialogBukti() {
+		jenisBukti = 'SHARE_PUBLIC';
+		platformBukti = 'Instagram';
 		galatBukti = '';
 		tautanBukti = '';
 		dialogBuktiTerbuka = true;
@@ -179,22 +196,19 @@
 		if (!kabar) return;
 		const tautan = tautanBukti.trim();
 
-		if (tautan === '') {
+		if (jenisBukti === 'SHARE_PUBLIC' && tautan === '') {
 			galatBukti = 'Tautan unggahan wajib diisi agar poin dapat dibukukan.';
 			return;
 		}
-		if (!/^https?:\/\/\S+\.\S+/.test(tautan)) {
+		if (jenisBukti === 'SHARE_PUBLIC' && !/^https?:\/\/\S+\.\S+/.test(tautan)) {
 			galatBukti = 'Tautan harus berupa alamat lengkap, mis. https://instagram.com/p/...';
 			return;
 		}
 
+		if (berkasBukti.length === 0) { galatBukti = 'Lampirkan minimal satu tangkapan layar atau PDF.'; return; }
 		galatBukti = '';
-		dialogBuktiTerbuka = false;
-
-		await gamification.perform(ActivityType.SHARE_PUBLIC, {
-			evidence: [`${platformBukti}: ${tautan}`],
-			note: `Diunggah ke ${platformBukti} — ${kabar.title}`
-		});
+		try { await activitySubmissions.submitBroadcastShare(kabar, platformBukti, tautan, berkasBukti, jenisBukti); dialogBuktiTerbuka=false; berkasBukti=[]; toast.success('Bukti terkirim','Poin diberikan setelah disetujui Verifikator.'); }
+		catch(error){ galatBukti=error.message; }
 	}
 
 	/** Menyalin teks bagikan ke papan klip. */
@@ -212,7 +226,7 @@
 </script>
 
 <svelte:head>
-	<title>{kabar ? kabar.title : 'Kabar tidak ditemukan'} · PFfriends</title>
+	<title>{kabar ? kabar.title : 'Kabar tidak ditemukan'} · PFriends</title>
 </svelte:head>
 
 {#if !kabar}
@@ -228,7 +242,7 @@
 		title={kabar.title}
 		eyebrow="{kabar.channelLabel} · {formatTanggal(kabar.sentAt, 'pendek')}"
 		backHref="/awardee/kabar"
-		backLabel="Kabar PFfriends"
+		backLabel="Kabar PFriends"
 	/>
 
 	<!-- `[&>*]:min-w-0`: butir grid berbaku `min-width: auto`. Kolom isi kabar memuat
@@ -265,14 +279,14 @@
 					<Button
 						variant={bacaSelesai ? 'ghost' : 'primary'}
 						size="md"
-						disabled={bacaSelesai}
+						disabled={bacaSelesai || sisaBaca > 0}
 						loading={gamification.busy === ActivityType.BROADCAST_VIEW}
 						iconPath={bacaSelesai ? ICONS.checkCircle : ICONS.check}
 						onclick={tandaiDibaca}
 					>
 						{bacaSelesai
 							? 'Poin baca sudah diklaim'
-							: `Sudah dibaca · +${aturanBaca.points} poin`}
+							: sisaBaca > 0 ? `Baca ${sisaBaca} detik lagi` : `Sudah dibaca · +${aturanBaca.points} poin`}
 					</Button>
 					{#if !bacaSelesai}
 						<p class="mt-2 text-xs text-ink-600">
@@ -325,7 +339,7 @@
 							</Button>
 						</div>
 						<p class="mt-2 text-xs leading-relaxed text-ink-600">
-							Tanggapan minimal {MIN_KARAKTER_TANGGAPAN} karakter agar poin diberikan — balasan satu
+							Tanggapan minimal {MIN_KARAKTER_TANGGAPAN} karakter agar poin diberikan - balasan satu
 							kata atau emoji saja tidak menambah apa pun bagi komunitas.
 						</p>
 					{/if}
@@ -351,10 +365,10 @@
 							fullWidth
 							iconPath={ICONS.whatsapp}
 							disabled={Boolean(kuotaBagikanPribadi?.exhausted)}
-							loading={gamification.busy === ActivityType.SHARE_PRIVATE}
+							loading={activitySubmissions.working && jenisBukti === 'SHARE_PRIVATE'}
 							onclick={bagikanKeWhatsApp}
 						>
-							Bagikan ke WhatsApp · +{aturanBagikanPribadi.points}
+							Bagikan ke WhatsApp · bukti +{aturanBagikanPribadi.points}
 						</Button>
 						<p
 							class="mt-1.5 text-[11px] leading-relaxed {kuotaBagikanPribadi?.exhausted
@@ -441,13 +455,12 @@
 	<!-- Dialog tautan bukti unggahan publik -->
 	<Modal
 		open={dialogBuktiTerbuka}
-		title="Lampirkan tautan unggahan"
+		title={jenisBukti === 'SHARE_PRIVATE' ? 'Lampirkan bukti WhatsApp' : 'Lampirkan tautan unggahan'}
 		size="md"
 		onclose={() => (dialogBuktiTerbuka = false)}
 	>
 		<p class="text-sm leading-relaxed text-ink-600">
-			Poin amplifikasi publik diberikan setelah tautan unggahan dilampirkan. Tautan diperiksa ulang
-			oleh moderator chapter dan harus tetap dapat diakses minimal 72 jam.
+			{jenisBukti === 'SHARE_PRIVATE' ? 'Poin WhatsApp tidak diberikan saat tab dibuka. Unggah screenshot pesan yang benar-benar sudah terkirim untuk diperiksa Verifikator.' : 'Poin amplifikasi publik diberikan setelah tautan dan bukti diperiksa Verifikator.'}
 		</p>
 
 		<div class="mt-4 space-y-4">
@@ -463,7 +476,7 @@
 				</select>
 			</label>
 
-			<label class="block">
+			{#if jenisBukti === 'SHARE_PUBLIC'}<label class="block">
 				<span class="label-micro">Tautan unggahan</span>
 				<input
 					bind:value={tautanBukti}
@@ -480,13 +493,15 @@
 						{galatBukti}
 					</span>
 				{/if}
-			</label>
+			</label>{/if}
+			<label class="block"><span class="label-micro">Tangkapan layar / PDF</span><input type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" class="mt-1.5 block w-full text-sm" onchange={(e)=>(berkasBukti=[...e.currentTarget.files])}/></label>
+			{#if jenisBukti === 'SHARE_PRIVATE' && galatBukti}<p class="text-xs font-semibold text-danger" role="alert">{galatBukti}</p>{/if}
 		</div>
 
 		{#snippet footer()}
 			<Button variant="ghost" size="md" onclick={() => (dialogBuktiTerbuka = false)}>Batal</Button>
 			<Button variant="primary" size="md" iconPath={ICONS.check} onclick={kirimBuktiPublik}>
-				Kirim bukti · +{aturanBagikanPublik.points} poin
+				Kirim bukti · +{jenisBukti === 'SHARE_PRIVATE' ? aturanBagikanPribadi.points : aturanBagikanPublik.points} poin
 			</Button>
 		{/snippet}
 	</Modal>

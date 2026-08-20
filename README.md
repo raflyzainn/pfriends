@@ -1,14 +1,14 @@
-# PFfriends — Community Connect Initiative
+# PFriends: Community Connect Initiative
 
-Mockup microsite untuk **Breakthrough Project Divisi Corporate Secretary — Pertamina Foundation**.
+Mockup microsite untuk **Breakthrough Project Divisi Corporate Secretary: Pertamina Foundation**.
 
-PFfriends adalah wadah alumni **Beasiswa Sobat Bumi (SOBI)** dan pelaku usaha **PFpreneur /
+PFriends adalah wadah alumni **Beasiswa Sobat Bumi (SOBI)** dan pelaku usaha **PFpreneur /
 Womenpreneur** agar tetap terhubung setelah masa program selesai. Ruang publiknya bercerita tentang
-program — dampak, cerita terpublikasi, kalender komunitas, dan gerakan bersama. Mekanik pengakuan
+program: dampak, cerita terpublikasi, kalender komunitas, dan gerakan bersama. Mekanik pengakuan
 kontribusi (poin, jenjang, papan peringkat, lencana) hidup **di dalam area ter-login Awardee**, dan
 agregatnya di dasbor Admin.
 
-Dibangun dari `2026 Community Connect Initiative update as 29052026.pdf` (12 halaman) — seluruh
+Dibangun dari `2026 Community Connect Initiative update as 29052026.pdf` (12 halaman): seluruh
 angka poin, ambang jenjang, dan target KPI diambil persis dari dokumen tersebut.
 
 **Versi ini adalah revisi V2.** Jejak perubahannya ada di `docs/13-SDLC-DELTA.md`; ketertelusuran
@@ -57,8 +57,10 @@ npm run verify:registration  # 18 asersi registrasi dan gamifikasi pada PocketBa
 npm run verify:directory     # 13 asersi Jejaring, privasi profil, filter, dan poin demo
 npm run verify:rewards       # saldo, katalog, penukaran idempoten, RBAC Admin, dan refund
 npm run verify:backend       # seluruh integration test PocketBase di atas
+npm run verify:public-content # endpoint cerita publik dan leaderboard
+npm run verify:public-impact  # agregat metode pengukuran PocketBase
 
-# Gerbang peramban — server dev harus berjalan lebih dulu:
+# Gerbang peramban: server dev harus berjalan lebih dulu:
 npm run dev -- --port 5177
 npm run verify:e2e           # seluruh route dibuka di peramban sungguhan, lima fase (0-4)
 npm run verify:gamification  # poin bertambah, tersimpan, dan tidak nol setelah muat ulang keras
@@ -71,7 +73,7 @@ npm run screenshot           # regenerasi 15 tangkapan layar ke docs/screenshots
 
 Skrip peramban mencari Chromium di `/Applications/Brave Browser.app`; ganti lewat variabel
 `BROWSER_BIN` bila memakai Chrome atau Edge. Seluruhnya memakai Chrome DevTools Protocol lewat
-WebSocket bawaan Node — tanpa Playwright, Puppeteer, atau dependensi uji apa pun.
+WebSocket bawaan Node: tanpa Playwright, Puppeteer, atau dependensi uji apa pun.
 
 ---
 
@@ -85,7 +87,7 @@ staf tetap diterima backend. Awardee masuk dengan email dan password miliknya se
 Verifikator/Admin akan diganti SSO OAuth; titik integrasinya ditandai `TODO(SSO)`. Setelah provider
 SSO siap, set `PB_REQUIRE_STAFF_SSO=1` untuk mematikan login password staf.
 
-Sebelumnya **masuk cukup dengan mengklik kartu pengguna** di `/masuk` — tidak
+Sebelumnya **masuk cukup dengan mengklik kartu pengguna** di `/masuk`: tidak
 ada kolom sandi yang perlu diisi. Ini keringanan yang disengaja untuk tahap mockup: peragaan di
 ruang rapat sering harus berpindah peran beberapa kali dalam semenit, dan mengetik surel panjang
 setiap kali memakan waktu peragaan itu sendiri. Kata sandi demo tetap dipakai di balik layar dan
@@ -115,7 +117,7 @@ sandinya tidak pernah melewati komponen antarmuka.
 | Admin | panel | panel | render | render |
 
 Peran **bukan** hierarki: Admin tidak mewarisi kewenangan Verifikator, dan sebaliknya. Aturannya
-hidup di satu berkas — `src/lib/domain/policies/AccessPolicy.js` — dan diuji sebagai matriks
+hidup di satu berkas: `src/lib/domain/policies/AccessPolicy.js`: dan diuji sebagai matriks
 16 asersi oleh `npm run verify:domain`.
 
 ---
@@ -124,9 +126,9 @@ hidup di satu berkas — `src/lib/domain/policies/AccessPolicy.js` — dan diuji
 
 > Direvisi 4 Agustus 2026. Navigasi dipangkas tajam di seluruh zona; sejumlah
 > halaman dicabut dan isinya dilebur. Beberapa route publik tetap hidup meski tidak
-> lagi tercantum di navbar — masih ditautkan dari dalam halaman lain.
+> lagi tercantum di navbar: masih ditautkan dari dalam halaman lain.
 
-### Zona publik — 10 route, tanpa sesi
+### Zona publik: 10 route, tanpa sesi
 
 Navbar hanya memuat tiga: **Beranda**, **Blog**, **Calendar of Event**.
 
@@ -134,24 +136,32 @@ Navbar hanya memuat tiga: **Beranda**, **Blog**, **Calendar of Event**.
 |---|---|---|
 | `/` | ✓ Beranda | Hero, billboard event, papan peringkat peserta paling aktif, blog terbaru |
 | `/cerita` | ✓ Blog | Blog komunitas |
-| `/cerita/[slug]` | — | Satu tulisan terpublikasi |
+| `/cerita/[slug]` |: | Satu tulisan terpublikasi |
 | `/kalender` | ✓ Calendar of Event | Kalender komunitas |
-| `/kalender/[id]` | — | Detail kegiatan + unduh `.ics` |
+| `/kalender/[id]` |: | Detail kegiatan + unduh `.ics` |
 
 Calendar of Event memakai PocketBase dan sengaja tidak memiliki data event dari seeder. Awardee mengusulkan event, Verifikator menyetujui, lalu event tampil publik. Registrasi tidak berpoin; 15 poin kehadiran baru dibukukan setelah peserta mengunggah bukti dan Verifikator menyetujuinya. Lihat `docs/21-CALENDAR-OF-EVENT-POCKETBASE.md`.
-| `/masuk` | — | Login email/password; kartu satu klik hanya pada mode demo lokal |
-| `/daftar` | — | Registrasi Awardee dengan data diri dan bukti protected |
-| `/pendaftaran/status` | — | Status terbatas dan pengiriman klarifikasi pendaftar |
-| `/tentang` | — | Latar program dan tata kelola |
-| `/komunitas` | — | Profil SOBI dan PFpreneur/Womenpreneur |
-| `/gerakan` | — | Gerakan bersama yang sedang berjalan |
-| `/metode-pengukuran` | — | Cara tiap angka dihitung |
 
-### Zona Awardee — 12 route
+Beranda, papan peringkat publik, daftar blog, dan detail blog juga membaca PocketBase. Seeder memasukkan seluruh status cerita, sedangkan endpoint publik hanya membuka cerita yang sudah terbit dan memiliki consent aktif. Workflow privat cerita masih memakai Dexie. Lihat `docs/23-LANDING-DAN-BLOG-POCKETBASE.md`.
+
+Label `DUMMY` tidak ditampilkan pada landing dan blog karena data operasional kedua bagian tersebut sudah berasal dari PocketBase. Label tetap muncul pada halaman lain yang masih membaca data lokal.
+
+Halaman komunitas membaca jumlah anggota aktif, komposisi komunitas, sebaran chapter, dan agenda dari PocketBase. Narasi serta foto tetap menjadi konfigurasi editorial statis. Lihat `docs/24-KOMUNITAS-POCKETBASE.md`.
+| `/masuk` |: | Login email/password; kartu satu klik hanya pada mode demo lokal |
+| `/daftar` |: | Registrasi Awardee dengan data diri dan bukti protected |
+| `/pendaftaran/status` |: | Status terbatas dan pengiriman klarifikasi pendaftar |
+| `/tentang` |: | Latar program dan tata kelola |
+| `/komunitas` |: | Profil SOBI dan PFpreneur/Womenpreneur dengan agregat anggota PocketBase |
+| `/gerakan` |: | Gerakan bersama yang sedang berjalan |
+| `/metode-pengukuran` |: | Cara tiap angka dihitung dari agregat PocketBase |
+
+### Zona Awardee: 12 route
 
 Navbar: Beranda · Blog Saya · Forum · Calendar of Event · Pencapaian · Kabar · Direktori
 
-`/awardee` · `/awardee/cerita` · `/awardee/cerita/tulis` · `/awardee/forum` (**baru** — forum
+Fitur Kabar menggunakan PocketBase: Admin menyusun/menjadwalkan/menerbitkan melalui `/admin/broadcast`, Awardee membaca dan melakukan amplifikasi dari `/awardee/kabar`, sedangkan bukti share publik diputuskan Verifikator.
+
+`/awardee` · `/awardee/cerita` · `/awardee/cerita/tulis` · `/awardee/forum` (**baru**: forum
 bergaya kanal) · `/awardee/kalender` · `/awardee/penghargaan` · `/awardee/kabar` ·
 `/awardee/kabar/[id]` · `/awardee/direktori` · `/awardee/aksi` · `/awardee/gerakan` ·
 `/awardee/profil` (tiga terakhir hidup tetapi di luar navbar)
@@ -179,7 +189,7 @@ Navbar: Dasbor KPI · Kontrol Akun · Gamifikasi
 dengan impersonate) · `/admin/gamifikasi` (nilai poin & ambang jenjang dapat disunting) ·
 `/admin/pendaftaran` (pemantauan registrasi read-only)
 
-`/admin/broadcast`, `/admin/moderasi`, `/admin/esg`, dan `/admin/laporan` **dicabut** —
+`/admin/broadcast`, `/admin/moderasi`, `/admin/esg`, dan `/admin/laporan` **dicabut** -
 dua yang terakhir isinya melebur ke Dasbor KPI.
 
 ---
@@ -217,7 +227,7 @@ DRAFT ──usulkan (Awardee ATAU Verifikator)──► DIUSULKAN ──setujui 
 TERJADWAL ──► BERLANGSUNG ──► SELESAI    ·    TERJADWAL/BERLANGSUNG ──batal + alasan──► DIBATALKAN
 ```
 
-`DIUSULKAN → TERJADWAL` **berarti** terbit ke kalender publik — tidak ada sumbu publikasi kedua.
+`DIUSULKAN → TERJADWAL` **berarti** terbit ke kalender publik: tidak ada sumbu publikasi kedua.
 Pengusul dilarang menyetujui usulannya sendiri; karena itulah seed menyediakan dua akun verifikator.
 
 Tenggat tiap antrean (2 / 3 / 5 / 2 hari kerja) berasal dari satu konstanta, `SLA_HARI_KERJA` di
@@ -231,14 +241,14 @@ Clean architecture berlapis. Arah ketergantungan satu arah dan **diuji**, bukan 
 **Presentation → Application → Domain ← Infrastructure**.
 
 ```
-src/lib/domain/           # murni, tanpa framework — dapat diuji dengan `node` polos
+src/lib/domain/           # murni, tanpa framework: dapat diuji dengan `node` polos
   constants/              # roles · content-workflow · scoring-table · tier-table · kpi-targets · esg-taxonomy
   value-objects/          # Points · Tier · EsgTag · ConsentRecord · PasswordHash (immutable, punya equals)
   entities/               # UserAccount · Awardee · Story · CommunityEvent · PointActivity · Movement · ...
   policies/               # AccessPolicy · AntiGamingPolicy · FeatureEligibilityPolicy
   services/               # AuthService · ContentReviewService · ProgramImpactService · GamificationEngine · KpiCalculator · ...
   validation/             # Validator
-  repositories/           # kelas abstrak — Dependency Inversion
+  repositories/           # kelas abstrak: Dependency Inversion
 src/lib/infrastructure/   # Dexie + repository konkret + seed deterministik (63 akun, 60 awardee)
 src/lib/stores/           # store runes: pembungkus tipis di atas domain
 src/lib/components/       # UI kit + ZoneGuard + editorial/ (8 komponen)
@@ -251,7 +261,7 @@ Dua aturan yang dijaga gerbang otomatis:
 1. **Nol angka poin, ambang jenjang, atau SLA yang ditulis literal di luar `domain/constants/`.**
    Mengubah nilai di sana mengubah seluruh aplikasi secara konsisten.
 2. **Nol impor `svelte`, `dexie`, `$app/*`, `$lib/stores/*`, atau `$lib/infrastructure/*` di dalam
-   `src/lib/domain/**`.** Dipindai berkas per berkas oleh `verify:domain` bagian 11 — sehingga
+   `src/lib/domain/**`.** Dipindai berkas per berkas oleh `verify:domain` bagian 11: sehingga
    logika bisnis tetap utuh saat backend sungguhan dipasang.
 
 Rincian rancangan ada di `docs/05-ARCHITECTURE.md`; kepemilikan berkas dan kontrak export V2 ada di
@@ -262,56 +272,56 @@ Rincian rancangan ada di `docs/05-ARCHITECTURE.md`; kepemilikan berkas dan kontr
 ## Cara demo ke Divisi Corsec
 
 Alur 10 menit yang menunjukkan tiga peran, dasbor ECharts, dan kalender publik. Jalankan
-`npm run dev`, lalu ikuti urutannya — urutan ini disusun supaya tiap layar menjawab satu keputusan
+`npm run dev`, lalu ikuti urutannya: urutan ini disusun supaya tiap layar menjawab satu keputusan
 pemilik produk.
 
-**Babak 1 · Ruang publik (tanpa masuk) — 3 menit**
+**Babak 1 · Ruang publik (tanpa masuk): 3 menit**
 
-1. **`/`** — Landing. Tunjukkan empat blok: dampak & angka agregat, cerita terpublikasi, kalender
+1. **`/`**: Landing. Tunjukkan empat blok: dampak & angka agregat, cerita terpublikasi, kalender
    komunitas beserta agenda, lalu gerakan dan dua komunitas. Tegaskan: **tidak ada satu pun poin,
-   jenjang, atau papan peringkat di layar ini** — itu keputusan, bukan kebetulan, dan ada gerbang
+   jenjang, atau papan peringkat di layar ini**: itu keputusan, bukan kebetulan, dan ada gerbang
    otomatis yang menjaganya.
-2. **`/metode-pengukuran`** — Jawaban untuk pertanyaan "angka ini dari mana?". Tiga kelas angka:
+2. **`/metode-pengukuran`**: Jawaban untuk pertanyaan "angka ini dari mana?". Tiga kelas angka:
    terhitung (A), estimasi berparameter yang wajib disajikan sebagai rentang (B), dan benchmark
-   industri yang bukan hasil ukur PFfriends (C).
+   industri yang bukan hasil ukur PFriends (C).
 3. **`/kalender`** → klik satu kegiatan → **`/kalender/[id]`** → tombol unduh `.ics`. Kalender
    komunitas dapat dibaca siapa pun tanpa masuk.
-4. **`/cerita`** — Blog cerita dampak dengan panel daftar event di sisi halaman. Buka satu cerita.
+4. **`/cerita`**: Blog cerita dampak dengan panel daftar event di sisi halaman. Buka satu cerita.
 
-**Babak 2 · Awardee — 3 menit**
+**Babak 2 · Awardee: 3 menit**
 
 5. **`/masuk`** → `zahra.kartawijaya@pfriends.id` / `pfriends2026`.
-6. **`/awardee`** — Di sinilah gamifikasi tinggal. Tunjukkan saldo poin, jenjang, dan sisa jarak ke
+6. **`/awardee`**: Di sinilah gamifikasi tinggal. Tunjukkan saldo poin, jenjang, dan sisa jarak ke
    jenjang berikutnya. **Klik "Lakukan sekarang"** pada aksi cepat → poin bertambah seketika, dan
    **muat ulang halaman** untuk membuktikan angkanya benar-benar tersimpan.
-7. **`/awardee/aksi`** — Sisa kuota harian dan status tiap poin (diberikan / menunggu bukti / tidak
+7. **`/awardee/aksi`**: Sisa kuota harian dan status tiap poin (diberikan / menunggu bukti / tidak
    dihitung). Ini jawaban atas *"reward meaningful contribution, not spammy activity"* (Hal 11).
-8. **`/awardee/cerita/tulis`** — Tulis satu cerita dan ajukan. Naskah masuk antrean verifikator.
-9. **`/awardee/papan-peringkat`** — Peringkat per komunitas dan per chapter. Tegaskan: halaman ini
+8. **`/awardee/cerita/tulis`**: Tulis satu cerita dan ajukan. Naskah masuk antrean verifikator.
+9. **`/awardee/papan-peringkat`**: Peringkat per komunitas dan per chapter. Tegaskan: halaman ini
    **tidak ada padanannya di zona publik**.
 
-**Babak 3 · Verifikator — 2 menit**
+**Babak 3 · Verifikator: 2 menit**
 
 10. Keluar → **`/masuk`** → `verifikator@pertaminafoundation.org` / `pfriends2026`.
-11. **`/verifikator`** — Papan antrean tertua-dulu beserta tenggat tiap antrean dalam hari kerja.
+11. **`/verifikator`**: Papan antrean tertua-dulu beserta tenggat tiap antrean dalam hari kerja.
 12. **`/verifikator/cerita`** → buka satu naskah → tunjukkan **tiga gerbang**: kelayakan fitur
     publik, kesiapan bukti ESG, dan checklist data sensitif. Coba setujui tanpa mencentang
-    checklist — sistem menolak. Coba minta revisi tanpa menulis catatan — sistem menolak.
-13. **`/verifikator/kegiatan`** — Usulan kegiatan dari Awardee. Setujui satu, lalu kembali ke
+    checklist: sistem menolak. Coba minta revisi tanpa menulis catatan: sistem menolak.
+13. **`/verifikator/kegiatan`**: Usulan kegiatan dari Awardee. Setujui satu, lalu kembali ke
     **`/kalender`** untuk memperlihatkan kegiatan itu kini tampil publik.
 
-**Babak 4 · Admin — 2 menit**
+**Babak 4 · Admin: 2 menit**
 
 14. Keluar → **`/masuk`** → `admin@pertaminafoundation.org` / `pfriends2026`.
-15. **`/admin`** — Dasbor KPI dengan Apache ECharts: lima KPI Hal 6 dihitung langsung dari data
+15. **`/admin`**: Dasbor KPI dengan Apache ECharts: lima KPI Hal 6 dihitung langsung dari data
     komunitas, lengkap dengan corong keterlibatan dan estimasi jangkauan organik (bruto vs neto).
-16. **`/admin/moderasi`** — Corong pipeline editorial dan papan beban verifikator.
-17. **`/admin/esg`** — Pemetaan E/S/G dan SDG. Tegaskan pembedaan Hal 10: KPI Aktivitas membuktikan
+16. **`/admin/moderasi`**: Corong pipeline editorial dan papan beban verifikator.
+17. **`/admin/esg`**: Pemetaan E/S/G dan SDG. Tegaskan pembedaan Hal 10: KPI Aktivitas membuktikan
     program *berjalan*, KPI ESG membuktikan program *menciptakan nilai*.
-18. **`/admin/gamifikasi`** — Agregat gamifikasi: distribusi jenjang tanpa nama, sumber perolehan
-    poin. Papan peringkat bernama **tidak ada di sini** — itu milik Awardee.
+18. **`/admin/gamifikasi`**: Agregat gamifikasi: distribusi jenjang tanpa nama, sumber perolehan
+    poin. Papan peringkat bernama **tidak ada di sini**: itu milik Awardee.
 
-**Penutup — 30 detik**
+**Penutup: 30 detik**
 
 19. Buka terminal, jalankan `npm run verify`. Empat gerbang plus build, seluruhnya hijau. Tunjukkan
     `docs/14-TRACEABILITY.md`: setiap keputusan pemilik produk menunjuk berkas yang mewujudkannya
@@ -326,7 +336,7 @@ pemilik produk.
 
 | Berkas | Isi |
 |---|---|
-| `00-SOURCE-BRIEF.md` | Ekstraksi lengkap 12 halaman PDF sumber — **rujukan kebenaran** |
+| `00-SOURCE-BRIEF.md` | Ekstraksi lengkap 12 halaman PDF sumber: **rujukan kebenaran** |
 | `01-BRD-SRS.md` | Latar, persona, 46 user story, use case, FR/NFR, matriks telusur |
 | `02-KPI-MODEL.md` | Formula tiap KPI, definisi operasional, rancangan dasbor |
 | `03-GAMIFICATION-SPEC.md` | Skoring, jenjang, anti-gaming, lencana, quest, papan peringkat, reward |
@@ -361,20 +371,20 @@ npm run verify:gamification    22 asersi · 0 gagal
 npm run screenshot             15 tangkapan layar · 0 berkas usang tersisa
 ```
 
-Yang sudah terbukti — bukan diklaim:
+Yang sudah terbukti: bukan diklaim:
 
 - 9 nilai poin dan 4 ambang jenjang **persis** sama dengan Hal 11–12 dokumen sumber, benar di setiap
   titik batas (0/24/25/49/50/99/100/149/150)
 - Matriks akses 4 peran × 4 zona berperilaku persis seperti tabel di atas, termasuk penolakan
   *open redirect* (`//situs-lain.com`) dan gelang login
-- Zona publik **nol** mekanik gamifikasi — diperiksa lewat impor, komponen, teks yang dirender, dan
+- Zona publik **nol** mekanik gamifikasi: diperiksa lewat impor, komponen, teks yang dirender, dan
   bentuk kembalian `ProgramImpactService.publicSnapshot()`
 - Alur editorial menolak: menyetujui tanpa checklist sensitivitas, memutus tanpa catatan, menyetujui
   usulan sendiri, dan bertindak dengan akun terkunci
 - Total poin tiap awardee seed **benar-benar** merupakan jumlah aktivitasnya, bukan angka tempelan;
-  seed deterministik — tampilan demo identik setiap kali dibuka
+  seed deterministik: tampilan demo identik setiap kali dibuka
 - Seluruh route benar-benar merender isi **sebagai peran yang berhak**, dan benar-benar tertutup bagi
-  peran lain — keduanya diuji terpisah
+  peran lain: keduanya diuji terpisah
 - Menekan aksi menambah poin sesuai nilai kanonik, tetap ada setelah muat ulang keras, dan **tidak
   jatuh ke nol** akibat balapan hidrasi (tiga putaran muat ulang, sembilan asersi)
 - Batas harian anti-spam benar-benar menolak aksi berlebih
@@ -386,13 +396,14 @@ Yang sudah terbukti — bukan diklaim:
 Ditulis di sini supaya tidak perlu ditanyakan saat presentasi.
 
 - **Migrasi backend masih bertahap.** Autentikasi, bukti keaktifan, riwayat review, dan poin hasil
-  verifikasi sudah berada di PocketBase. Modul mockup lama seperti cerita dan kegiatan masih memakai
-  IndexedDB (Dexie), sehingga perubahan modul tersebut belum tersinkron antarperamban.
+  verifikasi sudah berada di PocketBase. Pembacaan cerita publik dan kegiatan juga sudah memakai
+  PocketBase. Workflow privat cerita serta beberapa modul mockup lama masih memakai IndexedDB
+  (Dexie), sehingga perubahan pada modul tersebut belum tersinkron antarperamban.
 - **Keamanan fitur baru ditegakkan di PocketBase.** Collection rules dan hook server membatasi
   kepemilikan submission serta keputusan verifikator. `ZoneGuard` di antarmuka tetap hanya lapisan
   pengalaman pengguna; data backend tidak mengandalkannya sebagai otorisasi.
 - **Nama, cerita, dan riwayat kontribusi adalah data sintetis** yang dibangkitkan deterministik
-  untuk keperluan demo — bukan data penerima manfaat sungguhan. 60 awardee, 29 cerita, 20 kegiatan,
+  untuk keperluan demo: bukan data penerima manfaat sungguhan. 60 awardee, 29 cerita, 20 kegiatan,
   639 entri aktivitas.
 - **Foto adalah stok berlisensi bebas**, bukan dokumentasi kegiatan Pertamina Foundation. Kredit dan
   lisensi tiap berkas tercatat di `static/img/CREDITS.md`.
@@ -400,10 +411,10 @@ Ditulis di sini supaya tidak perlu ditanyakan saat presentasi.
   wajib disajikan sebagai rentang; benchmark komunikasi adalah rujukan industri. Keduanya dijelaskan
   di `/metode-pengukuran`.
 - **Titik sambung backend** ada di `src/lib/infrastructure/repositories/`. Mengganti implementasi
-  Dexie dengan pemanggilan REST tidak menyentuh lapisan domain sama sekali — dan itu diuji, bukan
+  Dexie dengan pemanggilan REST tidak menyentuh lapisan domain sama sekali: dan itu diuji, bukan
   diasumsikan.
 - **Tombol merah gelap pada aksi berukuran kecil disengaja.** Putih di atas `#ED1C24` hanya mencapai
-  rasio 4,38 — belum lolos WCAG AA untuk teks kecil — sehingga varian `sm` memakai merah yang lebih
+  rasio 4,38: belum lolos WCAG AA untuk teks kecil: sehingga varian `sm` memakai merah yang lebih
   gelap (6,53). Bila tim desain memilih konsistensi visual di atas kepatuhan AA, ubah di
   `src/lib/components/Button.svelte`.
 - **Yang belum tertutup gerbang otomatis** didaftar terbuka di `docs/14-TRACEABILITY.md` §3: keluar
@@ -412,4 +423,4 @@ Ditulis di sini supaya tidak perlu ditanyakan saat presentasi.
 
 ---
 
-Dibangun untuk Divisi Corporate Secretary — Pertamina Foundation · 2026
+Dibangun untuk Divisi Corporate Secretary: Pertamina Foundation · 2026

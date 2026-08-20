@@ -110,6 +110,12 @@ class ActivitySubmissionStore {
 		finally { this.working = false; }
 	}
 
+	async submitBroadcastShare(broadcast, platform, url, files, activityType = 'SHARE_PUBLIC') {
+		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
+		const data = new FormData(); data.set('activityType',activityType); data.set('broadcast',broadcast.id); data.set('activityDate',new Date().toISOString()); data.set('title',`${activityType === 'SHARE_PRIVATE' ? 'Share WhatsApp' : 'Share publik'}: ${broadcast.title}`); data.set('description',`Dibagikan melalui ${platform}.`); data.set('externalUrl',url); data.set('owner',pb.authStore.record.id); for(const file of files)data.append('evidenceFiles',file);
+		this.working=true; try { const result=await pb.collection('activity_submissions').create(data); await this.load({mine:true}); return result; } catch(error){this.error=pocketBaseMessage(error);throw error} finally{this.working=false}
+	}
+
 	async review(id, decision, note = '') {
 		const pb = getPocketBase();
 		if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');

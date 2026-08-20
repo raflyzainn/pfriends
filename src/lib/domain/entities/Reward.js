@@ -1,5 +1,5 @@
 /**
- * ENTITY — Item Katalog Penukaran Poin.
+ * ENTITY: Item Katalog Penukaran Poin.
  *
  * Tanggung jawab: mendefinisikan satu hadiah yang dapat ditukar anggota beserta
  * syarat penukarannya. Mandat langsung Hal 5 pilar 05: *"Peningkatan poin yang
@@ -7,7 +7,7 @@
  *
  * Keputusan yang dijaga entitas ini: penukaran memakai **Koin Tukar**, bukan Poin
  * Kontribusi. Kalau keduanya disatukan, seorang Champion yang menukar hadiah akan
- * turun menjadi Contributor — dan makna "recognition" pada Hal 12 langsung rusak.
+ * turun menjadi Contributor: dan makna "recognition" pada Hal 12 langsung rusak.
  * Karena itu `priceCoins` sengaja dinamai eksplisit, bukan sekadar `price`.
  *
  * Syarat `minTier` diperiksa terhadap tier aktif anggota, sehingga katalog ikut
@@ -19,11 +19,11 @@
  * "bulanan" pada `monthlyQuota` tidak dapat ditegakkan sama sekali: pencacahnya
  * tidak akan pernah tahu kapan harus kembali ke nol, dan katalog akan tampak habis
  * selamanya sejak bulan pertama yang ramai. Konsekuensinya, seluruh pembacaan kuota
- * menuntut sebuah bulan acuan — `remainingQuotaFor(monthKey)` — dan reset terjadi
+ * menuntut sebuah bulan acuan: `remainingQuotaFor(monthKey)`: dan reset terjadi
  * dengan sendirinya begitu bulan acuannya berganti.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 05 Recognition & Gamifikasi
- * @see docs/03-GAMIFICATION-SPEC.md — §2.2 dua mata uang, §10 katalog penukaran
+ * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 05 Recognition & Gamifikasi
+ * @see docs/03-GAMIFICATION-SPEC.md: §2.2 dua mata uang, §10 katalog penukaran
  */
 
 import { REWARD_CATEGORY_META } from '../constants/community.js';
@@ -39,7 +39,7 @@ const OFFSET_WIB_MS = 7 * 60 * 60 * 1000;
  * Sengaja dihitung dari komponen UTC yang sudah digeser, bukan dari `getMonth()`
  * lokal: peramban anggota di Jayapura dan di Jakarta harus sepakat tentang bulan
  * mana kuota sebuah penukaran dibebankan. Bila tidak, penukaran pada 1 Agustus dini
- * hari akan membebani Juli bagi sebagian anggota dan Agustus bagi sebagian lain —
+ * hari akan membebani Juli bagi sebagian anggota dan Agustus bagi sebagian lain :
  * dan kuota "15 per bulan" menjadi angka yang tidak dapat dipertanggungjawabkan.
  *
  * @param {Date|string|number} [pada] Waktu acuan; default waktu sekarang.
@@ -262,7 +262,7 @@ export class Reward {
 	 * Jumlah penukaran yang membebani sebuah bulan.
 	 *
 	 * Pencacah hanya berlaku bagi bulan yang tercatat pada `quotaMonthKey`. Bulan
-	 * lain mulai dari nol — itulah wujud "reset bulanan"-nya, dan ia terjadi tanpa
+	 * lain mulai dari nol: itulah wujud "reset bulanan"-nya, dan ia terjadi tanpa
 	 * satu pun pekerjaan terjadwal. Sistem demo tanpa cron tidak dapat mengandalkan
 	 * proses malam hari untuk mengosongkan pencacah, dan pencacah yang menunggu
 	 * proses yang tidak pernah datang akan menutup katalog selamanya.
@@ -327,12 +327,12 @@ export class Reward {
 	 * INILAH satu-satunya jalan tulis ke pencacah kuota, dan ia sengaja berada di
 	 * entitas: keputusan "penukaran ke-16 pada kuota 15 ditolak" adalah aturan
 	 * bisnis, bukan urusan basis data. Sebelum method ini ada, `redeemedThisMonth`
-	 * hanya pernah DIBACA — tidak satu pun baris di seluruh aplikasi menaikkannya —
+	 * hanya pernah DIBACA: tidak satu pun baris di seluruh aplikasi menaikkannya :
 	 * sehingga kuota bulanan sekadar hiasan pada kartu penghargaan dan anggota dapat
 	 * menukar melampaui kuotanya sebanyak yang ia mau.
 	 *
 	 * Bulan yang berbeda dari `quotaMonthKey` MENGGANTI pencacah menjadi 1, bukan
-	 * menambahi — itu titik reset bulanannya.
+	 * menambahi: itu titik reset bulanannya.
 	 *
 	 * @param {string} monthKey Kunci bulan `YYYY-MM` yang dibebani penukaran ini.
 	 * @returns {Reward} Instans baru; instans lama tidak berubah.
@@ -369,14 +369,14 @@ export class Reward {
 	/**
 	 * Apakah seorang awardee dapat menukar item ini, beserta alasan bila tidak.
 	 *
-	 * Mengembalikan alasan — bukan sekadar boolean — supaya kartu penghargaan
+	 * Mengembalikan alasan: bukan sekadar boolean: supaya kartu penghargaan
 	 * dapat menjelaskan apa yang kurang. Tombol nonaktif tanpa keterangan adalah
 	 * jalan buntu yang membuat awardee berhenti mencoba.
 	 *
 	 * Bulan acuan wajib ikut diserahkan supaya kuota diperiksa terhadap bulan yang
 	 * BENAR-BENAR akan dibebani penukaran, bukan terhadap bulan terakhir yang
 	 * kebetulan tersimpan di baris basis data. Keduanya berbeda tepat pada hari
-	 * pergantian bulan — hari ketika kesalahan semacam ini paling mahal.
+	 * pergantian bulan: hari ketika kesalahan semacam ini paling mahal.
 	 *
 	 * @param {import('./Awardee.js').Awardee} awardee
 	 * @param {string} [monthKey] Kunci bulan `YYYY-MM`; default bulan berjalan WIB.

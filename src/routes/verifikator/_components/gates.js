@@ -1,9 +1,9 @@
 /**
- * MODUL LOKAL ZONA VERIFIKATOR — ketiga gerbang keputusan, TERPISAH.
+ * MODUL LOKAL ZONA VERIFIKATOR: ketiga gerbang keputusan, TERPISAH.
  *
  * Tanggung jawab: menyediakan ketiga checklist yang dibaca verifikator sebelum
- * memutuskan sebuah naskah — kelayakan fitur publik, kesiapan bukti ESG, dan
- * pemeriksaan data sensitif — masing-masing dalam bentuknya sendiri.
+ * memutuskan sebuah naskah: kelayakan fitur publik, kesiapan bukti ESG, dan
+ * pemeriksaan data sensitif: masing-masing dalam bentuknya sendiri.
  *
  * Empat keputusan yang tidak terbaca dari kode:
  *
@@ -15,11 +15,11 @@
  * 2. **Gerbang kelayakan fitur publik dan bukti ESG dipinjam dari domain apa
  *    adanya.** `FeatureEligibilityPolicy.evaluate` dan
  *    `EsgEvidenceService.evidenceChecklist` sudah mengembalikan daftar `checks`
- *    lengkap dengan `hint` — persis supaya konsol dapat menunjukkan syarat mana
+ *    lengkap dengan `hint`: persis supaya konsol dapat menunjukkan syarat mana
  *    yang belum terpenuhi. Menyusun ulang daftarnya di zona ini berarti dua
  *    definisi kelayakan yang perlahan berbeda.
  * 3. **`EsgEvidenceService` dirakit di atas katalog yang SUDAH dimuat**, bukan di
- *    atas repository. Adapter di bawah hanya membaca `catalog.stories` — nol
+ *    atas repository. Adapter di bawah hanya membaca `catalog.stories`: nol
  *    transaksi IndexedDB tambahan, dan zona ini tetap tidak menjadi composition
  *    root kedua atas basis data.
  * 4. **Gerbang data sensitif dihitung dari konfirmasi MANUSIA, bukan dari field
@@ -28,9 +28,9 @@
  *    sedang berlangsung. `docs/04` §6.2 menegaskan deteksi otomatis hanya
  *    menyaring dan tidak pernah memutuskan.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 5 tiga panel gerbang terpisah
- * @see docs/00-SOURCE-BRIEF.md — Hal 12 minimum for public feature & minimum for ESG evidence
- * @see docs/04-ESG-GOVERNANCE.md — §6 checklist data sensitif
+ * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 5 tiga panel gerbang terpisah
+ * @see docs/00-SOURCE-BRIEF.md: Hal 12 minimum for public feature & minimum for ESG evidence
+ * @see docs/04-ESG-GOVERNANCE.md: §6 checklist data sensitif
  */
 
 import { FeatureEligibilityPolicy } from '$lib/domain/policies/FeatureEligibilityPolicy.js';
@@ -62,7 +62,7 @@ const layananBukti = new EsgEvidenceService({ storyRepo: katalogSebagaiRepo });
  */
 
 /**
- * GERBANG 1 — kelayakan fitur publik (lima syarat Hal 12).
+ * GERBANG 1: kelayakan fitur publik (lima syarat Hal 12).
  *
  * Menilai PENULIS beserta naskahnya, bukan naskahnya saja: salah satu syaratnya
  * adalah capaian kontribusi penulis. Karena itu awardee wajib ditemukan lebih
@@ -86,7 +86,7 @@ export function gerbangFiturPublik(awardee, story, pada) {
 }
 
 /**
- * GERBANG 2 — kesiapan bukti ESG (empat syarat Hal 12).
+ * GERBANG 2: kesiapan bukti ESG (empat syarat Hal 12).
  *
  * @param {import('$lib/domain/entities/Story.js').Story} story
  * @returns {GateResult}
@@ -115,7 +115,7 @@ export async function antreanBuktiBelumLengkap() {
 }
 
 /**
- * GERBANG 3 — pemeriksaan data sensitif (21 butir `docs/04` §6.1).
+ * GERBANG 3: pemeriksaan data sensitif (21 butir `docs/04` §6.1).
  *
  * Sumber kelulusannya adalah konfirmasi manusia yang sedang membaca naskah, bukan
  * field pada entity. Lihat butir 4 pada catatan berkas.

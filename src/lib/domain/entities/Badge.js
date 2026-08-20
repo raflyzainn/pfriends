@@ -1,12 +1,12 @@
 /**
- * ENTITY — Lencana Pengakuan.
+ * ENTITY: Lencana Pengakuan.
  *
  * Tanggung jawab: mendefinisikan satu lencana beserta kriteria perolehannya dan
  * tingkat kelangkaannya.
  *
  * Aturan yang tidak boleh dilanggar: **badge tidak pernah memberi Poin
  * Kontribusi.** Ia hanya memberi Koin Tukar dan hak kosmetik. Alasannya menjaga
- * integritas angka Corsec — kalau badge ikut menambah PK, tabel Hal 11 berhenti
+ * integritas angka Corsec: kalau badge ikut menambah PK, tabel Hal 11 berhenti
  * menjadi satu-satunya sumber poin dan muncul inflasi tersembunyi pada angka yang
  * kelak dilaporkan. Karena itu entitas ini hanya punya `bonusCoins`, dan tidak
  * ada field poin sama sekali.
@@ -15,8 +15,8 @@
  * Tidak ada penilaian subjektif, sehingga tidak ada anggota yang perlu bertanya
  * "kenapa dia dapat dan saya tidak".
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 05 Recognition & Gamifikasi
- * @see docs/03-GAMIFICATION-SPEC.md — §6 sistem badge, §6.2 tingkat kelangkaan
+ * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 05 Recognition & Gamifikasi
+ * @see docs/03-GAMIFICATION-SPEC.md: §6 sistem badge, §6.2 tingkat kelangkaan
  */
 
 /**
@@ -32,7 +32,7 @@ export const BadgeRarity = Object.freeze({
 });
 
 /**
- * Metadata kelangkaan. `bonusCoins` adalah Koin Tukar — bukan Poin Kontribusi.
+ * Metadata kelangkaan. `bonusCoins` adalah Koin Tukar: bukan Poin Kontribusi.
  * `targetPopulasi` menjadi rambu bagi kurator katalog: badge Legendaris yang
  * dimiliki separuh anggota bukan lagi tanda kehormatan, melainkan basa-basi.
  * @type {Readonly<Record<string, {code: string, label: string, logam: string, bonusCoins: number, targetPopulasi: string, token: string, ink: string, urutan: number}>>}
@@ -81,7 +81,7 @@ export const BADGE_RARITY_META = Object.freeze({
 });
 
 /**
- * Keluarga lencana — mengelompokkan badge menurut jenis kontribusi yang diakui.
+ * Keluarga lencana: mengelompokkan badge menurut jenis kontribusi yang diakui.
  * @readonly
  * @enum {string}
  */
@@ -231,7 +231,7 @@ export class Badge {
 		return BADGE_RARITY_META[this.#data.rarity];
 	}
 
-	/** @returns {number} Bonus Koin Tukar — bukan Poin Kontribusi. */
+	/** @returns {number} Bonus Koin Tukar: bukan Poin Kontribusi. */
 	get bonusCoins() {
 		return this.rarityMeta.bonusCoins;
 	}

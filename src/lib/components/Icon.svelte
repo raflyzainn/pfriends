@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Icon — SVG stroke sebaris bergaya Heroicons Outline.
+	 * Icon: SVG stroke sebaris bergaya Heroicons Outline.
 	 *
 	 * Props:
 	 * @prop {string}  path        Atribut `d`, diambil dari `$lib/data/icons.js`.
@@ -9,7 +9,7 @@
 	 * @prop {string}  class       Kelas tambahan.
 	 * @prop {string}  title       Bila diisi, ikon menjadi gambar bermakna dengan nama aksesibel.
 	 *
-	 * Ikon TIDAK PERNAH menetapkan warnanya sendiri — selalu mewarisi `currentColor`
+	 * Ikon TIDAK PERNAH menetapkan warnanya sendiri: selalu mewarisi `currentColor`
 	 * dari induk. Tanpa aturan ini, mustahil menjamin pasangan kontras teks/ikon.
 	 */
 	let { path = '', size = 20, strokeWidth = 1.8, class: className = '', title = '' } = $props();

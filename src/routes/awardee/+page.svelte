@@ -1,8 +1,8 @@
 <script>
 	/**
-	 * HALAMAN — Beranda Awardee.
+	 * HALAMAN: Beranda Awardee.
 	 *
-	 * Tanggung jawab: MENYAMBUT, lalu menjawab dua pertanyaan berurutan — *"apa
+	 * Tanggung jawab: MENYAMBUT, lalu menjawab dua pertanyaan berurutan: *"apa
 	 * yang perlu saya ikuti?"* dan *"apa yang perlu saya ketahui?"*. Ringkasan
 	 * pencapaian menyusul sesudahnya sebagai penutup yang menyemangati, bukan
 	 * sebagai pembuka yang menagih.
@@ -30,11 +30,11 @@
 	 *    ajakan yang berlaku kapan pun.
 	 *
 	 * 4. **Chart-nya satu seri dan tanpa pembanding.** `AwardeePointTrend` memang
-	 *    tidak mampu menampung seri kedua — garis "rata-rata komunitas" di
+	 *    tidak mampu menampung seri kedua: garis "rata-rata komunitas" di
 	 *    sebelahnya akan menjadi papan peringkat yang menyamar.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 tabel skor, Hal 12 tier
-	 * @see docs/07-UX-SITEMAP.md — §5.2 wireframe dasbor awardee
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 11 tabel skor, Hal 12 tier
+	 * @see docs/07-UX-SITEMAP.md: §5.2 wireframe dasbor awardee
 	 */
 	import { onMount } from 'svelte';
 	import {
@@ -80,7 +80,7 @@
 
 	const awardee = $derived(session.awardee);
 
-	/** Nama panggilan — kata pertama saja. Sapaan yang menyebut nama lengkap terasa formal. */
+	/** Nama panggilan: kata pertama saja. Sapaan yang menyebut nama lengkap terasa formal. */
 	const namaPanggilan = $derived(awardee ? awardee.fullName.split(' ')[0] : '');
 
 	/**
@@ -116,7 +116,7 @@
 	/** Kegiatan terdekat yang masih akan datang. */
 	const kegiatanTerdekat = $derived(catalog.upcomingEvents(new Date(), JUMLAH_KEGIATAN));
 
-	/** Kegiatan yang jatuh dalam tujuh hari ke depan — satu-satunya yang layak disebut mendesak. */
+	/** Kegiatan yang jatuh dalam tujuh hari ke depan: satu-satunya yang layak disebut mendesak. */
 	const kegiatanPekanIni = $derived(
 		kegiatanTerdekat.filter(
 			(kegiatan) => selisihHari(new Date(), kegiatan.startsAt) <= AMBANG_PEKAN_INI
@@ -177,7 +177,7 @@
 				jenis: 'Tenggat',
 				warna: 'navy',
 				iconPath: ICONS.calendar,
-				judul: `${kegiatan.title} — ${formatRelatif(kegiatan.startsAt)}`,
+				judul: `${kegiatan.title}: ${formatRelatif(kegiatan.startsAt)}`,
 				isi: `${kegiatan.typeMeta?.label ?? 'Kegiatan komunitas'} · ${kegiatan.isOnline ? 'Daring' : kegiatan.location || 'Luring'}. Pastikan kamu sudah mencatat jadwalnya.`,
 				href: '/awardee/kalender',
 				aksi: 'Lihat jadwal'
@@ -204,13 +204,13 @@
 				warna: 'slate',
 				iconPath: ICONS.book,
 				judul: 'Kamu belum menulis Blog pertama',
-				isi: 'Satu aksi kecil bulan ini sudah cukup menjadi tulisan. Naskah yang lolos tinjauan tayang di ruang publik PFfriends.',
+				isi: 'Satu aksi kecil bulan ini sudah cukup menjadi tulisan. Naskah yang lolos tinjauan tayang di ruang publik PFriends.',
 				href: '/awardee/cerita/tulis',
 				aksi: 'Mulai menulis'
 			});
 		}
 
-		// Butir tetap — menjaga daftar tidak pernah kosong. Lihat keputusan 3.
+		// Butir tetap: menjaga daftar tidak pernah kosong. Lihat keputusan 3.
 		daftar.push({
 			id: 'forum',
 			jenis: 'Info',
@@ -263,7 +263,7 @@
 </script>
 
 <svelte:head>
-	<title>Beranda — PFfriends</title>
+	<title>Beranda: PFriends</title>
 </svelte:head>
 
 {#if !awardee}
@@ -292,7 +292,7 @@
 					Kamu terdaftar sebagai anggota <span class="font-semibold text-brand-700"
 						>{awardee.communityDef.akronim}</span
 					>
-					di {awardee.chapterDef.label}{#if awardee.city}, {awardee.city}{/if}. Senang kamu kembali —
+					di {awardee.chapterDef.label}{#if awardee.city}, {awardee.city}{/if}. Senang kamu kembali :
 					di bawah ini kegiatan terdekat dan hal-hal yang perlu kamu ketahui hari ini.
 				</p>
 			</div>
@@ -329,7 +329,7 @@
 		{#if kegiatanTerdekat.length === 0}
 			<EmptyState
 				title="Belum ada kegiatan terjadwal"
-				message="Kegiatan baru diumumkan tiap awal bulan — dan kamu boleh mengusulkan sendiri lewat tab “Usulan saya” di Calendar of Event."
+				message="Kegiatan baru diumumkan tiap awal bulan: dan kamu boleh mengusulkan sendiri lewat tab “Usulan saya” di Calendar of Event."
 				iconPath={ICONS.calendar}
 				size="sm"
 				actionLabel="Buka Calendar of Event"
@@ -500,7 +500,7 @@
 
 				{#if lencanaTerkumpul.length === 0}
 					<p class="mt-3 rounded-xl bg-surface-soft p-3 text-[13px] leading-relaxed text-ink-600">
-						Belum ada lencana yang terbuka — dan itu wajar bagi anggota baru. Lencana pertama
+						Belum ada lencana yang terbuka: dan itu wajar bagi anggota baru. Lencana pertama
 						biasanya datang dari kabar yang disimak dan kegiatan pertama yang dihadiri.
 					</p>
 				{:else}
@@ -546,7 +546,7 @@
 			{#if kabarTerbaru.length === 0}
 				<EmptyState
 					title="Belum ada kabar baru"
-					message="Kabar mingguan PFfriends terbit setiap Selasa pagi."
+					message="Kabar mingguan PFriends terbit setiap Selasa pagi."
 					iconPath={ICONS.megaphone}
 					size="sm"
 				/>
@@ -616,7 +616,7 @@
 	     tetapi routenya tetap hidup dan isinya tetap berguna. Baris kecil di kaki
 	     dasbor menjaga keduanya tetap dapat dijangkau tanpa mengetik alamat. -->
 	<section class="mt-8 border-t border-ink-100 pt-5" aria-labelledby="judul-ruang-lain">
-		<h2 id="judul-ruang-lain" class="label-micro">Ruang lain di PFfriends</h2>
+		<h2 id="judul-ruang-lain" class="label-micro">Ruang lain di PFriends</h2>
 		<ul class="mt-2.5 flex flex-wrap gap-x-5 gap-y-2">
 			<li>
 				<a

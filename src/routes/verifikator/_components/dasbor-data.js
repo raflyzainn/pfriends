@@ -1,5 +1,5 @@
 /**
- * DATA CONTOH DASBOR VERIFIKATOR — angka performa awardee untuk mockup demo.
+ * DATA CONTOH DASBOR VERIFIKATOR: angka performa awardee untuk mockup demo.
  *
  * Tanggung jawab: menjadi SATU-SATUNYA tempat angka contoh dasbor verifikator
  * hidup, supaya halaman dasbor tidak menjadi campuran antara tata letak dan
@@ -13,14 +13,14 @@
  *    adalah hal pertama yang ditangkap pemirsa di ruang rapat, dan sesudah itu
  *    tidak ada satu pun angka lain yang mereka percayai.
  * 2. **Turunan dihitung, bukan diketik.** "KPI tercapai 3 dari 5" lahir dari
- *    `kpiTercapai()`, bukan dari angka 3 yang ditulis tangan — supaya menyunting
+ *    `kpiTercapai()`, bukan dari angka 3 yang ditulis tangan: supaya menyunting
  *    satu baris KPI tidak diam-diam membuat kartu ringkasannya berbohong.
  * 3. **Papan peringkat punya cadangan.** `PESERTA_TERAKTIF` dipakai hanya bila
  *    katalog awardee belum termuat; begitu data seed hadir, dasbor memakai nama
  *    sungguhan. Papan peringkat kosong pada saat demo lebih buruk daripada papan
  *    berisi contoh yang jujur ditandai.
  * 4. **Nilai antrean TIDAK ada di berkas ini.** Cacah naskah dan usulan yang
- *    menunggu datang dari store `editorial` — itu pekerjaan nyata verifikator,
+ *    menunggu datang dari store `editorial`: itu pekerjaan nyata verifikator,
  *    dan menggantinya dengan angka contoh akan membuat tautan "buka antrean"
  *    membawa pengguna ke daftar yang isinya berbeda dari lencananya.
  */
@@ -38,7 +38,7 @@ export const POSTINGAN_TERBIT = Object.freeze([12, 18, 21, 24, 27, 31, 34, 38]);
  *
  * Naik seiring `POSTINGAN_TERBIT` dan bukan kebetulan: poin lahir dari kontribusi
  * yang terbit, sehingga dua deret yang bergerak berlawanan arah akan langsung
- * ditanyakan pemirsa — dan tidak akan ada jawabannya.
+ * ditanyakan pemirsa: dan tidak akan ada jawabannya.
  */
 export const POIN_BULANAN = Object.freeze([3800, 5200, 6100, 6900, 7400, 8600, 9500, 10200]);
 
@@ -58,7 +58,7 @@ export const KPI_AWARDEE = Object.freeze([
 ]);
 
 /**
- * Asal kontribusi per komunitas dan chapter. Jumlahnya 205 — sama dengan jumlah
+ * Asal kontribusi per komunitas dan chapter. Jumlahnya 205: sama dengan jumlah
  * `POSTINGAN_TERBIT`, karena keduanya menghitung hal yang sama dari dua sisi.
  * @type {readonly {label: string, value: number}[]}
  */
@@ -76,7 +76,7 @@ export const AWARDEE_TERDAFTAR = 214;
 export const AWARDEE_AKTIF = 168;
 
 /**
- * Mutu kerja peninjauan — dipakai kartu antrean, bukan chart.
+ * Mutu kerja peninjauan: dipakai kartu antrean, bukan chart.
  *
  * `waktuTanggapHari` ditulis sebagai TEKS, bukan bilangan: pemisah desimal
  * Bahasa Indonesia adalah koma, sedangkan `1.8` yang dirender apa adanya akan

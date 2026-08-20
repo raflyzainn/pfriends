@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Footer — kaki halaman.
+	 * Footer: kaki halaman.
 	 *
 	 * Props (seluruhnya opsional):
 	 * @prop {boolean} compact  Versi satu baris untuk zona awardee/admin.
@@ -12,7 +12,7 @@
 	 *
 	 * 1. **Dua pil berbingkai "PT Pertamina (Persero)" dan "Danantara Indonesia"
 	 *    DIHAPUS.** Kotak berbingkai berisi nama organisasi terbaca sebagai chip
-	 *    placeholder yang belum diganti logo — persis kesan yang sedang dicabut.
+	 *    placeholder yang belum diganti logo: persis kesan yang sedang dicabut.
 	 *    Penggantinya baris teks monokrom.
 	 *
 	 * 2. **`/kalender` masuk ke daftar tautan.** Kalender adalah salah satu dari
@@ -23,7 +23,7 @@
 	 *    tiga chapter, satu divisi penyelenggara. Trikolon kata kerja adalah salah
 	 *    satu tanda tulisan generate yang paling mudah dikenali.
 	 *
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E7 catatan Footer, §2 P-7
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E7 catatan Footer, §2 P-7
 	 */
 	import { CHAPTERS, COMMUNITIES } from '$lib/domain/constants/community.js';
 	import { kelas } from './_visual.js';
@@ -51,7 +51,7 @@
 	<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 		<div class="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
 			<div class="min-w-0">
-				<p class="text-base font-extrabold text-heading">PFfriends</p>
+				<p class="text-base font-extrabold text-heading">PFriends</p>
 				<p class="mt-1 text-sm text-ink-600">
 					Community Connect Initiative · Pertamina Foundation
 				</p>
@@ -61,7 +61,7 @@
 					<!-- Baris FAKTA, bukan trikolon kata kerja. Angka chapter dibaca dari
 					     konstanta domain supaya kalimat ini tidak basi saat chapter bertambah. -->
 					<p class="mt-3 max-w-md text-[14px] leading-[1.6] text-ink-600">
-						Dua komunitas — {COMMUNITIES[0].akronim} dan {COMMUNITIES[1].akronim} — dalam
+						Dua komunitas: {COMMUNITIES[0].akronim} dan {COMMUNITIES[1].akronim}: dalam
 						{CHAPTERS.length} chapter angkatan, dikelola Divisi Corporate Secretary
 						Pertamina Foundation.
 					</p>

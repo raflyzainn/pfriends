@@ -1,8 +1,8 @@
 /**
- * MODUL INTERNAL — perhitungan metrik alur editorial.
+ * MODUL INTERNAL: perhitungan metrik alur editorial.
  *
  * Tanggung jawab: seluruh aritmetika di balik `ContentReviewService.slaOf()`,
- * `pipeline()`, dan `slaCompliance()` — usia antrean dalam hari kerja, median,
+ * `pipeline()`, dan `slaCompliance()`: usia antrean dalam hari kerja, median,
  * dan penentuan tahap corong dari bukti yang tersimpan pada naskah.
  *
  * Mengapa berkas terpisah, bukan method privat:
@@ -10,18 +10,18 @@
  * 1. **Batas ukuran modul (U-3).** Kelas keputusan editorial sudah memikul
  *    sepuluh transisi berikut pembelaannya; menambahkan aritmetika metrik ke
  *    dalamnya membuat satu berkas menjawab dua pertanyaan yang tidak saling
- *    membutuhkan — "boleh atau tidak" dan "seberapa cepat".
+ *    membutuhkan: "boleh atau tidak" dan "seberapa cepat".
  * 2. **Ini modul internal paket, bukan service kedua.** Namanya diawali garis
  *    bawah sesuai konvensi penamaan, dan ia TIDAK diekspor sebagai titik masuk:
  *    satu-satunya pemakainya adalah `ContentReviewService`. Antrean editorial
  *    tetap punya satu sumber kebenaran; yang dipecah hanyalah tempat rumusnya
  *    tinggal.
- * 3. **Seluruh isinya murni.** Tanpa repository, tanpa jam internal — waktu
+ * 3. **Seluruh isinya murni.** Tanpa repository, tanpa jam internal: waktu
  *    pemeriksaan selalu dioper pemanggil, sehingga kartu antrean dapat memanggil
  *    perhitungan SLA dua puluh kali tanpa satu pun pembacaan basis data.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.9 pipeline & slaCompliance, §5.5 U-3 batas ukuran modul
- * @see docs/10-REVISION-SPEC.md — §5.6 SLA & eskalasi
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.9 pipeline & slaCompliance, §5.5 U-3 batas ukuran modul
+ * @see docs/10-REVISION-SPEC.md: §5.6 SLA & eskalasi
  */
 
 import { SLA_HARI_KERJA } from '../constants/content-workflow.js';
@@ -29,7 +29,7 @@ import { STORY_STATUS } from '../constants/community.js';
 import { CommunityEvent } from '../entities/CommunityEvent.js';
 import { Story } from '../entities/Story.js';
 
-/** Batas iterasi penghitung hari kerja — pengaman gelang, bukan angka kebijakan. */
+/** Batas iterasi penghitung hari kerja: pengaman gelang, bukan angka kebijakan. */
 const MAKS_HARI_DIHITUNG = 3650;
 
 /**
@@ -136,7 +136,7 @@ export function slaDari(entity, pada) {
 
 /**
  * Tahap terjauh yang pernah dicapai sebuah naskah, dibaca dari BUKTI yang
- * tersimpan — bukan dari status terakhirnya.
+ * tersimpan: bukan dari status terakhirnya.
  *
  * Naskah yang sudah diarsipkan tetap pernah melewati tahap-tahap sebelumnya.
  * Corong yang membaca status terakhir akan melaporkan naskah itu seolah tidak
@@ -187,7 +187,7 @@ export function corongEditorial(stories) {
 /**
  * Kepatuhan SLA per antrean.
  *
- * Satu baris per kunci `SLA_HARI_KERJA`, termasuk antrean yang sedang kosong —
+ * Satu baris per kunci `SLA_HARI_KERJA`, termasuk antrean yang sedang kosong :
  * baris yang menghilang saat antreannya kosong membuat chart berubah bentuk dan
  * terbaca sebagai data yang gagal dimuat.
  *

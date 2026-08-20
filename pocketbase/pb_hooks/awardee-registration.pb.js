@@ -121,6 +121,7 @@ routerAdd('POST', '/api/pfriends/registrations/{id}/decision', (e) => {
 				awardee.set('businessSector', registration.getString('businessSector'));
 				awardee.set('businessCity', registration.getString('businessCity'));
 				awardee.set('status', 'AKTIF');
+				awardee.set('consentActive', true);
 				awardee.set('joinedAt', new Date().toISOString());
 				tx.save(awardee);
 				user.set('awardeeId', awardeeId);

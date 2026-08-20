@@ -1,15 +1,15 @@
 /**
- * POLICY — Gerbang Fitur Publik.
+ * POLICY: Gerbang Fitur Publik.
  *
  * Tanggung jawab: mengevaluasi lima syarat Hal 12 yang harus dipenuhi sebelum
  * seorang anggota dan ceritanya boleh diangkat ke ruang publik.
  *
  * > *"Minimum for public feature: 100 points + verified story + consent +
- * > PF validation + no sensitive-data concern."* — Hal 12
+ * > PF validation + no sensitive-data concern."*: Hal 12
  *
  * Kelima syarat bersifat **konjungtif**: satu saja tidak terpenuhi berarti tidak
  * layak. Tidak ada pembobotan, tidak ada skor gabungan, dan tidak ada jalur
- * pintas untuk admin. Alasannya bukan kekakuan prosedural — publikasi adalah satu
+ * pintas untuk admin. Alasannya bukan kekakuan prosedural: publikasi adalah satu
  * dari sedikit tindakan di sistem ini yang tidak dapat dibatalkan setelah
  * terjadi.
  *
@@ -18,13 +18,13 @@
  * penilaian kualitatif dipindahkan ke gerbang ini, yang memang didefinisikan
  * demikian oleh dokumen sumber.
  *
- * Mengembalikan daftar `checks` — bukan sekadar boolean — supaya konsol moderasi
+ * Mengembalikan daftar `checks`: bukan sekadar boolean: supaya konsol moderasi
  * dapat menunjukkan persis syarat mana yang belum terpenuhi. Penolakan tanpa
  * penjelasan hanya memindahkan pertanyaan ke luar sistem.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 12 "Minimum for public feature"
- * @see docs/03-GAMIFICATION-SPEC.md — §4.1 gate kelayakan
- * @see docs/09-BUILD-CONTRACT.md — K-3
+ * @see docs/00-SOURCE-BRIEF.md: Hal 12 "Minimum for public feature"
+ * @see docs/03-GAMIFICATION-SPEC.md: §4.1 gate kelayakan
+ * @see docs/09-BUILD-CONTRACT.md: K-3
  */
 
 import { AMBANG_FITUR_PUBLIK } from '../constants/tier-table.js';
@@ -54,7 +54,7 @@ const MILIDETIK_PER_HARI = 86_400_000;
 
 export class FeatureEligibilityPolicy {
 	/**
-	 * Kelas ini murni statis — keputusannya hanya bergantung pada argumen.
+	 * Kelas ini murni statis: keputusannya hanya bergantung pada argumen.
 	 * @throws {TypeError} bila diinstansiasi.
 	 */
 	constructor() {
@@ -129,7 +129,7 @@ export class FeatureEligibilityPolicy {
 	/**
 	 * Consent dianggap terpenuhi bila cerita membawa consent aktif miliknya
 	 * sendiri. Consent tingkat awardee dipakai sebagai penopang ketika cerita
-	 * belum ada — sehingga awardee tanpa consent apa pun tetap gagal di syarat ini
+	 * belum ada: sehingga awardee tanpa consent apa pun tetap gagal di syarat ini
 	 * alih-alih lolos karena ketiadaan data.
 	 *
 	 * @param {import('../entities/Awardee.js').Awardee} awardee
@@ -143,7 +143,7 @@ export class FeatureEligibilityPolicy {
 
 	/**
 	 * Validasi PF sah bila ada dan belum melewati masa berlakunya. Validasi yang
-	 * kedaluwarsa diperlakukan sama dengan tidak ada — bukan karena formalitas,
+	 * kedaluwarsa diperlakukan sama dengan tidak ada: bukan karena formalitas,
 	 * melainkan karena keadaan seorang anggota bisa berubah dalam tiga bulan.
 	 *
 	 * @param {import('../entities/Story.js').Story|null} story

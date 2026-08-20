@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { TierResolver } from '$lib/domain/services/TierResolver.js';
 import { myGamification } from '$lib/infrastructure/pocketbase/gamification.js';
+import { engageBroadcast } from '$lib/infrastructure/pocketbase/broadcasts.js';
 import { session } from './session.svelte.js';
 import { toast, ToastType } from './toast.svelte.js';
 
@@ -22,14 +23,19 @@ class GamificationStore {
 	unlockedBadges = $derived(this.badges.filter((entry) => entry.unlocked));
 	availableActions = $derived(this.dailyUsage.filter((row) => !row.exhausted));
 
-	async perform() {
-		const result = Object.freeze({ accepted: false, points: 0, reason: ALASAN_BACKEND, activity: null });
-		toast.push({
-			type: ToastType.INFO,
-			title: 'Pencatatan lokal dinonaktifkan',
-			message: `${ALASAN_BACKEND} Gunakan menu Bukti Keaktifan untuk mengajukan kontribusi.`
-		});
-		return result;
+	async perform(type, payload = {}) {
+		if (!['BROADCAST_VIEW','CTA_REACT','SHARE_PRIVATE'].includes(type) || !payload.refId) {
+			const result = Object.freeze({ accepted: false, points: 0, reason: ALASAN_BACKEND, activity: null });
+			toast.push({ type: ToastType.INFO, title: 'Perlu bukti', message: ALASAN_BACKEND }); return result;
+		}
+		this.busy = type;
+		try {
+			const response = await engageBroadcast(payload.refId, type, payload.note || '', payload.requestKey || '');
+			await this.refresh();
+			toast.success('Aksi tercatat', response.points ? `+${response.points} poin berhasil dibukukan.` : 'Aksi tercatat tanpa poin karena batas harian.');
+			return { accepted: true, points: response.points || 0, reason: '', activity: null };
+		} catch (error) { toast.error('Aksi gagal dicatat', error.message); return { accepted:false, points:0, reason:error.message, activity:null }; }
+		finally { this.busy = null; }
 	}
 
 	async refresh() {

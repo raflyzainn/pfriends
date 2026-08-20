@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * DecisionDialog — pengumpul masukan wajib sebuah keputusan editorial.
+	 * DecisionDialog: pengumpul masukan wajib sebuah keputusan editorial.
 	 *
 	 * @prop {import('./decisions.js').Decision|null} decision  Keputusan yang dipilih; `null` menutup dialog.
 	 * @prop {string} entityTitle   Judul naskah atau kegiatan yang sedang diputuskan.
@@ -24,7 +24,7 @@
 	 *    hilang sebelum sempat dibaca.
 	 * 4. **Konfirmasi data sensitif TIDAK dapat dicentang dari dialog ini.**
 	 *    Kesiapannya dioper sebagai `sensitivityReady` dari panel gerbang, karena
-	 *    kedua puluh satu butirnya harus dibaca di samping naskah — bukan dicentang
+	 *    kedua puluh satu butirnya harus dibaca di samping naskah: bukan dicentang
 	 *    sekaligus lewat satu kotak di dalam dialog.
 	 */
 	import { Button, Modal } from '$lib/components';

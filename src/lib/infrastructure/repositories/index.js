@@ -1,5 +1,5 @@
 /**
- * BARREL REPOSITORY — satu titik impor bagi lapisan store dan service.
+ * BARREL REPOSITORY: satu titik impor bagi lapisan store dan service.
  *
  * Repository bersifat tanpa state: seluruhnya hanya membungkus tabel Dexie yang
  * sama. Karena itu instans tunggal per tabel sudah memadai, dan store cukup

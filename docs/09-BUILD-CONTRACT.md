@@ -1,4 +1,4 @@
-# 09 — BUILD CONTRACT (Kontrak Build) — Pfriends
+# 09: BUILD CONTRACT (Kontrak Build): Pfriends
 
 > Dokumen ini **mengikat**. Seluruh agent implementasi wajib mematuhinya persis.
 > Bila dokumen desain lain (01–08) bertentangan dengan dokumen ini, **dokumen ini yang menang**.
@@ -21,7 +21,7 @@
 
 ## 2. Angka kanonik (SATU-SATUNYA sumber di kode)
 
-Sudah diimplementasikan di `src/lib/domain/constants/scoring-table.js` — **jangan ditulis ulang di tempat lain**.
+Sudah diimplementasikan di `src/lib/domain/constants/scoring-table.js`: **jangan ditulis ulang di tempat lain**.
 
 - 9 aksi: 1 · 2 · 5 · 8 · 10 · 15 · 15 · 30 · 50
 - 4 tier: 25 Active Member · 50 Contributor · 100 Featured Candidate · 150 Champion
@@ -36,7 +36,7 @@ Selalu impor dari `$lib/domain/constants/`.
 
 ## 3. Route final (25)
 
-### Zona Publik — tanpa login
+### Zona Publik: tanpa login
 | Path | Halaman | Isi inti |
 |---|---|---|
 | `/` | Beranda Pfriends | Hero, 2 komunitas, cara kerja poin, sorotan anggota, cerita terbaru, CTA daftar |
@@ -48,7 +48,7 @@ Selalu impor dari `$lib/domain/constants/`.
 | `/daftar` | Pendaftaran | Form onboarding + persetujuan consent |
 | `/masuk` | Masuk | Pemilih peran demo (anggota / admin PF) |
 
-### Zona Member — wajib sesi
+### Zona Member: wajib sesi
 | Path | Halaman | Isi inti |
 |---|---|---|
 | `/member` | Dasbor Anggota | Poin, tier + progres ke tier berikutnya, streak, aksi cepat, kabar terbaru |
@@ -82,11 +82,11 @@ Grup layout: `src/routes/(public)/`, `src/routes/member/`, `src/routes/admin/`.
 
 > Satu file = satu pemilik. Agent **dilarang** menyentuh file milik paket lain.
 > `src/app.css`, `src/app.html`, `package.json`, `vite.config.js`, `svelte.config.js`,
-> `src/routes/+layout.svelte`, `src/routes/+layout.js` **sudah selesai — jangan diubah siapa pun.**
+> `src/routes/+layout.svelte`, `src/routes/+layout.js` **sudah selesai: jangan diubah siapa pun.**
 
-### WP-1 — Domain: konstanta & value object
+### WP-1: Domain: konstanta & value object
 ```
-src/lib/domain/constants/scoring-table.js      [SUDAH ADA — jangan diubah]
+src/lib/domain/constants/scoring-table.js      [SUDAH ADA: jangan diubah]
 src/lib/domain/constants/tier-table.js
 src/lib/domain/constants/esg-taxonomy.js
 src/lib/domain/constants/kpi-targets.js
@@ -97,7 +97,7 @@ src/lib/domain/value-objects/EsgTag.js
 src/lib/domain/value-objects/ConsentRecord.js
 ```
 
-### WP-2 — Domain: entity, service, policy, repository
+### WP-2: Domain: entity, service, policy, repository
 ```
 src/lib/domain/entities/{Member,PointActivity,Story,CommunityEvent,Movement,Reward,Badge,Broadcast}.js
 src/lib/domain/services/{GamificationEngine,TierResolver,LeaderboardService,KpiCalculator,EsgEvidenceService}.js
@@ -105,26 +105,26 @@ src/lib/domain/policies/{AntiGamingPolicy,FeatureEligibilityPolicy}.js
 src/lib/domain/repositories/Repository.js
 ```
 
-### WP-3 — Infrastruktur & seed
+### WP-3: Infrastruktur & seed
 ```
 src/lib/infrastructure/db.js
 src/lib/infrastructure/repositories/*.js
 src/lib/infrastructure/seed/{rng.js,names.js,seed-data.js,bootstrap.js}
 ```
 
-### WP-4 — Store (runes)
+### WP-4: Store (runes)
 ```
 src/lib/stores/{session,gamification,catalog,leaderboard,admin,toast}.svelte.js
 ```
 
-### WP-5 — Komponen bersama & chart
+### WP-5: Komponen bersama & chart
 ```
 src/lib/components/*.svelte   (+ index.js barrel)
 src/lib/charts/*.svelte       (+ _chartTheme.js)
 src/lib/utils/{format.js,date.js}
 ```
 
-### WP-6 — Route publik   ### WP-7 — Route member   ### WP-8 — Route admin
+### WP-6: Route publik   ### WP-7: Route member   ### WP-8: Route admin
 Sesuai §3.
 
 **Urutan:** WP-1 → WP-2 → WP-3 → WP-4 → WP-5 → (WP-6 ‖ WP-7 ‖ WP-8)
@@ -159,13 +159,13 @@ export const COMMUNITIES, CHAPTERS, STORY_STATUS, MEMBER_STATUS, REWARD_CATEGORY
 
 ### Value object (immutable, punya `equals`)
 ```js
-new Points(value)            // .value .plus(p) .minus(p) .toString() .equals(o)  — tolak negatif
+new Points(value)            // .value .plus(p) .minus(p) .toString() .equals(o) : tolak negatif
 Tier.fromPoints(points)      // .level .label .threshold .color .benefit .isAtLeast(level)
 new EsgTag(pillar, sdgGoal)  // .pillar .sdgGoal .label
 new ConsentRecord({...})     // immutable; .revoke() -> instans BARU
 ```
 
-### Service (menerima repository lewat konstruktor — Dependency Inversion)
+### Service (menerima repository lewat konstruktor: Dependency Inversion)
 ```js
 new GamificationEngine({ activityRepo, antiGamingPolicy })
   await award(memberId, activityType, { evidence, refId, occurredAt }) // -> { accepted, points, reason, activity }
@@ -258,7 +258,7 @@ Semua ikon = **inline SVG stroke**, tanpa dependensi ikon eksternal.
 - **Distribusi tier realistis** (mengerucut): ±22 Newcomer (<25), ±16 Active, ±12 Contributor,
   ±7 Featured, ±3 Champion.
 - **Konsistensi mutlak**: `PointActivity` tiap anggota **harus berjumlah persis** sama dengan total poinnya.
-  Bangkitkan riwayat dulu, lalu jumlahkan — jangan menetapkan total lalu mengarang riwayat.
+  Bangkitkan riwayat dulu, lalu jumlahkan: jangan menetapkan total lalu mengarang riwayat.
 - Rentang tanggal aktivitas: Januari–Juli 2026 (sesuai timeline sumber), agar chart admin terisi 7 bulan.
 - Lainnya: ≥12 broadcast, ≥20 cerita (tersebar di semua status), ≥10 kegiatan, ≥6 gerakan,
   ≥10 reward, ≥12 badge, catatan consent untuk tiap anggota.
@@ -271,7 +271,7 @@ Semua ikon = **inline SVG stroke**, tanpa dependensi ikon eksternal.
 Setiap paket kerja dianggap selesai bila:
 
 1. `npm run build` **sukses tanpa error**.
-2. `node scripts/verify/compile-all.mjs` — 0 gagal kompilasi.
+2. `node scripts/verify/compile-all.mjs`: 0 gagal kompilasi.
 3. Tidak ada import menggantung, tidak ada komponen/фungsi yang dirujuk tapi tidak ada.
 4. Tidak ada teks placeholder (`Lorem ipsum`, `TODO`, `Coming soon`, `User 1`).
 5. Seluruh teks yang dilihat pengguna **Bahasa Indonesia**.
@@ -284,7 +284,7 @@ Setiap paket kerja dianggap selesai bila:
 ## 8. Aturan anti-bentrok untuk agent paralel
 
 - Jangan mengedit file di luar paket kerjamu. Bila butuh sesuatu dari paket lain,
-  **asumsikan kontrak §5 dan panggil apa adanya** — jangan membuat versi tandinganmu sendiri.
+  **asumsikan kontrak §5 dan panggil apa adanya**: jangan membuat versi tandinganmu sendiri.
 - Jangan menambah dependensi npm apa pun. Yang tersedia: `svelte`, `@sveltejs/kit`, `tailwindcss`,
   `dexie`, `echarts`. Titik.
 - Jangan mengubah `app.css` / `app.html` / config / layout root.

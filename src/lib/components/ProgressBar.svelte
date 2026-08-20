@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * ProgressBar — bilah progres beraksesibilitas penuh.
+	 * ProgressBar: bilah progres beraksesibilitas penuh.
 	 *
 	 * Props:
 	 * @prop {number} value

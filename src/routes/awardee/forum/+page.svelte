@@ -1,10 +1,10 @@
 <script>
 	/**
-	 * HALAMAN — Forum Komunitas (`/awardee/forum`).
+	 * HALAMAN: Forum Komunitas (`/awardee/forum`).
 	 *
-	 * Ruang percakapan harian PFfriends: kanal bertema di kiri, aliran pesan di
+	 * Ruang percakapan harian PFriends: kanal bertema di kiri, aliran pesan di
 	 * tengah, anggota yang sedang daring di kanan. Susunan tiga kolom ini sengaja
-	 * meniru aplikasi obrolan yang sudah dipakai sehari-hari oleh alumni — bukan
+	 * meniru aplikasi obrolan yang sudah dipakai sehari-hari oleh alumni: bukan
 	 * karena mengikuti tren, melainkan karena kanal bertema adalah satu-satunya
 	 * cara membuat satu grup berisi ribuan alumni tetap terbaca. Grup WhatsApp
 	 * tunggal yang kini mereka pakai menenggelamkan pertanyaan teknis PFpreneur di
@@ -13,7 +13,7 @@
 	 * TIGA KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
 	 * 1. **Percakapan hidup di state lokal, bukan di IndexedDB.** Forum belum punya
-	 *    entity, repository, maupun aturan moderasi di lapisan domain — menuliskan
+	 *    entity, repository, maupun aturan moderasi di lapisan domain: menuliskan
 	 *    tabel Dexie sekarang berarti membekukan bentuk data sebelum satu pun
 	 *    aturannya diputuskan, dan itu hutang yang jauh lebih mahal daripada pesan
 	 *    peraga yang hilang saat halaman dimuat ulang.
@@ -69,7 +69,7 @@
 			id: 'pengumuman',
 			nama: 'pengumuman',
 			topik: 'Kabar resmi dari tim Corporate Secretary Pertamina Foundation.',
-			catatan: 'Kanal searah — balasan dibuka di #tanya-jawab supaya pengumuman tetap mudah dicari.'
+			catatan: 'Kanal searah: balasan dibuka di #tanya-jawab supaya pengumuman tetap mudah dicari.'
 		},
 		{
 			id: 'sobi-alumni',
@@ -107,7 +107,7 @@
 	/**
 	 * Percakapan peraga per kanal, terlama lebih dulu.
 	 *
-	 * Isinya sengaja spesifik — nama kampus, nama produk, angka yang masuk akal.
+	 * Isinya sengaja spesifik: nama kampus, nama produk, angka yang masuk akal.
 	 * Percakapan peraga yang hanya berisi "halo semua" membuat forum terlihat mati
 	 * justru pada layar yang seharusnya membuktikan bahwa ia hidup.
 	 * @type {Record<string, Pesan[]>}
@@ -119,7 +119,7 @@
 				penulis: 'Tim Corsec PF',
 				peran: 'Corporate Secretary',
 				waktu: menitLalu(600),
-				isi: 'Halo PFfriends! Pendaftaran PFfriends Connect Batch 3 sudah dibuka. Kuota 120 peserta, ditutup 20 Agustus. Tautan pendaftaran ada di menu Calendar of Event ya.',
+				isi: 'Halo PFriends! Pendaftaran PFriends Connect Batch 3 sudah dibuka. Kuota 120 peserta, ditutup 20 Agustus. Tautan pendaftaran ada di menu Calendar of Event ya.',
 				reaksi: [
 					{ emoji: '🎉', jumlah: 24 },
 					{ emoji: '👍', jumlah: 11 }
@@ -219,7 +219,7 @@
 				penulis: 'Intan Latuconsina',
 				peran: 'Womenpreneur · Abon Ikan Tual',
 				waktu: menitLalu(120),
-				isi: 'Numpang tanya juga — untuk izin edar PIRT, prosesnya di dinas kesehatan kabupaten atau kota ya? Saya sudah dua minggu bolak-balik.',
+				isi: 'Numpang tanya juga: untuk izin edar PIRT, prosesnya di dinas kesehatan kabupaten atau kota ya? Saya sudah dua minggu bolak-balik.',
 				reaksi: [{ emoji: '🙏', jumlah: 3 }]
 			},
 			{
@@ -227,7 +227,7 @@
 				penulis: 'Fitri Ramadhani',
 				peran: 'Mentor PFpreneur',
 				waktu: menitLalu(96),
-				isi: 'Di dinas kesehatan kabupaten/kota sesuai domisili produksi, Bu Intan. Yang sering bikin lama biasanya berkas denah ruang produksi. Kalau mau, sesi pendampingan izin usaha ada tiap Rabu — jadwalnya di Calendar of Event.',
+				isi: 'Di dinas kesehatan kabupaten/kota sesuai domisili produksi, Bu Intan. Yang sering bikin lama biasanya berkas denah ruang produksi. Kalau mau, sesi pendampingan izin usaha ada tiap Rabu: jadwalnya di Calendar of Event.',
 				reaksi: [{ emoji: '👍', jumlah: 7 }]
 			}
 		],
@@ -345,13 +345,13 @@
 	/** Label singkat keanggotaan sendiri, untuk melabeli pesan yang baru dikirim. */
 	const peranSaya = $derived.by(() => {
 		const awardee = session.awardee;
-		if (!awardee) return 'Anggota PFfriends';
+		if (!awardee) return 'Anggota PFriends';
 		return `${awardee.communityDef.akronim} · ${awardee.chapterDef.label}`;
 	});
 
 	/**
 	 * Pesan kanal aktif, sudah ditandai mana yang boleh digabung dengan pesan di
-	 * atasnya. Penggabungan adalah keputusan TATA LETAK — karena itu dihitung di
+	 * atasnya. Penggabungan adalah keputusan TATA LETAK: karena itu dihitung di
 	 * sini, bukan disimpan pada datanya.
 	 */
 	const pesanTampil = $derived.by(() => {
@@ -393,7 +393,7 @@
 
 	// Aliran dibuka pada pesan TERBARU, bukan pada pesan tertua. Percakapan yang
 	// terbuka di bagian atas menuntut pembacanya menggulir sendiri sebelum melihat
-	// satu pun hal baru — dan tidak ada aplikasi obrolan yang berperilaku begitu.
+	// satu pun hal baru: dan tidak ada aplikasi obrolan yang berperilaku begitu.
 	$effect(() => {
 		if (sudahDigulir || !wadahPesan) return;
 		sudahDigulir = true;
@@ -456,15 +456,15 @@
 </script>
 
 <svelte:head>
-	<title>Forum Komunitas — PFfriends</title>
+	<title>Forum Komunitas: PFriends</title>
 </svelte:head>
 
 <div class="mb-4">
-	<p class="label-micro">Ruang percakapan PFfriends</p>
+	<p class="label-micro">Ruang percakapan PFriends</p>
 	<h1 class="mt-1 font-sans text-2xl font-bold tracking-[-0.02em] text-heading">Forum</h1>
 	<p class="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-600">
 		Tempat alumni Sobat Bumi dan pelaku usaha PFpreneur saling menyapa, bertanya, dan berbagi kabar
-		— dipisah per kanal supaya percakapan yang kamu cari tidak tenggelam.
+		: dipisah per kanal supaya percakapan yang kamu cari tidak tenggelam.
 	</p>
 </div>
 

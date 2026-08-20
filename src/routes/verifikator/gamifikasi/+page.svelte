@@ -2,7 +2,7 @@
 	import { PageHeader, RedemptionAdminPanel, RewardManagementPanel } from '$lib/components';
 </script>
 
-<svelte:head><title>Hadiah & Penukaran · Verifikator PFfriends</title></svelte:head>
+<svelte:head><title>Hadiah & Penukaran · Verifikator PFriends</title></svelte:head>
 
 <PageHeader
 	eyebrow="Ruang kerja Verifikator"

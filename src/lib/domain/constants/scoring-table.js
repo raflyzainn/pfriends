@@ -1,12 +1,12 @@
 /**
- * TABEL SKOR KANONIK — Hal 11 dokumen sumber.
+ * TABEL SKOR KANONIK: Hal 11 dokumen sumber.
  *
  * Ini satu-satunya tempat nilai poin boleh dituliskan di seluruh aplikasi.
  * Tidak ada angka poin yang boleh di-hardcode di komponen, store, atau seed.
- * Mengubah nilai di sini mengubah perilaku seluruh sistem — dan itu memang
+ * Mengubah nilai di sini mengubah perilaku seluruh sistem: dan itu memang
  * satu-satunya cara yang benar untuk mengubahnya.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 11 "Gamification Scoring Model"
+ * @see docs/00-SOURCE-BRIEF.md: Hal 11 "Gamification Scoring Model"
  */
 
 /**
@@ -42,7 +42,7 @@ export const ActivityType = Object.freeze({
 /**
  * @typedef {object} ScoringRule
  * @property {string} type          Salah satu ActivityType.
- * @property {number} points        Nilai poin — KANONIK, dari Hal 11.
+ * @property {number} points        Nilai poin: KANONIK, dari Hal 11.
  * @property {string} label         Label Bahasa Indonesia untuk UI.
  * @property {string} labelSumber   Teks asli dokumen sumber (untuk telusur balik).
  * @property {string} actionClass   Kelas verifikasi (ActionClass).
@@ -54,7 +54,7 @@ export const ActivityType = Object.freeze({
 /**
  * Tabel skor. Urutan sengaja dari poin terkecil ke terbesar seperti di slide.
  * `dailyCap` adalah rancangan anti-spam (Hal 11: "reward meaningful contribution,
- * not spammy activity") — bukan angka dari dokumen sumber, tetapi turunan sah darinya.
+ * not spammy activity"): bukan angka dari dokumen sumber, tetapi turunan sah darinya.
  * @type {readonly ScoringRule[]}
  */
 export const SCORING_TABLE = Object.freeze([
@@ -157,7 +157,7 @@ const RULE_BY_TYPE = new Map(SCORING_TABLE.map((rule) => [rule.type, rule]));
  * Mengambil aturan skor untuk sebuah jenis aksi.
  * @param {string} type
  * @returns {ScoringRule}
- * @throws {RangeError} bila jenis aksi tidak dikenal — gagal cepat, jangan diam-diam memberi 0 poin.
+ * @throws {RangeError} bila jenis aksi tidak dikenal: gagal cepat, jangan diam-diam memberi 0 poin.
  */
 export function aturanSkor(type) {
 	const rule = RULE_BY_TYPE.get(type);

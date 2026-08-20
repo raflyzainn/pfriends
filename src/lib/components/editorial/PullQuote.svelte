@@ -1,9 +1,9 @@
 <script>
 	/**
-	 * PullQuote — kutipan tarik di dalam artikel.
+	 * PullQuote: kutipan tarik di dalam artikel.
 	 *
 	 * Tanggung jawab: pemecah ritme utama halaman panjang. Yang membedakan kutipan
-	 * dari paragraf di sini adalah rule kiri 4 px, Fraunces 24 px, dan ruang putih —
+	 * dari paragraf di sini adalah rule kiri 4 px, Fraunces 24 px, dan ruang putih :
 	 * BUKAN glyph tanda kutip raksasa. Glyph dekoratif itu adalah tanda template
 	 * yang setara dengan blob blur, dan `docs/11` §8.7 melarangnya secara eksplisit.
 	 *
@@ -21,13 +21,13 @@
 	 *    Tanpa `grid-rows` eksplisit, `row-[1/-1]` pada rule kiri menciut menjadi
 	 *    satu baris: di grid implisit, garis `-1` menunjuk tepi grid EKSPLISIT yang
 	 *    saat itu belum ada. Penempatan otomatis lalu melempar `<figcaption>` ke sel
-	 *    kosong berikutnya — kolom rule selebar 4 px — dan atribusi kutipan patah
+	 *    kosong berikutnya: kolom rule selebar 4 px: dan atribusi kutipan patah
 	 *    satu kata per baris. Cacat ini lolos seluruh gerbang karena markup,
 	 *    semantik, dan kontrak propsnya semua benar; yang salah hanya geometri
 	 *    terender, dan tidak ada gerbang yang mengukurnya.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak props FINAL
-	 * @see docs/11-VISUAL-DIRECTION.md — §8.7 tanggung jawab & larangan
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak props FINAL
+	 * @see docs/11-VISUAL-DIRECTION.md: §8.7 tanggung jawab & larangan
 	 */
 	import { gayaKeyline, kelas } from '../_visual.js';
 
@@ -54,7 +54,7 @@
 
 <!-- Grid dua baris eksplisit, bukan flex bersarang: `<figcaption>` wajib anak
      LANGSUNG `<figure>`, sementara rule 4 px harus membentang setinggi kutipan
-     + atribusinya. Kolom & baris setiap anak ditulis tegas — lihat keputusan 3. -->
+     + atribusinya. Kolom & baris setiap anak ditulis tegas: lihat keputusan 3. -->
 <figure
 	class={kelas('my-10 grid grid-cols-[4px_minmax(0,1fr)] grid-rows-[auto_auto] gap-x-5', className)}
 	class:kutipan-tertarik={variant === 'pulled'}
@@ -85,14 +85,14 @@
 	 * punya talang selebar itu: kontainernya `max-w-7xl` (80rem) dengan padding
 	 * `lg:px-8` (2rem), sehingga ruang kiri yang tersedia baru 2rem. Akibatnya
 	 * kutipan meluber 32 px ke luar layar dan huruf pertama tiap barisnya
-	 * terpotong — terukur pada 1024, 1100, dan 1280 px. Cacat itu lolos seluruh
+	 * terpotong: terukur pada 1024, 1100, dan 1280 px. Cacat itu lolos seluruh
 	 * gerbang karena tidak ada yang mengukur geometri terender.
 	 *
 	 * Rumusnya: talang = padding kontainer + separuh sisa lebar di luar pagu
 	 * 80rem, dikurangi 1rem kelonggaran batang gulir (batang gulir tidak ikut
 	 * terhitung pada `100vw`, sehingga tanpa potongan ini titik peralihannya
 	 * meleset beberapa piksel). `min()` membuat tarikan tidak pernah melampaui
-	 * talangnya, dan efeknya tumbuh mulus sampai penuh 4rem pada layar lebar —
+	 * talangnya, dan efeknya tumbuh mulus sampai penuh 4rem pada layar lebar :
 	 * bukan melompat di satu titik henti.
 	 */
 	@media (min-width: 1024px) {

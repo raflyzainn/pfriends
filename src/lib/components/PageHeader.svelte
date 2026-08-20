@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * PageHeader — kepala halaman standar seluruh zona.
+	 * PageHeader: kepala halaman standar seluruh zona.
 	 *
 	 * Props:
 	 * @prop {string} title
@@ -10,15 +10,15 @@
 	 * @prop {string} backLabel
 	 * @prop {import('svelte').Snippet} actions  Tombol aksi di sisi kanan.
 	 *
-	 * Satu `<h1>` per halaman berasal dari sini — halaman tidak boleh menuliskan
+	 * Satu `<h1>` per halaman berasal dari sini: halaman tidak boleh menuliskan
 	 * `<h1>` kedua, agar hierarki heading tetap berurutan.
 	 *
-	 * MITIGASI WAJIB `--font-display` — jangan dihapus tanpa membaca ini.
+	 * MITIGASI WAJIB `--font-display`: jangan dihapus tanpa membaca ini.
 	 *
 	 * Komponen ini adalah kepala halaman SELURUH zona ter-login: `/awardee`,
 	 * `/verifikator`, `/admin`. Setelah `app.css` mengganti `--font-display`
 	 * menjadi Fraunces (daftar putih `docs/12` §3.4 butir 4), setiap `<h1>` yang
-	 * mewarisi token itu akan berpindah ke serif — dan `docs/11` §3.4 menetapkan
+	 * mewarisi token itu akan berpindah ke serif: dan `docs/11` §3.4 menetapkan
 	 * judul ketiga zona itu TETAP Plus Jakarta: panel kerja ber-serif display
 	 * terbaca lambat dan boros ruang.
 	 *
@@ -28,8 +28,8 @@
 	 * ini benar sendiri, tanpa bergantung pada satu baris di berkas lain yang
 	 * dapat berubah tanpa satu gerbang pun berubah merah.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.3(a) baris PageHeader, §3.3(d) butir 8
-	 * @see docs/11-VISUAL-DIRECTION.md — §3.2 "jebakan regresi", §3.4 batas zona
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.3(a) baris PageHeader, §3.3(d) butir 8
+	 * @see docs/11-VISUAL-DIRECTION.md: §3.2 "jebakan regresi", §3.4 batas zona
 	 */
 	import Icon from './Icon.svelte';
 	import { ICONS } from '$lib/data/icons.js';

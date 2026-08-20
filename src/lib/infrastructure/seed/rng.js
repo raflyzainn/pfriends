@@ -1,5 +1,5 @@
 /**
- * PRNG DETERMINISTIK — mulberry32.
+ * PRNG DETERMINISTIK: mulberry32.
  *
  * Tanggung jawab: menjadi satu-satunya sumber keacakan pada seluruh proses seed.
  *
@@ -10,15 +10,15 @@
  * seluruh generator identik di setiap mesin dan setiap kali dijalankan.
  *
  * mulberry32 dipilih karena berstatus 32-bit tunggal, cukup baik sebarannya untuk
- * data demo, dan pendek — seluruh algoritmanya terbaca dalam satu layar sehingga
+ * data demo, dan pendek: seluruh algoritmanya terbaca dalam satu layar sehingga
  * tidak ada bagian yang perlu dipercaya begitu saja.
  *
- * @see docs/09-BUILD-CONTRACT.md — §6 Aturan seed data
+ * @see docs/09-BUILD-CONTRACT.md: §6 Aturan seed data
  */
 
 /**
  * Seed tetap seluruh data demo. Angka ini adalah tanggal dokumen sumber
- * (29 Mei 2026) — dipilih agar asal-usulnya jelas, bukan konstanta ajaib.
+ * (29 Mei 2026): dipilih agar asal-usulnya jelas, bukan konstanta ajaib.
  * @type {number}
  */
 export const SEED = 20260529;
@@ -54,7 +54,7 @@ export function mulberry32(seed) {
  * @param {Rng} rng
  * @param {readonly T[]} items
  * @returns {T}
- * @throws {RangeError} bila array kosong — memilih dari himpunan kosong adalah bug
+ * @throws {RangeError} bila array kosong: memilih dari himpunan kosong adalah bug
  *   pemanggil, dan mengembalikan `undefined` diam-diam akan muncul jauh kemudian.
  */
 export function pick(rng, items) {
@@ -80,7 +80,7 @@ export function intBetween(rng, min, max) {
 }
 
 /**
- * Salinan acak sebuah array (Fisher–Yates). Array asal tidak diubah — generator
+ * Salinan acak sebuah array (Fisher–Yates). Array asal tidak diubah: generator
  * seed memakai ulang daftar nama dan kota berkali-kali, sehingga mengacak di
  * tempat akan membuat urutan pemanggilan berikutnya bergantung pada yang sebelumnya.
  * @template T
@@ -121,7 +121,7 @@ export function chance(rng, probability) {
 
 /**
  * Memilih satu elemen berdasarkan bobot. Dipakai agar aksi berpoin rendah jauh
- * lebih sering muncul daripada aksi berpoin tinggi — persis seperti perilaku
+ * lebih sering muncul daripada aksi berpoin tinggi: persis seperti perilaku
  * komunitas sungguhan, dan itulah yang membuat distribusi tier mengerucut.
  * @template T
  * @param {Rng} rng

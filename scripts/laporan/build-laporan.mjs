@@ -1,5 +1,5 @@
 /**
- * PEMBANGKIT LAPORAN REVISI — HTML → PDF + PNG.
+ * PEMBANGKIT LAPORAN REVISI: HTML → PDF + PNG.
  *
  * Tanggung jawab: merakit satu berkas HTML mandiri berisi ringkasan revisi beserta
  * tangkapan layarnya, lalu mencetaknya menjadi PDF (A4, siap kirim) dan PNG (satu
@@ -9,7 +9,7 @@
  *
  * 1. **Gambar ditanam sebagai data URI, bukan ditautkan.** Laporan sering berpindah
  *    tangan sebagai satu berkas lampiran surel. Tautan `file://` ke folder gambar
- *    akan tampil sebagai kotak kosong begitu berkasnya dipindah — dan itu baru
+ *    akan tampil sebagai kotak kosong begitu berkasnya dipindah: dan itu baru
  *    ketahuan di tangan penerima, bukan di sini.
  * 2. **Peramban dipakai sebagai mesin cetak, bukan pustaka PDF.** Chrome DevTools
  *    Protocol sudah dipakai empat skrip verifikasi lain di repo ini, sehingga tidak
@@ -32,7 +32,7 @@ const OUT = process.argv[3] ?? 'docs/laporan-revisi-2026-08-04';
 const BROWSER =
 	process.env.BROWSER_BIN ?? '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser';
 const PORT = 9444;
-const NAMA = 'Laporan-Revisi-PFfriends-2026-08-04';
+const NAMA = 'Laporan-Revisi-PFriends-2026-08-04';
 
 const tidur = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -66,7 +66,7 @@ const LAMPIRAN = [
 	{
 		file: '22-admin-kontrol-akun',
 		judul: 'Admin · Kontrol Akun',
-		ket: 'Seluruh 63 akun — 60 Awardee, 2 Verifikator, 1 Admin — dengan tombol "Masuk sebagai" (impersonate) di tiap baris.'
+		ket: 'Seluruh 63 akun: 60 Awardee, 2 Verifikator, 1 Admin: dengan tombol "Masuk sebagai" (impersonate) di tiap baris.'
 	},
 	{
 		file: '23-admin-gamifikasi',
@@ -76,7 +76,7 @@ const LAMPIRAN = [
 	{
 		file: '17-verifikator-dasbor',
 		judul: 'Verifikator · Dasbor',
-		ket: 'Fokus performa awardee dan dampaknya — berbeda dari dasbor Admin yang menyorot performa sistem. Memuat papan peringkat peserta.'
+		ket: 'Fokus performa awardee dan dampaknya: berbeda dari dasbor Admin yang menyorot performa sistem. Memuat papan peringkat peserta.'
 	},
 	{
 		file: '18-verifikator-submission-blog',
@@ -106,7 +106,7 @@ const LAMPIRAN = [
 	{
 		file: '15-awardee-pencapaian',
 		judul: 'Awardee · Pencapaian',
-		ket: 'Jenjang, lencana, dan perjalanan poin sebagai capaian pribadi — bukan peringkat antar-peserta.'
+		ket: 'Jenjang, lencana, dan perjalanan poin sebagai capaian pribadi: bukan peringkat antar-peserta.'
 	}
 ];
 
@@ -179,8 +179,8 @@ const html = `<!doctype html><html lang="id"><head><meta charset="utf-8">
 
 <div class="sampul">
 	<p class="kicker">Breakthrough Project · Divisi Corporate Secretary</p>
-	<h1>Laporan Revisi<br>Mockup PFfriends</h1>
-	<p class="sub">Community Connect Initiative — wadah alumni Beasiswa Sobat Bumi dan pelaku usaha PFpreneur / Womenpreneur.</p>
+	<h1>Laporan Revisi<br>Mockup PFriends</h1>
+	<p class="sub">Community Connect Initiative: wadah alumni Beasiswa Sobat Bumi dan pelaku usaha PFpreneur / Womenpreneur.</p>
 	<div class="meta">
 		<b>Tanggal revisi</b> 4 Agustus 2026 &nbsp;·&nbsp;
 		<b>Organisasi</b> Pertamina Foundation &nbsp;·&nbsp;
@@ -194,10 +194,10 @@ const html = `<!doctype html><html lang="id"><head><meta charset="utf-8">
 	<li><b>Palet warna</b> berganti dari merah–biru–navy Pertamina menjadi teal dan kuning yang lebih ramah, berlaku untuk seluruh sistem.</li>
 	<li><b>Navigasi dipangkas tajam.</b> Zona publik dari tujuh menu menjadi tiga; Admin dari tujuh menjadi tiga; Verifikator dari lima menjadi tiga.</li>
 	<li><b>Dua fitur baru:</b> Forum percakapan bagi awardee, dan papan peringkat peserta paling aktif yang tampil di beranda publik serta dasbor verifikator.</li>
-	<li><b>Masuk cukup satu klik</b> pada kartu pengguna — mempercepat peragaan yang kerap berpindah peran.</li>
+	<li><b>Masuk cukup satu klik</b> pada kartu pengguna: mempercepat peragaan yang kerap berpindah peran.</li>
 	<li><b>Seluruh dasbor memakai Apache ECharts</b> dengan data contoh yang saling konsisten.</li>
 </ul>
-<p>Aplikasi lolos seluruh gerbang verifikasi otomatis kecuali satu yang memang sengaja dilanggar — dijelaskan pada bagian 6.</p>
+<p>Aplikasi lolos seluruh gerbang verifikasi otomatis kecuali satu yang memang sengaja dilanggar: dijelaskan pada bagian 6.</p>
 
 <h2>2 · Identitas visual</h2>
 <p>Empat warna dasar yang ditetapkan pemilik produk, diterapkan menyeluruh:</p>
@@ -207,11 +207,11 @@ const html = `<!doctype html><html lang="id"><head><meta charset="utf-8">
 	<div style="background:#A5E9DD;color:#1A3E3D">#A5E9DD<br>teal muda</div>
 	<div style="background:#FDF4AF;color:#8F7014">#FDF4AF<br>kuning aksen</div>
 </div>
-<p>Keempatnya cerah dan tidak satu pun memenuhi rasio kontras 4.5:1 sebagai warna teks di atas putih — <b>#34908B hanya mencapai 3.81:1</b>. Karena itu tiap keluarga warna dilengkapi varian gelap khusus teks, sementara warna aslinya dipakai untuk bidang, chip, dan aksen. Tanpa pemisahan ini seluruh label sekunder akan gagal memenuhi WCAG AA.</p>
+<p>Keempatnya cerah dan tidak satu pun memenuhi rasio kontras 4.5:1 sebagai warna teks di atas putih: <b>#34908B hanya mencapai 3.81:1</b>. Karena itu tiap keluarga warna dilengkapi varian gelap khusus teks, sementara warna aslinya dipakai untuk bidang, chip, dan aksen. Tanpa pemisahan ini seluruh label sekunder akan gagal memenuhi WCAG AA.</p>
 <h3>Perubahan penyerta</h3>
 <ul>
-	<li>Logo Pertamina Foundation versi putih dipasang di bilah navigasi publik berlatar teal, berdampingan dengan wordmark <b>PFfriends</b>.</li>
-	<li>Penulisan nama diseragamkan dari "Pfriends" menjadi <b>"PFfriends"</b> pada 38 berkas antarmuka.</li>
+	<li>Logo Pertamina Foundation versi putih dipasang di bilah navigasi publik berlatar teal, berdampingan dengan wordmark <b>PFriends</b>.</li>
+	<li>Penulisan nama diseragamkan dari "Pfriends" menjadi <b>"PFriends"</b> pada 38 berkas antarmuka.</li>
 	<li>Teks <i>"PFRIENDS CONSOLE v0.1.0 · © 2026 Pertamina Foundation"</i> dihapus dari sidebar dan kaki halaman.</li>
 	<li>Palet grafik dan warna jenjang keanggotaan ikut disesuaikan; jenjang kini menaik dalam satu keluarga teal dan memuncak di kuning, sehingga urutannya terbaca dari warnanya sendiri.</li>
 </ul>
@@ -232,16 +232,16 @@ const html = `<!doctype html><html lang="id"><head><meta charset="utf-8">
 		<td>Beranda · Kabar · Aksi · Kalender · Gerakan · Cerita · Peringkat · Penghargaan · Direktori · Profil <i>(10)</i></td>
 		<td>Beranda · Blog Saya · Forum · Calendar of Event · Pencapaian · Kabar · Jejaring <i>(7)</i></td></tr>
 </table>
-<p>Halaman publik yang dicabut dari bilah navigasi — Gerakan, Komunitas, Tentang, Metode Pengukuran — <b>tetap hidup</b> dan masih dapat dibuka lewat tautan di dalam halaman lain. Yang dihapus hanya tempatnya di menu.</p>
+<p>Halaman publik yang dicabut dari bilah navigasi: Gerakan, Komunitas, Tentang, Metode Pengukuran: <b>tetap hidup</b> dan masih dapat dibuka lewat tautan di dalam halaman lain. Yang dihapus hanya tempatnya di menu.</p>
 
 <h2>4 · Perubahan per zona</h2>
 
 <h3>Zona publik</h3>
 <ul>
 	<li>Beranda dirombak menjadi empat bagian: hero, <b>billboard kegiatan</b> selebar halaman, <b>papan peringkat peserta paling aktif</b>, dan tiga kartu blog terbaru.</li>
-	<li>Foto hero berukuran besar (273 KB + 240 KB) diganti gradien teal dan bentuk geometris — halaman terbaca lebih cepat. Kartu blog tetap memakai foto asli karena berada di bawah lipatan dan tidak menghambat pembacaan.</li>
+	<li>Foto hero berukuran besar (273 KB + 240 KB) diganti gradien teal dan bentuk geometris: halaman terbaca lebih cepat. Kartu blog tetap memakai foto asli karena berada di bawah lipatan dan tidak menghambat pembacaan.</li>
 	<li><b>Fitur "Gabung" / pendaftaran mandiri dihapus.</b> Alur kini hanya Beranda → Login.</li>
-	<li><b>Masuk cukup mengklik kartu pengguna</b> — tanpa mengetik surel maupun sandi. Formulir manual tetap tersedia di balik tautan kecil.</li>
+	<li><b>Masuk cukup mengklik kartu pengguna</b>: tanpa mengetik surel maupun sandi. Formulir manual tetap tersedia di balik tautan kecil.</li>
 </ul>
 
 <h3>Zona Admin</h3>
@@ -254,14 +254,14 @@ const html = `<!doctype html><html lang="id"><head><meta charset="utf-8">
 
 <h3>Zona Verifikator</h3>
 <ul>
-	<li><b>Dasbor baru</b> yang berfokus pada performa awardee dan dampaknya — sengaja dibedakan dari dasbor Admin yang menyorot performa sistem. Memuat papan peringkat peserta, dua grafik, dan antrean kerja dengan angka nyata.</li>
+	<li><b>Dasbor baru</b> yang berfokus pada performa awardee dan dampaknya: sengaja dibedakan dari dasbor Admin yang menyorot performa sistem. Memuat papan peringkat peserta, dua grafik, dan antrean kerja dengan angka nyata.</li>
 	<li>"Antrean Cerita" menjadi <b>Submission Blog</b>; "Usulan Kegiatan" menjadi <b>Konfigurasi Calendar of Event</b>, kini disertai kalender bulanan serta kemampuan menambah dan menyunting agenda.</li>
 	<li>Halaman Bukti dan Profil dicabut. Identitas pengguna sudah tampil di kaki sidebar, sehingga profil tidak lagi memerlukan butir navigasi tersendiri.</li>
 </ul>
 
 <h3>Zona Awardee</h3>
 <ul>
-	<li>Tata letak disamakan dengan Admin dan Verifikator — memakai sidebar yang sama, bukan lagi bilah tab mendatar.</li>
+	<li>Tata letak disamakan dengan Admin dan Verifikator: memakai sidebar yang sama, bukan lagi bilah tab mendatar.</li>
 	<li>Beranda menjadi <b>dasbor penyambut</b>: sapaan menurut waktu, kegiatan yang dapat diikuti, daftar hal yang perlu diketahui, lalu pencapaian pribadi.</li>
 	<li><b>Forum baru</b> bergaya kanal percakapan dengan lima kanal, aliran pesan, dan daftar anggota daring.</li>
 	<li>Papan peringkat <b>dihapus dari zona awardee</b>. Peserta melihat capaiannya sebagai pencapaian pribadi; peringkat antar-peserta hanya tampil di beranda publik dan dasbor verifikator.</li>
@@ -275,9 +275,9 @@ const html = `<!doctype html><html lang="id"><head><meta charset="utf-8">
 	<tr><td>Aturan domain</td><td class="ok">LULUS</td><td>203 asersi</td></tr>
 	<tr><td>Konsistensi data seed</td><td class="ok">LULUS</td><td>73 asersi</td></tr>
 	<tr><td>Route di peramban</td><td class="ok">LULUS</td><td>29 route · 0 bermasalah · 31 asersi sesi</td></tr>
-	<tr><td>Mekanik gamifikasi</td><td class="ok">LULUS</td><td>22 asersi — poin bertambah dan bertahan setelah muat ulang keras</td></tr>
+	<tr><td>Mekanik gamifikasi</td><td class="ok">LULUS</td><td>22 asersi: poin bertambah dan bertahan setelah muat ulang keras</td></tr>
 	<tr><td>Build produksi</td><td class="ok">LULUS</td><td>Keluaran statis siap unggah</td></tr>
-	<tr><td>Kemurnian zona publik</td><td class="no">GAGAL</td><td>26 pelanggaran pada satu berkas — <b>disengaja</b>, lihat bagian 6</td></tr>
+	<tr><td>Kemurnian zona publik</td><td class="no">GAGAL</td><td>26 pelanggaran pada satu berkas: <b>disengaja</b>, lihat bagian 6</td></tr>
 </table>
 
 <div class="sorot">
@@ -287,14 +287,14 @@ const html = `<!doctype html><html lang="id"><head><meta charset="utf-8">
 <h2>6 · Keputusan yang menunggu</h2>
 <h3>a. Gerbang kemurnian zona publik</h3>
 <p>Aturan PO-2 melarang kata <i>poin</i>, <i>tier</i>, <i>peringkat</i>, dan <i>lencana</i> muncul di zona publik. Aturan itu tercatat sebagai keputusan sengaja pada dokumen rancangan. Permintaan menampilkan papan peringkat di beranda publik membatalkannya.</p>
-<p>Permintaan tersebut dikerjakan sesuai arahan, tetapi <b>skrip gerbangnya tidak disunting</b> — dokumen tata kelola adalah kewenangan pemilik produk, bukan pelaksana. Konsekuensinya perintah verifikasi menyeluruh akan berhenti di langkah ini. Bila aturan PO-2 memang dinyatakan tidak berlaku lagi, gerbang tersebut dapat dicabut.</p>
+<p>Permintaan tersebut dikerjakan sesuai arahan, tetapi <b>skrip gerbangnya tidak disunting</b>: dokumen tata kelola adalah kewenangan pemilik produk, bukan pelaksana. Konsekuensinya perintah verifikasi menyeluruh akan berhenti di langkah ini. Bila aturan PO-2 memang dinyatakan tidak berlaku lagi, gerbang tersebut dapat dicabut.</p>
 <h3>b. Jalan kembali setelah impersonate</h3>
-<p>Fitur "Masuk sebagai" pada Kontrol Akun berfungsi. Untuk kembali ke akun Admin, pengguna perlu keluar lalu memilih kartu Admin — dua klik, karena masuk kini satu klik. Tombol pintas khusus dapat ditambahkan bila diperlukan.</p>
+<p>Fitur "Masuk sebagai" pada Kontrol Akun berfungsi. Untuk kembali ke akun Admin, pengguna perlu keluar lalu memilih kartu Admin: dua klik, karena masuk kini satu klik. Tombol pintas khusus dapat ditambahkan bila diperlukan.</p>
 <h3>c. Konfigurasi gamifikasi belum mengubah perhitungan</h3>
 <p>Nilai poin yang disunting tersimpan dan pratinjaunya bekerja, tetapi mesin poin masih membaca tabel kanonik. Menyambungkan keduanya menuntut perubahan pada lapisan domain dan sebaiknya dikerjakan terpisah.</p>
 
-<h2 class="pecah">7 · Lampiran — tangkapan layar</h2>
-<p>Gambar berikut dipotong pada bagian atas tiap halaman. Versi utuh tersedia di folder <code>docs/screenshots/</code> — total ${semuaPotret.length} berkas.</p>
+<h2 class="pecah">7 · Lampiran: tangkapan layar</h2>
+<p>Gambar berikut dipotong pada bagian atas tiap halaman. Versi utuh tersedia di folder <code>docs/screenshots/</code>: total ${semuaPotret.length} berkas.</p>
 ${LAMPIRAN.map(
 	(l) => `<figure>
 	<img src="${gambar[l.file]}" alt="${l.judul}">
@@ -309,7 +309,7 @@ ${semuaPotret.map((f) => `<div>${f.replace('.png', '')}</div>`).join('\n')}
 
 <p class="kaki">Laporan ini dihasilkan otomatis dari kondisi aplikasi pada 4 Agustus 2026.
 Angka verifikasi diambil dari jalannya gerbang, bukan diketik ulang.
-PFfriends — Community Connect Initiative, Divisi Corporate Secretary, Pertamina Foundation.</p>
+PFriends: Community Connect Initiative, Divisi Corporate Secretary, Pertamina Foundation.</p>
 
 </body></html>`;
 
@@ -401,7 +401,7 @@ await cdp.kirim('Emulation.setDeviceMetricsOverride', {
 await cdp.kirim('Page.navigate', { url: `file://${htmlPath}` });
 await tidur(3500); // gambar data-URI perlu waktu untuk didekode
 
-// PDF — mengikuti @page A4 di CSS.
+// PDF: mengikuti @page A4 di CSS.
 const pdf = await cdp.kirim('Page.printToPDF', {
 	printBackground: true,
 	preferCSSPageSize: true
@@ -409,7 +409,7 @@ const pdf = await cdp.kirim('Page.printToPDF', {
 await writeFile(join(OUT, `${NAMA}.pdf`), Buffer.from(pdf.data, 'base64'));
 console.log(`✓ PDF   ${join(OUT, `${NAMA}.pdf`)}`);
 
-// PNG — satu gambar panjang selebar 1240px.
+// PNG: satu gambar panjang selebar 1240px.
 const ukuran = await cdp.kirim('Page.getLayoutMetrics');
 const tinggi = Math.ceil(ukuran.cssContentSize?.height ?? 20000);
 const png = await cdp.kirim('Page.captureScreenshot', {

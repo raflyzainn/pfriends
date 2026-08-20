@@ -1,8 +1,8 @@
 /**
- * TABEL TIER KANONIK — Hal 12 dokumen sumber ("Scoring Tiers and Feature Threshold").
+ * TABEL TIER KANONIK: Hal 12 dokumen sumber ("Scoring Tiers and Feature Threshold").
  *
  * Tanggung jawab: satu-satunya tempat ambang tier, benefit, dan warna tier boleh
- * dituliskan. Komponen, store, dan seed WAJIB mengimpor dari sini — tidak ada
+ * dituliskan. Komponen, store, dan seed WAJIB mengimpor dari sini: tidak ada
  * angka 25/50/100/150 yang boleh muncul sebagai literal di tempat lain.
  *
  * Keputusan yang mengikat (09-BUILD-CONTRACT K-3): tier ditentukan MURNI oleh
@@ -11,15 +11,15 @@
  * FeatureEligibilityPolicy. Alasannya praktis: "kenapa saya 50 poin tapi belum
  * Contributor?" adalah pertanyaan yang tidak boleh muncul saat demo ke Corsec.
  *
- * NEWCOMER (ambang 0) tidak ada di Hal 12 — Hal 12 hanya mendaftar empat tier
+ * NEWCOMER (ambang 0) tidak ada di Hal 12: Hal 12 hanya mendaftar empat tier
  * berambang. NEWCOMER ditambahkan sebagai keadaan awal agar setiap anggota selalu
  * punya tier yang dapat ditampilkan, dan benefitnya diambil dari Hal 5 pilar 01
  * ("Rules keanggotaan dan manfaat"), bukan dikarang. `benefitSumber` sengaja
  * `null` untuk menandai bahwa tidak ada teks Inggris asli yang menaunginya.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 12 "Scoring Tiers and Feature Threshold"
- * @see docs/03-GAMIFICATION-SPEC.md — §3 Tier, Ambang, dan Benefit
- * @see docs/09-BUILD-CONTRACT.md — §2 Angka kanonik, K-3
+ * @see docs/00-SOURCE-BRIEF.md: Hal 12 "Scoring Tiers and Feature Threshold"
+ * @see docs/03-GAMIFICATION-SPEC.md: §3 Tier, Ambang, dan Benefit
+ * @see docs/09-BUILD-CONTRACT.md: §2 Angka kanonik, K-3
  */
 
 /**
@@ -39,8 +39,8 @@ export const TierLevel = Object.freeze({
 /**
  * @typedef {object} TierEntry
  * @property {string} level         Salah satu TierLevel.
- * @property {number} rank          Urutan menaik 0..4 — dipakai untuk perbandingan tier.
- * @property {number} threshold     Ambang poin — KANONIK, dari Hal 12.
+ * @property {number} rank          Urutan menaik 0..4: dipakai untuk perbandingan tier.
+ * @property {number} threshold     Ambang poin: KANONIK, dari Hal 12.
  * @property {string} label         Nama tier persis Hal 12 (istilah brand, tidak diterjemahkan).
  * @property {string} deskripsi     Penjelasan satu kalimat Bahasa Indonesia untuk UI.
  * @property {string} benefit       Benefit Hal 12 yang diterjemahkan ke Bahasa Indonesia.
@@ -52,7 +52,7 @@ export const TierLevel = Object.freeze({
  */
 
 /**
- * Tabel tier, urut menaik berdasarkan ambang. Urutan ini adalah kontrak —
+ * Tabel tier, urut menaik berdasarkan ambang. Urutan ini adalah kontrak :
  * `tierUntukPoin` dan `tierBerikutnya` mengandalkannya.
  *
  * Nilai `color` diambil persis dari catatan visual slide Hal 12. Nama token
@@ -107,7 +107,7 @@ export const TIER_TABLE = Object.freeze([
 		threshold: 100,
 		label: 'Featured Candidate',
 		deskripsi:
-			'Anggota yang layak diangkat profilnya — ambang poin untuk gate fitur publik terpenuhi.',
+			'Anggota yang layak diangkat profilnya: ambang poin untuk gate fitur publik terpenuhi.',
 		benefit: 'Berhak ditampilkan di situs web atau media sosial',
 		benefitSumber: 'eligible for website or social media feature',
 		color: '#1E4B49',
@@ -131,7 +131,7 @@ export const TIER_TABLE = Object.freeze([
 ]);
 
 /**
- * Ambang minimum poin untuk gate fitur publik (Hal 12 — "Minimum for public feature").
+ * Ambang minimum poin untuk gate fitur publik (Hal 12: "Minimum for public feature").
  * Nilainya sengaja diturunkan dari TIER_TABLE, bukan ditulis ulang, agar tidak
  * mungkin lepas sinkron bila ambang tier berubah.
  * @type {number}
@@ -142,7 +142,7 @@ export const AMBANG_FITUR_PUBLIK = TIER_TABLE[3].threshold;
 const ENTRY_BY_LEVEL = new Map(TIER_TABLE.map((entry) => [entry.level, entry]));
 
 /**
- * Memastikan argumen poin layak dihitung. Gagal cepat — poin yang tidak sah
+ * Memastikan argumen poin layak dihitung. Gagal cepat: poin yang tidak sah
  * tidak boleh diam-diam dianggap 0, karena itu menyembunyikan bug hitung.
  * @param {number} points
  * @returns {void}
@@ -159,7 +159,7 @@ function pastikanPoinSah(points) {
 }
 
 /**
- * Tier yang sedang dipegang oleh sejumlah poin — entri berambang tertinggi
+ * Tier yang sedang dipegang oleh sejumlah poin: entri berambang tertinggi
  * yang masih terpenuhi.
  * @param {number} points
  * @returns {TierEntry}
@@ -174,7 +174,7 @@ export function tierUntukPoin(points) {
 }
 
 /**
- * Tier berikutnya yang belum tercapai. `null` bila sudah di tier tertinggi —
+ * Tier berikutnya yang belum tercapai. `null` bila sudah di tier tertinggi :
  * pemanggil wajib menangani kasus ini (kartu progres menampilkan keadaan
  * "sudah di puncak", bukan bar kosong).
  * @param {number} points

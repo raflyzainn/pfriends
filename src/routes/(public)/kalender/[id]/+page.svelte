@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * DETAIL KEGIATAN PUBLIK — satu agenda dibaca utuh, tanpa akun.
+	 * DETAIL KEGIATAN PUBLIK: satu agenda dibaca utuh, tanpa akun.
 	 *
 	 * Tiga keadaan yang wajib dibedakan halaman ini, dan sering tertukar:
 	 *
@@ -12,7 +12,7 @@
 	 *
 	 * Keadaan ketiga sengaja tidak dijelaskan kepada pembaca. Menjawab "kegiatan ini
 	 * masih berupa usulan" tetap membocorkan keberadaan usulan itu beserta judulnya
-	 * kepada siapa pun yang menebak alamat — kebocoran yang persis sama dengan
+	 * kepada siapa pun yang menebak alamat: kebocoran yang persis sama dengan
 	 * menampilkannya di kalender, hanya lebih pelan.
 	 *
 	 * EMPAT KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
@@ -36,7 +36,7 @@
 	 *    ini SPA tanpa backend; `unduhIcs` merakit berkasnya dari data yang sudah ada
 	 *    di memori dan menyerahkannya sebagai blob.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-08 kriteria selesai 3 & 5
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-08 kriteria selesai 3 & 5
 	 */
 	import { page } from '$app/state';
 	import { EventListPanel, Icon, ICONS } from '$lib/components';
@@ -60,12 +60,12 @@
 
 	/**
 	 * Sumber data halaman: `catalog.publishedEvents`, BUKAN daftar mentah
-	 * `catalog.events` — usulan yang belum disetujui tidak pernah sampai ke berkas
+	 * `catalog.events`: usulan yang belum disetujui tidak pernah sampai ke berkas
 	 * ini, bahkan sebelum `cariKegiatanPublik()` sempat menolaknya.
 	 */
 	const terbit = $derived(catalog.publishedEvents);
 
-	/** Entity kegiatan, sudah lolos gerbang publik — atau `null`. */
+	/** Entity kegiatan, sudah lolos gerbang publik: atau `null`. */
 	const kegiatan = $derived(cariKegiatanPublik(terbit, penciri));
 
 	/** Bentuk siap render; `null` bila kegiatannya tidak ada atau tanggalnya rusak. */
@@ -128,7 +128,7 @@
 </script>
 
 <svelte:head>
-	<title>{detail ? `${detail.title} · Kalender PFfriends` : 'Kegiatan tidak ditemukan · PFfriends'}</title>
+	<title>{detail ? `${detail.title} · Kalender PFriends` : 'Kegiatan tidak ditemukan · PFriends'}</title>
 </svelte:head>
 
 <div class="mx-auto w-full max-w-7xl px-5 sm:px-8">

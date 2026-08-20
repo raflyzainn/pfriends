@@ -1,14 +1,14 @@
 /**
- * KONTRAK REPOSITORY — abstract base class.
+ * KONTRAK REPOSITORY: abstract base class.
  *
  * Tanggung jawab: menjadi satu-satunya bentuk akses data yang dikenal lapisan
- * domain. Service bergantung pada kelas ini, bukan pada Dexie — inilah wujud
+ * domain. Service bergantung pada kelas ini, bukan pada Dexie: inilah wujud
  * konkret Dependency Inversion pada proyek ini (kontrak build K-1).
  *
  * Kelas ini sengaja tidak punya implementasi apa pun. Setiap method melempar
  * `NotImplemented` alih-alih mengembalikan `undefined`, karena repository yang
  * diam-diam mengembalikan `undefined` menghasilkan bug yang muncul jauh dari
- * penyebabnya — dasbor kosong tanpa satu pun pesan error. Gagal keras di titik
+ * penyebabnya: dasbor kosong tanpa satu pun pesan error. Gagal keras di titik
  * panggil jauh lebih murah untuk ditelusuri.
  *
  * Kontrak yang WAJIB dipenuhi implementasi konkret (WP-3):
@@ -16,22 +16,22 @@
  * 1. `getAll()` dan `getById()` mengembalikan **instans entity**, bukan baris
  *    mentah basis data. Pemetaan baris ke entity adalah tugas infrastruktur;
  *    domain tidak boleh tahu bentuk tabel.
- * 2. `getById()` mengembalikan `null` bila tidak ditemukan — bukan melempar.
+ * 2. `getById()` mengembalikan `null` bila tidak ditemukan: bukan melempar.
  *    "Tidak ada" adalah jawaban yang sah, bukan kegagalan.
  * 3. `query(criteria)` menerima objek kriteria polos dan mengembalikan array.
  *    Kriteria yang dipakai lapisan domain saat ini:
- *      - `{ awardeeId }`     — seluruh entri milik satu awardee (GamificationEngine)
- *      - `{ status }`        — penyaringan berdasarkan status siklus hidup
- *      - `{ email }`         — pencarian akun berdasarkan surel (AuthService)
- *      - `{ role }`          — penyaringan akun berdasarkan peran
- *      - `{ authorId }`      — naskah milik satu penulis (Awardee)
- *      - `{ reviewerId }`    — naskah yang sedang ditangani satu verifikator
+ *     : `{ awardeeId }`    : seluruh entri milik satu awardee (GamificationEngine)
+ *     : `{ status }`       : penyaringan berdasarkan status siklus hidup
+ *     : `{ email }`        : pencarian akun berdasarkan surel (AuthService)
+ *     : `{ role }`         : penyaringan akun berdasarkan peran
+ *     : `{ authorId }`     : naskah milik satu penulis (Awardee)
+ *     : `{ reviewerId }`   : naskah yang sedang ditangani satu verifikator
  *    Kriteria yang tidak dikenal implementasi harus diabaikan, bukan melempar,
  *    agar penambahan kriteria baru tidak memecah repository lama.
  * 4. Seluruh method bersifat asinkron dan mengembalikan Promise.
  *
- * @see docs/05-ARCHITECTURE.md — §Repository, Dependency Inversion
- * @see docs/09-BUILD-CONTRACT.md — K-1 (satu abstract Repository, tanpa container)
+ * @see docs/05-ARCHITECTURE.md: §Repository, Dependency Inversion
+ * @see docs/09-BUILD-CONTRACT.md: K-1 (satu abstract Repository, tanpa container)
  */
 
 /**
@@ -105,7 +105,7 @@ export class Repository {
 	/**
 	 * Menghapus entity.
 	 *
-	 * Catatan penting: `PointActivity` dan `AuditLog` bersifat append-only —
+	 * Catatan penting: `PointActivity` dan `AuditLog` bersifat append-only :
 	 * repository keduanya WAJIB menolak method ini. KPI Hal 6 dihitung dari
 	 * jumlah aksi, sehingga menghapus entri sama dengan memalsukan laporan.
 	 *

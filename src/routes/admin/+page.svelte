@@ -1,8 +1,8 @@
 <script>
 	/**
-	 * HALAMAN — Dasbor KPI Konsol Corporate Secretary.
+	 * HALAMAN: Dasbor KPI Konsol Corporate Secretary.
 	 *
-	 * Tanggung jawab: satu layar yang menjawab dua pertanyaan pengelola program —
+	 * Tanggung jawab: satu layar yang menjawab dua pertanyaan pengelola program :
 	 * **apakah aplikasinya berjalan sehat** dan **apakah publikasinya mencapai
 	 * target**. Performa per-awardee sengaja TIDAK ada di sini; itu wilayah
 	 * verifikator, dan mencampurnya membuat halaman ini berhenti menjadi dasbor
@@ -10,7 +10,7 @@
 	 *
 	 * ── Empat aturan tata letak yang bukan selera ────────────────────────────
 	 *
-	 * 1. **Satu baris kartu, empat chart, satu tabel — tidak lebih.** Versi
+	 * 1. **Satu baris kartu, empat chart, satu tabel: tidak lebih.** Versi
 	 *    sebelumnya memakai empat tab berisi tiga belas chart. Dasbor yang perlu
 	 *    diklik dulu sebelum menjawab apa pun bukan dasbor; ia katalog. Tab
 	 *    dicabut, dan chart yang tersisa dipilih karena pertanyaannya, bukan
@@ -24,17 +24,17 @@
 	 *    ditindaklanjuti siapa pun.
 	 * 4. **Angka jangkauan selalu ditandai sebagai estimasi.** Ia hasil model,
 	 *    bukan hasil pengukuran, dan satu-satunya tempat ia muncul adalah garis
-	 *    putus-putus pada chart tren — bukan kartu angka besar yang mengundang
+	 *    putus-putus pada chart tren: bukan kartu angka besar yang mengundang
 	 *    dikutip apa adanya di materi presentasi.
 	 *
 	 * Halaman ini MENYERAP inti dua halaman yang dicabut pada revisi 5 Agustus
 	 * 2026: kesiapan bukti ESG (dulu `/admin/esg`) menjadi kartu angka kunci, dan
 	 * rekap bulanan program (dulu `/admin/laporan`) menjadi tabel penutup. Yang
-	 * hilang bersama kedua halaman itu hanyalah lapis rinciannya — pemetaan SDG,
-	 * checklist bukti per naskah, dan perhitungan SROI — dan ketiganya memang
+	 * hilang bersama kedua halaman itu hanyalah lapis rinciannya: pemetaan SDG,
+	 * checklist bukti per naskah, dan perhitungan SROI: dan ketiganya memang
 	 * bukan bahan yang dibaca sekali lihat di dasbor.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 6 KPI dan Keluaran, Hal 10 ESG
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 6 KPI dan Keluaran, Hal 10 ESG
 	 */
 	import { Card, EmptyState, PageHeader, StatTile, StatusBadge, ICONS } from '$lib/components';
 	import AdminPublikasiTrend from '$lib/charts/AdminPublikasiTrend.svelte';
@@ -52,7 +52,7 @@
 
 	/**
 	 * Warna komunitas untuk chart, disamakan dengan donat komunitas di zona lain.
-	 * Heksadesimalnya tidak ditulis di sini — hanya dirujuk lewat tema chart.
+	 * Heksadesimalnya tidak ditulis di sini: hanya dirujuk lewat tema chart.
 	 */
 	const WARNA_KOMUNITAS = Object.freeze({
 		SOBI: palette.green,
@@ -130,7 +130,7 @@
 		};
 	});
 
-	/** Rata-rata kesiapan bukti tiga pilar ESG — serapan dari halaman Bukti ESG. */
+	/** Rata-rata kesiapan bukti tiga pilar ESG: serapan dari halaman Bukti ESG. */
 	const kesiapanEsg = $derived(
 		admin.esgReadiness.length > 0
 			? Math.round(
@@ -174,7 +174,7 @@
 
 	const poinPerBulan = $derived(new Map(admin.monthlyTrend.map((bulan) => [bulan.monthKey, bulan])));
 
-	/** Satu baris per bulan program — pemasok chart tren sekaligus tabel penutup. */
+	/** Satu baris per bulan program: pemasok chart tren sekaligus tabel penutup. */
 	const rekapBulanan = $derived(
 		admin.programMonths.map((bulan) => ({
 			id: bulan.monthKey,
@@ -219,7 +219,7 @@
 <PageHeader
 	eyebrow="Konsol Corporate Secretary"
 	title="Dasbor KPI"
-	subtitle="Kesehatan aplikasi dan capaian publikasi PFfriends untuk periode program Januari–Juli 2026. Seluruh angka dihitung dari data komunitas yang tercatat — tidak satu pun lahir di halaman ini. Performa per-awardee tidak ditampilkan di sini; itu wilayah verifikator."
+	subtitle="Kesehatan aplikasi dan capaian publikasi PFriends untuk periode program Januari–Juli 2026. Seluruh angka dihitung dari data komunitas yang tercatat: tidak satu pun lahir di halaman ini. Performa per-awardee tidak ditampilkan di sini; itu wilayah verifikator."
 />
 
 <!-- ── Baris kartu angka kunci ─────────────────────────────────────────── -->
@@ -251,7 +251,7 @@
 		/>
 		<StatTile
 			label="Kepatuhan SLA tinjauan"
-			value={sla.total > 0 ? formatPersen(sla.persen) : '—'}
+			value={sla.total > 0 ? formatPersen(sla.persen) : ':'}
 			hint={sla.total > 0
 				? `${formatAngka(sla.lewat)} butir lewat batas · median terlama ${formatAngka(sla.medianTerburuk)} hari`
 				: 'Belum ada butir tinjauan yang selesai'}
@@ -260,7 +260,7 @@
 		/>
 		<StatTile
 			label="Kesiapan bukti ESG"
-			value={admin.esgReadiness.length > 0 ? formatPersen(kesiapanEsg) : '—'}
+			value={admin.esgReadiness.length > 0 ? formatPersen(kesiapanEsg) : ':'}
 			hint={pilarTerlemah
 				? `Rata-rata tiga pilar · terlemah ${pilarTerlemah.label}`
 				: 'Menunggu matriks bukti tiga pilar'}
@@ -340,7 +340,7 @@
 		<h2 id="judul-rekap" class="text-base font-bold text-heading">Rekap bulanan program</h2>
 		<p class="mt-1 max-w-3xl text-sm text-ink-600">
 			Angka yang sama dengan chart di atas, dalam bentuk yang dapat disalin ke laporan bulanan.
-			Kolom estimasi jangkauan memakai angka neto — sudah didiskon tumpang tindih audiens.
+			Kolom estimasi jangkauan memakai angka neto: sudah didiskon tumpang tindih audiens.
 		</p>
 	</div>
 

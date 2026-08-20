@@ -1,5 +1,5 @@
 /**
- * REPOSITORY — Rekaman Persetujuan Data (Consent).
+ * REPOSITORY: Rekaman Persetujuan Data (Consent).
  *
  * Tanggung jawab: akses rekaman consent untuk pengaturan privasi awardee, gerbang
  * publikasi cerita, dan bukti pilar Governance Hal 10 ("consent records").
@@ -7,11 +7,11 @@
  * Satu perbedaan penting dari repository lain: rekaman consent **tidak pernah
  * disunting di tempat**. Pencabutan menghasilkan rekaman baru lewat
  * `ConsentRecord.revoke()`, dan rekaman lamanya tetap tersimpan. Pasangan keduanya
- * itulah jejak audit yang perlu ditunjukkan bila persetujuan kelak dipersoalkan —
+ * itulah jejak audit yang perlu ditunjukkan bila persetujuan kelak dipersoalkan :
  * karena itu `delete()` menolak, sama seperti buku besar poin.
  *
  * @see src/lib/domain/value-objects/ConsentRecord.js
- * @see docs/04-ESG-GOVERNANCE.md — §4 Rancangan Consent Record
+ * @see docs/04-ESG-GOVERNANCE.md: §4 Rancangan Consent Record
  */
 
 import { ConsentRecord, ConsentStatus } from '$lib/domain/value-objects/ConsentRecord.js';
@@ -39,7 +39,7 @@ export class ConsentRepository extends DexieRepository {
 
 	/**
 	 * Rekaman yang masih dapat diandalkan sebagai dasar publikasi pada waktu acuan.
-	 * Kedaluwarsa ikut diperiksa di sini, bukan hanya status — consent yang lewat
+	 * Kedaluwarsa ikut diperiksa di sini, bukan hanya status: consent yang lewat
 	 * masa berlakunya tetap berstatus AKTIF sampai ada proses yang memutakhirkannya.
 	 * @param {string} awardeeId
 	 * @param {Date} pada Waktu acuan.
@@ -68,7 +68,7 @@ export class ConsentRepository extends DexieRepository {
 	}
 
 	/**
-	 * Rekaman yang sudah dicabut — bahan kolom "consent dicabut" pada laporan ESG.
+	 * Rekaman yang sudah dicabut: bahan kolom "consent dicabut" pada laporan ESG.
 	 * @returns {Promise<ConsentRecord[]>}
 	 */
 	async revoked() {

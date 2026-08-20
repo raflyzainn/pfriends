@@ -1,5 +1,5 @@
 /**
- * DATA LOKAL ZONA VERIFIKATOR — checklist data sensitif 21 butir.
+ * DATA LOKAL ZONA VERIFIKATOR: checklist data sensitif 21 butir.
  *
  * Tanggung jawab: menyatakan kedua puluh satu butir pemeriksaan data sensitif
  * `docs/04` §6.1 sebagai DATA, supaya panel gerbang merendernya dari satu daftar
@@ -12,13 +12,13 @@
  *    ada regex, tidak ada parser EXIF, dan tidak ada satu pun pemeriksaan otomatis
  *    di `Story`. Yang ada hanyalah `SensitivityScan` bernilai tiga keadaan.
  *    Menaruh daftar ini di `domain/constants/` akan menyiratkan bahwa domain
- *    memeriksanya — padahal yang memeriksa adalah manusia yang sedang membaca
+ *    memeriksanya: padahal yang memeriksa adalah manusia yang sedang membaca
  *    layar ini. Berkas beku `docs/12` §1.2 juga melarang paket ini menyentuh
  *    `src/lib/domain/**`.
  * 2. **Butir "blokir" ditandai, bukan disaring.** Enam butir (1, 2, 3, 4, 13, 20)
  *    berkonsekuensi blokir permanen menurut `docs/04` §6.2. Ia ditandai supaya
  *    verifikator melihat bobot butir yang sedang ia centang, bukan disembunyikan
- *    ke daftar terpisah — daftar terpisah membuat delapan belas butir sisanya
+ *    ke daftar terpisah: daftar terpisah membuat delapan belas butir sisanya
  *    terasa opsional.
  * 3. **Tidak ada skor.** Panel gerbang menampilkan "n dari 21 dikonfirmasi", bukan
  *    persentase dan bukan nilai gabungan dengan dua gerbang lain. `docs/12` §3.5
@@ -26,8 +26,8 @@
  *    yang dilebur membuat kegagalan satu syarat dapat ditutupi kelulusan syarat
  *    lain, padahal ketiganya konjungtif.
  *
- * @see docs/04-ESG-GOVERNANCE.md — §6.1 checklist 21 butir, §6.2 aturan keputusan
- * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 5 tiga panel gerbang terpisah
+ * @see docs/04-ESG-GOVERNANCE.md: §6.1 checklist 21 butir, §6.2 aturan keputusan
+ * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 5 tiga panel gerbang terpisah
  */
 
 /**
@@ -57,25 +57,25 @@ export const SENSITIVITY_GROUPS = Object.freeze([
 			Object.freeze({
 				no: 1,
 				label: 'NIK atau nomor KTP (16 digit)',
-				aksi: 'Blokir — naskah wajib diredaksi lebih dahulu.',
+				aksi: 'Blokir: naskah wajib diredaksi lebih dahulu.',
 				blocking: true
 			}),
 			Object.freeze({
 				no: 2,
 				label: 'Nomor kartu keluarga, paspor, atau SIM',
-				aksi: 'Blokir — naskah wajib diredaksi lebih dahulu.',
+				aksi: 'Blokir: naskah wajib diredaksi lebih dahulu.',
 				blocking: true
 			}),
 			Object.freeze({
 				no: 3,
 				label: 'NPWP berformat 15–16 digit',
-				aksi: 'Blokir — naskah wajib diredaksi lebih dahulu.',
+				aksi: 'Blokir: naskah wajib diredaksi lebih dahulu.',
 				blocking: true
 			}),
 			Object.freeze({
 				no: 4,
 				label: 'Nomor rekening bank atau dompet elektronik',
-				aksi: 'Blokir — naskah wajib diredaksi lebih dahulu.',
+				aksi: 'Blokir: naskah wajib diredaksi lebih dahulu.',
 				blocking: true
 			}),
 			Object.freeze({
@@ -141,7 +141,7 @@ export const SENSITIVITY_GROUPS = Object.freeze([
 			Object.freeze({
 				no: 13,
 				label: 'Afiliasi politik atau konten partisan',
-				aksi: 'Blokir — konten partisan tidak dapat diterbitkan.',
+				aksi: 'Blokir: konten partisan tidak dapat diterbitkan.',
 				blocking: true
 			}),
 			Object.freeze({
@@ -153,7 +153,7 @@ export const SENSITIVITY_GROUPS = Object.freeze([
 			Object.freeze({
 				no: 15,
 				label: 'Kondisi ekonomi memalukan atau narasi belas kasihan',
-				aksi: 'Tulis ulang — martabat subjek harus terjaga.',
+				aksi: 'Tulis ulang: martabat subjek harus terjaga.',
 				blocking: false
 			})
 		])

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Timeline — jejak kronologis untuk riwayat poin dan audit ESG.
+	 * Timeline: jejak kronologis untuk riwayat poin dan audit ESG.
 	 *
 	 * Props:
 	 * @prop {{id:string,title:string,description?:string,at:string,iconPath?:string,
@@ -18,7 +18,7 @@
 	 * ── MENGAPA KOMPONEN INI TIDAK LAGI MENGENAL `PointsChip` ──────────────────
 	 * Sebelum G5, tiap butir boleh membawa `points` dan komponen ini merender
 	 * `PointsChip` sendiri. Satu-satunya pemakainya di seluruh aplikasi adalah
-	 * `/tentang` — halaman ZONA PUBLIK, tempat Keputusan Pemilik Produk #2
+	 * `/tentang`: halaman ZONA PUBLIK, tempat Keputusan Pemilik Produk #2
 	 * melarang angka kontribusi muncul sama sekali. Cabang itu tidak pernah
 	 * dipakai siapa pun, tetapi ia menautkan komponen gamifikasi ke dalam bundel
 	 * zona publik, dan menjadikan kebocoran PO-2 berjarak satu field data saja:
@@ -27,7 +27,7 @@
 	 *
 	 * Ketergantungannya dibalik, bukan dihapus begitu saja: pemanggil dari zona
 	 * ter-login yang memerlukan pil poin cukup menyerahkan snippet `trailing`.
-	 * Kemampuannya utuh, arah pengetahuannya yang berubah — komponen bersama
+	 * Kemampuannya utuh, arah pengetahuannya yang berubah: komponen bersama
 	 * tidak lagi memikul pengetahuan yang haram bagi separuh pemakainya.
 	 */
 	import Icon from './Icon.svelte';
@@ -50,7 +50,7 @@
 
 {#if items.length === 0}
 	<!-- Pesan kosong sengaja NETRAL ZONA. Kalimat sebelumnya berbunyi "Poin
-	     pertama Anda menunggu…" — dan komponen ini dirender `/tentang`, halaman
+	     pertama Anda menunggu…": dan komponen ini dirender `/tentang`, halaman
 	     zona publik, tempat PO-2 melarang angka kontribusi disebut sama sekali.
 	     Cukup satu lini masa kosong di sana untuk menayangkannya. Pemanggil dari
 	     zona ter-login yang memang ingin mengajak mengumpulkan poin menyerahkan

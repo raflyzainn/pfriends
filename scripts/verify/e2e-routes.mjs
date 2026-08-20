@@ -3,7 +3,7 @@
  *
  * Tanpa dependensi apa pun: memakai WebSocket bawaan Node 22 dan browser
  * berbasis Chromium yang sudah ada di mesin. Pfriends adalah SPA yang dirender
- * di klien, jadi `curl` tidak cukup — halaman harus benar-benar dijalankan.
+ * di klien, jadi `curl` tidak cukup: halaman harus benar-benar dijalankan.
  *
  * ── Mengapa setiap route ber-zona diuji DUA KALI ──────────────────────────────
  * Membuka `/admin` tanpa sesi lalu melihat pengalihan hanya membuktikan GUARD-nya
@@ -11,8 +11,8 @@
  * hanya dengan sesi Admin tidak membuktikan zona itu benar-benar tertutup bagi
  * orang lain. Karena itu skrip ini menjalankan dua fase:
  *
- *   (i)  sebagai TAMU  — tiga pintu zona wajib mendarat di `/masuk?next=…`
- *   (ii) sebagai PERAN YANG BENAR — halaman wajib merender isi, tanpa galat
+ *   (i)  sebagai TAMU : tiga pintu zona wajib mendarat di `/masuk?next=…`
+ *   (ii) sebagai PERAN YANG BENAR: halaman wajib merender isi, tanpa galat
  *        konsol, dan tanpa panel penolakan guard.
  *
  * Ditambah satu fase silang: peran yang salah wajib melihat panel penolakan.
@@ -20,16 +20,16 @@
  * ── Mengapa deteksi guard memakai ATRIBUT, bukan teks ─────────────────────────
  * Versi lama mencocokkan kalimat ("Pilih peran", "Konsol khusus pengelola").
  * Kalimat itu lenyap saat halaman masuk ditulis ulang menjadi formulir, sehingga
- * detektornya tidak akan pernah menyala lagi — dan skrip akan melaporkan 36 route
+ * detektornya tidak akan pernah menyala lagi: dan skrip akan melaporkan 36 route
  * hijau bahkan bila SELURUH zona ter-login menampilkan panel "bukan peran Anda".
  * Penggantinya `[data-zone-denied]` dan `[data-zone-splash]`, dua atribut yang
- * dipasang `ZoneGuard.svelte` sebagai kontrak — atribut tidak ikut basi saat
+ * dipasang `ZoneGuard.svelte` sebagai kontrak: atribut tidak ikut basi saat
  * salinan teks berubah.
  *
  * Prasyarat: server dev berjalan (`npm run dev -- --port 5177`).
  * Jalankan: node scripts/verify/e2e-routes.mjs [baseUrl]
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.14 daftar 36 route, §6.2 baris `e2e-routes.mjs`, §6.4 matriks guard
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.14 daftar 36 route, §6.2 baris `e2e-routes.mjs`, §6.4 matriks guard
  */
 
 import { spawn } from 'node:child_process';
@@ -53,7 +53,7 @@ const seed = buildSeed();
 
 /** @param {string} pesan */
 function wajibAda(pesan) {
-	console.error(`Seed tidak menyediakan ${pesan} — uji route dinamis tidak dapat berjalan.`);
+	console.error(`Seed tidak menyediakan ${pesan}: uji route dinamis tidak dapat berjalan.`);
 	process.exit(1);
 }
 
@@ -138,7 +138,7 @@ const RUTE_ADMIN = ['/admin', '/admin/awardee', '/admin/gamifikasi', '/admin/pen
 
 /**
  * Kredensial demo per peran. Kata sandinya satu untuk semua akun dan berasal dari
- * `SANDI_DEMO` — menyalinnya sebagai literal di sini akan membuat uji ini gagal
+ * `SANDI_DEMO`: menyalinnya sebagai literal di sini akan membuat uji ini gagal
  * diam-diam pada hari sandi seed diubah.
  * @type {Record<string, {email: string, home: string, rute: string[]}>}
  */
@@ -294,16 +294,16 @@ async function periksa(path, jeda = 1400) {
 }
 
 /**
- * Masuk dengan MENGKLIK KARTU PENGGUNA — jalur yang sesungguhnya dipakai manusia.
+ * Masuk dengan MENGKLIK KARTU PENGGUNA: jalur yang sesungguhnya dipakai manusia.
  *
  * Sejak revisi 4 Agustus 2026 halaman `/masuk` tidak lagi menampilkan kolom surel
  * dan sandi; keduanya diganti daftar kartu yang tinggal diklik, dan sandi demo
  * dipakai di balik layar oleh komponen. Versi lama fungsi ini mengisi
- * `#masuk-email` + `#masuk-sandi` lalu menekan submit — sesudah revisi, kedua
+ * `#masuk-email` + `#masuk-sandi` lalu menekan submit: sesudah revisi, kedua
  * selektor itu tidak pernah ada di DOM kecuali panel "masuk manual" dibuka, maka
  * `querySelector` mengembalikan `null`, pengisian gagal diam-diam, dan SELURUH
  * fase ter-login berjalan sebagai tamu. Route tetap dilaporkan "✓" karena memang
- * merender sesuatu — yang dirender halaman masuk, bukan halaman yang diuji.
+ * merender sesuatu: yang dirender halaman masuk, bukan halaman yang diuji.
  *
  * Kartu dicari lewat `[data-akun="surel"]`, bukan lewat urutan DOM: urutan kartu
  * berubah setiap kali seed disusun ulang.
@@ -324,7 +324,7 @@ async function masuk(email) {
 		})()`
 	);
 
-	// Halaman masuk hanya memajang SEBAGIAN akun demo — seluruh staf, tetapi cuma
+	// Halaman masuk hanya memajang SEBAGIAN akun demo: seluruh staf, tetapi cuma
 	// enam dari 60 awardee. Akun uji dipilih dari urutan seed, jadi kartunya sering
 	// tidak termasuk yang dipajang. Untuk kasus itu panel "masuk manual" dibuka dan
 	// formulirnya diisi: jalur itu memang masih ada di antarmuka, dan memakainya
@@ -372,7 +372,7 @@ async function masuk(email) {
  * Mengosongkan SELURUH penyimpanan origin: localStorage (sesi) dan IndexedDB
  * (buku besar Dexie).
  *
- * `localStorage.clear()` saja tidak cukup — profil peramban dipakai ulang antar
+ * `localStorage.clear()` saja tidak cukup: profil peramban dipakai ulang antar
  * jalannya skrip, dan sesi yang tertinggal membuat fase tamu langsung gagal
  * karena `/masuk` mengalihkan pengguna yang dianggap masih masuk.
  *
@@ -382,7 +382,7 @@ async function masuk(email) {
  * `storageKey`) dan pada Brave/Chromium mutakhir ia tidak menyapu localStorage.
  * Akibatnya sesi ADMIN dari jalannya skrip sebelumnya bertahan di profil
  * `/tmp/pfriends-e2e-profile`, dan Fase 1-2 hanya lolos pada profil yang benar-benar
- * baru — gerbang yang hijau sekali lalu merah selamanya, atau lebih buruk: hijau
+ * baru: gerbang yang hijau sekali lalu merah selamanya, atau lebih buruk: hijau
  * karena kebetulan. Karena itu penghapusan kini dilakukan dengan menjalankan
  * `localStorage.clear()` + `indexedDB.deleteDatabase()` di dalam dokumen origin,
  * dan hasilnya DIVERIFIKASI oleh `sisaPenyimpanan()`.
@@ -446,8 +446,8 @@ function cek(nama, kondisi, detail = '') {
 		console.log(`   ✓ ${nama}`);
 	} else {
 		gagalAsersi++;
-		kegagalan.push(`${nama}${detail ? ` — ${detail}` : ''}`);
-		console.log(`   ✗ ${nama}${detail ? ` — ${detail}` : ''}`);
+		kegagalan.push(`${nama}${detail ? `: ${detail}` : ''}`);
+		console.log(`   ✗ ${nama}${detail ? `: ${detail}` : ''}`);
 	}
 }
 
@@ -494,7 +494,7 @@ for (const [peran, profil] of Object.entries(PERAN_UJI)) {
 	// sudah punya tombolnya, tetapi keduanya ikon telanjang tanpa satu pun kata
 	// "keluar" di layar. Karena itu asersi ini memeriksa TIGA hal sekaligus:
 	// kaitnya ada (`[data-logout]`), kotaknya benar-benar terender, dan labelnya
-	// terbaca sebagai kata — bukan hanya glyph yang harus ditebak.
+	// terbaca sebagai kata: bukan hanya glyph yang harus ditebak.
 	const tombolKeluar = await cdp.evaluate(`(() => {
 		const t = document.querySelector('[data-logout]');
 		if (!t) return { ada: false };
@@ -558,7 +558,7 @@ for (const [peran, profil] of Object.entries(PERAN_UJI)) {
 
 // ── Fase 4 · Peran silang: zona yang bukan miliknya WAJIB ditolak ───────────
 // Fase 3 kini menutup setiap peran dengan menekan tombol keluar, jadi sesi ADMIN
-// dibangun ULANG di sini — tanpa `keluarBersih()`, langsung di atas basis data
+// dibangun ULANG di sini: tanpa `keluarBersih()`, langsung di atas basis data
 // yang sama. Pemulihan itu sekaligus menjadi buktinya sendiri: berpindah peran
 // tidak menuntut siapa pun menghapus data situs lebih dulu.
 console.log('\n── Fase 4 · Penolakan lintas zona (sesi ADMIN) ──');
@@ -583,7 +583,7 @@ let bermasalah = 0;
 for (const b of laporan) {
 	const kurus = b.panjang < AMBANG_ISI;
 	// Route mana pun yang berakhir pada panel guard atau splash berarti halamannya
-	// TIDAK hidup untuk peran yang seharusnya berhak — itu kegagalan, bukan bukti
+	// TIDAK hidup untuk peran yang seharusnya berhak: itu kegagalan, bukan bukti
 	// bahwa guard bekerja. Bukti guard dikumpulkan terpisah di Fase 2 dan 4.
 	const tersandera = b.ditolakGuard || b.masihSplash;
 	const buruk = b.galat || b.errorKonsol.length > 0 || kurus || tersandera;
@@ -592,8 +592,8 @@ for (const b of laporan) {
 	console.log(`${tanda} ${b.path.padEnd(40)} ${String(b.panjang).padStart(6)} chr  ${b.cuplikan}`);
 	if (b.galat) console.log(`    ! penanda galat di DOM`);
 	if (kurus) console.log(`    ! konten terlalu sedikit (mungkin blank/redirect)`);
-	if (b.ditolakGuard) console.log(`    ! panel "bukan peran Anda" — sesi tidak berlaku untuk zona ini`);
-	if (b.masihSplash) console.log(`    ! tersangkut splash ZoneGuard — sesi tidak selesai dipulihkan`);
+	if (b.ditolakGuard) console.log(`    ! panel "bukan peran Anda": sesi tidak berlaku untuk zona ini`);
+	if (b.masihSplash) console.log(`    ! tersangkut splash ZoneGuard: sesi tidak selesai dipulihkan`);
 	for (const e of b.errorKonsol.slice(0, 3)) console.log(`    ! konsol: ${e.slice(0, 150)}`);
 }
 console.log('='.repeat(78));

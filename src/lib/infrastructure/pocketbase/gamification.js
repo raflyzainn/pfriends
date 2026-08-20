@@ -12,7 +12,7 @@ function pointActivity(record) {
 	return new PointActivity({
 		id: record.id, awardeeId: record.awardeeId, activityType: record.activityType,
 		points: record.status === 'REVOKED' ? 0 : record.points,
-		status: record.status || 'AWARDED', refId: record.submission || null,
+		status: record.status || 'AWARDED', refId: record.broadcast || record.submission || null,
 		capReason: record.capReason || null, note: record.revokeReason || null,
 		occurredAt: record.occurredAt
 	});

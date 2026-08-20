@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN — Pencapaian (`/awardee/penghargaan`).
+	 * HALAMAN: Pencapaian (`/awardee/penghargaan`).
 	 *
 	 * Pilar 05 Hal 5 (*"Peningkatan poin yang dapat ditukar"*) dan tangga manfaat
 	 * jenjang Hal 12.
@@ -8,7 +8,7 @@
 	 * ── DARI "PENGHARGAAN" MENJADI "PENCAPAIAN" ────────────────────────────────
 	 *
 	 * Judul lama menempatkan anggota sebagai penerima: sesuatu diberikan kepadanya
-	 * oleh pihak lain. Judul baru menempatkannya sebagai pelaku — yang ditampilkan
+	 * oleh pihak lain. Judul baru menempatkannya sebagai pelaku: yang ditampilkan
 	 * di sini adalah apa yang SUDAH IA KERJAKAN. Perbedaannya bukan sekadar kata:
 	 * seluruh susunan halaman ikut berubah. Yang pertama terlihat kini jenjang yang
 	 * sedang dipegang dan seberapa dekat jenjang berikutnya, bukan empat ubin angka
@@ -18,7 +18,7 @@
 	 *
 	 * 1. **NOL perbandingan antar-anggota.** Halaman ini tidak mengimpor store
 	 *    papan peringkat maupun `LeaderboardRow`. Satu-satunya angka pembanding
-	 *    yang muncul adalah jarak menuju jenjang BERIKUTNYA — perbandingan anggota
+	 *    yang muncul adalah jarak menuju jenjang BERIKUTNYA: perbandingan anggota
 	 *    dengan dirinya sendiri, bukan dengan orang lain.
 	 * 2. **Yang dibelanjakan adalah Koin Tukar, bukan Poin Kontribusi.** Bila
 	 *    keduanya disatukan, seorang Champion yang menukar hadiah akan turun
@@ -30,12 +30,12 @@
 	 *    menyembunyikannya menghapus daya tariknya dan menyisakan kejutan yang
 	 *    tidak dapat dikejar siapa pun.
 	 *
-	 * BATAS TANGGUNG JAWAB. Halaman ini TIDAK merakit penukaran — seluruhnya satu
+	 * BATAS TANGGUNG JAWAB. Halaman ini TIDAK merakit penukaran: seluruhnya satu
 	 * pemanggilan endpoint PocketBase yang atomik; yang tersisa di sini
 	 * hanyalah membuka dialog, menampilkan hasilnya, dan memuat ulang tampilan.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 05, Hal 12 tier & benefit
-	 * @see docs/03-GAMIFICATION-SPEC.md — §2.2 dua mata uang, §6 badge, §10 katalog penukaran
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 05, Hal 12 tier & benefit
+	 * @see docs/03-GAMIFICATION-SPEC.md: §2.2 dua mata uang, §6 badge, §10 katalog penukaran
 	 */
 
 	import { onMount } from 'svelte';
@@ -108,15 +108,15 @@
 	/**
 	 * Riwayat poin terbaru, terbaru lebih dulu.
 	 *
-	 * Entri yang poinnya nol tetap ditampilkan. Aksi yang tercatat tanpa poin —
-	 * karena kuota harian penuh atau karena buktinya belum lengkap — adalah bagian
+	 * Entri yang poinnya nol tetap ditampilkan. Aksi yang tercatat tanpa poin :
+	 * karena kuota harian penuh atau karena buktinya belum lengkap: adalah bagian
 	 * jujur dari perjalanan, dan menyembunyikannya membuat anggota mengira aksinya
 	 * hilang.
 	 */
 	const riwayatPoin = $derived(gamification.ledger.slice(0, BATAS_RIWAYAT));
 
 	/**
-	 * Berapa aksi yang tercatat bulan ini — konteks hangat untuk kepala riwayat.
+	 * Berapa aksi yang tercatat bulan ini: konteks hangat untuk kepala riwayat.
 	 *
 	 * Kunci bulan disusun dari komponen tanggal LOKAL, bukan dari `toISOString()`:
 	 * entity menghitung `monthKey`-nya dengan waktu lokal (WIB), dan versi UTC akan
@@ -163,7 +163,7 @@
 
 	/**
 	 * Katalog yang ditampilkan. Kategori Dampak diangkat ke depan karena itulah satu-
-	 * satunya kategori yang mengubah poin menjadi kebaikan bagi orang lain — dan bagi
+	 * satunya kategori yang mengubah poin menjadi kebaikan bagi orang lain: dan bagi
 	 * komunitas Sobat Bumi justru itu yang paling layak ditonjolkan.
 	 */
 	const rewardTampil = $derived(
@@ -211,7 +211,7 @@
 	 *
 	 * Sisa kuota dibaca terhadap BULAN BERJALAN, bukan terhadap bulan yang kebetulan
 	 * tersimpan pada baris katalog. Keduanya berbeda tepat pada hari pergantian
-	 * bulan — dan kartu yang masih menampilkan "kuota habis" pada tanggal 1 adalah
+	 * bulan: dan kartu yang masih menampilkan "kuota habis" pada tanggal 1 adalah
 	 * kartu yang menahan anggota dari sesuatu yang sebenarnya sudah terbuka.
 	 *
 	 * @param {import('$lib/domain/entities/Reward.js').Reward} reward
@@ -240,7 +240,7 @@
 			toast.push({
 				type: ToastType.INFO,
 				title: 'Belum ada sesi anggota',
-				message: 'Masuk sebagai anggota PFfriends untuk menukarkan Koin Tukar.'
+				message: 'Masuk sebagai anggota PFriends untuk menukarkan Koin Tukar.'
 			});
 			return;
 		}
@@ -257,7 +257,7 @@
 	 *
 	 * Kelayakan diperiksa ulang oleh entity tepat sebelum saldo dipotong, bukan
 	 * hanya saat kartu dirender. Jeda antara membuka dialog dan menekan tukar cukup
-	 * untuk membuat pemeriksaan pertama basi — saldo bisa saja sudah terpakai di tab
+	 * untuk membuat pemeriksaan pertama basi: saldo bisa saja sudah terpakai di tab
 	 * lain, dan pemotongan ganda tidak akan pernah bisa dibatalkan.
 	 *
 	 * @returns {Promise<void>}
@@ -290,7 +290,7 @@
 </script>
 
 <svelte:head>
-	<title>Pencapaian — PFfriends</title>
+	<title>Pencapaian: PFriends</title>
 </svelte:head>
 
 <div class="mb-5">
@@ -299,7 +299,7 @@
 		Pencapaian
 	</h1>
 	<p class="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-600">
-		Semua yang kamu kumpulkan sejauh ini — jenjang, lencana, dan poin — beserta hadiah yang bisa
+		Semua yang kamu kumpulkan sejauh ini: jenjang, lencana, dan poin: beserta hadiah yang bisa
 		kamu tukar. Halaman ini hanya membandingkanmu dengan dirimu sendiri.
 	</p>
 </div>
@@ -352,7 +352,7 @@
 			{:else}
 				<p class="label-micro">Jenjang tertinggi</p>
 				<p class="mt-1.5 text-sm leading-relaxed font-semibold text-brand-700">
-					Kamu sudah di puncak tangga jenjang PFfriends. 🎉
+					Kamu sudah di puncak tangga jenjang PFriends. 🎉
 				</p>
 				<p class="mt-2 text-[11px] leading-relaxed text-ink-600">
 					Poin yang kamu kumpulkan sekarang menjadi Koin Tukar dan bahan pertimbangan undangan
@@ -364,7 +364,7 @@
 
 	<div class="mt-5 grid grid-cols-2 gap-3 border-t border-brand-200 pt-4 sm:grid-cols-4">
 		<div>
-			<p class="numeric text-xl text-heading">{achievements.loaded ? formatAngka(achievements.wallet.balance) : '—'}</p>
+			<p class="numeric text-xl text-heading">{achievements.loaded ? formatAngka(achievements.wallet.balance) : ':'}</p>
 			<p class="label-micro mt-1">Koin Tukar</p>
 		</div>
 		<div>
@@ -532,7 +532,7 @@
 					{formatAngka(lencanaTerkumpul)} lencana sudah kamu raih
 				</span>
 				· {formatAngka(lencanaTerkunci)} lainnya masih menunggu. Yang belum terbuka tetap terlihat
-				lengkap dengan kriterianya — supaya kamu tahu persis langkah berikutnya, bukan menebak-nebak.
+				lengkap dengan kriterianya: supaya kamu tahu persis langkah berikutnya, bukan menebak-nebak.
 			</p>
 		</Card>
 
@@ -624,7 +624,7 @@
 			<EmptyState
 				iconPath={ICONS.user}
 				title="Belum ada sesi anggota"
-				message="Masuk sebagai anggota PFfriends untuk melihat katalog penukaran beserta saldo Koin Tukar-mu."
+				message="Masuk sebagai anggota PFriends untuk melihat katalog penukaran beserta saldo Koin Tukar-mu."
 				actionLabel="Masuk sebagai anggota"
 				actionHref="/masuk"
 			/>

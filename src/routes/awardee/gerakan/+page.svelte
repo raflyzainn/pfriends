@@ -1,24 +1,24 @@
 <script>
 	/**
-	 * HALAMAN — Gerakan Bersama (`/awardee/gerakan`).
+	 * HALAMAN: Gerakan Bersama (`/awardee/gerakan`).
 	 *
 	 * Pilar 03 Hal 5: menginisiasi gerakan bersama selaras fokus keberlanjutan
-	 * Pertamina — aksi lingkungan, edukasi masyarakat, pemberdayaan ekonomi.
+	 * Pertamina: aksi lingkungan, edukasi masyarakat, pemberdayaan ekonomi.
 	 *
 	 * Halaman ini adalah tempat poin tertinggi Hal 11 benar-benar dapat diraih:
 	 * memimpin aksi lapangan bernilai 50 poin. Yang perlu dijaga adalah agar 50 poin
 	 * itu tidak berubah menjadi tombol yang bisa ditekan siapa saja kapan saja.
 	 * Karena itu pelaporan aksi menuntut bukti yang sama dengan gerbang bukti ESG
-	 * Hal 12, dan kelengkapannya diperlihatkan hidup di dalam formulir — awardee
+	 * Hal 12, dan kelengkapannya diperlihatkan hidup di dalam formulir: awardee
 	 * melihat apa yang masih kurang sebelum menekan kirim, bukan setelahnya.
 	 *
 	 * Satu syarat gerbang ESG sengaja sudah terpenuhi tanpa diisi ulang: tag ESG dan
-	 * SDG diwarisi dari gerakan induknya. Itu keputusan `Movement` — gerakan tidak
-	 * boleh berjalan tanpa tag — dan halaman ini hanya menampilkannya, bukan meminta
+	 * SDG diwarisi dari gerakan induknya. Itu keputusan `Movement`: gerakan tidak
+	 * boleh berjalan tanpa tag: dan halaman ini hanya menampilkannya, bukan meminta
 	 * awardee lapangan mengingat taksonomi.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 03, Hal 11 Lead local action 50 pts, Hal 12 bukti ESG
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.14 route /awardee/gerakan
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 03, Hal 11 Lead local action 50 pts, Hal 12 bukti ESG
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.14 route /awardee/gerakan
 	 */
 
 	import { onMount } from 'svelte';
@@ -47,7 +47,7 @@
 	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
 	import { formatAngka, formatRentangTanggal, formatTanggal } from '$lib/utils/format.js';
 
-	/** Nilai poin memimpin aksi lokal — dari tabel kanonik Hal 11. */
+	/** Nilai poin memimpin aksi lokal: dari tabel kanonik Hal 11. */
 	const POIN_MEMIMPIN = poinUntuk(ActivityType.LEAD_ACTION);
 
 	/** Nilai pil filter untuk "tanpa penyaringan kategori". */
@@ -59,7 +59,7 @@
 		PESERTA: 'PESERTA'
 	});
 
-	/** Panjang catatan hasil yang dianggap memadai sebagai bukti — pedoman tulis, bukan aturan domain. */
+	/** Panjang catatan hasil yang dianggap memadai sebagai bukti: pedoman tulis, bukan aturan domain. */
 	const TARGET_KARAKTER_CATATAN = 200;
 
 	/**
@@ -143,7 +143,7 @@
 
 	/**
 	 * Status keempat gerbang bukti ESG Hal 12 terhadap isian formulir saat ini.
-	 * Gerbang ketiga dinilai dari gerakan induk, bukan dari isian — tag ESG/SDG
+	 * Gerbang ketiga dinilai dari gerakan induk, bukan dari isian: tag ESG/SDG
 	 * memang diwariskan, dan menampilkannya sebagai pekerjaan awardee akan
 	 * menyesatkan.
 	 */
@@ -217,7 +217,7 @@
 		toast.push({
 			type: ToastType.INFO,
 			title: 'Belum ada sesi awardee',
-			message: 'Masuk sebagai awardee PFfriends untuk ikut gerakan dan melaporkan aksi lapangan.'
+			message: 'Masuk sebagai awardee PFriends untuk ikut gerakan dan melaporkan aksi lapangan.'
 		});
 		return false;
 	}
@@ -274,7 +274,7 @@
 	 *
 	 * Poin hanya diajukan untuk peran memimpin, karena hanya itu yang disebut tabel
 	 * Hal 11. Laporan seorang peserta tetap disimpan dan tetap menjadi bukti ESG
-	 * gerakan — kontribusi yang tidak berpoin bukan kontribusi yang tidak berharga,
+	 * gerakan: kontribusi yang tidak berpoin bukan kontribusi yang tidak berharga,
 	 * dan halaman ini mengatakannya dengan jelas alih-alih diam.
 	 *
 	 * @returns {Promise<void>}
@@ -292,7 +292,7 @@
 				const hasil = await gamification.perform(ActivityType.LEAD_ACTION, {
 					refId: gerakan.id,
 					evidence: [formBukti.trim()],
-					note: `${gerakan.title} — ${formLokasi.trim()}`,
+					note: `${gerakan.title}: ${formLokasi.trim()}`,
 					occurredAt: waktuAksi
 				});
 				// Kuota harian menolak aksi kedua di hari yang sama. Laporan tidak
@@ -325,13 +325,13 @@
 </script>
 
 <svelte:head>
-	<title>Gerakan Bersama — PFfriends</title>
+	<title>Gerakan Bersama: PFriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 03 · Movement-Based Program"
 	title="Gerakan Bersama"
-	subtitle="Aksi lingkungan, edukasi masyarakat, dan pemberdayaan ekonomi yang digerakkan awardee PFfriends. Ikut serta, jalankan di wilayahmu, lalu laporkan hasilnya sebagai bukti ESG."
+	subtitle="Aksi lingkungan, edukasi masyarakat, dan pemberdayaan ekonomi yang digerakkan awardee PFriends. Ikut serta, jalankan di wilayahmu, lalu laporkan hasilnya sebagai bukti ESG."
 />
 
 <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -390,7 +390,7 @@
 				<EmptyState
 					icon={ICONS.flag}
 					title="Kamu belum bergabung dengan gerakan mana pun"
-					message="Pilih satu gerakan di bawah yang paling dekat dengan wilayah dan keahlianmu. Bergabung tidak menuntut komitmen besar — cukup satu aksi nyata untuk memulai."
+					message="Pilih satu gerakan di bawah yang paling dekat dengan wilayah dan keahlianmu. Bergabung tidak menuntut komitmen besar: cukup satu aksi nyata untuk memulai."
 					size="sm"
 				/>
 			</div>
@@ -462,7 +462,7 @@
 							<!-- `shortLabel` ('E · SDG 12'), bukan `label` lengkap: `StatusBadge`
 							     memakai `whitespace-nowrap`, sehingga nama SDG yang panjang menjadi
 							     satu chip selebar 352 px yang melebarkan halaman di 375 px. Nama
-							     penuh tidak hilang — ia pindah ke atribut `title`. -->
+							     penuh tidak hilang: ia pindah ke atribut `title`. -->
 							<div class="mt-3 flex flex-wrap gap-1.5">
 								{#each gerakan.esgTags as tag (tag.toString())}
 									<StatusBadge
@@ -545,7 +545,7 @@
 		<section class="mt-10">
 			<h2 class="text-lg font-semibold text-heading">Gerakan yang sudah selesai</h2>
 			<p class="mt-1 text-[13px] text-ink-600">
-				Arsip aksi komunitas beserta dampak yang tercatat — bahan bukti untuk laporan ESG Pertamina
+				Arsip aksi komunitas beserta dampak yang tercatat: bahan bukti untuk laporan ESG Pertamina
 				Foundation.
 			</p>
 			<div class="mt-4 grid gap-4 md:grid-cols-2">
@@ -617,7 +617,7 @@
 					/>
 					<span class="text-[13px] leading-relaxed text-ink-700">
 						<span class="font-semibold text-ink-800">Memimpin pelaksanaan di lokasi</span>
-						— saya mengorganisasi aksi ini, mengumpulkan peserta, dan bertanggung jawab atas
+						: saya mengorganisasi aksi ini, mengumpulkan peserta, dan bertanggung jawab atas
 						hasilnya.
 						<span class="font-semibold text-pertamina-navy">Bernilai {POIN_MEMIMPIN} poin.</span>
 					</span>
@@ -631,7 +631,7 @@
 					/>
 					<span class="text-[13px] leading-relaxed text-ink-700">
 						<span class="font-semibold text-ink-800">Ikut serta sebagai peserta</span>
-						— laporan tetap tersimpan sebagai bukti ESG gerakan, tanpa poin kepemimpinan.
+						: laporan tetap tersimpan sebagai bukti ESG gerakan, tanpa poin kepemimpinan.
 					</span>
 				</label>
 			</fieldset>
@@ -682,7 +682,7 @@
 						</span>
 						<span class="text-[13px] leading-relaxed text-ink-700">
 							<span class="font-medium text-ink-800">{syarat.label}</span>
-							<span class="text-ink-600"> — {syarat.deskripsi}</span>
+							<span class="text-ink-600">: {syarat.deskripsi}</span>
 						</span>
 					</li>
 				{/each}

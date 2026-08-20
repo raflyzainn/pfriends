@@ -20,7 +20,7 @@
 	async function historyPage(page) { await activitySubmissions.loadReviewHistory({ page, decision }).catch(() => {}); }
 </script>
 
-<svelte:head><title>Verifikasi Bukti Keaktifan · PFfriends</title></svelte:head>
+<svelte:head><title>Verifikasi Bukti Keaktifan · PFriends</title></svelte:head>
 <PageHeader eyebrow="Ruang verifikasi" title="Bukti Keaktifan" description="Tangani antrean pemeriksaan dan telusuri seluruh keputusan yang pernah dibuat." />
 <div class="mb-5 flex gap-2 border-b border-ink-200"><button type="button" class={`px-4 py-3 text-sm font-semibold ${tab === 'queue' ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => tab = 'queue'}>Antrean</button><button type="button" class={`px-4 py-3 text-sm font-semibold ${tab === 'history' ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={openHistory}>Riwayat keputusan</button></div>
 

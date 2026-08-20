@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Button — tombol dasar seluruh aplikasi.
+	 * Button: tombol dasar seluruh aplikasi.
 	 *
 	 * Props:
 	 * @prop {'primary'|'secondary'|'outline'|'ghost'|'danger'|'success'} variant
@@ -42,13 +42,13 @@
 	/**
 	 * Varian `primary` memakai `pertamina-red-ink` (#B91820), bukan merah brand polos.
 	 *
-	 * Putih di atas #ED1C24 hanya mencapai 4,38 — lolos AA hanya untuk teks besar,
+	 * Putih di atas #ED1C24 hanya mencapai 4,38: lolos AA hanya untuk teks besar,
 	 * sedangkan ketiga ukuran tombol memakai teks 12–14px yang tergolong teks kecil
 	 * dan menuntut 4,5. Sebelumnya hanya ukuran `sm` yang digelapkan, sehingga tombol
-	 * `md` dan `lg` — termasuk ajakan utama di halaman publik — tetap di bawah ambang.
+	 * `md` dan `lg`: termasuk ajakan utama di halaman publik: tetap di bawah ambang.
 	 * `pertamina-red-ink` mencapai 6,53 dan berlaku seragam untuk semua ukuran.
 	 *
-	 * @see docs/11-VISUAL-DIRECTION.md §9 — koreksi kontras tombol primer publik
+	 * @see docs/11-VISUAL-DIRECTION.md §9: koreksi kontras tombol primer publik
 	 */
 	const VARIAN = {
 		primary:

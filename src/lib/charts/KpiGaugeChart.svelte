@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * KpiGaugeChart — meteran pencapaian satu KPI.
+	 * KpiGaugeChart: meteran pencapaian satu KPI.
 	 *
 	 * Props:
 	 * @prop {number} value
@@ -12,14 +12,14 @@
 	 * @prop {boolean} loading
 	 *
 	 * Meteran sengaja dibatasi 100% dan tidak pernah melewati busurnya. Pencapaian
-	 * di atas target tetap ditulis apa adanya sebagai angka di tengah — busur yang
+	 * di atas target tetap ditulis apa adanya sebagai angka di tengah: busur yang
 	 * meluap justru membuat capaian sulit dibandingkan antar-KPI.
 	 *
 	 * Meteran ringkas ini melengkapi `CoverageGaugeChart` (C-01), bukan
 	 * menggantikannya: yang itu meteran tunggal berzona warna untuk satu KPI
 	 * unggulan, yang ini deret meteran kecil untuk membaca empat KPI sisanya
 	 * berdampingan. Target yang tidak masuk akal (nol atau negatif) membuat
-	 * `option` bernilai `null` — meteran tanpa penyebut bukan meteran (CH-4).
+	 * `option` bernilai `null`: meteran tanpa penyebut bukan meteran (CH-4).
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import { KPI_STATUS } from '$lib/domain/constants/kpi-targets.js';

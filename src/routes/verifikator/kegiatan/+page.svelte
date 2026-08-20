@@ -1,8 +1,9 @@
 <script>
+	import { tick } from 'svelte';
 	/**
-	 * HALAMAN `/verifikator/kegiatan` — Konfigurasi Calendar of Event.
+	 * HALAMAN `/verifikator/kegiatan`: Konfigurasi Calendar of Event.
 	 *
-	 * Tanggung jawab: menjadi satu tempat verifikator MENGATUR kalender komunitas —
+	 * Tanggung jawab: menjadi satu tempat verifikator MENGATUR kalender komunitas -
 	 * memutuskan usulan yang menunggu, menambah event baru, menyunting detail event
 	 * yang sudah terjadwal, dan melihat bentuk kalender yang dihasilkannya.
 	 *
@@ -11,7 +12,7 @@
 	 * 1. **Usulan yang diajukan verifikator yang sedang masuk TIDAK dapat ia
 	 *    setujui atau tolak sendiri.** Tombolnya nonaktif beserta alasan tertulis,
 	 *    dan `ContentReviewService.approveEvent` tetap menolaknya bila permintaan
-	 *    dipaksakan lewat konsol peramban — penjagaan yang sesungguhnya hidup di
+	 *    dipaksakan lewat konsol peramban: penjagaan yang sesungguhnya hidup di
 	 *    domain, sedangkan halaman ini bertugas MENJELASKANNYA. Kegagalan yang
 	 *    senyap membuat verifikator menekan tombol yang sama berulang kali.
 	 * 2. **Formulir berada di halaman yang sama dengan antreannya.** Justru karena
@@ -20,7 +21,7 @@
 	 *    antrean di bawahnya dengan tombol keputusan nonaktif.
 	 * 3. **SATU formulir melayani "tambah" dan "sunting".** Dua formulir kembar
 	 *    untuk satu bentuk data adalah dua tempat yang harus diingat ketika sebuah
-	 *    field ditambahkan — dan yang kedua selalu yang terlupa.
+	 *    field ditambahkan: dan yang kedua selalu yang terlupa.
 	 * 4. **"Tambah" dan "sunting" menempuh jalur tulis yang BERBEDA, dan itu
 	 *    disengaja.** Event baru lahir sebagai USULAN lewat
 	 *    `editorial.proposeEvent()` sehingga tetap menempuh persetujuan; penyuntingan
@@ -28,7 +29,7 @@
 	 *    pernah menyentuh `status`. Verifikator memperbaiki salah ketik tanpa
 	 *    memperoleh pintu belakang menuju "terjadwal".
 	 * 5. **Kalender hanya menampilkan event yang benar-benar punya tempat di
-	 *    kalender** — terjadwal, berlangsung, dan selesai. Usulan mentah sengaja
+	 *    kalender**: terjadwal, berlangsung, dan selesai. Usulan mentah sengaja
 	 *    tidak ikut: penanda tanggal yang tidak dapat membedakan "sudah pasti" dari
 	 *    "masih diusulkan" akan membuat orang menjadwalkan diri pada acara yang
 	 *    mungkin ditolak besok.
@@ -43,10 +44,10 @@
 	 *    keputusan.** `EVENT_DECISIONS` menandai transisi itu `jalankan: null` karena
 	 *    kontrak store belum memuat jalurnya saat registri ditulis; kini store
 	 *    memuatnya, dan halaman ini memasangkannya lewat `lengkapiKeputusan()`.
-	 *    Registri tidak disunting dari sini — pemiliknya paket lain.
+	 *    Registri tidak disunting dari sini: pemiliknya paket lain.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — US-R24 antrean usulan kegiatan, §5.5 konflik kepentingan
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 3 dan 6
+	 * @see docs/10-REVISION-SPEC.md: US-R24 antrean usulan kegiatan, §5.5 konflik kepentingan
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 3 dan 6
 	 */
 	import {
 		Button,
@@ -117,10 +118,13 @@
 	/** @type {boolean} Formulir event sedang terbuka. */
 	let formulirTerbuka = $state(false);
 
+	/** @type {HTMLElement|undefined} Elemen tujuan setelah aksi tambah/sunting. */
+	let elemenFormulir = $state();
+
 	/**
 	 * @type {string} Identitas event yang sedang disunting; kosong berarti formulir
 	 * sedang dipakai untuk menambah event baru. Satu nilai ini yang membedakan kedua
-	 * mode — bukan dua flag terpisah yang dapat saling bertentangan.
+	 * mode: bukan dua flag terpisah yang dapat saling bertentangan.
 	 */
 	let idDisunting = $state('');
 
@@ -160,7 +164,7 @@
 	 * Agenda yang ditampilkan di samping kalender.
 	 *
 	 * Menyempit ke satu hari begitu sebuah tanggal dipilih, dan kembali ke sebulan
-	 * penuh saat pilihan dilepas — supaya kalender dan daftarnya mustahil menunjuk
+	 * penuh saat pilihan dilepas: supaya kalender dan daftarnya mustahil menunjuk
 	 * rentang yang berbeda.
 	 */
 	const agendaTerlihat = $derived(
@@ -228,7 +232,7 @@
 	/**
 	 * Alasan tertulis mengapa keputusan atas sebuah usulan dimatikan.
 	 *
-	 * Perbandingannya `actor.id` melawan `event.proposedBy` — keduanya menunjuk
+	 * Perbandingannya `actor.id` melawan `event.proposedBy`: keduanya menunjuk
 	 * `UserAccount`. Pada jalur cerita pasangannya berbeda (`awardeeId` melawan
 	 * `authorId`), dan menukarnya akan membuat pemeriksaan ini tidak pernah menyala.
 	 *
@@ -257,22 +261,28 @@
 	}
 
 	/** Membuka formulir dalam mode tambah. */
-	function bukaTambah() {
+	async function bukaTambah() {
 		idDisunting = '';
 		galatFormulir = '';
 		form = formulirKosong();
 		formulirTerbuka = true;
+		await tick();
+		elemenFormulir?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		elemenFormulir?.focus({ preventScroll: true });
 	}
 
 	/**
 	 * Membuka formulir dalam mode sunting atas sebuah event yang sudah ada.
 	 * @param {object} event
 	 */
-	function bukaSunting(event) {
+	async function bukaSunting(event) {
 		idDisunting = event.id;
 		galatFormulir = '';
 		form = formulirDariEvent(event);
 		formulirTerbuka = true;
+		await tick();
+		elemenFormulir?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		elemenFormulir?.focus({ preventScroll: true });
 	}
 
 	function tutupFormulir() {
@@ -286,7 +296,7 @@
 	 *
 	 * Event baru dikirim sebagai objek polos, bukan entity yang dirakit halaman:
 	 * `ContentReviewService.proposeEvent` membangun `CommunityEvent` sendiri dan
-	 * menimpa `proposedBy` dengan identitas aktor — nilai yang boleh dikirim dari
+	 * menimpa `proposedBy` dengan identitas aktor: nilai yang boleh dikirim dari
 	 * formulir akan membuat pemeriksaan konflik kepentingan dapat dilewati hanya
 	 * dengan mengetik id orang lain.
 	 *
@@ -325,7 +335,7 @@
 				if (!hasil.ok) return;
 				toast.info(
 					'Event baru masuk antrean',
-					'Persetujuan atas event ini harus diambil verifikator lain — Anda pengusulnya.'
+					'Persetujuan atas event ini harus diambil verifikator lain: Anda pengusulnya.'
 				);
 			}
 
@@ -345,14 +355,19 @@
 />
 
 {#if formulirTerbuka}
-	<section class="card mt-5 p-5" aria-labelledby="judul-formulir">
+	<section
+		bind:this={elemenFormulir}
+		class="card mt-5 scroll-mt-5 p-5"
+		aria-labelledby="judul-formulir"
+		tabindex="-1"
+	>
 		<h2 id="judul-formulir" class="text-base font-bold text-heading">
 			{idDisunting !== '' ? 'Sunting detail event' : 'Tambah event baru'}
 		</h2>
 		<p class="mt-1 text-sm leading-relaxed text-ink-600">
 			{#if idDisunting !== ''}
 				Yang disunting hanya detail deskriptif: judul, jenis, waktu, lokasi, dan kapasitas. Status
-				event tidak ikut berubah — persetujuan, penolakan, dan pembatalan tetap hanya lewat tombol
+				event tidak ikut berubah: persetujuan, penolakan, dan pembatalan tetap hanya lewat tombol
 				keputusan di daftar agenda.
 			{:else}
 				Event yang Anda tambahkan masuk ke antrean yang sama dengan usulan awardee, dan akan
@@ -599,7 +614,7 @@
 		</div>
 		<p class="mt-4 text-xs leading-relaxed text-ink-600">
 			Penanda hanya muncul untuk event yang benar-benar terjadwal, berlangsung, atau selesai. Usulan
-			yang belum diputuskan sengaja tidak ditandai — tanggal yang tampak pasti padahal masih mungkin
+			yang belum diputuskan sengaja tidak ditandai: tanggal yang tampak pasti padahal masih mungkin
 			ditolak akan menyesatkan siapa pun yang menjadwalkan dirinya ke sana.
 		</p>
 	</section>

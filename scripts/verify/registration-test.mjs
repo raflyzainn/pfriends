@@ -85,7 +85,7 @@ ok(reviews.some((item) => item.decision === 'APPROVE'), 'Audit approval tidak te
 const tinyPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
 const submission = await applicant.collection('activity_submissions').create({
 	owner: applicant.authStore.record.id,
-	activityType: 'SHARE_PUBLIC',
+	activityType: 'STORY_SUBMIT',
 	activityDate: new Date().toISOString(),
 	title: `Bukti gamifikasi ${suffix}`,
 	description: 'Bukti integrasi registrasi, verifikasi, ledger, tier, badge, streak, dan leaderboard.',
@@ -99,14 +99,14 @@ await verifier.send(`/api/pfriends/activity-submissions/${submission.id}/review`
 });
 
 const gamification = await applicant.send('/api/pfriends/gamification/me');
-ok(gamification.profile.totalPoints === 8, 'Total poin server tidak berasal dari ledger terverifikasi.');
+ok(gamification.profile.totalPoints === 10, 'Total poin server tidak berasal dari ledger terverifikasi.');
 ok(gamification.profile.tier === 'NEWCOMER', 'Tier server tidak sesuai ambang poin.');
 ok(gamification.profile.currentStreakWeeks === 1, 'Streak mingguan server tidak dihitung.');
 ok(gamification.ledger.some((item) => item.submission === submission.id && item.status === 'AWARDED'), 'Ledger server tidak memuat bukti yang disetujui.');
 ok(gamification.badges.some((item) => item.code === 'BDG_LANGKAH_AWAL' && item.unlocked), 'Badge Langkah Awal tidak diberikan server.');
 
 const leaderboard = await applicant.send('/api/pfriends/gamification/leaderboard?scope=global&period=all&limit=100');
-ok(leaderboard.entries.some((item) => item.awardeeId === auth.record.awardeeId && item.points === 8), 'Leaderboard server tidak memuat Awardee yang baru memperoleh poin.');
+ok(leaderboard.entries.some((item) => item.awardeeId === auth.record.awardeeId && item.points === 10), 'Leaderboard server tidak memuat Awardee yang baru memperoleh poin.');
 const dashboard = await verifier.send('/api/pfriends/verifier/dashboard');
 ok(dashboard.totalPoints >= gamification.profile.totalPoints && dashboard.registeredAwardees > 0, 'Dasbor Verifikator tidak membaca agregat gamifikasi backend.');
 

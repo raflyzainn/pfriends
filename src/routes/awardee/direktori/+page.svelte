@@ -1,10 +1,10 @@
 <script>
 	/**
-	 * HALAMAN — Jejaring Komunitas (`/awardee/direktori`).
+	 * HALAMAN: Jejaring Komunitas (`/awardee/direktori`).
 	 *
 	 * Labelnya "Jejaring", routenya tetap `/direktori`: mengganti route hanya demi
 	 * kecocokan label akan menyentuh tautan silang di forum, profil, dan seed
-	 * sekaligus — lihat catatan yang sama pada `data/navigation.js`.
+	 * sekaligus: lihat catatan yang sama pada `data/navigation.js`.
 	 *
 	 * Pilar 01 Hal 5 dan inti Strategic Initiative Hal 4: mempertemukan **alumni
 	 * Beasiswa Sobat Bumi sebagai mitra muda/mentor** dengan **PFpreneur sebagai
@@ -21,8 +21,8 @@
 	 * ditampilkan, sekalipun tersimpan pada entity. Direktori mempertemukan orang
 	 * lewat kanal resmi komunitas, bukan dengan membocorkan kontak pribadinya.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 2 Background, Hal 4 Strategic Initiative
-	 * @see docs/07-UX-SITEMAP.md — §4.2 Direktori, NFR-017 kontak pribadi
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 2 Background, Hal 4 Strategic Initiative
+	 * @see docs/07-UX-SITEMAP.md: §4.2 Direktori, NFR-017 kontak pribadi
 	 */
 
 	import { onMount } from 'svelte';
@@ -137,7 +137,7 @@
 	 *
 	 * `FilterChips` melepaskan pilihan menjadi string kosong ketika pil aktif ditekan
 	 * lagi. Kedua penyaring di halaman ini sudah menyediakan opsi "Semua", sehingga
-	 * string kosong bukan keadaan yang sah — ia akan mencari awardee berkomunitas ""
+	 * string kosong bukan keadaan yang sah: ia akan mencari awardee berkomunitas ""
 	 * dan mengosongkan direktori tanpa sebab yang terlihat.
 	 *
 	 * Batas tampil ikut disetel ulang karena hasil penyaringan yang baru hampir
@@ -154,7 +154,7 @@
 
 	/**
 	 * Bentuk yang dibaca `AwardeeCard`.
-	 * Kontak pribadi sengaja tidak ikut — lihat catatan privasi di kepala berkas.
+	 * Kontak pribadi sengaja tidak ikut: lihat catatan privasi di kepala berkas.
 	 * @param {import('$lib/domain/entities/Awardee.js').Awardee} awardee
 	 * @returns {Record<string, unknown>}
 	 */
@@ -182,7 +182,7 @@
 	}
 
 	/**
-	 * Mengarahkan awardee ke komunitas seberang — inti dari jembatan SOBI ×
+	 * Mengarahkan awardee ke komunitas seberang: inti dari jembatan SOBI ×
 	 * PFpreneur. Penyaring lain dikosongkan supaya hasilnya tidak terpotong oleh
 	 * pilihan sebelumnya yang sudah tidak relevan.
 	 * @param {string} tujuan Salah satu CommunityType.
@@ -212,20 +212,20 @@
 </script>
 
 <svelte:head>
-	<title>Jejaring Komunitas — PFfriends</title>
+	<title>Jejaring Komunitas: PFriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 01 · Open Community Ecosystem"
 	title="Jejaring"
-	subtitle="Temukan orang yang tepat di komunitas PFfriends. Alumni Sobat Bumi dan pelaku usaha Womenpreneur saling mencari berdasarkan keahlian, kota, atau chapter — lalu membuka percakapan lewat kanal resmi komunitas."
+	subtitle="Temukan orang yang tepat di komunitas PFriends. Alumni Sobat Bumi dan pelaku usaha Womenpreneur saling mencari berdasarkan keahlian, kota, atau chapter: lalu membuka percakapan lewat kanal resmi komunitas."
 />
 
 <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
 	<StatTile
 		label="Anggota aktif"
 		value={directory.stats.active}
-		hint="Terdata di komunitas PFfriends"
+		hint="Terdata di komunitas PFriends"
 		iconPath={ICONS.users}
 		color="var(--color-pertamina-navy)"
 	/>
@@ -402,7 +402,7 @@
 		<EmptyState
 			icon={ICONS.search}
 			title="Belum ada awardee yang cocok"
-			message="Coba kurangi penyaring atau gunakan kata kunci yang lebih umum — misalnya nama kota saja, tanpa nama keahlian."
+			message="Coba kurangi penyaring atau gunakan kata kunci yang lebih umum: misalnya nama kota saja, tanpa nama keahlian."
 			actionLabel="Bersihkan penyaring"
 			onAction={bersihkanPenyaring}
 		/>
@@ -551,7 +551,7 @@
 			{/if}
 			<p class="mt-3 text-xs leading-relaxed text-ink-600">
 				Nomor WhatsApp dan surel pribadi tidak ditampilkan di Jejaring. Perkenalan difasilitasi lewat
-				kanal resmi komunitas PFfriends.
+				kanal resmi komunitas PFriends.
 			</p>
 		</div>
 	{/if}

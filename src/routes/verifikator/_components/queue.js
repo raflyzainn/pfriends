@@ -1,8 +1,8 @@
 /**
- * MODUL LOKAL ZONA VERIFIKATOR — pembacaan antrean dan status SLA.
+ * MODUL LOKAL ZONA VERIFIKATOR: pembacaan antrean dan status SLA.
  *
  * Tanggung jawab: menyediakan satu-satunya jalan halaman zona ini memperoleh usia
- * antrean, batas SLA, dan urutan FIFO — tanpa satu pun angka hari kerja tertulis
+ * antrean, batas SLA, dan urutan FIFO: tanpa satu pun angka hari kerja tertulis
  * di komponen.
  *
  * Empat keputusan yang tidak terbaca dari kode:
@@ -11,7 +11,7 @@
  *    dari `ContentReviewService.slaOf(entity, pada)`, yang statis dan murni persis
  *    supaya kartu antrean dapat memanggilnya tanpa menyentuh repository. Menyalin
  *    perhitungannya ke zona ini akan melahirkan sumber kebenaran kedua atas
- *    "sudah berapa hari" — dan dua sumber selalu berakhir berselisih pada akhir
+ *    "sudah berapa hari": dan dua sumber selalu berakhir berselisih pada akhir
  *    pekan, tepat ketika penanda merah paling berarti.
  * 2. **Angka SLA hanya dibaca dari `SLA_HARI_KERJA`.** Label antrean di bawah
  *    menyebut batasnya dengan membaca konstanta itu, bukan dengan menuliskan
@@ -22,12 +22,12 @@
  *    ulang di halaman berarti dua kebijakan urutan; yang di halaman akan menang
  *    tanpa pernah diuji.
  * 4. **Tidak ada "skor antrean".** Yang dikembalikan adalah usia, batas, dan
- *    apakah batas terlewati — tiga fakta terpisah. Melebur ketiganya menjadi satu
+ *    apakah batas terlewati: tiga fakta terpisah. Melebur ketiganya menjadi satu
  *    angka prioritas akan membuat naskah tertua dapat tersalip oleh naskah yang
  *    kebetulan bernilai tinggi karena alasan lain.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 4 antrean FIFO & penanda SLA
- * @see docs/10-REVISION-SPEC.md — §5.6 SLA & eskalasi
+ * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 4 antrean FIFO & penanda SLA
+ * @see docs/10-REVISION-SPEC.md: §5.6 SLA & eskalasi
  */
 
 import { SLA_HARI_KERJA } from '$lib/domain/constants/content-workflow.js';
@@ -102,7 +102,7 @@ export const ANTREAN_SLA = Object.freeze([
  * Posisi FIFO sebuah butir, satu-basis, untuk ditampilkan sebagai nomor antrean.
  *
  * Ditulis sebagai fungsi agar halaman tidak perlu mengingat bahwa indeks `{#each}`
- * dimulai dari nol — nomor antrean "0" terbaca sebagai data yang belum dimuat.
+ * dimulai dari nol: nomor antrean "0" terbaca sebagai data yang belum dimuat.
  *
  * @param {number} indeks Indeks nol-basis pada daftar yang sudah tersortir FIFO.
  * @returns {number}

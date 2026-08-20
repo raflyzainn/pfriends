@@ -1,17 +1,17 @@
 /**
- * REPOSITORY — Cerita Komunitas (story bank Hal 9).
+ * REPOSITORY: Cerita Komunitas (story bank Hal 9).
  *
  * Tanggung jawab: akses data cerita untuk zona publik, ruang cerita awardee,
  * antrean tinjauan verifikator, dan agregasi bukti ESG.
  *
  * Satu hal yang dijaga di sini: `published()` menyaring lewat `isPublic` milik
  * entity, bukan lewat perbandingan status di tempat ini. Aturan "status mana yang
- * boleh terlihat publik" hanya boleh ada di satu tempat — bila ia tersalin ke
+ * boleh terlihat publik" hanya boleh ada di satu tempat: bila ia tersalin ke
  * repository, penambahan status baru kelak akan membocorkan cerita yang seharusnya
  * belum tayang.
  *
  * @see src/lib/domain/entities/Story.js
- * @see docs/04-ESG-GOVERNANCE.md — §3 state machine cerita
+ * @see docs/04-ESG-GOVERNANCE.md: §3 state machine cerita
  */
 
 import { Story } from '$lib/domain/entities/Story.js';
@@ -29,7 +29,7 @@ export class StoryRepository extends DexieRepository {
 	}
 
 	/**
-	 * Cerita berdasarkan slug — jalur baca halaman `/cerita/[slug]`.
+	 * Cerita berdasarkan slug: jalur baca halaman `/cerita/[slug]`.
 	 * @param {string} slug
 	 * @returns {Promise<Story|null>}
 	 */
@@ -63,7 +63,7 @@ export class StoryRepository extends DexieRepository {
 
 	/**
 	 * Antrean tinjauan: cerita yang sedang menunggu tindakan verifikator.
-	 * Diurutkan dari yang paling lama menunggu — antrean yang diurutkan terbaru
+	 * Diurutkan dari yang paling lama menunggu: antrean yang diurutkan terbaru
 	 * lebih dulu membuat cerita tertua tidak pernah tersentuh.
 	 * @returns {Promise<Story[]>}
 	 */
@@ -79,7 +79,7 @@ export class StoryRepository extends DexieRepository {
 	 *
 	 * Perhatikan bedanya dengan `byAuthor()`: `authorId` menunjuk seorang `Awardee`,
 	 * sedangkan `reviewerId` menunjuk sebuah `UserAccount`. Keduanya tidak pernah
-	 * bernilai sama — akun verifikator wajib ber-`awardeeId: null` — dan justru
+	 * bernilai sama: akun verifikator wajib ber-`awardeeId: null`: dan justru
 	 * ketidaksamaan itulah yang membuat pemeriksaan konflik kepentingan bermakna.
 	 *
 	 * @param {string} reviewerId Id `UserAccount` verifikator.

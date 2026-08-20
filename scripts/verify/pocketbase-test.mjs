@@ -27,7 +27,7 @@ const stamp = Date.now();
 const tinyPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
 const submission = await owner.collection('activity_submissions').create({
 	owner: owner.authStore.record.id,
-	activityType: 'SHARE_PUBLIC',
+	activityType: 'STORY_SUBMIT',
 	activityDate: new Date().toISOString(),
 	title: `Bukti integrasi ${stamp}`,
 	description: 'Dokumentasi otomatis untuk membuktikan alur PocketBase berjalan lengkap.',
@@ -75,18 +75,18 @@ await reviewer.send(`/api/pfriends/activity-submissions/${submission.id}/start-r
 
 const activityDay = current.activityDate.slice(0, 10);
 const priorLedger = await owner.collection('verified_point_activities').getFullList({
-	filter: owner.filter('awardeeId = {:awardeeId} && activityType = "SHARE_PUBLIC" && occurredAt >= {:start} && occurredAt <= {:end}', {
+	filter: owner.filter('awardeeId = {:awardeeId} && activityType = "STORY_SUBMIT" && occurredAt >= {:start} && occurredAt <= {:end}', {
 		awardeeId: awardees[0].awardeeId,
 		start: `${activityDay} 00:00:00.000Z`,
 		end: `${activityDay} 23:59:59.999Z`
 	})
 });
-const expectedPoints = priorLedger.length >= 2 ? 0 : 8;
+const expectedPoints = priorLedger.length >= 1 ? 0 : 10;
 await secondReviewer.send(`/api/pfriends/activity-submissions/${submission.id}/review`, { method: 'POST', body: { decision: 'APPROVE', note: 'Bukti sesuai.' } });
 current = await owner.collection('activity_submissions').getOne(submission.id);
 ok(current.status === 'APPROVED', 'Approval tidak tersimpan.');
 const ledger = await owner.collection('verified_point_activities').getFirstListItem(owner.filter('submission = {:id}', { id: submission.id }));
-ok(ledger.points === expectedPoints, 'Poin SHARE_PUBLIC tidak mengikuti batas harian.');
+ok(ledger.points === expectedPoints, 'Poin STORY_SUBMIT tidak mengikuti batas harian.');
 ok(expectedPoints !== 0 || ledger.capReason === 'DAILY_CAP', 'Alasan batas harian tidak tercatat.');
 
 let duplicateBlocked = false;

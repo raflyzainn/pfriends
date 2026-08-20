@@ -1,12 +1,12 @@
 /**
- * ENTITY — Cerita Komunitas.
+ * ENTITY: Cerita Komunitas.
  *
  * Tanggung jawab: menyimpan satu naskah kontribusi awardee beserta seluruh
  * berkas yang menentukan boleh-tidaknya naskah itu tayang di ruang publik.
  *
  * Story adalah "story bank" Hal 9 sekaligus syarat kedua gerbang fitur publik
  * Hal 12. Ia juga satu-satunya entitas yang membawa risiko reputasi langsung bagi
- * Pertamina Foundation — sebuah cerita yang tayang tanpa consent, atau memuat NIK
+ * Pertamina Foundation: sebuah cerita yang tayang tanpa consent, atau memuat NIK
  * seseorang, tidak bisa "ditarik kembali" dari internet. Karena itu `isPublishable`
  * bersifat konjungtif penuh dan tidak menyediakan jalur pintas untuk admin.
  *
@@ -14,16 +14,16 @@
  * tayang". Pertanyaan "apakah PENULISNYA layak diangkat ke fitur publik"
  * melibatkan poin awardee dan dijawab FeatureEligibilityPolicy.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 9 story bank, Hal 12 Minimum for public feature
- * @see docs/04-ESG-GOVERNANCE.md — §3 state machine cerita, §6 checklist data sensitif
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.2 alur editorial, §4.1 L3 rename authorId dan field peninjauan
+ * @see docs/00-SOURCE-BRIEF.md: Hal 9 story bank, Hal 12 Minimum for public feature
+ * @see docs/04-ESG-GOVERNANCE.md: §3 state machine cerita, §6 checklist data sensitif
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.2 alur editorial, §4.1 L3 rename authorId dan field peninjauan
  */
 
 import { ceritaTampilPublik, STORY_STATUS, STORY_STATUS_META } from '../constants/community.js';
 import { EsgTag } from '../value-objects/EsgTag.js';
 
 /**
- * Hasil pemindaian data sensitif (docs/04 §6). `MENUNGGU` adalah keadaan awal —
+ * Hasil pemindaian data sensitif (docs/04 §6). `MENUNGGU` adalah keadaan awal :
  * cerita yang belum dipindai tidak boleh dianggap aman hanya karena tidak
  * bertanda bahaya. Ketidaktahuan bukan izin.
  * @readonly
@@ -40,7 +40,7 @@ export const MIN_KATA_NASKAH = 300;
 
 /**
  * @typedef {object} StoryOutcome
- * @property {string} note    Catatan hasil — perubahan yang terjadi, bukan deskripsi acara.
+ * @property {string} note    Catatan hasil: perubahan yang terjadi, bukan deskripsi acara.
  * @property {string} metric  Nama metrik dampak, mis. 'Sampah terkumpul'.
  * @property {number} value   Nilai metrik.
  * @property {string} unit    Satuan metrik, mis. 'kg'.
@@ -308,7 +308,7 @@ export class Story {
 	 * Id `UserAccount` verifikator yang sedang memegang naskah.
 	 *
 	 * Perhatikan bedanya dengan `authorId`, yang menunjuk seorang `Awardee`.
-	 * Keduanya berjenis string dan mudah tertukar, padahal menunjuk tabel berbeda —
+	 * Keduanya berjenis string dan mudah tertukar, padahal menunjuk tabel berbeda :
 	 * penulis adalah penerima manfaat, peninjau adalah akun staf.
 	 * @returns {string|null}
 	 */
@@ -368,7 +368,7 @@ export class Story {
 
 	/**
 	 * Perkiraan waktu baca dalam menit, minimum satu menit.
-	 * Memakai 200 kata per menit — laju baca teks non-teknis Bahasa Indonesia.
+	 * Memakai 200 kata per menit: laju baca teks non-teknis Bahasa Indonesia.
 	 * @returns {number}
 	 */
 	get readMinutes() {
@@ -380,7 +380,7 @@ export class Story {
 	 * Apakah cerita tampil di zona publik.
 	 *
 	 * Konjungsi status DAN consent, bukan status saja. Sebelum G5, gerbang ini hanya
-	 * membaca status — sehingga naskah yang penulisnya sudah mencabut persetujuan
+	 * membaca status: sehingga naskah yang penulisnya sudah mencabut persetujuan
 	 * tetap tayang di `/cerita` selama statusnya masih TERPUBLIKASI. Kaskade
 	 * `ContentReviewService.withdrawOnConsentRevoked()` memang mengarsipkan naskah itu,
 	 * tetapi kaskade adalah rangkaian tulisan yang dapat terputus di tengah (tab
@@ -440,7 +440,7 @@ export class Story {
 	}
 
 	/**
-	 * Apakah cerita sudah lolos review Pertamina Foundation — syarat kedua gerbang
+	 * Apakah cerita sudah lolos review Pertamina Foundation: syarat kedua gerbang
 	 * fitur publik Hal 12 ("verified story").
 	 * @returns {boolean}
 	 */
@@ -484,11 +484,11 @@ export class Story {
 	 * Apakah naskah ini masih berdiri di atas persetujuan publikasi yang hidup.
 	 *
 	 * **`consentActive` di sini adalah PROYEKSI, bukan sumber kebenaran.** Sumber
-	 * kebenarannya tunggal dan tinggal di tabel `consents` — rekaman `ConsentRecord`
+	 * kebenarannya tunggal dan tinggal di tabel `consents`: rekaman `ConsentRecord`
 	 * milik penulis. Entity ini sengaja TIDAK membaca rekaman itu sendiri: Story
 	 * adalah objek murni yang dibangun dari satu baris tabel, dan memberinya
 	 * kemampuan membaca consent penulis berarti menyuntikkan data penulis ke setiap
-	 * titik konstruksi — termasuk `StoryRepository.published()` yang memetakan
+	 * titik konstruksi: termasuk `StoryRepository.published()` yang memetakan
 	 * puluhan baris sekaligus, dan setiap halaman publik yang merender daftar. Yang
 	 * lahir dari sana bukan satu sumber kebenaran, melainkan puluhan titik yang
 	 * masing-masing bisa lupa menyuntik.
@@ -500,7 +500,7 @@ export class Story {
 	 * naskah tetap dapat dinilai tanpa satu pun pembacaan tabel lain.
 	 *
 	 * Keputusan editorial (`approveStory`, `publishStory`) tetap MEMBACA ULANG
-	 * penulisnya lewat repository sebelum memutuskan — proyeksi dipakai untuk
+	 * penulisnya lewat repository sebelum memutuskan: proyeksi dipakai untuk
 	 * menyaring dan menampilkan, tidak pernah sebagai satu-satunya dasar keputusan
 	 * yang tidak dapat ditarik kembali.
 	 *
@@ -508,7 +508,7 @@ export class Story {
 	 * `consentId: ''` datang dari baris basis data yang kolomnya pernah kosong dan
 	 * dari formulir yang mengirim kolom tak terisi; keduanya berarti naskah ini
 	 * tidak menunjuk rekaman consent mana pun. Uji `!== null` meluluskan keduanya,
-	 * dan naskah tanpa dasar persetujuan akan lolos gerbang terbit — lubang yang
+	 * dan naskah tanpa dasar persetujuan akan lolos gerbang terbit: lubang yang
 	 * tidak terlihat karena seed selalu mengisi id yang sah.
 	 *
 	 * @returns {boolean}
@@ -542,8 +542,8 @@ export class Story {
 	 *
 	 * Konjungtif penuh dan tanpa pengecualian: sudah lolos review, consent penulis
 	 * masih aktif pada saat ini, pemindaian data sensitif bersih, ada validasi PF,
-	 * dan dokumentasinya lengkap. Consent diperiksa ulang di sini — bukan hanya
-	 * saat disetujui — karena consent yang sah minggu lalu bisa saja sudah dicabut
+	 * dan dokumentasinya lengkap. Consent diperiksa ulang di sini: bukan hanya
+	 * saat disetujui: karena consent yang sah minggu lalu bisa saja sudah dicabut
 	 * hari ini, dan penerbitan adalah momen terakhir yang masih bisa dibatalkan.
 	 * @returns {boolean}
 	 */

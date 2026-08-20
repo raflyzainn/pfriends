@@ -1,6 +1,6 @@
 {
 	"name": "pfriends",
-	"description": "Pfriends — Microsite Community Connect Initiative, Corporate Secretary Pertamina Foundation",
+	"description": "Pfriends: Microsite Community Connect Initiative, Corporate Secretary Pertamina Foundation",
 	"private": true,
 	"version": "0.1.0",
 	"type": "module",
@@ -24,7 +24,9 @@
 		"verify:directory": "node scripts/verify/directory-test.mjs",
 		"verify:rewards": "node scripts/verify/reward-test.mjs",
 		"verify:calendar": "node scripts/verify/calendar-test.mjs",
-		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards && npm run verify:calendar",
+		"verify:public-content": "node scripts/verify/public-content-test.mjs",
+		"verify:public-impact": "node scripts/verify/public-impact-test.mjs",
+		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards && npm run verify:calendar && npm run verify:public-content && npm run verify:public-impact",
 		"verify:browser": "npm run verify:e2e && npm run verify:gamification",
 		"screenshot": "node scripts/verify/screenshot.mjs"
 	},

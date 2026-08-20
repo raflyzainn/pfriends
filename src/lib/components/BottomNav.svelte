@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * BottomNav — navigasi utama zona ber-peran di ponsel.
+	 * BottomNav: navigasi utama zona ber-peran di ponsel.
 	 *
 	 * Props (seluruhnya opsional):
 	 * @prop {{id:string,label:string,href:string,iconPath:string,badge?:number}[]} items
@@ -10,12 +10,12 @@
 	 * @prop {string} ariaLabel Label aksesibilitas bilah navigasi.
 	 *
 	 * Awardee membuka microsite ini terutama dari ponsel lewat tautan WhatsApp,
-	 * sehingga bilah ini adalah navigasi utama mereka — bukan pelengkap dari sidebar
+	 * sehingga bilah ini adalah navigasi utama mereka: bukan pelengkap dari sidebar
 	 * desktop. Maksimum lima butir, masing-masing bersasaran sentuh penuh 44px, dan
 	 * setiap butir selalu memuat label teks selain ikon.
 	 *
 	 * Komponen ini tidak lagi menyimpan daftar menunya sendiri. Daftar bawaan datang
-	 * dari `$lib/data/navigation.js` — satu-satunya tempat yang tahu zona mana punya
+	 * dari `$lib/data/navigation.js`: satu-satunya tempat yang tahu zona mana punya
 	 * tujuan apa. Daftar tandingan di dalam komponen adalah cara paling sunyi untuk
 	 * membuat menu ponsel dan menu desktop menunjuk tempat yang berbeda.
 	 *

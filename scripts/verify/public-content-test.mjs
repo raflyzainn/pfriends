@@ -1,0 +1,63 @@
+import PocketBase from 'pocketbase';
+import { buildSeed } from '../../src/lib/infrastructure/seed/seed-data.js';
+import { loadLocalEnv } from '../pocketbase/local-env.mjs';
+
+await loadLocalEnv();
+
+const url = process.env.VITE_PB_URL || 'http://127.0.0.1:8090';
+const seed = buildSeed();
+const pb = new PocketBase(url);
+let passed = 0;
+
+function ok(value, message) {
+	if (!value) throw new Error(message);
+	passed++;
+}
+
+const expectedStories = seed.stories
+	.filter((story) => story.status === 'TERPUBLIKASI' && story.consentActive && story.consentId)
+	.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+const response = await pb.send('/api/pfriends/public/stories');
+ok(response.items.length === expectedStories.length, 'Jumlah cerita publik tidak sesuai seed yang layak terbit.');
+ok(response.items.every((story) => story.status === 'TERPUBLIKASI' && story.consentGranted === true), 'Endpoint publik membocorkan cerita yang belum layak terbit.');
+ok(response.items.every((story) => !('reviewNotes' in story) && !('reviewer' in story) && !('publishedBy' in story)), 'Endpoint cerita membocorkan data workflow internal.');
+ok(response.items.map((story) => story.slug).join('|') === expectedStories.map((story) => story.slug).join('|'), 'Cerita publik tidak terurut berdasarkan waktu terbit terbaru.');
+
+const first = response.items[0];
+const detail = await pb.send(`/api/pfriends/public/stories/${encodeURIComponent(first.slug)}`);
+ok(detail.id === first.id && detail.body === first.body, 'Detail cerita tidak konsisten dengan daftar publik.');
+
+const privateStory = seed.stories.find((story) => story.status !== 'TERPUBLIKASI');
+let privateHidden = false;
+try { await pb.send(`/api/pfriends/public/stories/${encodeURIComponent(privateStory.slug)}`); }
+catch (error) { privateHidden = error.status === 404; }
+ok(privateHidden, 'Cerita nonpublik dapat dibaca melalui endpoint slug.');
+
+let collectionLocked = false;
+try { await pb.collection('stories').getFullList(); }
+catch (error) { collectionLocked = error.status === 403 || error.status === 404; }
+ok(collectionLocked, 'Collection stories dapat dibaca langsung oleh pengunjung.');
+
+const leaderboard = await pb.send('/api/pfriends/public/leaderboard?limit=8');
+ok(leaderboard.entries.length > 0 && leaderboard.entries.length <= 8, 'Jumlah leaderboard publik tidak sesuai batas.');
+ok(leaderboard.entries.every((entry, index) => entry.rank === index + 1), 'Nomor peringkat tidak berurutan.');
+ok(leaderboard.entries.every((entry) => entry.name && entry.name !== 'Peserta anonim'), 'Leaderboard tidak menampilkan nama asli.');
+ok(leaderboard.entries.every((entry, index) => index === 0 || leaderboard.entries[index - 1].points >= entry.points), 'Leaderboard tidak terurut berdasarkan poin.');
+ok(leaderboard.entries.every((entry) => !('email' in entry) && !('whatsapp' in entry) && !('user' in entry)), 'Leaderboard membocorkan data pribadi.');
+
+const communities = await pb.send('/api/pfriends/public/communities');
+ok(communities.communities.map((item) => item.id).join('|') === 'SOBI|WOMENPRENEUR', 'Ringkasan komunitas tidak memuat dua komunitas utama.');
+ok(communities.activeMembers === communities.communities.reduce((sum, item) => sum + item.activeMembers, 0), 'Total anggota tidak sama dengan jumlah per komunitas.');
+ok(communities.activeMembers === communities.chapters.reduce((sum, item) => sum + item.activeMembers, 0), 'Total anggota tidak sama dengan jumlah per chapter.');
+ok(communities.activeChapters === communities.chapters.length, 'Jumlah chapter aktif tidak konsisten.');
+ok(communities.chapters.every((item) => item.activeMembers === item.sobiMembers + item.womenpreneurMembers), 'Komposisi anggota chapter tidak konsisten.');
+ok(!/(fullName|email|whatsapp|user)/.test(JSON.stringify(communities)), 'Endpoint komunitas membocorkan data pribadi.');
+
+if (process.env.PB_SUPERUSER_EMAIL && process.env.PB_SUPERUSER_PASSWORD) {
+	const admin = new PocketBase(url);
+	await admin.collection('_superusers').authWithPassword(process.env.PB_SUPERUSER_EMAIL, process.env.PB_SUPERUSER_PASSWORD);
+	const activeAwardees = await admin.collection('awardees').getFullList({ filter: 'status = "AKTIF"' });
+	ok(communities.activeMembers === activeAwardees.length, 'Endpoint komunitas menghitung Awardee yang tidak aktif atau melewatkan Awardee aktif.');
+}
+
+console.log(`Public content PocketBase: ${passed} pemeriksaan lulus.`);

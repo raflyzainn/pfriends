@@ -1,15 +1,15 @@
 /**
- * UTILITAS TANGGAL — operasi kalender murni, tanpa format tampilan.
+ * UTILITAS TANGGAL: operasi kalender murni, tanpa format tampilan.
  *
  * Pembagian tanggung jawab dengan `format.js`: file ini MENGHITUNG (selisih hari,
  * awal bulan, rentang bulan), `format.js` MENAMPILKAN (string berbahasa Indonesia).
  * Memisahkan keduanya membuat perhitungan dapat diuji tanpa bergantung pada locale.
  *
- * Seluruh fungsi bersifat murni dan tidak pernah mengubah argumennya — `Date` di
+ * Seluruh fungsi bersifat murni dan tidak pernah mengubah argumennya: `Date` di
  * JavaScript mutable, dan mutasi diam-diam pada tanggal adalah sumber bug yang
  * sangat sulit dilacak. Setiap fungsi mengembalikan instans `Date` baru.
  *
- * @see docs/09-BUILD-CONTRACT.md — §4 WP-5
+ * @see docs/09-BUILD-CONTRACT.md: §4 WP-5
  */
 
 /** Jumlah milidetik dalam satu hari kalender. */
@@ -31,7 +31,7 @@ export const NAMA_BULAN = Object.freeze([
 	'Desember'
 ]);
 
-/** Singkatan bulan tiga huruf — dipakai sebagai label sumbu chart dan blok tanggal kartu. */
+/** Singkatan bulan tiga huruf: dipakai sebagai label sumbu chart dan blok tanggal kartu. */
 export const NAMA_BULAN_PENDEK = Object.freeze([
 	'Jan',
 	'Feb',
@@ -60,7 +60,7 @@ export const NAMA_HARI = Object.freeze([
 
 /**
  * Menormalkan masukan apa pun menjadi `Date`. Mengembalikan `null` bila nilainya
- * tidak dapat ditafsirkan — pemanggil di lapisan tampilan lebih suka menampilkan
+ * tidak dapat ditafsirkan: pemanggil di lapisan tampilan lebih suka menampilkan
  * tanda hubung daripada string "Invalid Date".
  *
  * @param {Date|string|number|null|undefined} input
@@ -73,7 +73,7 @@ export function keTanggal(input) {
 }
 
 /**
- * Tengah malam pada hari yang sama — dipakai untuk membandingkan hari tanpa
+ * Tengah malam pada hari yang sama: dipakai untuk membandingkan hari tanpa
  * terganggu komponen jam.
  * @param {Date|string|number} input
  * @returns {Date|null}
@@ -216,7 +216,7 @@ export function sudahLewat(input, acuan = new Date()) {
 }
 
 /**
- * Kunci bulan berformat `YYYY-MM` — dipakai untuk mengelompokkan aktivitas per
+ * Kunci bulan berformat `YYYY-MM`: dipakai untuk mengelompokkan aktivitas per
  * bulan sebelum digambar sebagai deret chart.
  * @param {Date|string|number} input
  * @returns {string} String kosong bila tanggal tidak sah.

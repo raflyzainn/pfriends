@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * TierProgress — rel perjalanan tier. Komponen paling penting di produk ini.
+	 * TierProgress: rel perjalanan tier. Komponen paling penting di produk ini.
 	 *
 	 * Props:
 	 * @prop {number} points        Poin aktif (kontrak 09 §5).
@@ -70,7 +70,7 @@
 		ambangBerikut === null || ambangBerikut === undefined ? 0 : Math.max(0, ambangBerikut - poin)
 	);
 
-	/** Panjang isian rel — dipetakan ke ambang tertinggi agar sebanding dengan penanda. */
+	/** Panjang isian rel: dipetakan ke ambang tertinggi agar sebanding dengan penanda. */
 	const persenRel = $derived(Math.min(100, (poin / AMBANG_TERTINGGI) * 100));
 
 	/** @param {number} ambang */
@@ -109,7 +109,7 @@
 					style="left:{posisi(entri.threshold)}%;background:{tercapai
 						? entri.color
 						: 'var(--color-ink-300)'};"
-					title="{entri.label} · {formatAngka(entri.threshold)} PK — {entri.benefit}"
+					title="{entri.label} · {formatAngka(entri.threshold)} PK: {entri.benefit}"
 				></span>
 			{/each}
 		</div>

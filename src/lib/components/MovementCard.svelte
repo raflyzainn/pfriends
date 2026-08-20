@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * MovementCard — kartu gerakan bersama.
+	 * MovementCard: kartu gerakan bersama.
 	 *
 	 * Props:
 	 * @prop {{id:string,slug?:string,title:string,description?:string,pillar?:'E'|'S'|'G',
@@ -9,7 +9,7 @@
 	 * @prop {string} href
 	 * @prop {(movement:any)=>void} onJoin
 	 *
-	 * Bahasa kartu ini sengaja kolektif — "248 dari 500 orang bergerak", bukan
+	 * Bahasa kartu ini sengaja kolektif: "248 dari 500 orang bergerak", bukan
 	 * "Anda peserta ke-248". Gerakan bekerja karena orang merasa ikut serta dalam
 	 * sesuatu yang lebih besar, dan angka individu justru mengecilkannya.
 	 */
