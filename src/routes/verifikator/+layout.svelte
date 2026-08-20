@@ -47,6 +47,9 @@
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast } from '$lib/stores/toast.svelte.js';
 	import { activitySubmissions } from '$lib/stores/activity-submissions.svelte.js';
+	import { registration } from '$lib/stores/registration.svelte.js';
+	import { RegistrationStatus } from '$lib/domain/constants/registration.js';
+	import { workflowBadges } from '$lib/stores/workflow-badges.svelte.js';
 
 	let { children } = $props();
 
@@ -67,6 +70,9 @@
 		void catalog.load();
 		void editorial.load();
 		void activitySubmissions.load();
+		void registration.loadQueue();
+		void workflowBadges.loadMovements();
+		void workflowBadges.loadRedemptions();
 	});
 
 	/** Ketiga tujuan zona verifikator, sudah bertanda lencana antrean. */
@@ -74,7 +80,10 @@
 		withBadges(navForZone(Zone.VERIFIER), {
 			storyQueue: editorial.storyQueue.length,
 			eventQueue: editorial.eventQueue.length,
-			activityEvidenceQueue: activitySubmissions.queueCount
+			activityEvidenceQueue: activitySubmissions.queueCount,
+			movementQueue: workflowBadges.verifierMovementQueue,
+			registrationQueue: registration.items.filter((item) => item.status === RegistrationStatus.PENDING).length,
+			redemptionQueue: workflowBadges.redemptionQueue
 		})
 	);
 

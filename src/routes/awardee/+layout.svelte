@@ -54,6 +54,7 @@
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast } from '$lib/stores/toast.svelte.js';
 	import { activitySubmissions, SubmissionStatus } from '$lib/stores/activity-submissions.svelte.js';
+	import { workflowBadges } from '$lib/stores/workflow-badges.svelte.js';
 
 	let { children } = $props();
 
@@ -79,7 +80,7 @@
 	 * @returns {Promise<void>}
 	 */
 	async function siapkanZona() {
-		await Promise.all([catalog.load(), gamification.refresh(), activitySubmissions.load({ mine: true })]);
+		await Promise.all([catalog.load(), gamification.refresh(), activitySubmissions.load({ mine: true }), workflowBadges.loadMovements()]);
 		siap = true;
 	}
 
@@ -115,12 +116,21 @@
 		return catalog.storiesByAwardee(awardeeId).filter((cerita) => cerita.needsRevision).length;
 	});
 
+	const kehadiranPerluDikirim = $derived.by(() => {
+		const awardeeId = session.awardeeId;
+		if (!awardeeId) return 0;
+		const sudahDikirim = new Set(activitySubmissions.items.map((item) => item.event).filter(Boolean));
+		return catalog.events.filter((event) => event.startsAt <= new Date() && !event.isCancelled && event.isRegistered(awardeeId) && !event.hasAttended(awardeeId) && !sudahDikirim.has(event.id)).length;
+	});
+
 	/** Tujuh tujuan zona awardee, sudah bertanda lencana. */
 	const navZona = $derived(
 		withBadges(navForZone(Zone.AWARDEE), {
 			unreadBroadcasts: kabarBelumDiklaim,
 			myStoriesNeedingRevision: naskahPerluRevisi,
-			activityEvidenceRevision: activitySubmissions.items.filter((item) => item.status === SubmissionStatus.NEEDS_REVISION).length
+			activityEvidenceRevision: activitySubmissions.items.filter((item) => item.status === SubmissionStatus.NEEDS_REVISION).length,
+			movementRevision: workflowBadges.awardeeMovementRevision,
+			attendanceAction: kehadiranPerluDikirim
 		})
 	);
 

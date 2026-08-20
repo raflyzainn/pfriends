@@ -6,6 +6,8 @@ export async function listMovements() { return (await send('/api/pfriends/moveme
 export async function proposeMovement(body) { return send('/api/pfriends/movements', { method: 'POST', body }, 'Usulan Gerakan gagal dikirim.'); }
 export async function joinMovement(id) { return send(`/api/pfriends/movements/${id}/join`, { method: 'POST' }, 'Pendaftaran Gerakan gagal.'); }
 export async function submitMovementReport(id, formData) { return send(`/api/pfriends/movements/${id}/action-reports`, { method: 'POST', body: formData }, 'Laporan aksi gagal dikirim.'); }
+export async function resubmitMovement(id, body) { return send(`/api/pfriends/movements/${id}/resubmit`, { method: 'POST', body }, 'Perbaikan usulan Gerakan gagal dikirim.'); }
+export async function resubmitMovementReport(id, formData) { return send(`/api/pfriends/movement-reports/${id}/resubmit`, { method: 'POST', body: formData }, 'Perbaikan laporan aksi gagal dikirim.'); }
 export async function decideMovement(id, body) { return send(`/api/pfriends/verifier/movements/${id}/decision`, { method: 'POST', body }, 'Keputusan usulan gagal disimpan.'); }
 export async function startMovementReportReview(id) { return send(`/api/pfriends/verifier/movement-reports/${id}/start-review`, { method: 'POST' }, 'Laporan gagal dibuka untuk pemeriksaan.'); }
 export async function decideMovementReport(id, body) { return send(`/api/pfriends/verifier/movement-reports/${id}/decision`, { method: 'POST', body }, 'Keputusan laporan gagal disimpan.'); }

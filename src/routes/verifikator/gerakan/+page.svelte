@@ -1,9 +1,9 @@
 <script>
 	import { onMount } from 'svelte';
 	import { PageHeader, Card, StatusBadge, EmptyState, FilterChips, Button } from '$lib/components';
-	import { listMovements } from '$lib/infrastructure/pocketbase/movements.js';
+	import { workflowBadges } from '$lib/stores/workflow-badges.svelte.js';
 
-	let items = $state([]);
+	const items = $derived(workflowBadges.movements);
 	let loading = $state(true);
 	let tab = $state('proposals');
 	let status = $state('');
@@ -45,7 +45,7 @@
 
 	function changeTab(value) { tab = value; status = ''; }
 	function date(value) { return String(value || '').slice(0, 10); }
-	async function load() { loading = true; try { items = await listMovements(); } finally { loading = false; } }
+	async function load() { loading = true; try { await workflowBadges.loadMovements(); } finally { loading = false; } }
 	onMount(load);
 </script>
 

@@ -7,7 +7,7 @@
  * seperti yang dijanjikan Hal 11 dan Hal 12 PPT Corsec, dan apakah tujuh keputusan
  * pemilik produk benar-benar ditegakkan oleh kode: bukan oleh kesepakatan lisan.
  *
- * Empat belas bagian:
+ * Lima belas bagian:
  *   1–5  angka kanonik gamifikasi (warisan V1, tidak berubah)
  *   6    matriks AccessPolicy 4 peran × 4 zona + jangkar PO-2 (`canSeeScoring`)
  *   7    peta transisi cerita & kegiatan per peran (PO-4)
@@ -18,6 +18,7 @@
  *   12   consent tidak aktif memblokir approve & publish (gelombang G5)
  *   13   SroiCalculator: rantai penyesuaian, rasio, pembagi nol (gelombang G5)
  *   14   kuota reward berkurang dan menolak saat habis (gelombang G5)
+ *   15   angka notifikasi hanya menghitung pekerjaan aktif
  *
  * ── MENGAPA BAGIAN 12–14 ADA ────────────────────────────────────────────────
  * Ketiganya menutup cacat yang LOLOS seluruh gerbang sebelumnya dan baru
@@ -42,6 +43,7 @@ import { SCORING_TABLE, ActivityType, aturanSkor, poinUntuk } from '../../src/li
 import { TIER_TABLE, TierLevel, tierUntukPoin, tierBerikutnya } from '../../src/lib/domain/constants/tier-table.js';
 import { TierResolver } from '../../src/lib/domain/services/TierResolver.js';
 import { GamificationEngine } from '../../src/lib/domain/services/GamificationEngine.js';
+import { countAwardeeMovementRevisions, countRedemptionQueue, countVerifierMovementQueue } from '../../src/lib/domain/services/WorkflowBadgeCounter.js';
 import { AntiGamingPolicy } from '../../src/lib/domain/policies/AntiGamingPolicy.js';
 import { Points } from '../../src/lib/domain/value-objects/Points.js';
 import { buildSeed, seedStats } from '../../src/lib/infrastructure/seed/seed-data.js';
@@ -1007,6 +1009,39 @@ benar(
 	'seed: nol reward dengan pencacah melampaui kuotanya',
 	rewardSeedCacat.length === 0,
 	rewardSeedCacat.map((r) => `${r.id} ${r.redeemedThisMonth}/${r.monthlyQuota}`).join(', ')
+);
+
+console.log('── 15. Angka notifikasi pekerjaan aktif ──');
+
+const gerakanBadgeUji = [
+	{
+		status: 'DIUSULKAN',
+		proposedBy: 'awardee-a',
+		reports: [
+			{ status: 'SUBMITTED' },
+			{ status: 'IN_REVIEW' },
+			{ status: 'NEEDS_REVISION' },
+			{ status: 'APPROVED' }
+		]
+	},
+	{ status: 'PERLU_REVISI', proposedBy: 'awardee-a', reports: [] },
+	{ status: 'PERLU_REVISI', proposedBy: 'awardee-b', reports: [] },
+	{ status: 'BERJALAN', proposedBy: 'awardee-a', reports: [] }
+];
+
+samaDengan('verifikator menghitung usulan baru dan laporan yang perlu diperiksa', countVerifierMovementQueue(gerakanBadgeUji), 3);
+samaDengan('awardee hanya menghitung revisi miliknya dan laporan yang dikembalikan', countAwardeeMovementRevisions(gerakanBadgeUji, 'awardee-a'), 2);
+samaDengan('awardee tidak melihat revisi usulan milik orang lain', countAwardeeMovementRevisions(gerakanBadgeUji, 'awardee-b'), 2);
+samaDengan(
+	'penukaran menghitung seluruh status yang masih membutuhkan tindak lanjut',
+	countRedemptionQueue([
+		{ status: 'DIAJUKAN' },
+		{ status: 'DISETUJUI' },
+		{ status: 'DIKIRIM' },
+		{ status: 'SELESAI' },
+		{ status: 'DITOLAK' }
+	]),
+	3
 );
 
 console.log(`\n${'='.repeat(60)}`);

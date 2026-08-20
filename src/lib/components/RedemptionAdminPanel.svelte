@@ -5,6 +5,7 @@
 	import { REDEMPTION_STATUS_META } from '$lib/infrastructure/repositories/redemption-status.js';
 	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
 	import { formatAngka, formatTanggal } from '$lib/utils/format.js';
+	import { workflowBadges } from '$lib/stores/workflow-badges.svelte.js';
 	import Button from './Button.svelte';
 	import Card from './Card.svelte';
 	import EmptyState from './EmptyState.svelte';
@@ -19,7 +20,7 @@
 
 	async function load() {
 		loading = true;
-		try { rows = (await adminRedemptions(filter === 'SEMUA' ? '' : filter)).redemptions || []; }
+		try { rows = (await adminRedemptions(filter === 'SEMUA' ? '' : filter)).redemptions || []; if (filter === 'SEMUA') workflowBadges.redemptions = rows; }
 		catch (error) { toast.error('Antrean gagal dimuat', error instanceof Error ? error.message : undefined); }
 		finally { loading = false; }
 	}
@@ -35,7 +36,7 @@
 		try {
 			await transitionRedemption(selected.id, target, note);
 			toast.push({ type: ToastType.SUCCESS, title: 'Status penukaran diperbarui', message: `${selected.rewardName} kini berstatus ${REDEMPTION_STATUS_META[target]?.label || target}.` });
-			close(); await load();
+			close(); await Promise.all([load(), workflowBadges.loadRedemptions()]);
 		} catch (error) { toast.error('Status gagal diperbarui', error instanceof Error ? error.message : undefined); }
 		finally { saving = false; }
 	}

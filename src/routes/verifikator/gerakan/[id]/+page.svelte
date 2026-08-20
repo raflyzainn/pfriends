@@ -1,7 +1,8 @@
 <script>
 	import { page } from '$app/state';
 	import { PageHeader, Card, StatusBadge, Button, EmptyState } from '$lib/components';
-	import { listMovements, decideMovement, startMovementReportReview, decideMovementReport, completeMovement } from '$lib/infrastructure/pocketbase/movements.js';
+	import { decideMovement, startMovementReportReview, decideMovementReport, completeMovement } from '$lib/infrastructure/pocketbase/movements.js';
+	import { workflowBadges } from '$lib/stores/workflow-badges.svelte.js';
 
 	let movement = $state(null);
 	let loading = $state(true);
@@ -24,7 +25,7 @@
 	async function load() {
 		loading = true;
 		error = '';
-		try { movement = (await listMovements()).find((item) => item.id === page.params.id) ?? null; }
+		try { movement = (await workflowBadges.loadMovements()).find((item) => item.id === page.params.id) ?? null; }
 		catch (exception) { error = exception.message; }
 		finally { loading = false; }
 	}

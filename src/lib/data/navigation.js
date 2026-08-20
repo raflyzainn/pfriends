@@ -109,7 +109,7 @@ const NAV_AWARDEE = Object.freeze([
 		iconPath: ICONS.home,
 		primary: true
 	}),
-	Object.freeze({ id: 'movements', label: 'Gerakan', href: '/awardee/gerakan', iconPath: ICONS.flag }),
+	Object.freeze({ id: 'movements', label: 'Gerakan', href: '/awardee/gerakan', iconPath: ICONS.flag, badgeKey: 'movementRevision' }),
 	Object.freeze({
 		id: 'stories',
 		label: 'Blog Saya',
@@ -130,7 +130,8 @@ const NAV_AWARDEE = Object.freeze([
 		label: 'Calendar of Event',
 		href: '/awardee/kalender',
 		iconPath: ICONS.calendar,
-		primary: true
+		primary: true,
+		badgeKey: 'attendanceAction'
 	}),
 	Object.freeze({
 		id: 'rewards',
@@ -217,14 +218,16 @@ const NAV_VERIFIER = Object.freeze([
 		label: 'Registrasi Awardee',
 		href: '/verifikator/pendaftaran',
 		iconPath: ICONS.inbox,
-		primary: true
+		primary: true,
+		badgeKey: 'registrationQueue'
 	}),
 	Object.freeze({
 		id: 'rewards',
 		label: 'Hadiah & Penukaran',
 		href: '/verifikator/gamifikasi',
 		iconPath: ICONS.gift,
-		primary: true
+		primary: true,
+		badgeKey: 'redemptionQueue'
 	})
 ]);
 

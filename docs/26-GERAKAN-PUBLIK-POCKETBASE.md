@@ -39,6 +39,12 @@ Konsol Verifikator membagi pekerjaan menjadi tiga tab. Tab Usulan Gerakan memuat
 
 Tab Usulan Gerakan menampilkan badge untuk jumlah usulan berstatus `DIUSULKAN`. Tab Laporan Aksi menampilkan badge untuk jumlah laporan berstatus `SUBMITTED` atau `IN_REVIEW`. Badge disembunyikan saat jumlahnya nol. Status yang sedang menunggu tindak lanjut Awardee atau sudah mendapat keputusan tidak dihitung sebagai pekerjaan aktif Verifikator.
 
+Sidebar Verifikator menghitung usulan `DIUSULKAN` serta laporan `SUBMITTED` dan `IN_REVIEW` pada menu Verifikasi Gerakan. Sidebar Awardee menghitung usulan milik sendiri berstatus `PERLU_REVISI` dan laporan milik sendiri berstatus `NEEDS_REVISION` pada menu Gerakan. Nilainya dibaca dari store workflow bersama dan disegarkan setelah setiap perubahan status.
+
+Awardee memperbaiki usulan melalui `POST /api/pfriends/movements/{id}/resubmit` dan laporan melalui `POST /api/pfriends/movement-reports/{id}/resubmit`. Kedua endpoint hanya menerima pemilik record pada status revisi. Pengajuan ulang memperbarui record lama, menaikkan jumlah revisi, mengembalikan status ke antrean, dan menulis audit `RESUBMIT`. Bukti laporan lama dipertahankan jika Awardee tidak memilih berkas pengganti.
+
+Sidebar lain memakai aturan pekerjaan aktif yang sama. Registrasi Verifikator menghitung `PENDING`. Penukaran hadiah menghitung `DIAJUKAN`, `DISETUJUI`, dan `DIKIRIM`. Calendar of Event Awardee menghitung kegiatan lampau yang sudah didaftarkan tetapi belum memiliki pengajuan bukti kehadiran. Badge nol tidak ditampilkan.
+
 Data usulan lama dari seeder belum memiliki relasi akun pengusul. Migration lanjutan menghubungkannya dengan Awardee aktif agar persetujuan tidak gagal pada field `owner`, `awardeeId`, dan `awardeeName`.
 
 Admin membuka `/admin/gerakan` untuk memantau status, jumlah peserta, dan jumlah laporan disetujui. Admin tidak mempunyai tombol keputusan.
