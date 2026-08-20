@@ -104,7 +104,7 @@ Judul dan penomoran mengikuti `docs/10-REVISION-SPEC.md` §8.
 
 | US-R | Judul | Berkas yang mewujudkannya | Gerbang yang membuktikannya |
 |---|---|---|---|
-| **US-R26** | Dasbor KPI dengan ECharts | `routes/admin/+page.svelte` · `src/lib/charts/**` · `components/EChart.svelte` · `stores/admin.svelte.js` | **G-C** kompilasi bersih 17 komponen chart · **G-E** `/admin` dan 6 sub-route hijau dengan **0 error konsol** · **G-V** `22-admin-dasbor-kpi.png` |
+| **US-R26** | Dasbor KPI dengan ECharts | `routes/admin/+page.svelte` · `src/lib/charts/**` · `stores/admin.svelte.js` · `pocketbase/pb_hooks/admin-dashboard.pb.js` | **G-C** `verify:compile` · **G-B** `verify:admin-dashboard` memeriksa RBAC, KPI, agregat, keamanan DTO, dan pembacaan berulang · **G-E** `/admin` diverifikasi tanpa label `DUMMY` |
 | **US-R27** | Corong pipeline editorial di dasbor Admin | `charts/EditorialPipelineFunnel.svelte` · `ContentReviewService.pipeline()` · `domain/services/_editorial-metrics.js` | **G-E** `/admin/moderasi` hijau · **G-V** `23-admin-moderasi.png` |
 
 ### G. Visual & mutu

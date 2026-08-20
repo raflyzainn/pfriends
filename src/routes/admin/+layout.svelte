@@ -32,7 +32,6 @@
 	import { navForZone } from '$lib/data/navigation.js';
 	import { Zone } from '$lib/domain/policies/AccessPolicy.js';
 	import { admin } from '$lib/stores/admin.svelte.js';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 
 	let { children } = $props();
@@ -55,8 +54,7 @@
 
 	$effect(() => {
 		if (!session.isAdmin) return;
-		catalog.load();
-		admin.load();
+		void admin.load().catch(() => {});
 	});
 </script>
 
@@ -94,16 +92,18 @@
 					<p class="truncate text-sm leading-tight font-semibold text-heading">{bagianKini}</p>
 				</div>
 
-				<Button
-					variant="ghost"
-					size="sm"
-					iconPath={ICONS.refresh}
-					loading={admin.loading}
-					onclick={() => admin.reloadDemoData()}
-				>
-					<span class="hidden sm:inline">Muat ulang data demo</span>
-					<span class="sr-only sm:hidden">Muat ulang data demo</span>
-				</Button>
+				{#if jalurKini === '/admin'}
+					<Button
+						variant="ghost"
+						size="sm"
+						iconPath={ICONS.refresh}
+						loading={admin.loading}
+						onclick={() => admin.reload().catch(() => {})}
+					>
+						<span class="hidden sm:inline">Muat ulang data</span>
+						<span class="sr-only sm:hidden">Muat ulang data</span>
+					</Button>
+				{/if}
 
 				<div class="hidden items-center gap-2 border-l border-ink-100 pl-3 md:flex">
 					<span

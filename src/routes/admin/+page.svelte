@@ -16,7 +16,7 @@
 	 *    dicabut, dan chart yang tersisa dipilih karena pertanyaannya, bukan
 	 *    karena tersedia komponennya.
 	 * 2. **Tidak ada satu angka pun yang lahir di berkas ini.** Seluruh deret
-	 *    datang dari store `admin` (yang memanggil service domain) dan `catalog`.
+	 *    datang dari store `admin` yang membaca potret agregat PocketBase.
 	 *    Halaman hanya menyusun ulang dan memberi konteks.
 	 * 3. **Setiap panel membawa satu kalimat pertanyaan yang dijawabnya.**
 	 *    Kalimat itu bagian dari spesifikasi, bukan hiasan: chart tanpa
@@ -36,7 +36,7 @@
 	 *
 	 * @see docs/00-SOURCE-BRIEF.md: Hal 6 KPI dan Keluaran, Hal 10 ESG
 	 */
-	import { Card, EmptyState, PageHeader, StatTile, StatusBadge, ICONS } from '$lib/components';
+	import { Button, Card, EmptyState, PageHeader, StatTile, StatusBadge, ICONS } from '$lib/components';
 	import AdminPublikasiTrend from '$lib/charts/AdminPublikasiTrend.svelte';
 	import AdminSebaranChapter from '$lib/charts/AdminSebaranChapter.svelte';
 	import EngagementFunnelArea from '$lib/charts/EngagementFunnelArea.svelte';
@@ -44,10 +44,7 @@
 	import { palette } from '$lib/charts/_chartTheme.js';
 	import { CHAPTERS, COMMUNITIES } from '$lib/domain/constants/community.js';
 	import { KPI_PARAMETERS, targetKpi } from '$lib/domain/constants/kpi-targets.js';
-	import { accountRepository } from '$lib/infrastructure/repositories/index.js';
-	import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
 	import { admin } from '$lib/stores/admin.svelte.js';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { formatAngka, formatPersen, formatRingkas } from '$lib/utils/format.js';
 
 	/**
@@ -59,38 +56,17 @@
 		WOMENPRENEUR: palette.red
 	});
 
-	/** @type {import('$lib/domain/entities/UserAccount.js').UserAccount[]} */
-	let akun = $state.raw([]);
-
-	// Cacah akun dibaca langsung dari tabel `accounts`, bukan diturunkan dari
-	// jumlah awardee ditambah angka tetap. Verifikator dan admin adalah baris akun
-	// yang bisa bertambah, dan angka tetap yang ditulis di halaman akan diam-diam
-	// salah pada hari pertama seseorang menambahkannya.
-	$effect(() => {
-		let dibatalkan = false;
-
-		(async () => {
-			await bootstrapDatabase();
-			const baris = await accountRepository.getAll();
-			if (!dibatalkan) akun = baris;
-		})();
-
-		return () => {
-			dibatalkan = true;
-		};
-	});
-
 	// ── Kartu angka kunci ────────────────────────────────────────────────────
 
-	const naskahMasuk = $derived(catalog.stories.length);
+	const naskahMasuk = $derived(admin.summary.stories.total);
 
-	const akunAktif = $derived(akun.filter((baris) => baris.isActive).length);
+	const akunAktif = $derived(admin.summary.accounts.active);
 
 	const rincianPeran = $derived(
 		[
-			{ jumlah: akun.filter((baris) => baris.isAwardee).length, label: 'awardee' },
-			{ jumlah: akun.filter((baris) => baris.isVerifier).length, label: 'verifikator' },
-			{ jumlah: akun.filter((baris) => baris.isAdmin).length, label: 'admin' }
+			{ jumlah: admin.summary.accounts.byRole.AWARDEE, label: 'awardee' },
+			{ jumlah: admin.summary.accounts.byRole.VERIFIER, label: 'verifikator' },
+			{ jumlah: admin.summary.accounts.byRole.ADMIN, label: 'admin' }
 		]
 			.filter((baris) => baris.jumlah > 0)
 			.map((baris) => `${formatAngka(baris.jumlah)} ${baris.label}`)
@@ -148,18 +124,9 @@
 
 	// ── Deret chart ──────────────────────────────────────────────────────────
 
-	/** Cacah naskah terbit per bulan program, dibaca dari tanggal terbitnya. */
-	const terbitPerBulan = $derived.by(() => {
-		/** @type {Map<string, number>} */
-		const rekap = new Map(admin.programMonths.map((bulan) => [bulan.monthKey, 0]));
-		for (const cerita of admin.publishedStories) {
-			const pada = cerita.publishedAt;
-			if (!(pada instanceof Date) || Number.isNaN(pada.getTime())) continue;
-			const kunci = `${pada.getFullYear()}-${String(pada.getMonth() + 1).padStart(2, '0')}`;
-			if (rekap.has(kunci)) rekap.set(kunci, (rekap.get(kunci) ?? 0) + 1);
-		}
-		return rekap;
-	});
+	const terbitPerBulan = $derived(
+		new Map(admin.monthly.map((bulan) => [bulan.monthKey, bulan.publishedStories]))
+	);
 
 	/** Deret dicocokkan lewat `monthKey`, bukan lewat indeks larik. */
 	const diseminasiPerBulan = $derived(
@@ -189,18 +156,16 @@
 	);
 
 	/** Sebaran anggota per chapter, dipecah per komunitas. */
-	const sebaranChapter = $derived({
-		kategori: CHAPTERS.map((chapter) => chapter.label),
-		seri: COMMUNITIES.map((komunitas) => ({
-			name: komunitas.akronim,
-			color: WARNA_KOMUNITAS[komunitas.id],
-			data: CHAPTERS.map(
-				(chapter) =>
-					catalog.awardees.filter(
-						(awardee) => awardee.chapterId === chapter.id && awardee.community === komunitas.id
-					).length
-			)
-		}))
+	const sebaranChapter = $derived.by(() => {
+		const backend = new Map(admin.chapters.map((chapter) => [chapter.id, chapter]));
+		return {
+			kategori: CHAPTERS.map((chapter) => chapter.label),
+			seri: COMMUNITIES.map((komunitas) => ({
+				name: komunitas.akronim,
+				color: WARNA_KOMUNITAS[komunitas.id],
+				data: CHAPTERS.map((chapter) => backend.get(chapter.id)?.[komunitas.id] ?? 0)
+			}))
+		};
 	});
 
 	const kpiTercapai = $derived(admin.kpi.filter((baris) => baris.percent >= 100).length);
@@ -216,18 +181,32 @@
 	]);
 </script>
 
-<PageHeader
-	eyebrow="Konsol Corporate Secretary"
-	title="Dasbor KPI"
-	subtitle="Kesehatan aplikasi dan capaian publikasi PFriends untuk periode program Januari–Juli 2026. Seluruh angka dihitung dari data komunitas yang tercatat: tidak satu pun lahir di halaman ini. Performa per-awardee tidak ditampilkan di sini; itu wilayah verifikator."
-/>
+	<PageHeader
+		eyebrow="Konsol Corporate Secretary"
+		title="Dasbor KPI"
+		subtitle="Kesehatan aplikasi dan capaian publikasi PFriends untuk periode program Januari sampai Juli 2026. Seluruh angka dihitung dari data komunitas yang tercatat. Performa per Awardee tidak ditampilkan di sini karena itu wilayah Verifikator."
+	/>
+
+	{#if admin.error}
+		<Card class="mb-5 border-red-200 bg-red-50">
+			<div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+				<div>
+					<p class="font-semibold text-red-900">Dasbor KPI belum dapat dimuat</p>
+					<p class="mt-1 text-sm text-red-800">{admin.error}</p>
+				</div>
+				<Button variant="secondary" onclick={() => admin.reload().catch(() => {})}>
+					Coba muat kembali
+				</Button>
+			</div>
+		</Card>
+	{/if}
 
 <!-- ── Baris kartu angka kunci ─────────────────────────────────────────── -->
 <section aria-label="Angka kunci program" class="mb-6">
 	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
 		<StatTile
 			label="Blog terpublikasi"
-			value={admin.publishedStories.length}
+			value={admin.summary.stories.published}
 			unit="naskah"
 			hint="{formatAngka(admin.pendingCount)} menunggu tinjauan · {formatAngka(naskahMasuk)} naskah masuk"
 			iconPath={ICONS.book}
@@ -243,7 +222,7 @@
 		/>
 		<StatTile
 			label="Akun terdaftar"
-			value={akun.length}
+			value={admin.summary.accounts.total}
 			unit="akun"
 			hint={rincianPeran || 'Membaca tabel akun'}
 			iconPath={ICONS.users}
@@ -330,7 +309,7 @@
 	<AdminSebaranChapter
 		categories={sebaranChapter.kategori}
 		series={sebaranChapter.seri}
-		loading={catalog.loading}
+		loading={admin.loading}
 	/>
 </Card>
 
@@ -350,7 +329,7 @@
 				title={admin.loading ? 'Menyusun rekap bulanan' : 'Rekap bulanan belum tersedia'}
 				message={admin.loading
 					? 'Membaca registry anggota, kabar terkirim, dan riwayat aksi komunitas.'
-					: 'Muat ulang data demo dari bilah atas untuk memasang kembali basis data komunitas.'}
+					: 'Gunakan tombol muat ulang data untuk mencoba membaca kembali potret PocketBase.'}
 				iconPath={ICONS.chart}
 				size="sm"
 			/>
@@ -360,7 +339,7 @@
 			<div class="overflow-x-auto">
 				<table class="w-full min-w-max border-collapse text-left">
 					<caption class="sr-only">
-						Rekap bulanan program Januari–Juli 2026: blog terbit, konten terdiseminasi, hari
+						Rekap bulanan program Januari sampai Juli 2026: blog terbit, konten terdiseminasi, hari
 						diseminasi, amplification rate, poin kontribusi, dan estimasi jangkauan organik.
 					</caption>
 

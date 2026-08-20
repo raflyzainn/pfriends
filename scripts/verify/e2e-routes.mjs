@@ -33,6 +33,8 @@
  */
 
 import { spawn } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { buildSeed } from '../../src/lib/infrastructure/seed/seed-data.js';
 import { SANDI_DEMO } from '../../src/lib/infrastructure/seed/accounts.js';
@@ -233,7 +235,7 @@ const proc = spawn(
 		'--no-sandbox',
 		'--no-first-run',
 		`--remote-debugging-port=${PORT}`,
-		'--user-data-dir=/tmp/pfriends-e2e-profile',
+		`--user-data-dir=${join(tmpdir(), `pffriends-e2e-profile-${process.pid}`)}`,
 		'about:blank'
 	],
 	{ stdio: 'ignore' }

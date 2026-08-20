@@ -45,7 +45,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] `/admin/broadcast`: pembuatan, penyuntingan draf/jadwal, penerbitan, audiens, dan jumlah penerima Kabar memakai PocketBase.
 
 - [x] `/admin/pendaftaran`: monitoring registrasi memakai PocketBase; Admin tidak mengambil keputusan.
-- [ ] `/admin`: KPI dan agregat operasional umum masih lokal (`DUMMY`).
+- [x] `/admin`: KPI, agregat akun, Cerita, Kabar, SLA, ESG, keterlibatan, chapter, dan rekap bulanan memakai endpoint agregat PocketBase.
 - [x] `/admin/awardee`: daftar, pencarian, filter, pagination, status akun, status keanggotaan, waktu masuk terakhir, riwayat audit, dan impersonasi Awardee selama 30 menit memakai PocketBase.
 - [~] `/admin/gamifikasi`: hub ringkasan gamifikasi memakai data PocketBase dan mengarahkan ke nested route agar tidak menjadi halaman panjang.
 - [x] `/admin/gamifikasi/pesanan` dan `/admin/gamifikasi/hadiah`: pemantauan penukaran serta CRUD katalog hadiah memakai PocketBase; keputusan pesanan tetap milik Verifikator.
@@ -67,7 +67,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] Kabar: publikasi Admin, audiens, read 15 detik, CTA, share WhatsApp, bukti share publik, review Verifikator, serta ledger server.
 - [ ] SSO OAuth Verifikator/Admin (`TODO`).
 - [ ] Reset password, verifikasi email, MFA, dan notifikasi.
-- [~] Consent versioned, profil penuh, forum, quest, dan KPI umum belum selesai. Workflow privat Cerita, Gerakan, serta pembacaan Cerita publik sudah backend.
+- [~] Consent versioned, profil penuh, forum, dan quest belum selesai. Workflow privat Cerita, Gerakan, pembacaan Cerita publik, serta KPI umum sudah backend.
 
 ## Aturan label UI
 

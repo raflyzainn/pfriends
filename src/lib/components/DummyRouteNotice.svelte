@@ -20,6 +20,9 @@
 		if (path.startsWith('/admin/pendaftaran')) return '';
 		if (path.startsWith('/admin/broadcast')) return '';
 		if (path.startsWith('/admin/gerakan')) return '';
+		if (path.startsWith('/admin/awardee')) return '';
+		if (path.startsWith('/admin/cerita')) return '';
+		if (path === '/admin') return '';
 		if (path === '/verifikator') return ''; // Ditandai per-widget karena sumbernya campuran.
 		if (path.startsWith('/verifikator/kegiatan')) return '';
 		if (path.startsWith('/verifikator/kabar')) return '';
