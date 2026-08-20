@@ -48,7 +48,7 @@ routerAdd('GET', '/api/pfriends/public/communities', (e) => {
 routerAdd('GET', '/api/pfriends/public/movements', (e) => {
 	const utils = require(`${__hooks}/public-content-utils.js`);
 	const rows = e.app.findRecordsByFilter('movements', utils.movementFilter(), '-startsAt', 0, 0);
-	return e.json(200, { items: rows.map(utils.movementDto) });
+	return e.json(200, { items: rows.map((row) => utils.movementDto(row, e.app)) });
 });
 
 routerAdd('GET', '/api/pfriends/public/impact', (e) => {

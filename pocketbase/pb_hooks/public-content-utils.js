@@ -30,18 +30,11 @@ function storyFilter(extra) {
 	return extra ? `${base} && ${extra}` : base;
 }
 
-function movementDto(record) {
-	const arrayValue = (field) => {
-		try {
-			const parsed = JSON.parse(record.getString(field) || '[]');
-			return Array.isArray(parsed) ? parsed : [];
-		} catch (_) {}
-		return [];
-	};
-	const participants = arrayValue('participantIds');
-	const reports = arrayValue('reportIds');
+function movementDto(record, app) {
+	const participants = app.findRecordsByFilter('movement_participants', 'movement = {:movement} && status = "ACTIVE"', '', 0, 0, { movement: record.id });
+	const reports = app.findRecordsByFilter('movement_reports', 'movement = {:movement} && status = "APPROVED"', '', 0, 0, { movement: record.id });
 	return {
-		id: record.getString('legacyId'),
+		id: record.id,
 		slug: record.getString('slug'),
 		title: record.getString('title'),
 		category: record.getString('category'),

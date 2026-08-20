@@ -11,10 +11,13 @@
 		if (path.startsWith('/awardee/direktori')) return '';
 		if (path.startsWith('/awardee/penghargaan')) return '';
 		if (path.startsWith('/awardee/kalender')) return '';
+		if (path.startsWith('/awardee/gerakan')) return '';
 		if (path.startsWith('/verifikator/bukti-keaktifan') || path.startsWith('/verifikator/pendaftaran')) return '';
 		if (path.startsWith('/verifikator/gamifikasi')) return '';
+		if (path.startsWith('/verifikator/gerakan')) return '';
 		if (path.startsWith('/admin/pendaftaran')) return '';
 		if (path.startsWith('/admin/broadcast')) return '';
+		if (path.startsWith('/admin/gerakan')) return '';
 		if (path === '/verifikator') return ''; // Ditandai per-widget karena sumbernya campuran.
 		if (path.startsWith('/verifikator/kegiatan')) return '';
 		if (path.startsWith('/verifikator/kabar')) return '';

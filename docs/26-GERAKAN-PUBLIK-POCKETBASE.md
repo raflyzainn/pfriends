@@ -29,6 +29,14 @@ npm run build
 
 Pengujian memastikan status nonpublik disembunyikan, urutan gerakan benar, agregat peserta serta laporan sesuai sumber, data privat tidak dikirim, dan collection tidak dapat dibaca langsung.
 
-## Batas migrasi
+## Perluasan workflow privat
 
-Migrasi ini hanya mencakup halaman publik. Partisipasi, pengajuan gerakan, laporan dampak, evidence, dan workflow pada `/awardee/gerakan` masih menjadi pekerjaan terpisah.
+Migrasi lanjutan menambahkan collection `movement_participants`, `movement_reports`, dan `movement_decisions`. Awardee dapat mengajukan Gerakan, bergabung, serta mengirim laporan aksi dengan berkas bukti. Istilah laporan aksi dipakai karena alur ini tidak meminta laporan keuangan.
+
+Verifikator memutuskan usulan dan laporan melalui `/verifikator/gerakan`. Saat usulan disetujui, Verifikator wajib menetapkan tag ESG dan SDG. Pengusul otomatis menjadi pemimpin. Gerakan hanya dapat diselesaikan setelah minimal satu laporan disetujui.
+
+Admin membuka `/admin/gerakan` untuk memantau status, jumlah peserta, dan jumlah laporan disetujui. Admin tidak mempunyai tombol keputusan.
+
+Poin `LEAD_ACTION` sebesar 50 dibuat oleh server hanya untuk laporan pemimpin yang disetujui. Indeks unik pada ledger mencegah pemberian poin lebih dari satu kali untuk pemimpin yang sama dalam satu Gerakan.
+
+Halaman publik tetap hanya menampilkan Gerakan berjalan dan selesai. Jumlah peserta sekarang dihitung dari participant aktif, sedangkan jumlah laporan dihitung dari laporan yang sudah disetujui.
