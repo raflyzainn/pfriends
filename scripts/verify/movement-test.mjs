@@ -15,6 +15,8 @@ if (awardees.length < 2 || !verifier) throw new Error('Akun demo untuk pengujian
 const login = async (account) => { const pb = new PocketBase(url); await pb.collection('users').authWithPassword(account.email, SANDI_DEMO); return pb; };
 const leader = await login(awardees[0]); const participant = await login(awardees[1]); const reviewer = await login(verifier);
 let checks = 0; const expect = (value, message) => { if (!value) throw new Error(message); checks++; };
+const legacyProposal = await maintenance.collection('movements').getFirstListItem('status = "DIUSULKAN"');
+expect(Boolean(legacyProposal.proposedBy && legacyProposal.leaderLegacyId && legacyProposal.leaderName), 'Usulan lama harus terhubung dengan akun pengusul dan pemimpin.');
 const suffix = Date.now(); const startsAt = new Date(Date.now() + 86400000).toISOString(); const endsAt = new Date(Date.now() + 604800000).toISOString();
 const movement = await leader.send('/api/pfriends/movements', { method: 'POST', body: { title: `Gerakan Integrasi ${suffix}`, category: 'LINGKUNGAN', objective: 'Menguji alur Gerakan dari usulan sampai laporan', description: 'Gerakan integrasi ini memastikan data usulan, partisipasi, dan laporan tersimpan sepenuhnya pada PocketBase.', region: 'Jakarta', startsAt, endsAt, targetParticipants: 12 } });
 expect(movement.status === 'DIUSULKAN', 'Usulan harus berstatus DIUSULKAN.');

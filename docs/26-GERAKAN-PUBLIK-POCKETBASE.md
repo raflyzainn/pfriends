@@ -35,6 +35,10 @@ Migrasi lanjutan menambahkan collection `movement_participants`, `movement_repor
 
 Verifikator memutuskan usulan dan laporan melalui `/verifikator/gerakan`. Saat usulan disetujui, Verifikator wajib menetapkan tag ESG dan SDG. Pengusul otomatis menjadi pemimpin. Gerakan hanya dapat diselesaikan setelah minimal satu laporan disetujui.
 
+Konsol Verifikator membagi pekerjaan menjadi tiga tab. Tab Usulan Gerakan memuat proposal yang membutuhkan keputusan. Tab Laporan Aksi memuat laporan pemimpin dan peserta sebagai antrean mandiri. Tab Semua Gerakan dipakai untuk melihat status program dan menyelesaikan Gerakan. Kolom pencarian menyaring judul, Awardee, serta wilayah. Catatan keputusan dan tag ESG hanya muncul saat Verifikator memilih tindakan sehingga tidak menyerupai kolom pencarian kosong.
+
+Data usulan lama dari seeder belum memiliki relasi akun pengusul. Migration lanjutan menghubungkannya dengan Awardee aktif agar persetujuan tidak gagal pada field `owner`, `awardeeId`, dan `awardeeName`.
+
 Admin membuka `/admin/gerakan` untuk memantau status, jumlah peserta, dan jumlah laporan disetujui. Admin tidak mempunyai tombol keputusan.
 
 Poin `LEAD_ACTION` sebesar 50 dibuat oleh server hanya untuk laporan pemimpin yang disetujui. Indeks unik pada ledger mencegah pemberian poin lebih dari satu kali untuk pemimpin yang sama dalam satu Gerakan.
