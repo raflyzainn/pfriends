@@ -241,7 +241,8 @@
 
 <PublicLeaderboard
 	entries={publicContent.leaderboard.slice(0, JUMLAH_PERINGKAT)}
-	loading={publicContent.loading}
+	loading={publicContent.leaderboardLoading}
+	error={publicContent.leaderboardError}
 />
 
 <!-- ═══ 4 · BLOG TERBARU: maksimum tiga kartu ═══ -->

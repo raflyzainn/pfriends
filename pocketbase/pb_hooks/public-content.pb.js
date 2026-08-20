@@ -22,9 +22,11 @@ routerAdd('GET', '/api/pfriends/public/stories/{slug}', (e) => {
 routerAdd('GET', '/api/pfriends/public/leaderboard', (e) => {
 	const rawLimit = Number(e.request.url.query().get('limit') || 8);
 	const limit = Math.min(20, Math.max(1, Number.isFinite(rawLimit) ? Math.floor(rawLimit) : 8));
-	const all = require(`${__hooks}/gamification-utils.js`).ensureAll(e.app);
-	const rows = all
-		.map((item) => ({ profile: item.profile, points: item.profile.getInt('totalPoints') }))
+	const activeAwardees = e.app.findRecordsByFilter('awardees', 'status = "AKTIF"', '', 0, 0);
+	const activeIds = new Set(activeAwardees.map((awardee) => awardee.id));
+	const rows = e.app.findRecordsByFilter('gamification_profiles', 'totalPoints > 0', '', 0, 0)
+		.filter((profile) => activeIds.has(profile.getString('awardee')))
+		.map((profile) => ({ profile, points: profile.getInt('totalPoints') }))
 		.filter((item) => item.points > 0)
 		.sort((a, b) => b.points - a.points || a.profile.getString('fullName').localeCompare(b.profile.getString('fullName')));
 	return e.json(200, {

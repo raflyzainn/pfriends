@@ -41,8 +41,9 @@ import { UserRole } from './roles.js';
  * Yang sengaja TIDAK ada, beserta alasannya:
  * - `DIAJUKAN → DISETUJUI` (melompati review): menghapus satu-satunya titik
  *   tempat checklist data sensitif benar-benar dijalankan.
- * - `DISETUJUI → PERLU_REVISI`: persetujuan sudah mengunci validasi PF. Temuan
- *   baru ditangani lewat arsip, supaya jejak persetujuan lama tidak terhapus.
+ * - `DISETUJUI → PERLU_REVISI`: naskah yang belum pernah tayang dan sudah lolos
+ *   validasi ditutup lewat arsip bila batal diterbitkan. Permintaan revisi setelah
+ *   tayang berangkat dari `TERPUBLIKASI` supaya penarikan publik tercatat jelas.
  * - ADMIN sebagai aktor review/persetujuan/penerbitan: keputusan konten milik
  *   Verifikator; Admin membaca, mengekspor, dan memegang jalur banding.
  * - Transisi apa pun keluar dari `DIARSIPKAN`: terminal. Naskah yang hidup
@@ -70,6 +71,7 @@ export const STORY_TRANSITIONS = Object.freeze({
 		Object.freeze({ to: STORY_STATUS.DIARSIPKAN, by: Object.freeze([UserRole.VERIFIER]) })
 	]),
 	[STORY_STATUS.TERPUBLIKASI]: Object.freeze([
+		Object.freeze({ to: STORY_STATUS.PERLU_REVISI, by: Object.freeze([UserRole.VERIFIER]) }),
 		Object.freeze({
 			to: STORY_STATUS.DIARSIPKAN,
 			by: Object.freeze([UserRole.VERIFIER, UserRole.ADMIN])

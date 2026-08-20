@@ -6,7 +6,7 @@ function entity(value) { return Story.from(value); }
 async function send(path, options = {}) { try { return await client().send(path, options); } catch (error) { throw new Error(pocketBaseMessage(error, 'PocketBase tidak dapat memproses Cerita.')); } }
 
 export async function myStories() { const response = await send('/api/pfriends/stories/mine'); return (response.items || []).map(entity); }
-export async function verifierStories() { const response = await send('/api/pfriends/verifier/stories'); return (response.items || []).map(entity); }
+export async function verifierStories(scope = 'queue') { const response = await send(`/api/pfriends/verifier/stories?scope=${encodeURIComponent(scope)}`); return (response.items || []).map(entity); }
 export async function verifierStoryDetail(id) { const response = await send(`/api/pfriends/verifier/stories/${id}`); return { ...response, story: entity(response.story) }; }
 
 function draftForm(values) {

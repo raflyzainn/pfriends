@@ -8,6 +8,7 @@ Dokumen ini mencatat implementasi halaman Cerita milik Awardee dan ruang pemerik
 | --- | --- |
 | Awardee | Daftar Cerita, draf, penyimpanan otomatis, unggah bukti, calon sampul, kirim, perbaiki, dan kirim ulang |
 | Verifikator | Antrean, detail, mulai pemeriksaan, checklist data sensitif, minta revisi, setujui, terbitkan, dan arsipkan |
+| Admin | Pemantauan metadata seluruh status, penanggung jawab verifikasi, keputusan, dan riwayat status tanpa membuka isi privat |
 | Privasi | Bukti dan calon sampul terlindungi. Sampul publik dibuat sebagai berkas terpisah saat Cerita diterbitkan |
 | Audit | Keputusan tersimpan di `story_reviews` dan perubahan status tersimpan di `story_status_events` |
 | Poin | Pengiriman pertama membuat satu ledger `STORY_SUBMIT`. Pengiriman ulang tidak membuat ledger baru |
@@ -56,6 +57,19 @@ Berkas terlindungi mengikuti aturan baca khusus. Awardee hanya dapat membuka ber
 | `POST /api/pfriends/verifier/stories/{id}/publish` | Membuat sampul publik dan menerbitkan Cerita |
 | `POST /api/pfriends/verifier/stories/{id}/archive` | Mengarsipkan dan menghapus sampul publik |
 
+Parameter `scope=all` pada endpoint daftar Verifikator memuat seluruh Cerita selain draf. Nilai bawaan tetap memuat antrean aktif.
+
+Verifikator dapat meminta revisi atas Cerita berstatus `TERPUBLIKASI`. Tindakan ini menghapus sampul publik, mengosongkan validasi penerbitan, dan memindahkan record yang sama ke `PERLU_REVISI`. Riwayat keputusan, slug, bukti, dan ledger poin tetap dipertahankan. Arsip tetap terminal dan tidak digunakan sebagai jalur revisi.
+
+## Endpoint Admin
+
+| Endpoint | Fungsi |
+| --- | --- |
+| `GET /api/pfriends/admin/stories` | Membaca metadata seluruh Cerita dengan pencarian, filter status, dan paginasi |
+| `GET /api/pfriends/admin/stories/{id}` | Membaca metadata, keputusan Verifikator, dan riwayat status |
+
+Endpoint Admin tidak mengirim body, ringkasan, outcome, nama berkas privat, maupun tautan berkas. Halaman `/admin/cerita` dan detailnya bersifat hanya baca.
+
 ## Seeder
 
 Data demo berisi 32 Cerita. Tiga contoh baru mewakili status sedang diperiksa, perlu revisi, dan draf. Seeder juga menghubungkan pemilik PocketBase serta menambahkan berkas contoh pada status privat yang memerlukannya. Proses tetap idempoten karena upsert memakai `legacyId`.
@@ -71,7 +85,7 @@ npm run verify:compile
 npm run build
 ```
 
-Tes integrasi Cerita menjalankan empat belas pemeriksaan dari pembuatan draf sampai arsip. Tes mencakup persistensi berkas, akses bukti terlindungi oleh Verifikator, penolakan akses record langsung, antrean Verifikator, revisi pada record yang sama, checklist sensitif, promosi sampul publik, penghapusan dari katalog publik, dan idempotensi ledger poin.
+Tes integrasi Cerita mencakup persistensi berkas, akses bukti terlindungi oleh Verifikator, penolakan akses record langsung, privasi pemantauan Admin, antrean Verifikator, revisi sebelum dan sesudah publikasi pada record yang sama, checklist sensitif, promosi sampul publik, penghapusan dari katalog publik, penerbitan ulang, dan idempotensi ledger poin.
 
 ## Penyegaran Cerita Publik
 

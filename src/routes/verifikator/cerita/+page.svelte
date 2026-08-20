@@ -57,6 +57,9 @@
 
 	/** Kunci tab yang berarti "tanpa penyaring". */
 	const SEMUA = 'SEMUA';
+	const MODE_ANTREAN = 'ANTREAN';
+	const MODE_SEMUA = 'SEMUA_CERITA';
+	let mode = $state(MODE_ANTREAN);
 
 	/**
 	 * Waktu acuan seluruh perhitungan usia di halaman ini: satu nilai untuk
@@ -72,24 +75,30 @@
 	let keputusanTerbuka = $state(null);
 
 	/** Status yang benar-benar ada di antrean saat ini, urut sesuai antrean. */
-	const statusDiAntrean = $derived([...new Set(editorial.storyQueue.map((story) => story.status))]);
+	const sumber = $derived(mode === MODE_ANTREAN ? editorial.storyQueue : editorial.verifierStories);
+	const statusDiAntrean = $derived([...new Set(sumber.map((story) => story.status))]);
 
 	/** Tab penyaring: "Semua" ditambah status yang benar-benar ada. */
 	const tabs = $derived([
-		{ id: SEMUA, label: 'Semua', count: editorial.storyQueue.length },
+		{ id: SEMUA, label: 'Semua', count: sumber.length },
 		...statusDiAntrean.map((status) => ({
 			id: status,
 			label: STORY_STATUS_META[status]?.label ?? status,
-			count: editorial.storyQueue.filter((story) => story.status === status).length
+			count: sumber.filter((story) => story.status === status).length
 		}))
 	]);
 
 	/** Antrean sesudah disaring; urutannya tetap urutan asal dari domain. */
 	const antrean = $derived(
 		tabAktif === SEMUA
-			? editorial.storyQueue
-			: editorial.storyQueue.filter((story) => story.status === tabAktif)
+			? sumber
+			: sumber.filter((story) => story.status === tabAktif)
 	);
+
+	function gantiMode(value) {
+		mode = value;
+		tabAktif = SEMUA;
+	}
 
 	/**
 	 * Tiga angka ringkas di kepala halaman.
@@ -180,7 +189,12 @@
 	subtitle="Naskah yang dikirim awardee, tertua lebih dahulu. Tombol keputusan tiap baris berasal dari peta transisi domain, sehingga daftarnya tidak pernah berbeda dari aturan alur editorial."
 />
 
-<section class="mt-5 grid gap-4 sm:grid-cols-3" aria-label="Ringkasan submission">
+<div class="mb-5 flex gap-2 border-b border-ink-200">
+	<button type="button" class={`px-4 py-3 text-sm font-semibold ${mode === MODE_ANTREAN ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => gantiMode(MODE_ANTREAN)}>Antrean</button>
+	<button type="button" class={`px-4 py-3 text-sm font-semibold ${mode === MODE_SEMUA ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => gantiMode(MODE_SEMUA)}>Semua Cerita</button>
+</div>
+
+{#if mode === MODE_ANTREAN}<section class="mt-5 grid gap-4 sm:grid-cols-3" aria-label="Ringkasan submission">
 	{#each ringkasan as kartu (kartu.id)}
 		<div class="card p-4">
 			<span class="flex items-center gap-2 {kartu.tegas ? 'text-pertamina-red-ink' : 'text-ink-600'}">
@@ -196,21 +210,21 @@
 			</span>
 		</div>
 	{/each}
-</section>
+</section>{/if}
 
-{#if editorial.storyQueue.length > 0}
+{#if sumber.length > 0}
 	<div class="mt-6">
 		<Tabs {tabs} bind:active={tabAktif} variant="pill" />
 	</div>
 {/if}
 
-{#if editorial.error && editorial.storyQueue.length === 0}
+{#if editorial.error && sumber.length === 0}
 	<div class="mt-5 rounded-card border border-danger/30 bg-danger-tint/40 p-5" role="alert">
 		<p class="text-sm font-semibold text-heading">Antrean Cerita gagal dimuat</p>
 		<p class="mt-1 text-sm leading-relaxed text-ink-600">{editorial.error}</p>
 		<div class="mt-4"><Button size="sm" variant="secondary" onclick={() => editorial.refresh()}>Coba lagi</Button></div>
 	</div>
-{:else if editorial.loading && editorial.storyQueue.length === 0}
+{:else if editorial.loading && sumber.length === 0}
 	<div class="mt-5 space-y-3" aria-busy="true" aria-label="Memuat Submission Blog">
 		{#each ['a', 'b', 'c'] as kunci (kunci)}
 			<div class="skeleton h-28 w-full rounded-card"></div>
@@ -235,7 +249,7 @@
 					subtitle={naskah.summary}
 					statusLabel={naskah.statusMeta.label}
 					statusColor={naskah.statusMeta.badgeColor}
-					sla={slaAntrean(naskah, sekarang)}
+					sla={mode === MODE_ANTREAN ? slaAntrean(naskah, sekarang) : null}
 					meta={[
 						`Penulis: ${naskah.authorName}`,
 						`${naskah.wordCount} kata`,

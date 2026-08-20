@@ -17,7 +17,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 
 ## Awardee
 
-- [~] `/awardee`: poin, tier, streak, badge, dan kegiatan dari PocketBase; kabar, cerita, serta ringkasan komunitas masih lokal (`DUMMY`).
+- [~] `/awardee`: poin, tier, streak, badge, kegiatan, kabar, dan ringkasan Cerita dari PocketBase; sebagian ringkasan komunitas masih lokal (`DUMMY`).
 - [x] `/awardee/bukti-keaktifan` dan `/awardee/bukti-keaktifan/[id]`: pengajuan, file terlindungi, status, revisi, dan riwayat memakai PocketBase.
 - [~] `/awardee/aksi`: riwayat poin memakai ledger PocketBase; katalog aksi ringan dan interaksi langsung belum backend (`DUMMY`).
 - [x] `/awardee/penghargaan` atau Pencapaian: poin, tier, streak, badge, saldo Koin Tukar, katalog reward, kuota, penukaran, dan Pesanan Saya memakai PocketBase. Quest belum ditampilkan sebagai data operasional pada halaman ini.
@@ -26,17 +26,17 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] `/awardee/kabar` dan `/awardee/kabar/[id]`: broadcast, dwell/read, CTA, bukti share WhatsApp, bukti share publik, review Verifikator, dan ledger poin memakai PocketBase; membuka tab WhatsApp saja tidak berpoin.
 - [x] `/awardee/kalender`: usulan, status keputusan, agenda, pendaftaran, kapasitas, bukti hadir, revisi, dan poin memakai PocketBase.
 - [x] `/awardee/gerakan`: usulan, partisipasi, laporan aksi, bukti terlindungi, status pemeriksaan, dan poin pemimpin memakai PocketBase.
-- [ ] `/awardee/cerita` dan `/awardee/cerita/tulis`: draft, submit, kurasi, dan publikasi masih lokal (`DUMMY`).
+- [x] `/awardee/cerita` dan `/awardee/cerita/tulis`: draf, penyimpanan otomatis, unggah bukti, pengajuan, revisi, penerbitan ulang, dan status memakai PocketBase.
 - [ ] `/awardee/forum`: state halaman belum mempunyai persistence backend (`DUMMY`).
 
 ## Verifikator
 
 - [x] `/verifikator/kabar`: pemantauan read-only atas draf, jadwal, kabar terkirim, audiens, dan jumlah penerima memakai PocketBase; bukti share publik diputuskan melalui Bukti Keaktifan.
-- [~] `/verifikator`: total poin, Awardee, tier, streak, badge, leaderboard, dan antrean kegiatan dari PocketBase; KPI konten, antrean cerita, laju review, serta rekam kerja lain masih lokal dan diberi label `DUMMY` per widget.
+- [~] `/verifikator`: total poin, Awardee, tier, streak, badge, leaderboard, antrean kegiatan, dan antrean Cerita dari PocketBase; sebagian KPI serta rekam kerja lain masih lokal dan diberi label `DUMMY` per widget.
 - [x] `/verifikator/pendaftaran`: antrean, preview bukti terlindungi, WhatsApp, klarifikasi, approve, reject, dan audit memakai PocketBase.
 - [x] `/verifikator/bukti-keaktifan` dan `/verifikator/bukti-keaktifan/[id]`: antrean, preview bukti, review, revisi, approval, ledger poin, dan audit memakai PocketBase.
 - [x] `/verifikator/gamifikasi`: melihat penukar, memproses seluruh status pesanan, refund, WhatsApp, serta CRUD katalog hadiah memakai PocketBase.
-- [ ] `/verifikator/cerita` dan `/verifikator/cerita/[id]`: workflow kurasi cerita masih Dexie (`DUMMY`).
+- [x] `/verifikator/cerita` dan `/verifikator/cerita/[id]`: antrean, seluruh status, bukti terlindungi, keputusan, revisi setelah publikasi, penerbitan, arsip, dan audit memakai PocketBase.
 - [x] `/verifikator/kegiatan`: keputusan usulan, lifecycle agenda, penyuntingan, peserta, dan antrean bukti hadir memakai PocketBase.
 - [x] `/verifikator/gerakan`: keputusan usulan, penetapan ESG dan SDG, pemeriksaan laporan aksi, serta penyelesaian Gerakan memakai PocketBase.
 
@@ -50,6 +50,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [~] `/admin/gamifikasi`: hub ringkasan gamifikasi memakai data PocketBase dan mengarahkan ke nested route agar tidak menjadi halaman panjang.
 - [x] `/admin/gamifikasi/pesanan` dan `/admin/gamifikasi/hadiah`: pemantauan penukaran serta CRUD katalog hadiah memakai PocketBase; keputusan pesanan tetap milik Verifikator.
 - [x] `/admin/gerakan`: pemantauan status, peserta, dan jumlah laporan Gerakan memakai PocketBase tanpa kewenangan keputusan.
+- [x] `/admin/cerita` dan `/admin/cerita/[id]`: pemantauan metadata seluruh status, penulis, Verifikator, keputusan, dan riwayat memakai PocketBase tanpa membuka isi atau berkas privat.
 - [ ] `/admin/gamifikasi/aturan`: konfigurasi poin, tier, dan simulasi tetap dipertahankan dengan navigasi lompat, tetapi masih lokal (`DUMMY`).
 
 ## Komponen lintas halaman yang sudah backend
@@ -66,7 +67,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] Kabar: publikasi Admin, audiens, read 15 detik, CTA, share WhatsApp, bukti share publik, review Verifikator, serta ledger server.
 - [ ] SSO OAuth Verifikator/Admin (`TODO`).
 - [ ] Reset password, verifikasi email, MFA, dan notifikasi.
-- [~] Consent versioned, profil penuh, workflow privat cerita, forum, quest, dan KPI umum belum selesai. Workflow Gerakan dan pembacaan cerita publik sudah backend.
+- [~] Consent versioned, profil penuh, forum, quest, dan KPI umum belum selesai. Workflow privat Cerita, Gerakan, serta pembacaan Cerita publik sudah backend.
 
 ## Aturan label UI
 

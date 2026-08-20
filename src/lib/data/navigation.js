@@ -221,6 +221,7 @@ const NAV_VERIFIER = Object.freeze([
 		primary: true,
 		badgeKey: 'registrationQueue'
 	}),
+	Object.freeze({ id: 'stories', label: 'Pemantauan Cerita', href: '/admin/cerita', iconPath: ICONS.book }),
 	Object.freeze({
 		id: 'rewards',
 		label: 'Hadiah & Penukaran',

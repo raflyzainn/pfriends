@@ -19,8 +19,12 @@ class PublicContentStore {
 	movementsLoading = $state(false);
 	movementsError = $state(null);
 	loaded = $state(false);
-	loading = $state(false);
-	error = $state(null);
+	storiesLoading = $state(false);
+	storiesError = $state(null);
+	leaderboardLoading = $state(false);
+	leaderboardError = $state(null);
+	loading = $derived(this.storiesLoading || this.leaderboardLoading);
+	error = $derived(this.storiesError || this.leaderboardError);
 	#loadingPromise = null;
 	#communityPromise = null;
 	#movementsPromise = null;
@@ -35,20 +39,27 @@ class PublicContentStore {
 	}
 
 	async #load() {
-		this.loading = true;
-		this.error = null;
-		try {
-			const [stories, leaderboard] = await Promise.all([publicStories(), publicLeaderboard(8)]);
-			this.stories = stories;
-			this.leaderboard = leaderboard;
-			this.loaded = true;
-		} catch (error) {
-			this.stories = [];
-			this.leaderboard = [];
-			this.error = error instanceof Error ? error.message : 'Konten publik gagal dimuat.';
-		} finally {
-			this.loading = false;
-		}
+		this.storiesLoading = true;
+		this.leaderboardLoading = true;
+		this.storiesError = null;
+		this.leaderboardError = null;
+		await Promise.allSettled([
+			publicStories()
+				.then((stories) => { this.stories = stories; })
+				.catch((error) => {
+					this.stories = [];
+					this.storiesError = error instanceof Error ? error.message : 'Cerita publik gagal dimuat.';
+				})
+				.finally(() => { this.storiesLoading = false; }),
+			publicLeaderboard(8)
+				.then((leaderboard) => { this.leaderboard = leaderboard; })
+				.catch((error) => {
+					this.leaderboard = [];
+					this.leaderboardError = error instanceof Error ? error.message : 'Papan peringkat gagal dimuat.';
+				})
+				.finally(() => { this.leaderboardLoading = false; })
+		]);
+		this.loaded = true;
 	}
 
 	async loadCommunity({ force = false } = {}) {

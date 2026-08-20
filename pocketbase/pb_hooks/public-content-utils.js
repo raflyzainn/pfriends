@@ -10,6 +10,8 @@ function jsonField(record, field, fallback) {
 function storyDto(record, app) {
 	let coverUrl = '';
 	try { const cover = app.findFirstRecordByData('story_public_covers', 'story', record.id); const image = cover.getString('image'); if (image) coverUrl = `/api/files/${cover.collection().id}/${cover.id}/${image}`; } catch (_) {}
+	const esgTags = jsonField(record, 'esgTags', []);
+	const mediaRefs = jsonField(record, 'mediaRefs', []);
 	return {
 		id: record.getString('legacyId'),
 		slug: record.getString('slug'),
@@ -21,8 +23,8 @@ function storyDto(record, app) {
 		status: record.getString('status'),
 		community: record.getString('community'),
 		chapterId: record.getString('chapterId'),
-		esgTags: jsonField(record, 'esgTags', []),
-		mediaRefs: jsonField(record, 'mediaRefs', []),
+		esgTags: Array.isArray(esgTags) ? esgTags : [],
+		mediaRefs: Array.isArray(mediaRefs) ? mediaRefs : [],
 		coverUrl,
 		outcome: jsonField(record, 'outcome', null),
 		location: record.getString('location'),

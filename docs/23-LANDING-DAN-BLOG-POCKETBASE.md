@@ -1,5 +1,11 @@
 # Migrasi Landing dan Blog ke PocketBase
 
+## Ketahanan pemuatan publik
+
+Leaderboard dan Cerita memakai keadaan pemuatan serta galat yang terpisah. Kegagalan salah satu endpoint tidak mengosongkan data endpoint lainnya. Endpoint leaderboard hanya membaca profil gamifikasi yang sudah terbentuk dan tidak menjalankan perubahan profil atau badge pada permintaan publik.
+
+Halaman `/cerita` membaca seluruh record yang berstatus `TERPUBLIKASI` dengan consent aktif. Halaman ini tidak membatasi jumlah Cerita. Landing page utama tetap menampilkan cuplikan Cerita terbaru.
+
 Dokumen ini mencatat implementasi halaman publik yang selesai pada 20 Agustus 2026. Ruang lingkupnya adalah beranda, daftar cerita, detail cerita, dan papan peringkat publik.
 
 ## Keputusan implementasi

@@ -172,7 +172,23 @@
 				</p>
 			{/if}
 
-			{#if hasilSaring.length > 0}
+			{#if publicContent.storiesLoading && ceritaTerbit.length === 0}
+				<p class="mt-10 border-t border-ink-200 pt-8 text-[15px] text-ink-600">
+					Memuat seluruh Cerita terpublikasi.
+				</p>
+			{:else if publicContent.storiesError}
+				<div class="mt-10 border-t border-ink-200 pt-8">
+					<h2 class="display-editorial text-[24px] leading-[1.20] text-heading">
+						Cerita belum dapat dimuat
+					</h2>
+					<p class="mt-3 max-w-[52ch] text-[16px] leading-[1.68] text-ink-700">
+						{publicContent.storiesError}
+					</p>
+					<button type="button" class="mt-5 text-[15px] font-semibold text-brand-700 hover:underline" onclick={() => publicContent.load({ force: true })}>
+						Coba muat kembali
+					</button>
+				</div>
+			{:else if hasilSaring.length > 0}
 				{#if unggulan}
 					{@const kartu = kartuCerita(unggulan)}
 					<div class="mt-10 border-b border-ink-200 pb-10">

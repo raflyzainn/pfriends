@@ -74,6 +74,7 @@ const SEBAB_LUAR_DOMAIN = 'GAGAL_TEKNIS';
 class EditorialStore {
 	/** @type {import('$lib/domain/entities/Story.js').Story[]} Naskah menunggu tindakan verifikator. */
 	storyQueue = $state.raw([]);
+	verifierStories = $state.raw([]);
 
 	/** @type {import('$lib/domain/entities/CommunityEvent.js').CommunityEvent[]} Usulan kegiatan menunggu keputusan. */
 	eventQueue = $state.raw([]);
@@ -406,14 +407,15 @@ class EditorialStore {
 			const accountId = session.accountId;
 
 			const [storyQueue, eventQueue, pipeline, myStories, myEvents] = await Promise.all([
-				session.isVerifier ? loadVerifierStories() : Promise.resolve([]),
+				session.isVerifier ? loadVerifierStories('all') : Promise.resolve([]),
 				eventRepository.proposalQueue(),
 				Promise.resolve([]),
 				session.isAwardee ? loadMyStories() : Promise.resolve([]),
 				accountId ? eventRepository.proposedBy(accountId) : Promise.resolve([])
 			]);
 
-			this.storyQueue = storyQueue;
+			this.verifierStories = storyQueue;
+			this.storyQueue = storyQueue.filter((story) => ['DIAJUKAN', 'REVIEW', 'DISETUJUI'].includes(story.status));
 			this.eventQueue = eventQueue;
 			this.pipeline = pipeline;
 			this.myStories = myStories;

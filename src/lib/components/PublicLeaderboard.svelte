@@ -2,7 +2,7 @@
 	import { tierUntukPoin } from '$lib/domain/constants/tier-table.js';
 	import { formatAngka, inisial } from '$lib/utils/format.js';
 
-	let { entries = [], loading = false } = $props();
+	let { entries = [], loading = false, error = null } = $props();
 
 	const rows = $derived(
 		entries.map((awardee) => {
@@ -63,9 +63,13 @@
 					</li>
 				{/each}
 			</ul>
-		{:else}
+		{:else if error}
 			<p class="px-5 py-8 text-[15px] leading-[1.6] text-ink-600">
 				Papan peringkat belum tersedia. Silakan coba lagi setelah layanan kembali aktif.
+			</p>
+		{:else}
+			<p class="px-5 py-8 text-[15px] leading-[1.6] text-ink-600">
+				Belum ada perolehan poin yang dapat ditampilkan.
 			</p>
 		{/if}
 	</div>

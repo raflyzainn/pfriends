@@ -11,6 +11,8 @@ function client() {
 function storyEntity(record) {
 	return Story.from({
 		...record,
+		esgTags: Array.isArray(record.esgTags) ? record.esgTags : [],
+		mediaRefs: Array.isArray(record.mediaRefs) ? record.mediaRefs : [],
 		consentActive: record.consentGranted === true,
 		consentId: record.consentGranted === true ? 'SERVER_VERIFIED' : null,
 		reviewNotes: [],

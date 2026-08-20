@@ -9,6 +9,7 @@ const maintenance = new PocketBase(url);
 await maintenance.collection('_superusers').authWithPassword(process.env.PB_SUPERUSER_EMAIL, process.env.PB_SUPERUSER_PASSWORD);
 const accounts = buildSeed().accounts;
 const verifierAccount = accounts.find((item) => item.role === 'VERIFIER' && item.status === 'AKTIF');
+const adminAccount = accounts.find((item) => item.role === 'ADMIN' && item.status === 'AKTIF');
 const awardeeProfiles = await maintenance.collection('awardees').getFullList({ filter: 'consentActive = true' });
 let awardeeAccount;
 for (const profile of awardeeProfiles) {
@@ -16,7 +17,7 @@ for (const profile of awardeeProfiles) {
 	awardeeAccount = accounts.find((item) => item.id === user.legacyAccountId && item.status === 'AKTIF');
 	if (awardeeAccount) break;
 }
-if (!verifierAccount || !awardeeAccount) throw new Error('Akun demo untuk pengujian Cerita tidak lengkap.');
+if (!verifierAccount || !awardeeAccount || !adminAccount) throw new Error('Akun demo untuk pengujian Cerita tidak lengkap.');
 
 const login = async (account) => {
 	const pb = new PocketBase(url);
@@ -25,6 +26,7 @@ const login = async (account) => {
 };
 const awardee = await login(awardeeAccount);
 const verifier = await login(verifierAccount);
+const admin = await login(adminAccount);
 const storyCollection = await maintenance.collections.getOne('stories');
 let checks = 0;
 const expect = (value, message) => { if (!value) throw new Error(message); checks++; };
@@ -50,6 +52,13 @@ try {
 	story = await awardee.send('/api/pfriends/stories/drafts', { method: 'POST', body: form });
 	expect(story.status === 'DRAFT' && story.evidenceFiles.length === 1 && story.coverCandidate, 'Draf dan berkas privat harus tersimpan.');
 	expect(story.esgTags?.[0]?.pillar === 'S' && Number(story.esgTags?.[0]?.sdgGoal) === 4, `Tag ESG draf tidak tersimpan dengan benar: ${JSON.stringify(story.esgTags)}`);
+	const adminList = await admin.send(`/api/pfriends/admin/stories?q=${encodeURIComponent(title)}`);
+	expect(adminList.items.some((item) => item.id === story.id && item.status === 'DRAFT'), 'Admin harus dapat memantau metadata draf.');
+	const adminDetail = await admin.send(`/api/pfriends/admin/stories/${story.id}`);
+	expect(adminDetail.story.id === story.id && !('body' in adminDetail.story) && !('evidenceFiles' in adminDetail.story), 'Audit Admin tidak boleh membuka isi atau berkas privat.');
+	let adminDeniedForAwardee = false;
+	try { await awardee.send('/api/pfriends/admin/stories'); } catch (error) { adminDeniedForAwardee = error.status === 403; }
+	expect(adminDeniedForAwardee, 'Endpoint pemantauan Admin harus menolak Awardee.');
 	const submitted = await awardee.send(`/api/pfriends/stories/${story.id}/submit`, { method: 'POST' });
 	expect(submitted.status === 'DIAJUKAN', 'Draf harus masuk antrean Verifikator.');
 	const verifierFileToken = await verifier.files.getToken();
@@ -87,6 +96,25 @@ try {
 	expect(published.status === 'TERPUBLIKASI' && published.coverUrl, 'Cerita harus terbit dengan sampul publik.');
 	const publicList = await maintenance.send('/api/pfriends/public/stories');
 	expect(publicList.items.some((item) => item.slug === published.slug), 'Cerita terbit harus muncul pada endpoint publik.');
+	const pulled = await verifier.send(`/api/pfriends/verifier/stories/${story.id}/decision`, { method: 'POST', body: { decision: 'REQUEST_REVISION', note: 'Perbarui hasil kegiatan sebelum diterbitkan kembali.' } });
+	expect(pulled.status === 'PERLU_REVISI' && !pulled.publishedAt, 'Cerita terbit harus dapat ditarik untuk revisi pada record yang sama.');
+	const publicDuringRevision = await maintenance.send('/api/pfriends/public/stories');
+	expect(!publicDuringRevision.items.some((item) => item.slug === published.slug), 'Cerita yang ditarik untuk revisi harus hilang dari ruang publik.');
+	const postPublishRevision = new FormData();
+	postPublishRevision.set('title', title);
+	postPublishRevision.set('summary', 'Ringkasan diperbarui setelah Cerita ditarik dari ruang publik.');
+	postPublishRevision.set('body', `${body} Perubahan setelah publikasi sudah dilengkapi dan siap diperiksa kembali.`);
+	postPublishRevision.set('location', 'Jakarta Pusat');
+	postPublishRevision.set('activityDate', new Date().toISOString().slice(0, 10));
+	postPublishRevision.set('participantCount', '12');
+	postPublishRevision.set('esgTags', JSON.stringify([{ pillar: 'S', sdgGoal: 4 }]));
+	postPublishRevision.set('outcome', JSON.stringify({ note: 'Hasil diperbarui dan seluruh bukti lama tetap dipertahankan.', metric: 'Peserta', value: 12, unit: 'orang' }));
+	await awardee.send(`/api/pfriends/stories/${story.id}/draft`, { method: 'PATCH', body: postPublishRevision });
+	await awardee.send(`/api/pfriends/stories/${story.id}/submit`, { method: 'POST' });
+	await verifier.send(`/api/pfriends/verifier/stories/${story.id}/start-review`, { method: 'POST' });
+	await verifier.send(`/api/pfriends/verifier/stories/${story.id}/decision`, { method: 'POST', body: { decision: 'APPROVE', sensitivityChecks: Array.from({ length: 21 }, (_, index) => index + 1) } });
+	const republished = await verifier.send(`/api/pfriends/verifier/stories/${story.id}/publish`, { method: 'POST' });
+	expect(republished.status === 'TERPUBLIKASI', 'Cerita hasil revisi harus dapat diterbitkan kembali.');
 	await verifier.send(`/api/pfriends/verifier/stories/${story.id}/archive`, { method: 'POST', body: { reason: 'PERMINTAAN_ANGGOTA' } });
 	const publicAfterArchive = await maintenance.send('/api/pfriends/public/stories');
 	expect(!publicAfterArchive.items.some((item) => item.slug === published.slug), 'Cerita yang diarsipkan harus hilang dari endpoint publik.');

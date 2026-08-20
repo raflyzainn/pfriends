@@ -33,7 +33,11 @@ routerAdd('POST', '/api/pfriends/stories/{id}/submit', (e) => {
 }, $apis.requireAuth('users'));
 
 routerAdd('GET', '/api/pfriends/verifier/stories', (e) => {
-	const utils = require(`${__hooks}/story-utils.js`); utils.requireRole(e, 'VERIFIER'); const rows = e.app.findRecordsByFilter('stories', 'status = "DIAJUKAN" || status = "REVIEW" || status = "DISETUJUI"', 'submittedAt', 0, 0); return e.json(200, { items: rows.map((row) => utils.storyDto(e.app, row, true)) });
+	const utils = require(`${__hooks}/story-utils.js`); utils.requireRole(e, 'VERIFIER');
+	const scope = e.request.url.query().get('scope') || 'queue';
+	const filter = scope === 'all' ? 'status != "DRAFT"' : 'status = "DIAJUKAN" || status = "REVIEW" || status = "DISETUJUI"';
+	const rows = e.app.findRecordsByFilter('stories', filter, scope === 'all' ? '-updated' : 'submittedAt', 0, 0);
+	return e.json(200, { items: rows.map((row) => utils.storyDto(e.app, row, true)) });
 }, $apis.requireAuth('users'));
 
 routerAdd('GET', '/api/pfriends/verifier/stories/{id}', (e) => {
@@ -46,7 +50,22 @@ routerAdd('POST', '/api/pfriends/verifier/stories/{id}/start-review', (e) => {
 
 routerAdd('POST', '/api/pfriends/verifier/stories/{id}/decision', (e) => {
 	const utils = require(`${__hooks}/story-utils.js`); utils.requireRole(e, 'VERIFIER'); const body = new DynamicModel({ decision: '', note: '', sensitivityChecks: [] }); e.bindBody(body); if (!['REQUEST_REVISION','APPROVE'].includes(body.decision)) throw new BadRequestError('Keputusan tidak dikenal.'); if (body.decision === 'REQUEST_REVISION' && String(body.note).trim().length < 5) throw new BadRequestError('Catatan revisi minimal 5 karakter.'); let result;
-	e.app.runInTransaction((tx) => { const row = tx.findRecordById('stories', e.request.pathValue('id')); if (row.getString('status') !== 'REVIEW') throw new BadRequestError('Naskah harus mulai diperiksa sebelum diputuskan.'); if (row.getString('reviewer') !== e.auth.id) throw new ForbiddenError('Naskah sedang diperiksa Verifikator lain.'); const awardee = tx.findRecordById('awardees', row.getString('author')); if (body.decision === 'APPROVE' && !awardee.getBool('consentActive')) throw new BadRequestError('Consent penulis sudah tidak aktif.'); const checks = Array.isArray(body.sensitivityChecks) ? [...new Set(body.sensitivityChecks.map(Number))].sort((a,b)=>a-b) : []; if (body.decision === 'APPROVE' && (checks.length !== 21 || checks.some((value,index)=>value !== index + 1))) throw new BadRequestError('Seluruh checklist data sensitif wajib dikonfirmasi.'); const now = new Date().toISOString(); const after = body.decision === 'APPROVE' ? 'DISETUJUI' : 'PERLU_REVISI'; row.set('status', after); row.set('reviewedAt', now); if (after === 'DISETUJUI') { row.set('sensitivityScan', 'CLEAR'); row.set('pfValidation', { validatorId: e.auth.id, validatedAt: now }); } tx.save(row); utils.review(tx, row, e.auth, body.decision, body.note, checks); utils.statusEvent(tx, row, e.auth, body.decision === 'APPROVE' ? 'APPROVED' : 'REVISION_REQUESTED', 'REVIEW', after, body.note); result = row; }); return e.json(200, utils.storyDto(e.app, result, true));
+	e.app.runInTransaction((tx) => {
+		const row = tx.findRecordById('stories', e.request.pathValue('id'));
+		const before = row.getString('status');
+		const revisiTerbit = body.decision === 'REQUEST_REVISION' && before === 'TERPUBLIKASI';
+		if (before !== 'REVIEW' && !revisiTerbit) throw new BadRequestError('Naskah tidak dapat diputuskan pada status ini.');
+		if (before === 'REVIEW' && row.getString('reviewer') !== e.auth.id) throw new ForbiddenError('Naskah sedang diperiksa Verifikator lain.');
+		const awardee = tx.findRecordById('awardees', row.getString('author'));
+		if (body.decision === 'APPROVE' && !awardee.getBool('consentActive')) throw new BadRequestError('Consent penulis sudah tidak aktif.');
+		const checks = Array.isArray(body.sensitivityChecks) ? [...new Set(body.sensitivityChecks.map(Number))].sort((a,b)=>a-b) : [];
+		if (body.decision === 'APPROVE' && (checks.length !== 21 || checks.some((value,index)=>value !== index + 1))) throw new BadRequestError('Seluruh checklist data sensitif wajib dikonfirmasi.');
+		const now = new Date().toISOString(); const after = body.decision === 'APPROVE' ? 'DISETUJUI' : 'PERLU_REVISI';
+		row.set('status', after); row.set('reviewedAt', now);
+		if (after === 'DISETUJUI') { row.set('sensitivityScan', 'CLEAR'); row.set('pfValidation', { validatorId: e.auth.id, validatedAt: now }); }
+		if (revisiTerbit) { row.set('sensitivityScan', 'MENUNGGU'); row.set('pfValidation', null); row.set('publishedAt', ''); row.set('publishedBy', ''); try { tx.delete(tx.findFirstRecordByData('story_public_covers', 'story', row.id)); } catch (_) {} }
+		tx.save(row); utils.review(tx, row, e.auth, body.decision, body.note, checks); utils.statusEvent(tx, row, e.auth, body.decision === 'APPROVE' ? 'APPROVED' : 'REVISION_REQUESTED', before, after, body.note); result = row;
+	}); return e.json(200, utils.storyDto(e.app, result, true));
 }, $apis.requireAuth('users'));
 
 routerAdd('POST', '/api/pfriends/verifier/stories/{id}/publish', (e) => {
