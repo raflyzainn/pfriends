@@ -40,7 +40,7 @@
 	/** Laci navigasi; hanya berpengaruh di bawah breakpoint lg. */
 	let navTerbuka = $state(false);
 
-	/** Tiga tujuan zona admin: Dasbor KPI, Kontrol Akun, Konfigurasi Gamifikasi. */
+	/** Seluruh tujuan zona Admin, termasuk Pemantauan Cerita. */
 	const navZona = navForZone(Zone.ADMIN);
 
 	const jalurKini = $derived(page.url?.pathname ?? '/admin');
