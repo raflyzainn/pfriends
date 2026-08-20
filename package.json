@@ -28,7 +28,8 @@
 		"verify:public-impact": "node scripts/verify/public-impact-test.mjs",
 		"verify:movements": "node scripts/verify/movement-test.mjs",
 		"verify:stories": "node scripts/verify/story-test.mjs",
-		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards && npm run verify:calendar && npm run verify:public-content && npm run verify:public-impact && npm run verify:movements && npm run verify:stories",
+		"verify:admin-awardees": "node scripts/verify/admin-awardee-test.mjs",
+		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards && npm run verify:calendar && npm run verify:public-content && npm run verify:public-impact && npm run verify:movements && npm run verify:stories && npm run verify:admin-awardees",
 		"verify:browser": "npm run verify:e2e && npm run verify:gamification",
 		"screenshot": "node scripts/verify/screenshot.mjs"
 	},

@@ -46,7 +46,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 
 - [x] `/admin/pendaftaran`: monitoring registrasi memakai PocketBase; Admin tidak mengambil keputusan.
 - [ ] `/admin`: KPI dan agregat operasional umum masih lokal (`DUMMY`).
-- [ ] `/admin/awardee`: manajemen akun/Awardee masih lokal dan memakai akun demo (`DUMMY`).
+- [x] `/admin/awardee`: daftar, pencarian, filter, pagination, status akun, status keanggotaan, waktu masuk terakhir, riwayat audit, dan impersonasi Awardee selama 30 menit memakai PocketBase.
 - [~] `/admin/gamifikasi`: hub ringkasan gamifikasi memakai data PocketBase dan mengarahkan ke nested route agar tidak menjadi halaman panjang.
 - [x] `/admin/gamifikasi/pesanan` dan `/admin/gamifikasi/hadiah`: pemantauan penukaran serta CRUD katalog hadiah memakai PocketBase; keputusan pesanan tetap milik Verifikator.
 - [x] `/admin/gerakan`: pemantauan status, peserta, dan jumlah laporan Gerakan memakai PocketBase tanpa kewenangan keputusan.

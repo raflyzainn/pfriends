@@ -19,7 +19,7 @@ const recordsByAwardeeId = new Map();
 for (const account of accounts) {
 	let existing = null;
 	try { existing = await pb.collection('users').getFirstListItem(pb.filter('legacyAccountId = {:id}', { id: account.id })); } catch (error) { if (error?.status !== 404) throw error; }
-	const data = { email: account.email, emailVisibility: false, password: SANDI_DEMO, passwordConfirm: SANDI_DEMO, legacyAccountId: account.id, awardeeId: account.awardeeId || '', role: account.role, displayName: account.displayName, unit: account.unit || '', status: account.status, onboardingStatus: 'APPROVED' };
+	const data = { email: account.email, emailVisibility: false, password: SANDI_DEMO, passwordConfirm: SANDI_DEMO, legacyAccountId: account.id, awardeeId: account.awardeeId || '', role: account.role, displayName: account.displayName, unit: account.unit || '', status: account.status, onboardingStatus: 'APPROVED', lastLoginAt: account.lastLoginAt || null };
 	const user = existing
 		? await pb.collection('users').update(existing.id, data)
 		: await pb.collection('users').create(data);

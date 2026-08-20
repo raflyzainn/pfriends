@@ -35,6 +35,7 @@
 	 */
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import {
 		BottomNav,
 		DummyRouteNotice,
@@ -74,6 +75,24 @@
 	 * @type {boolean}
 	 */
 	let sudahDisiapkan = false;
+	let kembaliBekerja = $state(false);
+	let sisaImpersonasi = $state('');
+
+	async function kembaliKeAdmin() {
+		kembaliBekerja = true;
+		try { await session.endImpersonation(); await goto('/admin/awardee'); }
+		finally { kembaliBekerja = false; }
+	}
+
+	$effect(() => {
+		if (!browser || !session.impersonation) return;
+		const tick = () => {
+			const remaining = new Date(session.impersonation.expiresAt).getTime() - Date.now();
+			if (remaining <= 0) { void kembaliKeAdmin(); return; }
+			sisaImpersonasi = `${Math.ceil(remaining / 60000)} menit`;
+		};
+		tick(); const interval = setInterval(tick, 30000); return () => clearInterval(interval);
+	});
 
 	/**
 	 * Memuat data bersama zona awardee.
@@ -171,6 +190,12 @@
 		/>
 
 		<div class="flex min-w-0 flex-1 flex-col">
+			{#if session.impersonation}
+				<div class="flex flex-wrap items-center justify-between gap-3 bg-pertamina-navy px-4 py-2 text-white sm:px-6 lg:px-8">
+					<p class="text-sm font-semibold">Anda sedang masuk sebagai {session.impersonation.awardeeName}. Sesi berakhir dalam {sisaImpersonasi}.</p>
+					<button type="button" class="rounded-control bg-white px-3 py-1.5 text-xs font-bold text-pertamina-navy disabled:opacity-60" disabled={kembaliBekerja} onclick={kembaliKeAdmin}>{kembaliBekerja ? 'Mengembalikan sesi...' : 'Kembali ke Admin'}</button>
+				</div>
+			{/if}
 			<header
 				class="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-ink-100 bg-surface/90 px-4 backdrop-blur"
 			>

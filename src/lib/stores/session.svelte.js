@@ -49,6 +49,7 @@ import { isApprovedOnboarding, RegistrationStatus } from '$lib/domain/constants/
 
 /** Kunci penyimpanan sesi di localStorage. */
 const KUNCI_SESI = 'pfriends_session';
+const KUNCI_IMPERSONASI = 'pfriends_admin_impersonation';
 
 /** Nilai peran yang sah untuk dipulihkan dari penyimpanan. */
 const PERAN_SAH = Object.freeze(Object.values(UserRole));
@@ -119,6 +120,14 @@ function bacaSesiTersimpan() {
 	} catch {
 		return { ...SESI_KOSONG };
 	}
+}
+
+function bacaImpersonasi() {
+	if (!browser) return null;
+	try {
+		const value = JSON.parse(sessionStorage.getItem(KUNCI_IMPERSONASI) || 'null');
+		return value?.adminToken && value?.adminRecord && value?.id && value?.expiresAt ? value : null;
+	} catch { return null; }
 }
 
 /**
@@ -198,6 +207,9 @@ class SessionStore {
 	/** @type {string|null} Pesan galat terakhir yang layak ditampilkan. */
 	error = $state(null);
 
+	/** Metadata sesi Admin yang sedang membuka ruang Awardee. */
+	impersonation = $state.raw(null);
+
 	/** Ada sesi aktif. */
 	isAuthenticated = $derived(this.role !== null);
 
@@ -235,6 +247,7 @@ class SessionStore {
 	 */
 	constructor() {
 		const tersimpan = bacaSesiTersimpan();
+		this.impersonation = bacaImpersonasi();
 		this.role = tersimpan.role;
 		this.user = tersimpan.user;
 		this.#accountId = tersimpan.accountId;
@@ -254,6 +267,39 @@ class SessionStore {
 	/** @returns {string|null} Identitas akun pemilik sesi. */
 	get accountId() {
 		return this.#accountId;
+	}
+
+	get isImpersonating() { return this.impersonation !== null; }
+
+	async beginImpersonation(result) {
+		if (!browser) throw new Error('Impersonasi hanya tersedia di peramban.');
+		const pb = getPocketBase();
+		if (!pb?.authStore.isValid || !this.isAdmin) throw new Error('Sesi Admin tidak tersedia.');
+		const state = { ...result.impersonation, adminToken: pb.authStore.token, adminRecord: pb.authStore.record };
+		sessionStorage.setItem(KUNCI_IMPERSONASI, JSON.stringify(state));
+		this.impersonation = state;
+		pb.authStore.save(result.token, result.record);
+		const principal = principalPocketBase(result.record);
+		const awardee = principal.awardeeId ? await awardeeRepository.getById(principal.awardeeId) : null;
+		if (!awardee) throw new Error('Profil Awardee tidak tersedia.');
+		this.#terapkan(principal, awardee, RegistrationStatus.APPROVED);
+	}
+
+	async endImpersonation() {
+		if (!browser || !this.impersonation) return false;
+		const state = this.impersonation;
+		const pb = getPocketBase();
+		pb.authStore.save(state.adminToken, state.adminRecord);
+		const principal = principalPocketBase(state.adminRecord);
+		this.#terapkan(principal, null, state.adminRecord.onboardingStatus || RegistrationStatus.APPROVED);
+		try {
+			const { endAwardeeImpersonation } = await import('$lib/infrastructure/pocketbase/adminAwardees.js');
+			await endAwardeeImpersonation(state.id);
+		} finally {
+			sessionStorage.removeItem(KUNCI_IMPERSONASI);
+			this.impersonation = null;
+		}
+		return true;
 	}
 
 	/**
@@ -321,7 +367,11 @@ class SessionStore {
 	 * @returns {void}
 	 */
 	logout() {
-		getPocketBase()?.authStore.clear();
+		const pb = getPocketBase();
+		if (this.impersonation && pb?.authStore.isValid) {
+			void pb.send(`/api/pfriends/admin/impersonations/${encodeURIComponent(this.impersonation.id)}/end`, { method: 'POST', requestKey: null }).catch(() => {});
+		}
+		pb?.authStore.clear();
 		this.role = null;
 		this.account = null;
 		this.awardee = null;
@@ -335,6 +385,8 @@ class SessionStore {
 		if (!browser) return;
 		try {
 			localStorage.removeItem(KUNCI_SESI);
+			sessionStorage.removeItem(KUNCI_IMPERSONASI);
+			this.impersonation = null;
 		} catch {
 			// Penyimpanan yang menolak dihapus tidak boleh menggagalkan proses keluar;
 			// keadaan dalam memori sudah bersih dan itulah yang menentukan tampilan.
@@ -423,7 +475,9 @@ class SessionStore {
 			await bootstrapDatabase();
 			const pb = getPocketBase();
 			if (!pb?.authStore.isValid) { this.logout(); return; }
-			const auth = await pb.collection('users').authRefresh();
+			const auth = this.impersonation
+				? await pb.send('/api/pfriends/session/me')
+				: await pb.collection('users').authRefresh();
 			const onboarding = auth.record.onboardingStatus || RegistrationStatus.APPROVED;
 			const principal = principalPocketBase(auth.record);
 			if (!isApprovedOnboarding(onboarding)) {
