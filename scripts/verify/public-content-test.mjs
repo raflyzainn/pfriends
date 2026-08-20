@@ -53,6 +53,22 @@ ok(communities.activeChapters === communities.chapters.length, 'Jumlah chapter a
 ok(communities.chapters.every((item) => item.activeMembers === item.sobiMembers + item.womenpreneurMembers), 'Komposisi anggota chapter tidak konsisten.');
 ok(!/(fullName|email|whatsapp|user)/.test(JSON.stringify(communities)), 'Endpoint komunitas membocorkan data pribadi.');
 
+const expectedMovements = seed.movements
+	.filter((movement) => ['BERJALAN', 'SELESAI'].includes(movement.status))
+	.sort((a, b) => new Date(b.startsAt).getTime() - new Date(a.startsAt).getTime());
+const movements = await pb.send('/api/pfriends/public/movements');
+ok(movements.items.length === expectedMovements.length, 'Jumlah gerakan publik tidak sesuai seed.');
+ok(movements.items.every((movement) => ['BERJALAN', 'SELESAI'].includes(movement.status)), 'Endpoint gerakan membocorkan status nonpublik.');
+ok(movements.items.map((movement) => movement.slug).join('|') === expectedMovements.map((movement) => movement.slug).join('|'), 'Gerakan publik tidak terurut berdasarkan waktu mulai terbaru.');
+ok(movements.items.every((movement) => Number.isInteger(movement.participantCount) && Number.isInteger(movement.reportCount)), 'Agregat peserta atau laporan gerakan tidak valid.');
+ok(movements.items.every((movement, index) => movement.participantCount === expectedMovements[index].participantIds.length && movement.reportCount === expectedMovements[index].reportIds.length), 'Agregat gerakan tidak sesuai data sumber.');
+ok(!/(participantIds|reportIds|leaderLegacyId|leaderName|description|impact|esgTags)/.test(JSON.stringify(movements)), 'Endpoint gerakan membocorkan data yang tidak diperlukan halaman publik.');
+
+let movementCollectionLocked = false;
+try { await pb.collection('movements').getFullList(); }
+catch (error) { movementCollectionLocked = error.status === 403 || error.status === 404; }
+ok(movementCollectionLocked, 'Collection movements dapat dibaca langsung oleh pengunjung.');
+
 if (process.env.PB_SUPERUSER_EMAIL && process.env.PB_SUPERUSER_PASSWORD) {
 	const admin = new PocketBase(url);
 	await admin.collection('_superusers').authWithPassword(process.env.PB_SUPERUSER_EMAIL, process.env.PB_SUPERUSER_PASSWORD);

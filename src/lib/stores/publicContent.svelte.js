@@ -2,6 +2,7 @@ import { browser } from '$app/environment';
 import {
 	publicLeaderboard,
 	publicCommunitySummary,
+	publicMovements,
 	publicStories,
 	publicStoryBySlug
 } from '$lib/infrastructure/pocketbase/publicContent.js';
@@ -13,11 +14,16 @@ class PublicContentStore {
 	communityLoaded = $state(false);
 	communityLoading = $state(false);
 	communityError = $state(null);
+	movements = $state.raw([]);
+	movementsLoaded = $state(false);
+	movementsLoading = $state(false);
+	movementsError = $state(null);
 	loaded = $state(false);
 	loading = $state(false);
 	error = $state(null);
 	#loadingPromise = null;
 	#communityPromise = null;
+	#movementsPromise = null;
 
 	async load({ force = false } = {}) {
 		if (!browser) return;
@@ -65,6 +71,29 @@ class PublicContentStore {
 			this.communityError = error instanceof Error ? error.message : 'Ringkasan komunitas gagal dimuat.';
 		} finally {
 			this.communityLoading = false;
+		}
+	}
+
+	async loadMovements({ force = false } = {}) {
+		if (!browser) return;
+		if (this.movementsLoaded && !force) return;
+		if (this.#movementsPromise && !force) return this.#movementsPromise;
+		this.#movementsPromise = this.#loadMovements();
+		try { await this.#movementsPromise; }
+		finally { this.#movementsPromise = null; }
+	}
+
+	async #loadMovements() {
+		this.movementsLoading = true;
+		this.movementsError = null;
+		try {
+			this.movements = await publicMovements();
+			this.movementsLoaded = true;
+		} catch (error) {
+			this.movements = [];
+			this.movementsError = error instanceof Error ? error.message : 'Gerakan publik gagal dimuat.';
+		} finally {
+			this.movementsLoading = false;
 		}
 	}
 

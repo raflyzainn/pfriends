@@ -6,7 +6,7 @@
 	const path = $derived(page.url.pathname);
 	const message = $derived.by(() => {
 		if (['/masuk', '/daftar', '/pendaftaran/status'].includes(path)) return '';
-		if (path === '/' || path.startsWith('/cerita') || path.startsWith('/komunitas') || path.startsWith('/metode-pengukuran')) return '';
+		if (path === '/' || path.startsWith('/cerita') || path.startsWith('/komunitas') || path.startsWith('/metode-pengukuran') || path.startsWith('/gerakan')) return '';
 		if (path.startsWith('/awardee/bukti-keaktifan')) return '';
 		if (path.startsWith('/awardee/direktori')) return '';
 		if (path.startsWith('/awardee/penghargaan')) return '';

@@ -95,7 +95,7 @@ Audit ini berdasarkan migration, hooks, adapter/repository, dan store yang dipak
 | Consent profil dan publikasi | **Belum backend** | Dexie `consents`; registrasi hanya menyimpan snapshot consent | grant/revoke/versioning dan dampak takedown belum server-side |
 | Cerita/editorial | **Hybrid** | baca publik memakai PocketBase `stories`; workflow privat masih Dexie | draft, review, publish, file unggahan, dan audit workflow belum PocketBase |
 | Kegiatan/kalender/attendance | **Backend** | `events`, `event_participants`, `activity_submissions`, ledger poin | event sengaja tanpa seed; reminder dan ekspor peserta belum ada |
-| Gerakan dan laporan dampak | **Hybrid** | collection `movements` dan agregat metode pengukuran sudah PocketBase; UI gerakan masih Dexie | partisipasi, laporan, evidence, validasi ESG/SDG, dan workflow belum backend |
+| Gerakan dan laporan dampak | **Hybrid** | collection `movements`, daftar publik tersanitasi, dan agregat metode pengukuran sudah PocketBase | area Awardee, partisipasi, laporan, evidence, validasi ESG/SDG, dan workflow belum backend |
 | Kabar/broadcast engagement | **Backend** | PocketBase `broadcasts`, `broadcast_engagements`, bukti dan ledger | notifikasi eksternal dan worker pengiriman email/WA belum tersedia |
 | Badge, tier, streak, leaderboard | **Backend untuk ledger bukti** | `gamification_profiles`, `badges`, `awardee_badges` + endpoint server | sumber poin engagement/konten belum backend dan quest belum tersedia |
 | Reward dan redemption | **Backend** | `coin_accounts`, `coin_transactions`, `rewards`, `redemptions` + endpoint transaksional | CRUD katalog tersedia untuk Admin/Verifikator; job expiry belum tersedia |

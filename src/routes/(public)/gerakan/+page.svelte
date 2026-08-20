@@ -32,7 +32,7 @@
 	 */
 	import { FilterChips, Icon, ICONS } from '$lib/components';
 	import { PhotoFigure, SectionRule } from '$lib/components/editorial';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
+	import { publicContent } from '$lib/stores/publicContent.svelte.js';
 	import {
 		MovementCategory,
 		MovementStatus,
@@ -51,10 +51,12 @@
 
 	let kategoriTerpilih = $state(SEMUA);
 
+	$effect(() => {
+		publicContent.loadMovements();
+	});
+
 	const gerakanPublik = $derived(
-		catalog.movements
-			.filter((gerakan) => STATUS_PUBLIK.includes(gerakan.status))
-			.sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
+		publicContent.movements.filter((gerakan) => STATUS_PUBLIK.includes(gerakan.status))
 	);
 
 	const hasilSaring = $derived(
@@ -156,6 +158,16 @@
 			dapat diperiksa.
 		</p>
 	</header>
+
+	{#if publicContent.movementsLoading && gerakanPublik.length === 0}
+		<p class="mt-8 text-[15px] leading-[1.6] text-ink-600" aria-live="polite">
+			Memuat gerakan dari PocketBase.
+		</p>
+	{:else if publicContent.movementsError}
+		<p class="mt-8 max-w-[58ch] border-l-4 border-pertamina-red pl-4 text-[15px] leading-[1.6] text-ink-700" role="alert">
+			{publicContent.movementsError} Muat ulang halaman untuk mencoba kembali.
+		</p>
+	{/if}
 
 	{#if unggulanVM}
 		<!-- Gerakan unggulan: foto 21:9 dengan panel teks menumpuk. -->
@@ -321,7 +333,7 @@
 					<Icon path={ICONS.arrowLongRight} size={18} />
 				</button>
 			</div>
-		{:else}
+		{:else if publicContent.movementsLoaded && !publicContent.movementsError}
 			<div class="mt-8 border-t border-ink-200 pt-8">
 				<p class="max-w-[56ch] text-[16px] leading-[1.68] text-ink-700">
 					Belum ada gerakan yang berjalan. Gerakan bersama selalu berawal dari usulan anggota

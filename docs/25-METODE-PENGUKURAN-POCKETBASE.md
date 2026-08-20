@@ -22,7 +22,7 @@ Endpoint hanya mengirim angka agregat dan waktu potret. Identitas Awardee, bukti
 
 Migration menambahkan `consentActive` pada `awardees` dan collection terkunci `movements`. Seeder menyimpan seluruh tujuh gerakan demo dengan semua status secara idempoten. Persetujuan registrasi baru juga mengaktifkan consent pengolahan data pada profil Awardee.
 
-Collection gerakan pada tahap ini dipakai untuk agregat metode pengukuran. Halaman publik dan area Awardee untuk gerakan masih memakai Dexie sampai migrasi fitur gerakan dikerjakan tersendiri.
+Collection gerakan dipakai untuk agregat metode pengukuran dan daftar `/gerakan` publik. Area Awardee untuk partisipasi serta laporan gerakan masih memakai Dexie sampai workflow privat dimigrasikan tersendiri.
 
 ## Frontend
 

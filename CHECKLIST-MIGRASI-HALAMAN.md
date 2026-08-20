@@ -7,7 +7,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] `/`: hero bersifat statis, sedangkan event terdekat, leaderboard, dan blog terbaru dibaca dari PocketBase.
 - [x] `/komunitas`: jumlah anggota aktif, ringkasan komunitas, sebaran chapter, dan agenda dibaca dari PocketBase; narasi serta foto adalah konfigurasi editorial statis.
 - [x] `/kalender` dan `/kalender/[id]`: event yang disetujui dibaca dari PocketBase; usulan mentah tidak tampil publik.
-- [ ] `/gerakan`: gerakan publik masih lokal (`DUMMY`).
+- [x] `/gerakan`: gerakan berjalan dan selesai, jumlah peserta, jumlah laporan, target, wilayah, serta kategori dibaca melalui endpoint publik PocketBase.
 - [x] `/cerita` dan `/cerita/[slug]`: cerita terbit, detail slug, consent aktif, dan media terkurasi dibaca melalui endpoint publik PocketBase.
 - [x] `/metode-pengukuran`: angka anggota, chapter, cerita, kegiatan, gerakan, ledger, dan amplifikasi dihitung melalui endpoint agregat PocketBase.
 - [x] `/daftar`: registrasi Awardee, data diri, consent snapshot, dan bukti memakai PocketBase.
@@ -73,5 +73,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - Landing, daftar blog, dan detail blog tidak lagi menampilkan pemberitahuan `DUMMY` karena sumber data operasionalnya sudah PocketBase.
 - Halaman komunitas tidak lagi menampilkan pemberitahuan `DUMMY` karena seluruh data operasionalnya sudah PocketBase.
 - Halaman metode pengukuran tidak lagi menampilkan pemberitahuan `DUMMY` karena potret angka operasionalnya sudah PocketBase.
+- Halaman gerakan publik tidak lagi menampilkan pemberitahuan `DUMMY` karena daftar dan agregatnya sudah PocketBase.
+- Seluruh halaman publik sudah memakai PocketBase atau konfigurasi editorial statis. Pengecualian pada kelompok autentikasi adalah login staf di `/masuk` yang masih menunggu SSO.
 - Pada halaman hybrid, label ditempel pada widget lokal, bukan pada seluruh data backend.
 - Data/UI/grafik lokal tidak dihapus selama migrasi; tetap ditampilkan dengan label `DUMMY` sampai adapter PocketBase-nya selesai.

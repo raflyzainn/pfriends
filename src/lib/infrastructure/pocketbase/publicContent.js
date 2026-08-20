@@ -60,6 +60,20 @@ export async function publicCommunitySummary() {
 	}
 }
 
+export async function publicMovements() {
+	try {
+		const response = await client().send('/api/pfriends/public/movements');
+		return (response.items || []).map((movement) => ({
+			...movement,
+			startsAt: new Date(movement.startsAt),
+			endsAt: new Date(movement.endsAt),
+			isRunning: movement.status === 'BERJALAN'
+		}));
+	} catch (error) {
+		throw new Error(pocketBaseMessage(error, 'Gerakan publik gagal dimuat.'));
+	}
+}
+
 export async function publicImpactSnapshot() {
 	try {
 		const response = await client().send('/api/pfriends/public/impact');

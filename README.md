@@ -57,7 +57,7 @@ npm run verify:registration  # 18 asersi registrasi dan gamifikasi pada PocketBa
 npm run verify:directory     # 13 asersi Jejaring, privasi profil, filter, dan poin demo
 npm run verify:rewards       # saldo, katalog, penukaran idempoten, RBAC Admin, dan refund
 npm run verify:backend       # seluruh integration test PocketBase di atas
-npm run verify:public-content # endpoint cerita publik dan leaderboard
+npm run verify:public-content # endpoint cerita, leaderboard, komunitas, dan gerakan publik
 npm run verify:public-impact  # agregat metode pengukuran PocketBase
 
 # Gerbang peramban: server dev harus berjalan lebih dulu:
@@ -144,7 +144,7 @@ Calendar of Event memakai PocketBase dan sengaja tidak memiliki data event dari 
 
 Beranda, papan peringkat publik, daftar blog, dan detail blog juga membaca PocketBase. Seeder memasukkan seluruh status cerita, sedangkan endpoint publik hanya membuka cerita yang sudah terbit dan memiliki consent aktif. Workflow privat cerita masih memakai Dexie. Lihat `docs/23-LANDING-DAN-BLOG-POCKETBASE.md`.
 
-Label `DUMMY` tidak ditampilkan pada landing dan blog karena data operasional kedua bagian tersebut sudah berasal dari PocketBase. Label tetap muncul pada halaman lain yang masih membaca data lokal.
+Label `DUMMY` tidak ditampilkan pada landing, blog, komunitas, metode pengukuran, dan gerakan karena data operasionalnya sudah berasal dari PocketBase. Label tetap muncul pada area privat yang masih membaca data lokal.
 
 Halaman komunitas membaca jumlah anggota aktif, komposisi komunitas, sebaran chapter, dan agenda dari PocketBase. Narasi serta foto tetap menjadi konfigurasi editorial statis. Lihat `docs/24-KOMUNITAS-POCKETBASE.md`.
 | `/masuk` |: | Login email/password; kartu satu klik hanya pada mode demo lokal |
@@ -152,7 +152,7 @@ Halaman komunitas membaca jumlah anggota aktif, komposisi komunitas, sebaran cha
 | `/pendaftaran/status` |: | Status terbatas dan pengiriman klarifikasi pendaftar |
 | `/tentang` |: | Latar program dan tata kelola |
 | `/komunitas` |: | Profil SOBI dan PFpreneur/Womenpreneur dengan agregat anggota PocketBase |
-| `/gerakan` |: | Gerakan bersama yang sedang berjalan |
+| `/gerakan` |: | Gerakan berjalan dan selesai dari endpoint publik PocketBase |
 | `/metode-pengukuran` |: | Cara tiap angka dihitung dari agregat PocketBase |
 
 ### Zona Awardee: 12 route

@@ -30,6 +30,36 @@ function storyFilter(extra) {
 	return extra ? `${base} && ${extra}` : base;
 }
 
+function movementDto(record) {
+	const arrayValue = (field) => {
+		try {
+			const parsed = JSON.parse(record.getString(field) || '[]');
+			return Array.isArray(parsed) ? parsed : [];
+		} catch (_) {}
+		return [];
+	};
+	const participants = arrayValue('participantIds');
+	const reports = arrayValue('reportIds');
+	return {
+		id: record.getString('legacyId'),
+		slug: record.getString('slug'),
+		title: record.getString('title'),
+		category: record.getString('category'),
+		status: record.getString('status'),
+		objective: record.getString('objective'),
+		region: record.getString('region'),
+		startsAt: record.getString('startsAt'),
+		endsAt: record.getString('endsAt'),
+		targetParticipants: record.getInt('targetParticipants'),
+		participantCount: participants.length,
+		reportCount: reports.length
+	};
+}
+
+function movementFilter() {
+	return 'status = "BERJALAN" || status = "SELESAI"';
+}
+
 function communitySummary(app) {
 	const awardees = app.findRecordsByFilter('awardees', 'status = "AKTIF"', 'chapterId', 0, 0);
 	const communityIds = ['SOBI', 'WOMENPRENEUR'];
@@ -111,4 +141,4 @@ function publicImpact(app) {
 	};
 }
 
-module.exports = { communitySummary, publicImpact, storyDto, storyFilter };
+module.exports = { communitySummary, movementDto, movementFilter, publicImpact, storyDto, storyFilter };
