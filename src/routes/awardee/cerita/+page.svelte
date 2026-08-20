@@ -69,10 +69,7 @@
 	 * mengisi jeda antara halaman terbuka dan antrean selesai dimuat.
 	 * @type {import('$lib/domain/entities/Story.js').Story[]}
 	 */
-	const blogSaya = $derived.by(() => {
-		if (editorial.myStories.length > 0) return editorial.myStories;
-		return awardee ? catalog.storiesByAwardee(awardee.id) : [];
-	});
+	const blogSaya = $derived(editorial.myStories);
 
 	const perluRevisi = $derived(blogSaya.filter((tulisan) => tulisan.needsRevision));
 	const dalamTinjauan = $derived(blogSaya.filter((tulisan) => tulisan.isInModeration));
@@ -150,7 +147,7 @@
 
 	onMount(async () => {
 		if (!session.ready) await session.hydrate();
-		await Promise.all([catalog.load(), editorial.load()]);
+		await editorial.load();
 	});
 </script>
 

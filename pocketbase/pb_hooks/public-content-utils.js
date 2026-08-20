@@ -1,4 +1,15 @@
-function storyDto(record) {
+function jsonField(record, field, fallback) {
+	try { return JSON.parse(record.getString(field)); } catch (_) {}
+	const direct = record.get(field);
+	if (Array.isArray(direct) && direct.every((value) => typeof value === 'number')) {
+		try { return JSON.parse(direct.map((value) => String.fromCharCode(value)).join('')); } catch (_) {}
+	}
+	return direct || fallback;
+}
+
+function storyDto(record, app) {
+	let coverUrl = '';
+	try { const cover = app.findFirstRecordByData('story_public_covers', 'story', record.id); const image = cover.getString('image'); if (image) coverUrl = `/api/files/${cover.collection().id}/${cover.id}/${image}`; } catch (_) {}
 	return {
 		id: record.getString('legacyId'),
 		slug: record.getString('slug'),
@@ -10,14 +21,15 @@ function storyDto(record) {
 		status: record.getString('status'),
 		community: record.getString('community'),
 		chapterId: record.getString('chapterId'),
-		esgTags: record.get('esgTags') || [],
-		mediaRefs: record.get('mediaRefs') || [],
-		outcome: record.get('outcome') || null,
+		esgTags: jsonField(record, 'esgTags', []),
+		mediaRefs: jsonField(record, 'mediaRefs', []),
+		coverUrl,
+		outcome: jsonField(record, 'outcome', null),
 		location: record.getString('location'),
 		activityDate: record.getString('activityDate') || null,
 		participantCount: record.getInt('participantCount'),
 		sensitivityScan: record.getString('sensitivityScan'),
-		pfValidation: record.get('pfValidation') || null,
+		pfValidation: jsonField(record, 'pfValidation', null),
 		consentGranted: true,
 		submittedAt: record.getString('submittedAt') || null,
 		publishedAt: record.getString('publishedAt') || null,

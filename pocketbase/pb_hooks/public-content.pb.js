@@ -1,7 +1,7 @@
 routerAdd('GET', '/api/pfriends/public/stories', (e) => {
 	const utils = require(`${__hooks}/public-content-utils.js`);
 	const rows = e.app.findRecordsByFilter('stories', utils.storyFilter(''), '-publishedAt', 0, 0);
-	return e.json(200, { items: rows.map(utils.storyDto) });
+	return e.json(200, { items: rows.map((row) => utils.storyDto(row, e.app)) });
 });
 
 routerAdd('GET', '/api/pfriends/public/stories/{slug}', (e) => {
@@ -16,7 +16,7 @@ routerAdd('GET', '/api/pfriends/public/stories/{slug}', (e) => {
 	} catch (_) {
 		throw new NotFoundError('Cerita tidak ditemukan.');
 	}
-	return e.json(200, utils.storyDto(record));
+	return e.json(200, utils.storyDto(record, e.app));
 });
 
 routerAdd('GET', '/api/pfriends/public/leaderboard', (e) => {

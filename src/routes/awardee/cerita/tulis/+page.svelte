@@ -50,9 +50,7 @@
 	import { ActivityType, poinUntuk } from '$lib/domain/constants/scoring-table.js';
 	import { MIN_KATA_NASKAH, Story } from '$lib/domain/entities/Story.js';
 	import { Rule, Validator } from '$lib/domain/validation/Validator.js';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
-	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
 	import { formatAngka, potongTeks } from '$lib/utils/format.js';
@@ -137,7 +135,14 @@
 	let formTanggal = $state(HARI_INI);
 	let formPeserta = $state('');
 	let formBukti = $state('');
+	let berkasBukti = $state([]);
+	let berkasSampul = $state(null);
+	let sampulTersedia = $state(false);
 	let formConsent = $state(false);
+	let idDraf = $state('');
+	let statusSimpan = $state('');
+	let timerSimpan;
+	let siapSimpanOtomatis = $state(false);
 
 	/** @type {boolean} Penulis sudah pernah menekan kirim; galat per field baru ditampilkan sesudahnya. */
 	let sudahDicoba = $state(false);
@@ -170,7 +175,7 @@
 	 */
 	const naskahRevisi = $derived(
 		idNaskahRevisi
-			? (catalog.stories.find((cerita) => cerita.id === idNaskahRevisi) ?? null)
+			? (editorial.myStories.find((cerita) => cerita.id === idNaskahRevisi) ?? null)
 			: null
 	);
 
@@ -212,7 +217,7 @@
 		if (idNaskahBaru === '') idNaskahBaru = `STR-${penulis.id}-${Date.now()}`;
 
 		return new Story({
-			id: naskahRevisi?.id ?? idNaskahBaru,
+			id: idDraf || naskahRevisi?.id || idNaskahBaru,
 			slug: naskahRevisi?.slug ?? buatSlug(formJudul, penulis.id),
 			authorId: penulis.id,
 			authorName: penulis.fullName,
@@ -224,6 +229,8 @@
 			chapterId: penulis.chapterId,
 			esgTags: [{ pillar: formPilar, sdgGoal: Number(formSdg) }],
 			mediaRefs: bukti === '' ? [] : [bukti],
+			evidenceFiles: bukti === '' ? [] : [bukti],
+			coverCandidate: sampulTersedia || berkasSampul ? 'sampul' : '',
 			outcome: {
 				note: formCatatanHasil.trim(),
 				metric: formMetrik.trim(),
@@ -276,6 +283,12 @@
 			hint: 'pilih satu pilar ESG dan satu tujuan SDG di bagian klasifikasi dampak'
 		},
 		{
+			key: 'sampul',
+			label: 'Foto sampul publik',
+			terpenuhi: sampulTersedia || Boolean(berkasSampul),
+			hint: 'pilih satu foto yang aman ditampilkan ketika tulisan diterbitkan'
+		},
+		{
 			key: 'consent',
 			label: 'Izin publikasi',
 			terpenuhi: consentLengkap,
@@ -304,12 +317,13 @@
 	const syaratBelumTerpenuhi = $derived(syaratKirim.filter((syarat) => !syarat.terpenuhi));
 
 	const layakKirim = $derived(
-		naskah !== null && naskah.isSubmittable && consentLengkap && validasi.valid
+		naskah !== null && naskah.isSubmittable && (sampulTersedia || Boolean(berkasSampul)) && consentLengkap && validasi.valid
 	);
 
 	onMount(async () => {
 		if (!session.ready) await session.hydrate();
-		await Promise.all([catalog.load(), editorial.load(), gamification.refresh()]);
+		await editorial.load();
+		siapSimpanOtomatis = true;
 	});
 
 	// Prefill sekali saja. Menjadikannya reaktif penuh akan menimpa suntingan
@@ -330,7 +344,28 @@
 		formLokasi = sumber.location;
 		formTanggal = sumber.activityDate ? isoLokal(sumber.activityDate) : HARI_INI;
 		formPeserta = sumber.participantCount ? String(sumber.participantCount) : '';
-		formBukti = sumber.mediaRefs[0] ?? '';
+		formBukti = sumber.evidenceFiles.length ? 'Bukti tersimpan' : '';
+		sampulTersedia = Boolean(sumber.coverCandidate);
+		idDraf = sumber.id;
+	});
+
+	function nilaiDraf() {
+		return { title: formJudul, summary: formRingkasan, body: formIsi, location: formLokasi, activityDate: formTanggal ? new Date(`${formTanggal}T09:00:00`).toISOString() : '', participantCount: Number(formPeserta) || 0, esgTags: [{ pillar: formPilar, sdgGoal: Number(formSdg) }], outcome: { note: formCatatanHasil, metric: formMetrik, value: Number(formNilai) || 0, unit: formSatuan }, evidenceFiles: berkasBukti, coverCandidate: berkasSampul };
+	}
+
+	async function simpanDraf() {
+		if (!siapSimpanOtomatis || sedangMengirim || (!formJudul.trim() && !formIsi.trim())) return true;
+		statusSimpan = 'Menyimpan';
+		const hasil = await editorial.saveStoryDraft(nilaiDraf(), idDraf || idNaskahRevisi);
+		if (!hasil.ok || !hasil.story) { statusSimpan = 'Gagal menyimpan'; return false; }
+		idDraf = hasil.story.id; berkasBukti = []; berkasSampul = null; formBukti = hasil.story.evidenceFiles.length ? 'Bukti tersimpan' : ''; sampulTersedia = Boolean(hasil.story.coverCandidate); statusSimpan = 'Tersimpan'; return true;
+	}
+
+	$effect(() => {
+		const jejak = [formJudul, formRingkasan, formIsi, formPilar, formSdg, formCatatanHasil, formMetrik, formNilai, formSatuan, formLokasi, formTanggal, formPeserta, formBukti, berkasSampul, berkasBukti];
+		if (!siapSimpanOtomatis || jejak.length === 0) return;
+		clearTimeout(timerSimpan); timerSimpan = setTimeout(() => void simpanDraf(), 1000);
+		return () => clearTimeout(timerSimpan);
 	});
 
 	/**
@@ -394,15 +429,9 @@
 
 		sedangMengirim = true;
 		try {
-			const hasil = await editorial.submitStory(naskah);
+			if (!(await simpanDraf()) || !idDraf) return;
+			const hasil = await editorial.submitStory({ id: idDraf });
 			if (!hasil.ok) return;
-
-			await gamification.perform(ActivityType.STORY_SUBMIT, {
-				refId: naskah.id,
-				evidence: [...naskah.mediaRefs],
-				note: naskah.title
-			});
-			await catalog.refresh();
 			await goto('/awardee/cerita');
 		} finally {
 			sedangMengirim = false;
@@ -657,13 +686,14 @@
 				</label>
 
 				<label class="mt-4 block">
-					<span class="label-micro">Sumber bukti</span>
+					<span class="label-micro">Berkas bukti</span>
 					<input
-						type="text"
-						bind:value={formBukti}
-						placeholder="Nama berkas dokumentasi atau tautan album, mis. bank-sampah-rw04.jpg"
+						type="file"
+						multiple
+						accept="image/jpeg,image/png,image/webp,application/pdf"
+						onchange={(event) => { berkasBukti = [...event.currentTarget.files]; formBukti = berkasBukti.length ? `${berkasBukti.length} berkas dipilih` : ''; }}
 						aria-invalid={Boolean(galat.evidence)}
-						class="mt-1.5 w-full max-w-full rounded-xl border bg-surface px-3 py-2 text-sm text-ink-800 {galat.evidence
+						class="mt-1.5 w-full max-w-full rounded-xl border bg-surface p-3 text-sm text-ink-800 {galat.evidence
 							? 'border-danger'
 							: 'border-ink-450'}"
 					/>
@@ -671,9 +701,15 @@
 						<span class="mt-1 block text-xs text-danger">{galat.evidence}</span>
 					{:else}
 						<span class="mt-1 block text-xs text-ink-600">
-							Foto, daftar hadir, atau laporan tertulis yang dapat diperiksa verifikator.
+							Maksimal lima foto atau PDF. Berkas hanya dapat dibuka Awardee pemilik dan Verifikator.
 						</span>
 					{/if}
+				</label>
+
+				<label class="mt-4 block">
+					<span class="label-micro">Foto sampul publik</span>
+					<input type="file" accept="image/jpeg,image/png,image/webp" onchange={(event) => { berkasSampul = event.currentTarget.files?.[0] ?? null; sampulTersedia = Boolean(berkasSampul) || sampulTersedia; }} class="mt-1.5 w-full max-w-full rounded-xl border border-ink-450 bg-surface p-3 text-sm text-ink-800" />
+					<span class="mt-1 block text-xs text-ink-600">Foto ini baru menjadi publik setelah naskah disetujui dan diterbitkan.</span>
 				</label>
 			</Card>
 
@@ -714,6 +750,7 @@
 					<span class="numeric font-semibold text-ink-800">{formatAngka(POIN_CERITA)}</span>
 					Poin Kontribusi pada buku besarmu.
 				</p>
+				{#if statusSimpan}<p class="text-xs font-semibold {statusSimpan === 'Gagal menyimpan' ? 'text-danger' : 'text-ink-600'}">{statusSimpan}</p>{/if}
 				<div class="flex flex-wrap items-center gap-2">
 					<Button variant="secondary" size="md" href="/awardee/cerita">Batal</Button>
 					<Button

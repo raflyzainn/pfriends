@@ -120,6 +120,7 @@ const BELUM_TERSEDIA_KEGIATAN =
  * @property {string} [note]                 Catatan bebas.
  * @property {string} [reason]               Kunci `STORY_ARCHIVE_REASON`.
  * @property {boolean} [sensitivityConfirmed] Checklist data sensitif dinyatakan lolos.
+ * @property {number[]} [sensitivityChecks] Nomor butir yang dikonfirmasi.
  */
 
 /**
@@ -180,6 +181,7 @@ export const STORY_DECISIONS = Object.freeze({
 		jalankan: (story, payload) =>
 			editorial.approve(story, {
 				sensitivityConfirmed: payload.sensitivityConfirmed === true,
+				sensitivityChecks: payload.sensitivityChecks ?? [],
 				note: payload.note ?? ''
 			})
 	}),

@@ -97,6 +97,30 @@ for (const movement of movements) {
 }
 
 let storiesCreated = 0;
+const PRIVATE_STORY_STATUSES = new Set(['DRAFT', 'DIAJUKAN', 'REVIEW', 'PERLU_REVISI', 'DISETUJUI']);
+const SAMPLE_PNG = new Uint8Array([
+	137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82,
+	0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0, 0, 31, 21, 196,
+	137, 0, 0, 0, 13, 73, 68, 65, 84, 8, 215, 99, 248, 207, 192,
+	240, 31, 0, 5, 0, 1, 255, 137, 153, 61, 29, 0, 0, 0, 0,
+	73, 69, 78, 68, 174, 66, 96, 130
+]);
+
+function storySeedPayload(data, existing, story) {
+	if (!PRIVATE_STORY_STATUSES.has(story.status)) return data;
+	const form = new FormData();
+	for (const [key, value] of Object.entries(data)) {
+		form.set(key, value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value ?? ''));
+	}
+	if (!existing?.evidenceFiles?.length) {
+		form.append('evidenceFiles', new Blob([SAMPLE_PNG], { type: 'image/png' }), `bukti_${story.id}.png`);
+	}
+	if (!existing?.coverCandidate) {
+		form.set('coverCandidate', new Blob([SAMPLE_PNG], { type: 'image/png' }), `sampul_${story.id}.png`);
+	}
+	return form;
+}
+
 for (const story of stories) {
 	const author = recordsByAwardeeId.get(story.authorId);
 	if (!author) continue;
@@ -105,6 +129,7 @@ for (const story of stories) {
 	const data = {
 		legacyId: story.id,
 		slug: story.slug,
+		owner: author.user,
 		author: author.id,
 		authorLegacyId: story.authorId,
 		authorName: story.authorName,
@@ -135,8 +160,9 @@ for (const story of stories) {
 		archiveReason: story.archiveReason || '',
 		views: story.views || 0
 	};
-	if (existing) await pb.collection('stories').update(existing.id, data);
-	else { await pb.collection('stories').create(data); storiesCreated++; }
+	const payload = storySeedPayload(data, existing, story);
+	if (existing) await pb.collection('stories').update(existing.id, payload);
+	else { await pb.collection('stories').create(payload); storiesCreated++; }
 }
 
 async function findOne(collection, filter, params) {

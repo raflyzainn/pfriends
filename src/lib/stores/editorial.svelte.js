@@ -45,6 +45,7 @@ import {
 	storyRepository
 } from '$lib/infrastructure/repositories/index.js';
 import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
+import { archiveStoryRecord, createStoryDraft, decideStory, myStories as loadMyStories, publishStoryRecord, revokeStoryConsent, startStoryReview, storyFileToken, storyFileUrl, submitStoryRecord, updateStoryDraft, verifierStories as loadVerifierStories, verifierStoryDetail } from '$lib/infrastructure/pocketbase/stories.js';
 import { session } from './session.svelte.js';
 import { toast } from './toast.svelte.js';
 
@@ -97,6 +98,10 @@ class EditorialStore {
 
 	/** @type {string|null} Pesan galat pemuatan terakhir. */
 	error = $state(null);
+	selectedStory = $state.raw(null);
+	storyReviews = $state.raw([]);
+	storyEvents = $state.raw([]);
+	storyFileToken = $state('');
 
 	/**
 	 * @type {Date} Waktu acuan perhitungan SLA. Disimpan sebagai state, bukan
@@ -163,9 +168,17 @@ class EditorialStore {
 	 */
 	async submitStory(story) {
 		return this.#jalankan(
-			(service, actor) => service.submitStory(story, actor),
+			() => submitStoryRecord(story.id),
 			'Naskah dikirim ke antrean tinjauan.'
 		);
+	}
+
+	async saveStoryDraft(values, id = '') {
+		if (!session.isAwardee) return { ok: false, reason: SEBAB_LUAR_DOMAIN, story: null };
+		this.working = true;
+		try { const story = id ? await updateStoryDraft(id, values) : await createStoryDraft(values); await this.#muat(); return { ok: true, reason: '', story }; }
+		catch (error) { this.error = error instanceof Error ? error.message : PESAN_GALAT_PENYIMPANAN; return { ok: false, reason: SEBAB_LUAR_DOMAIN, story: null }; }
+		finally { this.working = false; }
 	}
 
 	/**
@@ -175,7 +188,7 @@ class EditorialStore {
 	 */
 	async startReview(story) {
 		return this.#jalankan(
-			(service, actor) => service.startReview(story, actor),
+			() => startStoryReview(story.id),
 			'Naskah masuk ke daftar tinjauan Anda.'
 		);
 	}
@@ -189,7 +202,7 @@ class EditorialStore {
 	 */
 	async approve(story, opsi) {
 		return this.#jalankan(
-			(service, actor) => service.approveStory(story, actor, opsi),
+			() => decideStory(story.id, 'APPROVE', opsi?.note ?? '', opsi?.sensitivityChecks ?? []),
 			'Naskah disetujui dan siap diterbitkan.'
 		);
 	}
@@ -202,7 +215,7 @@ class EditorialStore {
 	 */
 	async requestRevision(story, note) {
 		return this.#jalankan(
-			(service, actor) => service.requestRevision(story, actor, note),
+			() => decideStory(story.id, 'REQUEST_REVISION', note),
 			'Catatan revisi terkirim ke penulis.'
 		);
 	}
@@ -214,7 +227,7 @@ class EditorialStore {
 	 */
 	async publish(story) {
 		return this.#jalankan(
-			(service, actor) => service.publishStory(story, actor),
+			() => publishStoryRecord(story.id),
 			'Naskah terbit di ruang publik.'
 		);
 	}
@@ -227,7 +240,7 @@ class EditorialStore {
 	 */
 	async archive(story, reason) {
 		return this.#jalankan(
-			(service, actor) => service.archiveStory(story, actor, reason),
+			() => archiveStoryRecord(story.id, reason),
 			'Naskah diarsipkan beserta alasannya.'
 		);
 	}
@@ -307,16 +320,12 @@ class EditorialStore {
 
 		this.working = true;
 		try {
-			const hasil = await this.#reviewService().withdrawOnConsentRevoked(penulisId, actor);
-			if (!hasil.ok) {
-				toast.error(JUDUL_DITOLAK, REVIEW_FAILURE_MESSAGE[hasil.reason] ?? PESAN_GALAT_PENYIMPANAN);
-				return { ok: false, withdrawn: 0, blocked: 0, reason: hasil.reason };
-			}
+			const hasil = await revokeStoryConsent();
 			await this.#muat();
 			return {
 				ok: true,
-				withdrawn: hasil.withdrawn.length,
-				blocked: hasil.blocked.length,
+				withdrawn: hasil.withdrawn,
+				blocked: hasil.blocked,
 				reason: ''
 			};
 		} catch {
@@ -349,11 +358,7 @@ class EditorialStore {
 
 		this.working = true;
 		try {
-			const hasil = await tindakan(this.#reviewService(), actor);
-			if (!hasil.ok) {
-				toast.error(JUDUL_DITOLAK, REVIEW_FAILURE_MESSAGE[hasil.reason] ?? PESAN_GALAT_PENYIMPANAN);
-				return { ok: false, reason: hasil.reason };
-			}
+			await tindakan(this.#reviewService(), actor);
 			toast.success('Tersimpan', pesanSukses);
 			await this.#muat();
 			return { ok: true, reason: '' };
@@ -364,6 +369,15 @@ class EditorialStore {
 			this.working = false;
 		}
 	}
+
+	async loadStoryDetail(id) {
+		this.loading = true; this.error = null;
+		try { const detail = await verifierStoryDetail(id); this.selectedStory = detail.story; this.storyReviews = detail.reviews || []; this.storyEvents = detail.events || []; this.storyFileToken = await storyFileToken(); return detail.story; }
+		catch (error) { this.error = error instanceof Error ? error.message : PESAN_GALAT_PENYIMPANAN; this.selectedStory = null; return null; }
+		finally { this.loading = false; }
+	}
+
+	storyEvidenceUrl(story, filename) { return storyFileUrl(story, filename, this.storyFileToken); }
 
 	async #jalankanEvent(tindakan, pesanSukses) {
 		if (!session.account) { toast.error(JUDUL_DITOLAK, PESAN_TANPA_SESI); return { ok: false, reason: SEBAB_LUAR_DOMAIN }; }
@@ -383,15 +397,14 @@ class EditorialStore {
 		this.error = null;
 		try {
 			await bootstrapDatabase();
-			const service = this.#reviewService();
 			const awardeeId = session.awardeeId;
 			const accountId = session.accountId;
 
 			const [storyQueue, eventQueue, pipeline, myStories, myEvents] = await Promise.all([
-				service.storyQueue(),
+				session.isVerifier ? loadVerifierStories() : Promise.resolve([]),
 				eventRepository.proposalQueue(),
-				service.pipeline(),
-				awardeeId ? storyRepository.byAuthor(awardeeId) : Promise.resolve([]),
+				Promise.resolve([]),
+				session.isAwardee ? loadMyStories() : Promise.resolve([]),
 				accountId ? eventRepository.proposedBy(accountId) : Promise.resolve([])
 			]);
 

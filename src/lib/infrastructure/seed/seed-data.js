@@ -1548,6 +1548,52 @@ Yang saya kerjakan sederhana pada permukaannya: mendatangi dua belas ibu yang ma
 Sampai hari ini dua belas resep sudah terdokumentasi lengkap dari tiga puluh yang saya targetkan. Ada dua resep yang terpaksa saya tinggalkan karena pemiliknya jatuh sakit sebelum sempat kami masak bersama, dan itu bagian yang paling saya sesali dari seluruh proses ini.
 
 Saya akan melengkapi catatan ini setelah tahap kedua selesai, termasuk bagian yang belum saya putuskan: siapa yang berhak atas resep-resep ini setelah dibukukan, dan bagaimana memastikan yang mewariskannya tetap dikenali namanya bila kelak ada yang memakainya untuk usaha.`
+	},
+	{
+		slug: 'bank-sampah-pasar-pagi-banjarmasin',
+		status: STORY_STATUS.REVIEW,
+		title: 'Bank Sampah Pasar Pagi yang Dikelola Pedagang Banjarmasin',
+		summary: 'Pedagang pasar menyusun jadwal pengumpulan dan pencatatan sampah kemasan agar program tetap berjalan tanpa bergantung pada relawan.',
+		esgKey: 'pengurangan_sampah',
+		location: 'Banjarmasin, Kalimantan Selatan', peserta: 37, dayIndex: 199, penulisUrut: 11,
+		outcome: { note: 'Tiga puluh tujuh pedagang mengumpulkan 486 kilogram kemasan dalam delapan pekan dan memakai hasil penjualannya untuk membeli alat kebersihan bersama.', metric: 'Sampah kemasan terkumpul', value: 486, unit: 'kilogram' },
+		body: `Pasar pagi menghasilkan banyak kardus, botol, dan kemasan plastik setiap hari. Selama ini semua bahan itu bercampur dengan sampah basah sehingga nilainya hilang dan petugas kebersihan harus mengangkut volume yang lebih besar. Kami memulai percobaan bersama enam pedagang dengan menempatkan karung terpisah di belakang kios masing masing.
+
+Pekan pertama memperlihatkan masalah yang tidak kami perkirakan. Karung cepat penuh, tetapi tidak ada orang yang bersedia membawanya ke titik timbang. Kami lalu menyusun jadwal bergilir dan mencatat berat dari setiap blok pasar. Pencatatan dibuat terbuka di papan dekat pos keamanan agar semua pedagang dapat melihat hasilnya.
+
+Dalam delapan pekan jumlah peserta bertambah menjadi tiga puluh tujuh pedagang. Sampah kemasan yang terkumpul mencapai empat ratus delapan puluh enam kilogram. Uang hasil penjualan tidak dibagikan, melainkan dipakai membeli sapu, sarung tangan, dan wadah angkut yang dapat digunakan bersama.
+
+Hal penting dari percobaan ini bukan hanya jumlah sampahnya. Pengelolaan sekarang dilakukan oleh pedagang melalui jadwal yang mereka sepakati sendiri. Relawan hanya membantu pada tahap awal dan tidak lagi menjadi penentu apakah kegiatan berjalan pada hari tertentu.`
+	},
+	{
+		slug: 'kelas-keuangan-pedagang-kecil-kendari',
+		status: STORY_STATUS.PERLU_REVISI,
+		title: 'Catatan Harian Keuangan untuk Pedagang Kecil Kendari',
+		summary: 'Delapan belas pedagang mencoba pencatatan sederhana untuk memisahkan uang usaha dan kebutuhan rumah tangga.',
+		esgKey: 'pertumbuhan_womenpreneur',
+		location: 'Kendari, Sulawesi Tenggara', peserta: 18, dayIndex: 200, penulisUrut: 18,
+		outcome: { note: 'Empat belas dari delapan belas peserta mencatat transaksi secara rutin selama enam pekan dan sebelas peserta mulai memisahkan uang usaha dari belanja rumah tangga.', metric: 'Peserta rutin mencatat', value: 14, unit: 'orang' },
+		body: `Pertemuan pertama dimulai dengan pertanyaan sederhana tentang keuntungan harian. Hampir semua peserta dapat menyebutkan jumlah uang yang masuk, tetapi kesulitan menjelaskan berapa yang tersisa setelah bahan baku, ongkos perjalanan, dan kebutuhan rumah tangga dibayar. Uang usaha dan uang keluarga bergerak melalui dompet yang sama.
+
+Kami tidak memperkenalkan aplikasi. Setiap peserta menerima buku kecil dengan tiga kolom untuk uang masuk, uang keluar, dan tujuan pengeluaran. Bentuk ini dipilih setelah mencoba lembar yang lebih rinci dan mendapati peserta berhenti mengisi pada hari ketiga.
+
+Selama enam pekan, empat belas dari delapan belas peserta mencatat secara rutin. Sebelas peserta mulai menyimpan uang usaha dalam tempat yang berbeda. Empat peserta belum konsisten karena anggota keluarga lain juga melayani pembeli dan tidak selalu menulis transaksi.
+
+Catatan Verifikator meminta naskah ini menjelaskan perubahan pendapatan dengan bukti yang lebih terukur. Bagian tersebut masih perlu dilengkapi karena tujuan awal kegiatan adalah membangun kebiasaan pencatatan, bukan menjanjikan kenaikan pendapatan dalam waktu singkat. Data lanjutan sedang dikumpulkan sebelum tulisan dikirim kembali.`
+	},
+	{
+		slug: 'kebun-bibit-warga-bogor',
+		status: STORY_STATUS.DRAFT,
+		title: 'Kebun Bibit Warga di Lahan Kosong Bogor',
+		summary: 'Draf awal tentang pemanfaatan lahan kosong sebagai tempat pembibitan tanaman pangan untuk warga sekitar.',
+		esgKey: 'aksi_lingkungan_lokal',
+		location: 'Bogor, Jawa Barat', peserta: 22, dayIndex: 201, penulisUrut: 25,
+		outcome: { note: 'Sebanyak dua ratus bibit mulai disiapkan oleh dua puluh dua warga untuk dibagikan setelah masa perawatan pertama selesai.', metric: 'Bibit disiapkan', value: 200, unit: 'bibit' },
+		body: `Lahan kosong di belakang balai warga lama dipenuhi rumput dan menjadi tempat pembuangan barang yang tidak terpakai. Bulan ini kami mulai membersihkannya bersama dan menyiapkan rak sederhana untuk pembibitan cabai, tomat, serta tanaman obat.
+
+Dua puluh dua warga sudah mengambil jadwal perawatan. Sekitar dua ratus bibit sedang tumbuh, tetapi belum semuanya cukup kuat untuk dibagikan. Tulisan ini masih berupa draf karena hasil tahap pertama baru dapat dihitung setelah bibit melewati masa perawatan dan diterima oleh keluarga yang akan menanamnya.
+
+Bagian berikutnya akan mencatat jumlah bibit yang bertahan, keluarga penerima, dan cara kelompok menjaga ketersediaan benih untuk putaran berikutnya.`
 	}
 ]);
 

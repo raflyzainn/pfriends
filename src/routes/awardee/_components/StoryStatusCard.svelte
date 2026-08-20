@@ -94,7 +94,7 @@
 		{/if}
 	</div>
 
-	<h3 class="mt-2 text-base leading-snug font-semibold break-words text-ink-800">{story.title}</h3>
+	<h3 class="mt-2 text-base leading-snug font-semibold break-words text-ink-800">{story.title || 'Draf tanpa judul'}</h3>
 	{#if story.summary}
 		<p class="mt-1 text-[13px] leading-relaxed text-ink-600">{story.summary}</p>
 	{/if}
@@ -185,9 +185,9 @@
 		</details>
 	{/if}
 
-	{#if story.needsRevision && reviseHref}
+	{#if (story.needsRevision || story.status === STORY_STATUS.DRAFT) && reviseHref}
 		<div class="mt-4 border-t border-ink-100 pt-3">
-			<Button size="sm" href={reviseHref} iconPath={ICONS.edit}>Perbaiki lalu kirim ulang</Button>
+			<Button size="sm" href={reviseHref} iconPath={ICONS.edit}>{story.needsRevision ? 'Perbaiki lalu kirim ulang' : 'Lanjutkan menulis'}</Button>
 		</div>
 	{/if}
 </Card>

@@ -66,7 +66,7 @@ export function kartuCerita(story) {
 		readMinutes: story.readMinutes,
 		author: { name: story.authorName },
 		href: `/cerita/${story.slug}`,
-		cover: fotoCerita(story.slug)
+		cover: story.coverUrl || fotoCerita(story.slug)
 	};
 }
 

@@ -66,6 +66,9 @@ export const MIN_KATA_NASKAH = 300;
  * @property {string} [chapterId]
  * @property {readonly {pillar: string, sdgGoal: number}[]} [esgTags] Pasangan pilar dan SDG.
  * @property {readonly string[]} [mediaRefs]   Rujukan dokumentasi.
+ * @property {readonly string[]} [evidenceFiles]
+ * @property {string} [coverCandidate]
+ * @property {string} [coverUrl]
  * @property {StoryOutcome|null} [outcome]     Catatan hasil terukur.
  * @property {string} [location]               Lokasi aktivitas yang diceritakan.
  * @property {Date|string|null} [activityDate] Tanggal pelaksanaan aktivitas.
@@ -124,6 +127,9 @@ export class Story {
 			chapterId = '',
 			esgTags = [],
 			mediaRefs = [],
+			evidenceFiles = mediaRefs,
+			coverCandidate = '',
+			coverUrl = '',
 			outcome = null,
 			location = '',
 			activityDate = null,
@@ -144,10 +150,13 @@ export class Story {
 			views = 0
 		} = input ?? {};
 
-		for (const [nama, nilai] of Object.entries({ id, slug, authorId, authorName, title, body })) {
+		for (const [nama, nilai] of Object.entries({ id, slug, authorId, authorName })) {
 			if (typeof nilai !== 'string' || nilai.trim() === '') {
 				throw new TypeError(`Field "${nama}" wajib berupa string tidak kosong.`);
 			}
+		}
+		if (status !== STORY_STATUS.DRAFT) {
+			for (const [nama, nilai] of Object.entries({ title, body })) if (typeof nilai !== 'string' || nilai.trim() === '') throw new TypeError(`Field "${nama}" wajib berupa string tidak kosong.`);
 		}
 		if (!Object.hasOwn(STORY_STATUS_META, status)) {
 			throw new RangeError(`Status cerita tidak dikenal: "${status}".`);
@@ -171,6 +180,9 @@ export class Story {
 			// tag setengah terisi menjadi keadaan yang tidak mungkin terbentuk.
 			esgTags: Object.freeze(esgTags.map((tag) => EsgTag.fromJSON(tag))),
 			mediaRefs: Object.freeze([...mediaRefs]),
+			evidenceFiles: Object.freeze([...(evidenceFiles ?? mediaRefs)]),
+			coverCandidate,
+			coverUrl,
 			outcome: outcome === null ? null : Object.freeze({ ...outcome }),
 			location,
 			activityDate: keTanggalOpsional(activityDate, 'activityDate'),
@@ -258,6 +270,10 @@ export class Story {
 	get mediaRefs() {
 		return this.#data.mediaRefs;
 	}
+
+	get evidenceFiles() { return this.#data.evidenceFiles; }
+	get coverCandidate() { return this.#data.coverCandidate; }
+	get coverUrl() { return this.#data.coverUrl; }
 
 	/** @returns {StoryOutcome|null} */
 	get outcome() {
@@ -592,6 +608,9 @@ export class Story {
 			chapterId: this.chapterId,
 			esgTags: this.esgTags.map((tag) => tag.toJSON()),
 			mediaRefs: [...this.mediaRefs],
+			evidenceFiles: [...this.evidenceFiles],
+			coverCandidate: this.coverCandidate,
+			coverUrl: this.coverUrl,
 			outcome: this.outcome === null ? null : { ...this.outcome },
 			location: this.location,
 			activityDate: this.activityDate?.toISOString() ?? null,
