@@ -37,6 +37,8 @@ Verifikator memutuskan usulan dan laporan melalui `/verifikator/gerakan`. Saat u
 
 Konsol Verifikator membagi pekerjaan menjadi tiga tab. Tab Usulan Gerakan memuat proposal yang membutuhkan keputusan. Tab Laporan Aksi memuat laporan pemimpin dan peserta sebagai antrean mandiri. Tab Semua Gerakan dipakai untuk melihat status program dan menyelesaikan Gerakan. Tampilan daftar mengikuti pola Bukti Keaktifan dengan kartu ringkas dan satu tombol detail. Pemeriksaan, catatan keputusan, tag ESG, serta penyelesaian Gerakan dipindahkan ke `/verifikator/gerakan/[id]` agar antrean mudah dipindai dan keputusan memiliki ruang yang jelas.
 
+Tab Usulan Gerakan menampilkan badge untuk jumlah usulan berstatus `DIUSULKAN`. Tab Laporan Aksi menampilkan badge untuk jumlah laporan berstatus `SUBMITTED` atau `IN_REVIEW`. Badge disembunyikan saat jumlahnya nol. Status yang sedang menunggu tindak lanjut Awardee atau sudah mendapat keputusan tidak dihitung sebagai pekerjaan aktif Verifikator.
+
 Data usulan lama dari seeder belum memiliki relasi akun pengusul. Migration lanjutan menghubungkannya dengan Awardee aktif agar persetujuan tidak gagal pada field `owner`, `awardeeId`, dan `awardeeName`.
 
 Admin membuka `/admin/gerakan` untuk memantau status, jumlah peserta, dan jumlah laporan disetujui. Admin tidak mempunyai tombol keputusan.

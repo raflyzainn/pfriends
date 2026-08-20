@@ -22,6 +22,8 @@
 	};
 	const proposals = $derived(items.filter((item) => item.status === 'DIUSULKAN' || item.status === 'PERLU_REVISI'));
 	const reports = $derived(items.flatMap((movement) => (movement.reports || []).map((report) => ({ ...report, movementId: movement.id, movementTitle: movement.title }))));
+	const pendingProposalCount = $derived(items.filter((item) => item.status === 'DIUSULKAN').length);
+	const pendingReportCount = $derived(reports.filter((item) => item.status === 'SUBMITTED' || item.status === 'IN_REVIEW').length);
 	const proposalFilters = $derived([
 		{ id: 'DIUSULKAN', label: 'Diusulkan', count: proposals.filter((item) => item.status === 'DIUSULKAN').length },
 		{ id: 'PERLU_REVISI', label: 'Perlu revisi', count: proposals.filter((item) => item.status === 'PERLU_REVISI').length }
@@ -52,8 +54,8 @@
 <PageHeader eyebrow="Ruang verifikasi" title="Gerakan" description="Tangani usulan Gerakan, periksa laporan aksi, dan pantau pelaksanaan program." />
 
 <div class="mb-5 flex gap-2 border-b border-ink-200">
-	<button type="button" class={`px-4 py-3 text-sm font-semibold ${tab === 'proposals' ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => changeTab('proposals')}>Usulan Gerakan</button>
-	<button type="button" class={`px-4 py-3 text-sm font-semibold ${tab === 'reports' ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => changeTab('reports')}>Laporan Aksi</button>
+	<button type="button" aria-label={`Usulan Gerakan, ${pendingProposalCount} antrean aktif`} class={`flex items-center gap-2 px-4 py-3 text-sm font-semibold ${tab === 'proposals' ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => changeTab('proposals')}>Usulan Gerakan{#if pendingProposalCount > 0}<span class="numeric inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-pertamina-red px-1.5 text-[11px] font-bold leading-none text-white">{pendingProposalCount}</span>{/if}</button>
+	<button type="button" aria-label={`Laporan Aksi, ${pendingReportCount} antrean aktif`} class={`flex items-center gap-2 px-4 py-3 text-sm font-semibold ${tab === 'reports' ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => changeTab('reports')}>Laporan Aksi{#if pendingReportCount > 0}<span class="numeric inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-pertamina-red px-1.5 text-[11px] font-bold leading-none text-white">{pendingReportCount}</span>{/if}</button>
 	<button type="button" class={`px-4 py-3 text-sm font-semibold ${tab === 'movements' ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => changeTab('movements')}>Semua Gerakan</button>
 </div>
 
