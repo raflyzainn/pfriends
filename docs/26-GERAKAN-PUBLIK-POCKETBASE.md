@@ -43,7 +43,9 @@ Sidebar Verifikator menghitung usulan `DIUSULKAN` serta laporan `SUBMITTED` dan 
 
 Awardee memperbaiki usulan melalui `POST /api/pfriends/movements/{id}/resubmit` dan laporan melalui `POST /api/pfriends/movement-reports/{id}/resubmit`. Kedua endpoint hanya menerima pemilik record pada status revisi. Pengajuan ulang memperbarui record lama, menaikkan jumlah revisi, mengembalikan status ke antrean, dan menulis audit `RESUBMIT`. Bukti laporan lama dipertahankan jika Awardee tidak memilih berkas pengganti.
 
-Sidebar lain memakai aturan pekerjaan aktif yang sama. Registrasi Verifikator menghitung `PENDING`. Penukaran hadiah menghitung `DIAJUKAN`, `DISETUJUI`, dan `DIKIRIM`. Calendar of Event Awardee menghitung kegiatan lampau yang sudah didaftarkan tetapi belum memiliki pengajuan bukti kehadiran. Badge nol tidak ditampilkan.
+Sidebar lain memakai aturan pekerjaan aktif yang sama. Registrasi Verifikator menghitung `PENDING`. Penukaran hadiah menghitung `DIAJUKAN`, `DISETUJUI`, dan `DIKIRIM`. Calendar of Event Awardee menghitung kegiatan lampau yang sudah didaftarkan tetapi belum memiliki pengajuan bukti kehadiran atau bukti tersebut berstatus `NEEDS_REVISION`. Badge nol tidak ditampilkan.
+
+Pada halaman Calendar of Event, kegiatan yang membutuhkan bukti kehadiran ditempatkan paling atas pada tab Sudah berlangsung. Kartunya memakai latar sorotan, label Perlu tindakan, dan ajakan upload yang jelas. Bukti berstatus `NEEDS_REVISION` memakai penanda perbaikan serta menampilkan catatan Verifikator. Bukti yang sudah dikirim dan sedang diperiksa tidak lagi dihitung sebagai pekerjaan Awardee.
 
 Data usulan lama dari seeder belum memiliki relasi akun pengusul. Migration lanjutan menghubungkannya dengan Awardee aktif agar persetujuan tidak gagal pada field `owner`, `awardeeId`, dan `awardeeName`.
 

@@ -119,8 +119,11 @@
 	const kehadiranPerluDikirim = $derived.by(() => {
 		const awardeeId = session.awardeeId;
 		if (!awardeeId) return 0;
-		const sudahDikirim = new Set(activitySubmissions.items.map((item) => item.event).filter(Boolean));
-		return catalog.events.filter((event) => event.startsAt <= new Date() && !event.isCancelled && event.isRegistered(awardeeId) && !event.hasAttended(awardeeId) && !sudahDikirim.has(event.id)).length;
+		const pengajuanPerKegiatan = new Map(activitySubmissions.items.filter((item) => item.event).map((item) => [item.event, item]));
+		return catalog.events.filter((event) => {
+			const pengajuan = pengajuanPerKegiatan.get(event.id);
+			return event.startsAt <= new Date() && !event.isCancelled && event.isRegistered(awardeeId) && !event.hasAttended(awardeeId) && (!pengajuan || pengajuan.status === SubmissionStatus.NEEDS_REVISION);
+		}).length;
 	});
 
 	/** Tujuh tujuan zona awardee, sudah bertanda lencana. */

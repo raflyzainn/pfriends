@@ -162,20 +162,33 @@
 			: 0
 	);
 
+	function pengajuanKehadiran(kegiatan) {
+		return activitySubmissions.items.find((row) => row.event === kegiatan.id);
+	}
+
+	function perluUnggahBukti(kegiatan) {
+		if (!awardee || kegiatan.isCancelled || kegiatan.hasAttended(awardee.id)) return false;
+		if (!kegiatan.isRegistered(awardee.id)) return false;
+		const pengajuan = pengajuanKehadiran(kegiatan);
+		return !pengajuan || pengajuan.status === 'NEEDS_REVISION';
+	}
+
 	const belumDiklaim = $derived(
-		awardee
-			? lampau.filter(
-					(kegiatan) =>
-						!kegiatan.isCancelled &&
-						!kegiatan.hasAttended(awardee.id) &&
-						kegiatan.isRegistered(awardee.id)
-				).length
-			: 0
+		awardee ? lampau.filter((kegiatan) => perluUnggahBukti(kegiatan)).length : 0
+	);
+
+	const lampauTerurut = $derived(
+		[...lampau].sort((a, b) => {
+			const prioritasA = perluUnggahBukti(a) ? 1 : 0;
+			const prioritasB = perluUnggahBukti(b) ? 1 : 0;
+			if (prioritasA !== prioritasB) return prioritasB - prioritasA;
+			return b.startsAt.getTime() - a.startsAt.getTime();
+		})
 	);
 
 	onMount(async () => {
 		if (!session.ready) await session.hydrate();
-		await Promise.all([catalog.load(), editorial.load(), gamification.refresh()]);
+		await Promise.all([catalog.load(), editorial.load(), gamification.refresh(), activitySubmissions.load({ mine: true })]);
 	});
 
 	/**
@@ -395,8 +408,7 @@
 					{formatAngka(belumDiklaim)} kegiatan menunggu konfirmasi kehadiranmu
 				</p>
 				<p class="mt-0.5 text-[13px] text-ink-600">
-					Kamu terdaftar tetapi kehadiranmu belum tercatat. Buka tab “Sudah berlangsung” dan tekan
-					Hadiri untuk mengklaim {POIN_HADIR} poin per sesi.
+					Kegiatan yang perlu tindakan sudah ditandai dan ditempatkan paling atas pada tab Sudah berlangsung.
 				</p>
 			</div>
 			<Button variant="outline" size="sm" onclick={() => (tabAktif = TAB_LAMPAU)}>
@@ -528,12 +540,22 @@
 	</div>
 {:else}
 	<div class="mt-6 space-y-3">
-		{#each lampau as kegiatan (kegiatan.id)}
+		{#each lampauTerurut as kegiatan (kegiatan.id)}
 			{@const sudahHadir = awardee ? kegiatan.hasAttended(awardee.id) : false}
 			{@const tanggal = bagianTanggal(kegiatan.startsAt)}
 			{@const participant = eventRepository.participantFor(kegiatan.id)}
-			{@const attendanceSubmission = activitySubmissions.items.find((row) => row.event === kegiatan.id)}
-			<Card padding="md">
+			{@const attendanceSubmission = pengajuanKehadiran(kegiatan)}
+			{@const butuhBukti = perluUnggahBukti(kegiatan)}
+			<Card padding="md" variant={butuhBukti ? 'highlight' : 'default'}>
+				{#if butuhBukti}
+					<div class="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white/80 px-3 py-2.5">
+						<div class="flex min-w-0 items-center gap-2 text-sm font-semibold text-pertamina-red">
+							<Icon path={ICONS.upload} size={17} class="shrink-0" />
+							<span>{attendanceSubmission ? 'Bukti kehadiran perlu diperbaiki' : 'Perlu upload bukti kehadiran'}</span>
+						</div>
+						<StatusBadge label="Perlu tindakan" color="red" withDot size="sm" />
+					</div>
+				{/if}
 				<div class="flex items-start gap-4">
 					{#if tanggal}
 						<div
@@ -619,6 +641,9 @@
 							{#if attendanceSubmission && attendanceSubmission.status !== 'NEEDS_REVISION'}
 								<StatusBadge label={attendanceSubmission.status === 'APPROVED' ? 'Bukti disetujui' : 'Bukti sedang diperiksa'} color={attendanceSubmission.status === 'APPROVED' ? 'green' : 'blue'} withDot />
 							{:else}
+								{#if attendanceSubmission?.reviewNote}
+									<p class="max-w-md text-right text-xs leading-relaxed text-red-700">Catatan Verifikator: {attendanceSubmission.reviewNote}</p>
+								{/if}
 								<input type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" class="max-w-64 text-xs" onchange={(e) => (fileBukti[kegiatan.id] = [...e.currentTarget.files])} />
 								<Button size="sm" loading={idSedangDiproses === kegiatan.id} disabled={idSedangDiproses !== null || (fileBukti[kegiatan.id]?.length ?? 0) === 0} onclick={() => hadiri(kegiatan)}>{attendanceSubmission ? 'Kirim ulang bukti' : 'Upload bukti hadir'}</Button>
 							{/if}
