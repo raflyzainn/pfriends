@@ -36,7 +36,13 @@ routerAdd('GET', '/api/pfriends/verifier/stories', (e) => {
 	const utils = require(`${__hooks}/story-utils.js`); utils.requireRole(e, 'VERIFIER');
 	const scope = e.request.url.query().get('scope') || 'queue';
 	const filter = scope === 'all' ? 'status != "DRAFT"' : 'status = "DIAJUKAN" || status = "REVIEW" || status = "DISETUJUI"';
-	const rows = e.app.findRecordsByFilter('stories', filter, scope === 'all' ? '-updated' : 'submittedAt', 0, 0);
+	const rows = e.app.findRecordsByFilter(
+		'stories',
+		filter,
+		scope === 'all' ? '-draftSavedAt,-submittedAt,-publishedAt' : 'submittedAt',
+		0,
+		0
+	);
 	return e.json(200, { items: rows.map((row) => utils.storyDto(e.app, row, true)) });
 }, $apis.requireAuth('users'));
 

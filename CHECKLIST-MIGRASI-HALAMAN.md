@@ -36,7 +36,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 - [x] `/verifikator/pendaftaran`: antrean, preview bukti terlindungi, WhatsApp, klarifikasi, approve, reject, dan audit memakai PocketBase.
 - [x] `/verifikator/bukti-keaktifan` dan `/verifikator/bukti-keaktifan/[id]`: antrean, preview bukti, review, revisi, approval, ledger poin, dan audit memakai PocketBase.
 - [x] `/verifikator/gamifikasi`: melihat penukar, memproses seluruh status pesanan, refund, WhatsApp, serta CRUD katalog hadiah memakai PocketBase.
-- [x] `/verifikator/cerita` dan `/verifikator/cerita/[id]`: antrean, seluruh status, bukti terlindungi, keputusan, revisi setelah publikasi, penerbitan, arsip, dan audit memakai PocketBase.
+- [x] `/verifikator/cerita` dan `/verifikator/cerita/[id]`: antrean, seluruh status, bukti terlindungi, keputusan, revisi setelah publikasi, penerbitan, arsip, dan audit memakai PocketBase. Query seluruh Cerita memakai field tanggal schema dan sudah diuji agar tidak menghasilkan respons 400.
 - [x] `/verifikator/kegiatan`: keputusan usulan, lifecycle agenda, penyuntingan, peserta, dan antrean bukti hadir memakai PocketBase.
 - [x] `/verifikator/gerakan`: keputusan usulan, penetapan ESG dan SDG, pemeriksaan laporan aksi, serta penyelesaian Gerakan memakai PocketBase.
 

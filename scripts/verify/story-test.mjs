@@ -27,9 +27,12 @@ const login = async (account) => {
 const awardee = await login(awardeeAccount);
 const verifier = await login(verifierAccount);
 const admin = await login(adminAccount);
+
 const storyCollection = await maintenance.collections.getOne('stories');
 let checks = 0;
 const expect = (value, message) => { if (!value) throw new Error(message); checks++; };
+const semuaCeritaVerifikator = await verifier.send('/api/pfriends/verifier/stories?scope=all');
+expect(Array.isArray(semuaCeritaVerifikator.items), 'Verifikator dapat memuat seluruh Cerita');
 const suffix = Date.now();
 const title = `Cerita Integrasi PocketBase ${suffix}`;
 const paragraph = 'Kegiatan warga menghasilkan perubahan yang dapat diperiksa melalui catatan peserta, waktu pelaksanaan, lokasi, bukti foto, dan hasil yang dicatat bersama secara terbuka.';

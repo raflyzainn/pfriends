@@ -59,6 +59,8 @@ Berkas terlindungi mengikuti aturan baca khusus. Awardee hanya dapat membuka ber
 
 Parameter `scope=all` pada endpoint daftar Verifikator memuat seluruh Cerita selain draf. Nilai bawaan tetap memuat antrean aktif.
 
+Daftar seluruh Cerita diurutkan memakai `draftSavedAt`, `submittedAt`, dan `publishedAt`. Field tersebut tersedia pada schema `stories`, sehingga pemuatan tidak bergantung pada field sistem `updated` yang tidak dapat dipakai oleh query hook ini.
+
 Verifikator dapat meminta revisi atas Cerita berstatus `TERPUBLIKASI`. Tindakan ini menghapus sampul publik, mengosongkan validasi penerbitan, dan memindahkan record yang sama ke `PERLU_REVISI`. Riwayat keputusan, slug, bukti, dan ledger poin tetap dipertahankan. Arsip tetap terminal dan tidak digunakan sebagai jalur revisi.
 
 ## Endpoint Admin
@@ -85,7 +87,7 @@ npm run verify:compile
 npm run build
 ```
 
-Tes integrasi Cerita mencakup persistensi berkas, akses bukti terlindungi oleh Verifikator, penolakan akses record langsung, privasi pemantauan Admin, antrean Verifikator, revisi sebelum dan sesudah publikasi pada record yang sama, checklist sensitif, promosi sampul publik, penghapusan dari katalog publik, penerbitan ulang, dan idempotensi ledger poin.
+Tes integrasi Cerita mencakup persistensi berkas, akses bukti terlindungi oleh Verifikator, penolakan akses record langsung, privasi pemantauan Admin, antrean dan seluruh Cerita Verifikator, revisi sebelum dan sesudah publikasi pada record yang sama, checklist sensitif, promosi sampul publik, penghapusan dari katalog publik, penerbitan ulang, dan idempotensi ledger poin.
 
 ## Penyegaran Cerita Publik
 
