@@ -224,6 +224,7 @@
 			category: reward.category,
 			priceKt: reward.priceCoins,
 			minTier: reward.minTier.level,
+			status: reward.status,
 			quota: reward.monthlyQuota ?? 0,
 			remaining: reward.remainingQuotaOn() ?? 0,
 			description: reward.description
@@ -244,7 +245,18 @@
 			});
 			return;
 		}
-		rewardDipilih = achievements.rewards.find((reward) => reward.id === tampilan.id) ?? null;
+		const reward = achievements.rewards.find((item) => item.id === tampilan.id) ?? null;
+		if (!reward?.isAvailableOn()) {
+			toast.push({
+				type: ToastType.INFO,
+				title: reward?.statusMeta.label ?? 'Hadiah belum tersedia',
+				message: reward?.status === 'SEGERA'
+					? 'Penghargaan ini segera hadir dan belum dapat ditukar.'
+					: 'Kuota penukaran penghargaan ini sudah habis.'
+			});
+			return;
+		}
+		rewardDipilih = reward;
 	}
 
 	/** @returns {void} */

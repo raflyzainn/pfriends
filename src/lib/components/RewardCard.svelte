@@ -4,7 +4,8 @@
 	 *
 	 * Props:
 	 * @prop {{id:string,name:string,category?:string,priceKt:number,minTier?:string,
-	 *         quota?:number,remaining?:number,image?:string,description?:string}} reward
+	 *         status?:'TERSEDIA'|'HABIS'|'SEGERA',quota?:number,remaining?:number,
+	 *         image?:string,description?:string}} reward
 	 * @prop {number} points     Saldo Koin Tukar pengguna (kontrak 09 §5).
 	 * @prop {number} balanceKt  Alias `points` (penamaan 08 §5.2).
 	 * @prop {string|null} userTier
@@ -23,6 +24,7 @@
 	import { ICONS } from '$lib/data/icons.js';
 	import { formatAngka } from '$lib/utils/format.js';
 	import { REWARD_CATEGORY_META, REWARD_CATEGORY } from '$lib/domain/constants/community.js';
+	import { REWARD_STATUS_META, RewardStatus } from '$lib/domain/entities/Reward.js';
 	import { entriTier, kelas } from './_visual.js';
 
 	let {
@@ -61,12 +63,16 @@
 
 	const kuota = $derived(reward?.quota ?? 0);
 	const sisa = $derived(reward?.remaining ?? 0);
-	const habis = $derived(kuota > 0 && sisa <= 0);
+	const status = $derived(reward?.status ?? RewardStatus.TERSEDIA);
+	const statusMeta = $derived(REWARD_STATUS_META[status] ?? REWARD_STATUS_META[RewardStatus.TERSEDIA]);
+	const segera = $derived(status === RewardStatus.SEGERA);
+	const habis = $derived(status === RewardStatus.HABIS || (kuota > 0 && sisa <= 0));
 	const menipis = $derived(kuota > 0 && sisa > 0 && sisa / kuota < AMBANG_KUOTA_MENIPIS);
 
-	const terkunci = $derived(tierKurang || saldoKurang || habis);
+	const terkunci = $derived(status !== RewardStatus.TERSEDIA || tierKurang || saldoKurang || habis);
 
 	const alasan = $derived.by(() => {
+		if (segera) return 'Penghargaan ini segera hadir dan belum dapat ditukar.';
 		if (habis) return 'Kuota penukaran periode ini sudah habis.';
 		if (tierKurang) return `Perlu tier ${tierMinimum?.label} untuk menukar penghargaan ini.`;
 		if (saldoKurang) return `Kurang ${formatAngka(kurangKt)} KT lagi untuk menukar.`;
@@ -89,13 +95,17 @@
 			</div>
 		{/if}
 
-		{#if menipis}
+		{#if segera}
 			<span class="absolute top-3 right-3">
-				<StatusBadge label="Sisa {formatAngka(sisa)}" color="amber" size="sm" />
+				<StatusBadge label={statusMeta.label} color={statusMeta.badgeColor} size="sm" />
 			</span>
 		{:else if habis}
 			<span class="absolute top-3 right-3">
-				<StatusBadge label="Habis" color="slate" size="sm" />
+				<StatusBadge label={statusMeta.label === 'Tersedia' ? 'Kuota habis' : statusMeta.label} color="slate" size="sm" />
+			</span>
+		{:else if menipis}
+			<span class="absolute top-3 right-3">
+				<StatusBadge label="Sisa {formatAngka(sisa)}" color="amber" size="sm" />
 			</span>
 		{/if}
 	</div>
@@ -140,7 +150,7 @@
 				disabled={terkunci || !onRedeem}
 				onclick={onRedeem ? () => onRedeem(reward) : undefined}
 			>
-				{terkunci ? 'Belum bisa ditukar' : 'Tukar Sekarang'}
+				{segera ? 'Segera hadir' : habis ? 'Kuota habis' : terkunci ? 'Belum bisa ditukar' : 'Tukar Sekarang'}
 			</Button>
 		</div>
 	</div>

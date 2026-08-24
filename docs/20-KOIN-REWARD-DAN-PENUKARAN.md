@@ -20,6 +20,8 @@ Semua kredit, debit, koreksi, penukaran, dan refund dicatat append-only pada `co
 
 Saat Awardee menukar hadiah, server memeriksa role, status akun, komunitas, tier, status reward, saldo, dan kuota dalam satu transaksi. `requestKey` unik mencegah klik ganda membuat dua debit.
 
+Katalog Awardee tetap menampilkan hadiah berstatus `SEGERA` dan `HABIS`, tetapi kartu menampilkan badge serta alasan ketersediaannya dan tombol penukaran dinonaktifkan. Kuota bulanan yang tersisa nol juga ditampilkan sebagai `Kuota habis`. Pemeriksaan server tetap menjadi pengaman terakhir apabila status berubah setelah halaman dimuat.
+
 - Reward tanpa persetujuan langsung berstatus `DIKIRIM`.
 - Reward dengan persetujuan dimulai dari `DIAJUKAN`.
 - Verifikator memproses `DIAJUKAN -> DISETUJUI -> DIKIRIM -> SELESAI`.
