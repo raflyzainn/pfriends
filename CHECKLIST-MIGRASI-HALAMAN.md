@@ -17,8 +17,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 
 ## Awardee
 
-- [~] `/awardee`: poin, tier, streak,
- badge, kegiatan, kabar, dan ringkasan Cerita dari PocketBase; sebagian ringkasan komunitas masih lokal (`DUMMY`).
+- [~] `/awardee`: poin, tier, streak, badge, kegiatan, kabar, dan ringkasan Cerita dari PocketBase; sebagian ringkasan komunitas masih lokal (`DUMMY`).
 - [x] `/awardee/bukti-keaktifan` dan `/awardee/bukti-keaktifan/[id]`: pengajuan, file terlindungi, status, revisi, dan riwayat memakai PocketBase.
 - [x] `/awardee/aksi`: katalog aksi aktif, nilai poin, kuota harian, dan riwayat poin memakai PocketBase; aksi kustom buatan staf otomatis menuju Bukti Keaktifan dan tidak membukukan poin langsung dari browser.
 - [x] `/awardee/penghargaan` atau Pencapaian: poin, tier, streak, badge, saldo Koin Tukar, katalog reward, kuota, penukaran, dan Pesanan Saya memakai PocketBase. Quest belum ditampilkan sebagai data operasional pada halaman ini.
