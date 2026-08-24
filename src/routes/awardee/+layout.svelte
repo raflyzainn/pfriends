@@ -51,7 +51,7 @@
 	import { isNavActive, navForZone, withBadges } from '$lib/data/navigation.js';
 	import { ActivityType } from '$lib/domain/constants/scoring-table.js';
 	import { Zone } from '$lib/domain/policies/AccessPolicy.js';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
+	import { awardeeDashboard } from '$lib/stores/awardee-dashboard.svelte.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { awardeeProfile } from '$lib/stores/profile.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
@@ -101,7 +101,7 @@
 	 * @returns {Promise<void>}
 	 */
 	async function siapkanZona() {
-		await Promise.all([catalog.load(), gamification.refresh(), awardeeProfile.load(), activitySubmissions.load({ mine: true }), workflowBadges.loadMovements()]);
+		await Promise.all([awardeeDashboard.load(), gamification.refresh(), awardeeProfile.load(), activitySubmissions.load({ mine: true }), workflowBadges.loadMovements()]);
 		siap = true;
 	}
 
@@ -127,21 +127,19 @@
 				.map((entri) => entri.refId)
 				.filter(Boolean)
 		);
-		return catalog.sentBroadcasts.filter((kabar) => !sudah.has(kabar.id)).length;
+		return awardeeDashboard.broadcasts.filter((kabar) => kabar.isSent && !sudah.has(kabar.id)).length;
 	});
 
 	/** Naskah yang dikembalikan verifikator dan menunggu diperbaiki penulisnya. */
 	const naskahPerluRevisi = $derived.by(() => {
-		const awardeeId = session.awardeeId;
-		if (!awardeeId) return 0;
-		return catalog.storiesByAwardee(awardeeId).filter((cerita) => cerita.needsRevision).length;
+		return awardeeDashboard.stories.filter((cerita) => cerita.needsRevision).length;
 	});
 
 	const kehadiranPerluDikirim = $derived.by(() => {
 		const awardeeId = session.awardeeId;
 		if (!awardeeId) return 0;
 		const pengajuanPerKegiatan = new Map(activitySubmissions.items.filter((item) => item.event).map((item) => [item.event, item]));
-		return catalog.events.filter((event) => {
+		return awardeeDashboard.events.filter((event) => {
 			const pengajuan = pengajuanPerKegiatan.get(event.id);
 			return event.startsAt <= new Date() && !event.isCancelled && event.isRegistered(awardeeId) && !event.hasAttended(awardeeId) && (!pengajuan || pengajuan.status === SubmissionStatus.NEEDS_REVISION);
 		}).length;

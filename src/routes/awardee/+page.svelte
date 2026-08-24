@@ -50,8 +50,7 @@
 	} from '$lib/components';
 	import AwardeePointTrend from '$lib/charts/AwardeePointTrend.svelte';
 	import { ActivityType } from '$lib/domain/constants/scoring-table.js';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
-	import { editorial } from '$lib/stores/editorial.svelte.js';
+	import { awardeeDashboard } from '$lib/stores/awardee-dashboard.svelte.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { selisihHari, tambahHari } from '$lib/utils/date.js';
@@ -107,14 +106,25 @@
 		)
 	);
 
-	const kabarTerbaru = $derived(catalog.sentBroadcasts.slice(0, JUMLAH_KABAR));
+	const kabarTerkirim = $derived(
+		awardeeDashboard.broadcasts
+			.filter((kabar) => kabar.isSent)
+			.sort((a, b) => (b.sentAt?.getTime() ?? 0) - (a.sentAt?.getTime() ?? 0))
+	);
+
+	const kabarTerbaru = $derived(kabarTerkirim.slice(0, JUMLAH_KABAR));
 
 	const kabarBelumDibaca = $derived(
-		catalog.sentBroadcasts.filter((kabar) => !kabarSudahDiklaim.has(kabar.id)).length
+		kabarTerkirim.filter((kabar) => !kabarSudahDiklaim.has(kabar.id)).length
 	);
 
 	/** Kegiatan terdekat yang masih akan datang. */
-	const kegiatanTerdekat = $derived(catalog.upcomingEvents(new Date(), JUMLAH_KEGIATAN));
+	const kegiatanTerdekat = $derived(
+		awardeeDashboard.events
+			.filter((kegiatan) => kegiatan.isPubliclyVisible && kegiatan.isUpcoming(new Date()))
+			.sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+			.slice(0, JUMLAH_KEGIATAN)
+	);
 
 	/** Kegiatan yang jatuh dalam tujuh hari ke depan: satu-satunya yang layak disebut mendesak. */
 	const kegiatanPekanIni = $derived(
@@ -124,10 +134,7 @@
 	);
 
 	/** Naskah milik penulis yang sedang masuk. */
-	const naskahSaya = $derived.by(() => {
-		if (editorial.myStories.length > 0) return editorial.myStories;
-		return awardee ? catalog.storiesByAwardee(awardee.id) : [];
-	});
+	const naskahSaya = $derived(awardeeDashboard.stories);
 
 	const naskahPerluRevisi = $derived(naskahSaya.filter((cerita) => cerita.needsRevision));
 	const naskahTerbit = $derived(naskahSaya.filter((cerita) => cerita.isPublished));
@@ -254,11 +261,8 @@
 		};
 	});
 
-	// Antrean editorial dimuat di sini, bukan di layout: hanya dasbor dan dua
-	// halaman yang membutuhkannya, dan store menahan pemanggilan serentak pada satu
-	// janji yang sama sehingga pemanggilan ganda tidak berarti dua pembacaan.
 	onMount(async () => {
-		await editorial.load();
+		await awardeeDashboard.load({ force: true });
 	});
 </script>
 
@@ -312,6 +316,15 @@
 	</section>
 
 	<!-- ══ S2 · Kegiatan terdekat ════════════════════════════════════════════ -->
+	{#if awardeeDashboard.error}
+		<div class="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-control border border-red-200 bg-red-50 px-4 py-3">
+			<p class="text-sm text-red-900">{awardeeDashboard.error} Data lokal tidak digunakan sebagai pengganti.</p>
+			<Button variant="outline" size="sm" loading={awardeeDashboard.loading} onclick={() => awardeeDashboard.load({ force: true })}>
+				Coba muat ulang
+			</Button>
+		</div>
+	{/if}
+
 	<section class="mt-7" aria-labelledby="judul-kegiatan">
 		<div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
 			<h2 id="judul-kegiatan" class="text-lg font-bold text-heading">
@@ -546,7 +559,7 @@
 			{#if kabarTerbaru.length === 0}
 				<EmptyState
 					title="Belum ada kabar baru"
-					message="Kabar mingguan PFriends terbit setiap Selasa pagi."
+					message="Kabar akan muncul di sini segera."
 					iconPath={ICONS.megaphone}
 					size="sm"
 				/>

@@ -27,6 +27,7 @@
 	 * @see docs/03-GAMIFICATION-SPEC.md: §5.2 kunci idempotensi per aksi
 	 */
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import { startBroadcast } from '$lib/infrastructure/pocketbase/broadcasts.js';
 	import {
 		Button,
@@ -60,6 +61,10 @@
 
 	const idKabar = $derived(page.params.id ?? '');
 	const kabar = $derived(catalog.byId(CatalogKind.BROADCAST, idKabar));
+
+	onMount(async () => {
+		await catalog.load();
+	});
 
 	/**
 	 * Seluruh entri buku besar yang menyangkut kabar ini.

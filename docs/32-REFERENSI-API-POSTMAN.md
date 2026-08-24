@@ -41,6 +41,8 @@ Untuk unggahan file, pilih Body > form-data dan jangan menulis `Content-Type` se
 
 Role yang dipakai: `AWARDEE`, `VERIFIER`, dan `ADMIN`. Istilah **Staf** berarti `ADMIN` atau `VERIFIER` aktif.
 
+Dasbor `/awardee` tidak memiliki endpoint agregat tersendiri. Untuk mereproduksi datanya di Postman, login sebagai Awardee lalu jalankan `GET /api/pfriends/gamification/me`, `GET /api/pfriends/events`, `GET /api/pfriends/broadcasts`, dan `GET /api/pfriends/stories/mine` dengan `{{awardeeToken}}`.
+
 ## 2. Auth dan sesi
 
 Endpoint auth di bawah adalah REST bawaan PocketBase.

@@ -15,6 +15,7 @@
 		if (path.startsWith('/awardee/kalender')) return '';
 		if (path.startsWith('/awardee/gerakan')) return '';
 		if (path.startsWith('/awardee/cerita')) return '';
+		if (path === '/awardee') return '';
 		if (path.startsWith('/verifikator/bukti-keaktifan') || path.startsWith('/verifikator/pendaftaran')) return '';
 		if (path.startsWith('/verifikator/gamifikasi')) return '';
 		if (path.startsWith('/verifikator/gerakan')) return '';

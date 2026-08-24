@@ -19,6 +19,7 @@
 	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 04, Hal 6 KPI diseminasi
 	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.14 /awardee/kabar
 	 */
+	import { onMount } from 'svelte';
 	import {
 		Card,
 		EmptyState,
@@ -77,6 +78,10 @@
 		return kabarTerkirim;
 	});
 
+	onMount(async () => {
+		await catalog.load();
+	});
+
 	/**
 	 * Pesan kosong yang sesuai dengan penyaring yang sedang dipakai. Satu kalimat
 	 * kosong untuk semua keadaan akan berbohong pada dua di antaranya.
@@ -97,7 +102,7 @@
 		}
 		return {
 			judul: 'Belum ada kabar baru',
-			pesan: 'Kabar mingguan PFriends terbit setiap Selasa pagi.'
+			pesan: 'Kabar akan muncul di sini segera.'
 		};
 	});
 </script>
