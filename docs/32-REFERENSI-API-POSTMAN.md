@@ -298,7 +298,7 @@ Verifikator. Body:
 | GET | `/api/pfriends/point-actions` | Semua user aktif | Tanpa body. Awardee menerima aksi aktif; Staf menerima semua status |
 | GET | `/api/pfriends/gamification/me` | Awardee | Profil, wallet, aksi, kuota, ledger, badge |
 | GET | `/api/pfriends/gamification/leaderboard` | Semua user login | Query: `scope=global|community|chapter`, `key`, `period=all|month`, `limit=1..100` |
-| GET | `/api/pfriends/verifier/dashboard` | Verifikator | Tanpa body |
+| GET | `/api/pfriends/verifier/dashboard` | Verifikator | Tanpa body. Mengembalikan agregat gamifikasi, `monthly`, `kpis`, `reviewPerformance`, `workRecord`, dan leaderboard tanpa isi keputusan atau bukti privat |
 | POST | `/api/pfriends/point-activities/{{pointActivityId}}/revoke` | Admin | `{"reason":"Alasan pencabutan minimal lima karakter"}` |
 
 ### Tambah aksi poin

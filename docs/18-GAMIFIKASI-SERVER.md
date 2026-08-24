@@ -15,7 +15,7 @@ Endpoint yang digunakan UI:
 
 - `GET /api/pfriends/gamification/me` untuk pencapaian Awardee, ledger, dan kuota harian sembilan aksi;
 - `GET /api/pfriends/gamification/leaderboard` untuk global, komunitas, chapter, seluruh waktu, atau bulan berjalan;
-- `GET /api/pfriends/verifier/dashboard` untuk angka poin, tier, badge, streak, distribusi, dan leaderboard Verifikator;
+- `GET /api/pfriends/verifier/dashboard` untuk angka poin, tier, badge, streak, distribusi, leaderboard, Cerita terbit bulanan, KPI resmi, laju peninjauan, dan rekam kerja Verifikator;
 - `POST /api/pfriends/point-activities/{id}/revoke` untuk pencabutan poin oleh Admin.
 - `GET /api/pfriends/achievements` dan `POST /api/pfriends/redemptions` untuk Pencapaian Awardee;
 - `GET /api/pfriends/admin/redemptions` dan endpoint `transition` untuk pemrosesan Admin.
