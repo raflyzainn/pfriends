@@ -166,7 +166,7 @@ bergaya kanal) · `/awardee/kalender` · `/awardee/penghargaan` · `/awardee/kab
 `/awardee/kabar/[id]` · `/awardee/direktori` · `/awardee/aksi` · `/awardee/gerakan` ·
 `/awardee/profil` (profil dibuka melalui kartu akun, bukan menu tersendiri)
 
-Pusat Aksi membaca sembilan kuota harian dan ledger poin dari PocketBase. Kartu aksi mengantar ke workflow server yang sesuai; pengajuan pengetahuan dan mentor membuka Bukti Keaktifan dengan jenis aktivitas terpilih. Lihat `docs/30-AKSI-DAN-POIN-POCKETBASE.md`.
+Pusat Aksi membaca katalog aktif, kuota harian, dan ledger poin dari PocketBase. Admin serta Verifikator dapat mengelola aksi dan auditnya; aksi kustom selalu membuka Bukti Keaktifan. Lihat `docs/30-AKSI-DAN-POIN-POCKETBASE.md` dan `docs/31-KATALOG-AKSI-DINAMIS-POCKETBASE.md`.
 
 `/awardee/papan-peringkat` **dicabut**: peserta melihat capaiannya sebagai pencapaian
 pribadi, bukan sebagai peringkat antar-peserta. Papan peringkat hanya tampil di beranda

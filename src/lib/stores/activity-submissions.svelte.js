@@ -86,7 +86,7 @@ class ActivitySubmissionStore {
 		const pb = getPocketBase();
 		if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
 		const data = new FormData();
-		for (const key of ['activityType','activityDate','title','description','externalUrl']) data.set(key, values[key] || '');
+		for (const key of ['pointAction','activityType','activityDate','title','description','externalUrl']) data.set(key, values[key] || '');
 		data.set('owner', pb.authStore.record.id);
 		for (const file of values.files || []) data.append('evidenceFiles', file);
 		this.working = true; this.error = '';

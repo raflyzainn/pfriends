@@ -17,6 +17,7 @@ routerAdd('GET', '/api/pfriends/gamification/me', (e) => {
 	return e.json(200, {
 		profile: result.profile,
 		wallet: { balance: wallet.getInt('balance'), lifetimeEarned: wallet.getInt('lifetimeEarned'), lifetimeSpent: wallet.getInt('lifetimeSpent') },
+		actions: e.app.findRecordsByFilter('point_actions', 'status = "ACTIVE"', 'actionClass,label', 0, 0).map(require(`${__hooks}/point-action-utils.js`).dto),
 		dailyUsage: utils.dailyUsage(e.app, awardee.getString('legacyId')),
 		ledger: result.entries.slice().reverse(),
 		badges: catalog.map((badge) => ({ id: badge.id, code: badge.getString('code'), name: badge.getString('name'), family: badge.getString('family'), rarity: badge.getString('rarity'), criteria: badge.getString('criteria'), icon: badge.getString('icon'), community: badge.getString('community'), unlocked: badges.some((row) => row.getString('badgeCode') === badge.getString('code')) }))

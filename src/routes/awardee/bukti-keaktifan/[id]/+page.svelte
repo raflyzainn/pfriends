@@ -1,8 +1,8 @@
 <script>
 	import { page } from '$app/state';
 	import { PageHeader, Card, StatusBadge, Button, EmptyState } from '$lib/components';
-	import { aturanSkor } from '$lib/domain/constants/scoring-table.js';
 	import { activitySubmissions, SUBMISSION_EVENT_META, SUBMISSION_STATUS_META, SubmissionStatus } from '$lib/stores/activity-submissions.svelte.js';
+	import { gamification } from '$lib/stores/gamification.svelte.js';
 	let started = false;
 	$effect(() => { if (!started && page.params.id) { started = true; void activitySubmissions.detail(page.params.id).catch(() => {}); } });
 	const dateTime = (value) => String(value || '').slice(0, 16).replace('T', ' ');
@@ -13,7 +13,7 @@
 
 {#if activitySubmissions.selected}
 	{@const item = activitySubmissions.selected}
-	{@const rule = aturanSkor(item.activityType)}
+	{@const rule = gamification.actions.find((action) => action.id === item.pointAction) || { label: item.actionCode || item.activityType, points: item.awardedPoints || 0 }}
 	<div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
 		<div class="grid gap-5">
 			<Card>

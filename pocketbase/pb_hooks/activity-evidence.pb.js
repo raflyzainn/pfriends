@@ -1,6 +1,3 @@
-const SCORE = { SHARE_PRIVATE: 5, SHARE_PUBLIC: 8, STORY_SUBMIT: 10, SESSION_ATTEND: 15, KNOWLEDGE_QA: 15, SPEAKER_MENTOR: 30, LEAD_ACTION: 50 };
-const DAILY_CAP = { SHARE_PRIVATE: 3, SHARE_PUBLIC: 2, STORY_SUBMIT: 1, SESSION_ATTEND: 2, KNOWLEDGE_QA: 2, SPEAKER_MENTOR: 1, LEAD_ACTION: 1 };
-
 onRecordCreateRequest((e) => {
 	if (!e.auth || e.auth.getString('role') !== 'AWARDEE') throw new ForbiddenError('Hanya Awardee yang dapat mengirim bukti.');
 	if (e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Akun Awardee tidak aktif.');
@@ -12,6 +9,10 @@ onRecordCreateRequest((e) => {
 	e.record.set('revisionCount', 0);
 	e.record.set('reviewer', ''); e.record.set('reviewNote', ''); e.record.set('reviewStartedAt', ''); e.record.set('reviewedAt', ''); e.record.set('awardedPoints', 0);
 	e.record.set('submittedAt', new Date().toISOString());
+	const action = require(`${__hooks}/point-action-utils.js`).resolve(e.app, e.record, true);
+	if (action.getString('workflow') !== 'EVIDENCE') throw new BadRequestError('Aksi ini tidak diajukan melalui Bukti Keaktifan.');
+	e.record.set('pointAction', action.id); e.record.set('actionCode', action.getString('code'));
+	if (action.getBool('isCore')) e.record.set('activityType', action.getString('code'));
 	if (e.record.getString('activityType') === 'SESSION_ATTEND') {
 		const eventId = e.record.getString('event');
 		if (!eventId) throw new BadRequestError('Bukti hadir wajib terhubung ke event.');
@@ -29,7 +30,7 @@ onRecordUpdateRequest((e) => {
 	if (!e.auth || e.auth.id !== e.record.getString('owner') || e.record.original().getString('status') !== 'NEEDS_REVISION') {
 		throw new ForbiddenError('Pengajuan ini tidak dapat diperbarui.');
 	}
-	for (const field of ['owner','awardeeId','awardeeName','activityType','event','eventParticipant','broadcast','status','revisionCount','reviewer','reviewNote','reviewStartedAt','reviewedAt','awardedPoints']) {
+	for (const field of ['owner','awardeeId','awardeeName','activityType','pointAction','actionCode','event','eventParticipant','broadcast','status','revisionCount','reviewer','reviewNote','reviewStartedAt','reviewedAt','awardedPoints']) {
 		e.record.set(field, e.record.original().get(field));
 	}
 	e.record.set('status', 'SUBMITTED');
@@ -79,8 +80,6 @@ routerAdd('POST', '/api/pfriends/activity-submissions/{id}/start-review', (e) =>
 }, $apis.requireAuth('users'));
 
 routerAdd('POST', '/api/pfriends/activity-submissions/{id}/review', (e) => {
-	const score = { SHARE_PRIVATE: 5, SHARE_PUBLIC: 8, STORY_SUBMIT: 10, SESSION_ATTEND: 15, KNOWLEDGE_QA: 15, SPEAKER_MENTOR: 30, LEAD_ACTION: 50 };
-	const dailyCap = { SHARE_PRIVATE: 3, SHARE_PUBLIC: 2, STORY_SUBMIT: 1, SESSION_ATTEND: 2, KNOWLEDGE_QA: 2, SPEAKER_MENTOR: 1, LEAD_ACTION: 1 };
 	if (!e.auth || e.auth.getString('role') !== 'VERIFIER' || e.auth.getString('status') !== 'AKTIF') throw new ForbiddenError('Hanya Verifikator aktif yang dapat memutuskan bukti.');
 	const body = new DynamicModel({ decision: '', note: '' });
 	e.bindBody(body);
@@ -99,14 +98,16 @@ routerAdd('POST', '/api/pfriends/activity-submissions/{id}/review', (e) => {
 		if (body.decision === 'REQUEST_REVISION') {
 			submission.set('status', 'NEEDS_REVISION'); submission.set('revisionCount', submission.getInt('revisionCount') + 1); submission.set('awardedPoints', 0);
 		} else {
-			const type = submission.getString('activityType');
+			const actionUtils = require(`${__hooks}/point-action-utils.js`);
+			const action = actionUtils.resolve(tx, submission, true);
+			const type = action.getString('code');
 			const awardeeId = submission.getString('awardeeId');
 			const date = submission.getString('activityDate').slice(0, 10);
-			const count = tx.findRecordsByFilter('verified_point_activities', 'awardeeId = {:awardee} && activityType = {:type} && occurredAt >= {:start} && occurredAt <= {:end}', '', 0, 0, { awardee: awardeeId, type, start: date + ' 00:00:00.000Z', end: date + ' 23:59:59.999Z' }).length;
-			const capped = count >= dailyCap[type];
-			const points = capped ? 0 : score[type];
+			const count = tx.findRecordsByFilter('verified_point_activities', 'awardeeId = {:awardee} && (actionCode = {:type} || activityType = {:type}) && occurredAt >= {:start} && occurredAt <= {:end}', '', 0, 0, { awardee: awardeeId, type, start: date + ' 00:00:00.000Z', end: date + ' 23:59:59.999Z' }).length;
+			const capped = count >= action.getInt('dailyCap');
+			const points = capped ? 0 : action.getInt('points');
 			const ledger = new Record(tx.findCollectionByNameOrId('verified_point_activities'));
-			ledger.set('submission', id); ledger.set('user', submission.getString('owner')); ledger.set('source', 'EVIDENCE'); ledger.set('awardeeId', awardeeId); ledger.set('activityType', type); ledger.set('points', points); ledger.set('capReason', capped ? 'DAILY_CAP' : ''); ledger.set('occurredAt', submission.getString('activityDate')); ledger.set('awardedAt', now); ledger.set('status', 'AWARDED');
+			ledger.set('submission', id); ledger.set('user', submission.getString('owner')); ledger.set('source', 'EVIDENCE'); ledger.set('awardeeId', awardeeId); actionUtils.attach(ledger, action); ledger.set('points', points); ledger.set('capReason', capped ? 'DAILY_CAP' : ''); ledger.set('occurredAt', submission.getString('activityDate')); ledger.set('awardedAt', now); ledger.set('status', 'AWARDED');
 			if (submission.getString('broadcast')) ledger.set('broadcast', submission.getString('broadcast'));
 			tx.save(ledger);
 			submission.set('status', 'APPROVED'); submission.set('awardedPoints', points);

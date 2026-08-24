@@ -19,7 +19,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 
 - [~] `/awardee`: poin, tier, streak, badge, kegiatan, kabar, dan ringkasan Cerita dari PocketBase; sebagian ringkasan komunitas masih lokal (`DUMMY`).
 - [x] `/awardee/bukti-keaktifan` dan `/awardee/bukti-keaktifan/[id]`: pengajuan, file terlindungi, status, revisi, dan riwayat memakai PocketBase.
-- [x] `/awardee/aksi`: katalog sembilan aksi, kuota harian, dan riwayat poin memakai PocketBase; setiap kartu menuju workflow Kabar, Bukti Keaktifan, Cerita, Calendar of Event, atau Gerakan yang sesuai dan tidak membukukan poin langsung dari browser.
+- [x] `/awardee/aksi`: katalog aksi aktif, nilai poin, kuota harian, dan riwayat poin memakai PocketBase; aksi kustom buatan staf otomatis menuju Bukti Keaktifan dan tidak membukukan poin langsung dari browser.
 - [x] `/awardee/penghargaan` atau Pencapaian: poin, tier, streak, badge, saldo Koin Tukar, katalog reward, kuota, penukaran, dan Pesanan Saya memakai PocketBase. Quest belum ditampilkan sebagai data operasional pada halaman ini.
 - [~] `/awardee/profil`: profil hasil approval dan gamifikasi terbaca dari PocketBase; edit profil umum, consent versioned, statistik konten, dan etalase masih hybrid/lokal (`DUMMY`).
 - [x] `/awardee/direktori` atau Jejaring: profil Awardee aktif, pencarian, filter, statistik, pagination, dan gamifikasi ringkas memakai endpoint PocketBase tersanitasi.
@@ -35,7 +35,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [~] `/verifikator`: total poin, Awardee, tier, streak, badge, leaderboard, antrean kegiatan, dan antrean Cerita dari PocketBase; sebagian KPI serta rekam kerja lain masih lokal dan diberi label `DUMMY` per widget.
 - [x] `/verifikator/pendaftaran`: antrean, preview bukti terlindungi, WhatsApp, klarifikasi, approve, reject, dan audit memakai PocketBase.
 - [x] `/verifikator/bukti-keaktifan` dan `/verifikator/bukti-keaktifan/[id]`: antrean, preview bukti, review, revisi, approval, ledger poin, dan audit memakai PocketBase.
-- [x] `/verifikator/gamifikasi`: melihat penukar, memproses seluruh status pesanan, refund, WhatsApp, serta CRUD katalog hadiah memakai PocketBase.
+- [x] `/verifikator/gamifikasi`: memproses penukaran, CRUD katalog hadiah, dan CRUD katalog aksi poin beserta audit memakai PocketBase.
 - [x] `/verifikator/cerita` dan `/verifikator/cerita/[id]`: antrean, seluruh status, bukti terlindungi, keputusan, revisi setelah publikasi, penerbitan, arsip, dan audit memakai PocketBase. Query seluruh Cerita memakai field tanggal schema dan sudah diuji agar tidak menghasilkan respons 400.
 - [x] `/verifikator/kegiatan`: keputusan usulan, lifecycle agenda, penyuntingan, peserta, dan antrean bukti hadir memakai PocketBase.
 - [x] `/verifikator/gerakan`: keputusan usulan, penetapan ESG dan SDG, pemeriksaan laporan aksi, serta penyelesaian Gerakan memakai PocketBase.
@@ -51,7 +51,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [x] `/admin/gamifikasi/pesanan` dan `/admin/gamifikasi/hadiah`: pemantauan penukaran serta CRUD katalog hadiah memakai PocketBase; keputusan pesanan tetap milik Verifikator.
 - [x] `/admin/gerakan`: pemantauan status, peserta, dan jumlah laporan Gerakan memakai PocketBase tanpa kewenangan keputusan.
 - [x] `/admin/cerita` dan `/admin/cerita/[id]`: pemantauan metadata seluruh status, penulis, Verifikator, keputusan, dan riwayat memakai PocketBase tanpa membuka isi atau berkas privat.
-- [ ] `/admin/gamifikasi/aturan`: konfigurasi poin, tier, dan simulasi tetap dipertahankan dengan navigasi lompat, tetapi masih lokal (`DUMMY`).
+- [~] `/admin/gamifikasi/aturan`: CRUD katalog aksi poin dan audit memakai PocketBase; konfigurasi tier dan simulator lama masih lokal (`DUMMY`).
 
 ## Komponen lintas halaman yang sudah backend
 

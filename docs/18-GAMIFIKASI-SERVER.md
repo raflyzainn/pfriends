@@ -24,9 +24,9 @@ Tier dihitung pada ambang 0, 25, 50, 100, dan 150 poin. Pekan streak dimulai Sel
 
 ## Pusat Aksi
 
-`/awardee/aksi` membaca ledger dan `dailyUsage` dari endpoint gamifikasi. `dailyUsage` selalu memuat sembilan jenis aksi beserta `used`, `cap`, `remaining`, `exhausted`, dan `periodKey`. Penggunaan dihitung dari `verified_point_activities` milik Awardee pada hari server yang sama dengan pemeriksaan cap.
+`/awardee/aksi` membaca ledger, katalog `actions`, dan `dailyUsage` dari endpoint gamifikasi. Katalog berasal dari `point_actions` berstatus aktif. `dailyUsage` memuat `actionId`, kode aksi, `used`, `cap`, `remaining`, `exhausted`, dan `periodKey`. Penggunaan dihitung dari `verified_point_activities` milik Awardee pada hari server yang sama dengan pemeriksaan cap.
 
-Kartu Pusat Aksi hanya mengantar Awardee ke rumah operasional aksi. Kabar, Cerita, Calendar of Event, dan Gerakan membukukan poin melalui endpoint masing-masing. `KNOWLEDGE_QA` dan `SPEAKER_MENTOR` membuka formulir Bukti Keaktifan dengan jenis aktivitas terpilih. Tidak ada kartu yang memberikan poin langsung dari browser.
+Kartu Pusat Aksi hanya mengantar Awardee ke rumah operasional aksi. Kabar, Cerita, Calendar of Event, dan Gerakan membukukan poin melalui endpoint masing-masing. `KNOWLEDGE_QA`, `SPEAKER_MENTOR`, dan seluruh aksi kustom membuka formulir Bukti Keaktifan dengan aksi terpilih. Tidak ada kartu yang memberikan poin langsung dari browser. Rancangan CRUD dan audit dijelaskan di `docs/31-KATALOG-AKSI-DINAMIS-POCKETBASE.md`.
 
 ## Batas implementasi
 

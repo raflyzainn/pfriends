@@ -38,7 +38,7 @@
 	 * @see src/lib/domain/constants/scoring-table.js: nilai kanonik
 	 * @see src/lib/domain/constants/tier-table.js: ambang kanonik
 	 */
-	import { AdminGamificationNav, Button, Card, DummyBadge, Icon, PageHeader, StatTile, StatusBadge, ICONS } from '$lib/components';
+	import { AdminGamificationNav, Button, Card, DummyBadge, Icon, PageHeader, PointActionManagementPanel, StatTile, StatusBadge, ICONS } from '$lib/components';
 	import TierDistributionChart from '$lib/charts/TierDistributionChart.svelte';
 	import { ActionClass, ActivityType, SCORING_TABLE } from '$lib/domain/constants/scoring-table.js';
 	import { TIER_TABLE } from '$lib/domain/constants/tier-table.js';
@@ -342,6 +342,7 @@
 </PageHeader>
 
 <AdminGamificationNav />
+<PointActionManagementPanel />
 
 <div class="mb-5 flex flex-wrap gap-2">
 	<a href="#nilai-poin" class="rounded-full border border-ink-200 bg-white px-3 py-2 text-xs font-semibold text-ink-700 hover:border-brand-300">Nilai poin</a>

@@ -1,5 +1,5 @@
 <script>
-	import { PageHeader, RedemptionAdminPanel, RewardManagementPanel } from '$lib/components';
+	import { PageHeader, PointActionManagementPanel, RedemptionAdminPanel, RewardManagementPanel } from '$lib/components';
 </script>
 
 <svelte:head><title>Hadiah & Penukaran · Verifikator PFriends</title></svelte:head>
@@ -12,3 +12,4 @@
 
 <RedemptionAdminPanel canManage title="Antrean penukaran hadiah" />
 <RewardManagementPanel />
+<PointActionManagementPanel />

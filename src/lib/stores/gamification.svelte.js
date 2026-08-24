@@ -12,6 +12,7 @@ class GamificationStore {
 	coins = $state(0);
 	ledger = $state.raw([]);
 	dailyUsage = $state.raw([]);
+	actions = $state.raw([]);
 	badges = $state.raw([]);
 	loading = $state(false);
 	busy = $state(null);
@@ -51,6 +52,7 @@ class GamificationStore {
 			this.streakWeeks = result.profile.currentStreakWeeks || 0;
 			this.coins = result.wallet.balance || 0;
 			this.dailyUsage = result.dailyUsage;
+			this.actions = result.actions;
 		} catch (error) {
 			this.error = error instanceof Error ? error.message : 'Gamifikasi gagal dimuat.';
 			this.reset(false);
@@ -60,7 +62,7 @@ class GamificationStore {
 	}
 
 	reset(clearError = true) {
-		this.points = 0; this.coins = 0; this.ledger = []; this.dailyUsage = [];
+		this.points = 0; this.coins = 0; this.ledger = []; this.dailyUsage = []; this.actions = [];
 		this.badges = []; this.streakWeeks = 0; this.busy = null;
 		if (clearError) this.error = null;
 	}

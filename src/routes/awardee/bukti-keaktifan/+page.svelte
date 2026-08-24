@@ -1,21 +1,23 @@
 <script>
 	import { page } from '$app/state';
 	import { PageHeader, Button, Card, StatusBadge, EmptyState, ICONS } from '$lib/components';
-	import { SCORING_TABLE } from '$lib/domain/constants/scoring-table.js';
 	import { activitySubmissions, SUBMISSION_STATUS_META, SubmissionStatus } from '$lib/stores/activity-submissions.svelte.js';
+	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
 
-	const TYPES = SCORING_TABLE.filter((rule) => rule.needsEvidence && !['SESSION_ATTEND','SHARE_PUBLIC'].includes(rule.type));
+	const TYPES = $derived(gamification.actions.filter((rule) => rule.workflow === 'EVIDENCE' && !['SESSION_ATTEND','SHARE_PRIVATE','SHARE_PUBLIC'].includes(rule.code)));
+	const requestedAction = page.url.searchParams.get('action') ?? '';
 	const requestedType = page.url.searchParams.get('activityType') ?? '';
-	let activityType = $state(TYPES.some((rule) => rule.type === requestedType) ? requestedType : (TYPES[0]?.type ?? 'SHARE_PUBLIC'));
+	let pointAction = $state(requestedAction);
 	let activityDate = $state(new Date().toISOString().slice(0, 10));
 	let title = $state(''); let description = $state(''); let externalUrl = $state('');
 	let files = $state.raw([]); let editingId = $state(''); let formError = $state('');
-	const selectedRule = $derived(TYPES.find((rule) => rule.type === activityType));
+	const selectedRule = $derived(TYPES.find((rule) => rule.id === pointAction));
+	$effect(() => { if (!pointAction && TYPES.length) pointAction = TYPES.find((rule) => rule.code === requestedType)?.id || TYPES[0].id; });
 
 	function chooseFiles(event) { files = [...(event.currentTarget.files || [])]; }
 	function edit(item) {
-		editingId = item.id; activityType = item.activityType; activityDate = String(item.activityDate).slice(0, 10);
+		editingId = item.id; pointAction = item.pointAction; activityDate = String(item.activityDate).slice(0, 10);
 		title = item.title; description = item.description; externalUrl = item.externalUrl || ''; files = [];
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
@@ -25,7 +27,7 @@
 		if (!editingId && files.length === 0) { formError = 'Pilih minimal satu file bukti.'; return; }
 		if (files.length > 5 || files.some((file) => file.size > 5 * 1024 * 1024)) { formError = 'Maksimum 5 file dan 5 MB per file.'; return; }
 		try {
-			await activitySubmissions.submit({ activityType, activityDate: `${activityDate} 12:00:00.000Z`, title, description, externalUrl, files }, editingId);
+			await activitySubmissions.submit({ pointAction, activityDate: `${activityDate} 12:00:00.000Z`, title, description, externalUrl, files }, editingId);
 			toast.push({ type: ToastType.SUCCESS, title: editingId ? 'Perbaikan dikirim' : 'Bukti keaktifan dikirim', message: 'Verifikator akan meninjau pengajuanmu.' }); reset();
 		} catch { formError = activitySubmissions.error; }
 	}
@@ -39,8 +41,8 @@
 		<h2 class="text-lg font-semibold text-heading">{editingId ? 'Perbaiki pengajuan' : 'Unggah bukti baru'}</h2>
 		<form class="mt-5 grid gap-4" onsubmit={send}>
 			<label class="grid gap-1.5 text-sm font-medium text-ink-700">Jenis aktivitas
-				<select bind:value={activityType} disabled={Boolean(editingId)} class="rounded-xl border border-ink-200 bg-white px-3 py-2.5">
-					{#each TYPES as rule}<option value={rule.type}>{rule.label} · {rule.points} poin</option>{/each}
+				<select bind:value={pointAction} disabled={Boolean(editingId)} required class="rounded-xl border border-ink-200 bg-white px-3 py-2.5">
+					{#each TYPES as rule}<option value={rule.id}>{rule.label} · {rule.points} poin</option>{/each}
 				</select>
 			</label>
 			<label class="grid gap-1.5 text-sm font-medium text-ink-700">Tanggal aktivitas<input bind:value={activityDate} type="date" required max={new Date().toISOString().slice(0, 10)} class="rounded-xl border border-ink-200 px-3 py-2.5" /></label>
@@ -61,7 +63,7 @@
 		{#if activitySubmissions.items.length === 0}<EmptyState title="Belum ada bukti" message="Pengajuan pertamamu akan tampil di sini." />{:else}
 			<div class="grid gap-3">{#each activitySubmissions.items as item}
 				<Card>
-					<div class="flex items-start justify-between gap-3"><div><p class="text-xs text-ink-500">{String(item.activityDate).slice(0,10)}</p><h3 class="mt-1 font-semibold text-heading">{item.title}</h3><p class="mt-1 text-sm text-ink-600">{TYPES.find((rule) => rule.type === item.activityType)?.label}</p></div><StatusBadge label={SUBMISSION_STATUS_META[item.status]?.label} color={SUBMISSION_STATUS_META[item.status]?.color} withDot /></div>
+					<div class="flex items-start justify-between gap-3"><div><p class="text-xs text-ink-500">{String(item.activityDate).slice(0,10)}</p><h3 class="mt-1 font-semibold text-heading">{item.title}</h3><p class="mt-1 text-sm text-ink-600">{gamification.actions.find((rule) => rule.id === item.pointAction)?.label || item.actionCode || item.activityType}</p></div><StatusBadge label={SUBMISSION_STATUS_META[item.status]?.label} color={SUBMISSION_STATUS_META[item.status]?.color} withDot /></div>
 					{#if item.reviewNote}<p class="mt-3 rounded-lg bg-ink-50 p-3 text-sm text-ink-700"><strong>Catatan Verifikator:</strong> {item.reviewNote}</p>{/if}
 					{#if item.status === SubmissionStatus.APPROVED}<p class="mt-3 text-sm font-semibold text-success">+{item.awardedPoints} poin dibukukan</p>{/if}
 					<div class="mt-3 flex flex-wrap gap-2"><Button size="sm" variant="secondary" href={`/awardee/bukti-keaktifan/${item.id}`}>Lihat detail & status</Button>{#if item.activityType === 'SESSION_ATTEND'}<Button size="sm" variant="outline" href="/awardee/kalender">Buka Calendar of Event</Button>{:else if item.status === SubmissionStatus.NEEDS_REVISION}<Button size="sm" variant="outline" onclick={() => edit(item)}>Perbaiki bukti</Button>{/if}</div>

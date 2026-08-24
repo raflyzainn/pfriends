@@ -42,7 +42,7 @@
 		ICONS
 	} from '$lib/components';
 	import { ActivityStatus } from '$lib/domain/entities/PointActivity.js';
-	import { ActionClass, SCORING_TABLE } from '$lib/domain/constants/scoring-table.js';
+	import { ActionClass } from '$lib/domain/constants/scoring-table.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { formatAngka, formatTanggal, frasaHitung } from '$lib/utils/format.js';
 
@@ -121,11 +121,11 @@
 	 * sama adalah tautan tak tertulis yang akan putus diam-diam.
 	 */
 	const katalogAksi = $derived(
-		SCORING_TABLE.map((rule) => ({
-			rule,
-			kelas: KELAS_AKSI[rule.actionClass],
-			jalur: JALUR_AKSI[rule.type] ?? { href: '', cara: '' },
-			kuota: gamification.usageFor(rule.type)
+		gamification.actions.map((action) => ({
+			rule: { ...action, type: action.code, needsEvidence: action.workflow === 'EVIDENCE' },
+			kelas: KELAS_AKSI[action.actionClass],
+			jalur: JALUR_AKSI[action.code] ?? { href: `/awardee/bukti-keaktifan?action=${action.id}`, cara: action.description },
+			kuota: gamification.usageFor(action.code)
 		}))
 	);
 
@@ -165,7 +165,7 @@
 	);
 
 	const tabs = $derived([
-		{ id: 'katalog', label: 'Aksi & Kuota', count: SCORING_TABLE.length },
+		{ id: 'katalog', label: 'Aksi & Kuota', count: gamification.actions.length },
 		{ id: 'riwayat', label: 'Riwayat Poin', count: gamification.ledger.length }
 	]);
 
@@ -190,7 +190,7 @@
 
 <PageHeader
 	title="Pusat Aksi & Poin"
-	subtitle="Sembilan cara memperoleh Poin Kontribusi, sisa kuota harianmu, dan seluruh riwayat poin apa adanya."
+	subtitle="Cara memperoleh Poin Kontribusi, sisa kuota harianmu, dan seluruh riwayat poin apa adanya."
 	eyebrow="Recognition & Gamifikasi"
 />
 

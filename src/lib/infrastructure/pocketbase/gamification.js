@@ -1,5 +1,5 @@
 import { Badge } from '$lib/domain/entities/Badge.js';
-import { PointActivity } from '$lib/domain/entities/PointActivity.js';
+import { ACTIVITY_STATUS_META, PointActivity } from '$lib/domain/entities/PointActivity.js';
 import { getPocketBase, pocketBaseMessage } from './client.js';
 
 function client() {
@@ -8,9 +8,11 @@ function client() {
 	return pb;
 }
 
-function pointActivity(record) {
+function pointActivity(record, actions = []) {
+	const type=record.actionCode||record.activityType, action=actions.find((row)=>row.code===type);
+	if(action&&!action.isCore){const status=record.status||'AWARDED',points=status==='REVOKED'?0:record.points;return {id:record.id,awardeeId:record.awardeeId,activityType:type,points,basePoints:action.points,status,refId:record.submission||null,capReason:record.capReason||null,note:record.revokeReason||null,occurredAt:new Date(record.occurredAt),label:record.actionLabel||action.label,actionClass:action.actionClass,pillar:action.pillar,statusMeta:ACTIVITY_STATUS_META[status],isAwarded:status==='AWARDED'};}
 	return new PointActivity({
-		id: record.id, awardeeId: record.awardeeId, activityType: record.activityType,
+		id: record.id, awardeeId: record.awardeeId, activityType: type,
 		points: record.status === 'REVOKED' ? 0 : record.points,
 		status: record.status || 'AWARDED', refId: record.broadcast || record.submission || null,
 		capReason: record.capReason || null, note: record.revokeReason || null,
@@ -30,7 +32,8 @@ function badgeEntry(record) {
 export async function myGamification() {
 	try {
 		const response = await client().send('/api/pfriends/gamification/me');
-		return { profile: response.profile, wallet: response.wallet || { balance: 0 }, dailyUsage: response.dailyUsage || [], ledger: (response.ledger || []).map(pointActivity), badges: (response.badges || []).map(badgeEntry) };
+		const actions=response.actions||[];
+		return { profile: response.profile, wallet: response.wallet || { balance: 0 }, actions, dailyUsage: response.dailyUsage || [], ledger: (response.ledger || []).map((row)=>pointActivity(row,actions)), badges: (response.badges || []).map(badgeEntry) };
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Gamifikasi gagal dimuat.')); }
 }
 
