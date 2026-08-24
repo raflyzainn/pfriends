@@ -27,7 +27,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [x] `/awardee/kalender`: usulan, status keputusan, agenda, pendaftaran, kapasitas, bukti hadir, revisi, dan poin memakai PocketBase.
 - [x] `/awardee/gerakan`: usulan, partisipasi, laporan aksi, bukti terlindungi, status pemeriksaan, dan poin pemimpin memakai PocketBase.
 - [x] `/awardee/cerita` dan `/awardee/cerita/tulis`: draf, penyimpanan otomatis, unggah bukti, pengajuan, revisi, penerbitan ulang, dan status memakai PocketBase.
-- [x] `/awardee/forum`, `/verifikator/forum`, dan `/admin/forum`: kanal berbasis komunitas, pesan persisten, rate limit antispam, soft delete dengan hak pemilik/staf, picker seluruh emoji Unicode, reply inline dan navigasi konteks, presence, REST API, serta pembaruan realtime SSE memakai PocketBase; tidak memakai queue atau WebSocket khusus.
+- [x] `/awardee/forum`, `/verifikator/forum`, dan `/admin/forum`: kanal berbasis komunitas, pesan persisten, rate limit antispam, hard delete dengan hak pemilik/staf, picker seluruh emoji Unicode, reply inline dan navigasi konteks, presence, REST API, serta pembaruan realtime SSE memakai PocketBase; tidak memakai queue atau WebSocket khusus.
 
 ## Verifikator
 

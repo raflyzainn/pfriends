@@ -41,9 +41,10 @@ await verifier.send('/api/pfriends/forum/channels/mangrove/messages',{method:'PO
 await expectStatus(()=>verifier.send('/api/pfriends/forum/channels/mangrove/messages',{method:'POST',body:{content:spamText,requestKey:crypto.randomUUID()}}),429,'Pesan duplikat dalam dua menit tidak dibatasi');
 const deleteTarget=await sobi.send('/api/pfriends/forum/channels/tanya-jawab/messages',{method:'POST',body:{content:`Pesan yang akan dihapus ${crypto.randomUUID()}`,requestKey:crypto.randomUUID()}});
 await expectStatus(()=>women.send(`/api/pfriends/forum/messages/${deleteTarget.id}`,{method:'DELETE'}),403,'Pengguna lain dapat menghapus pesan tanpa hak moderasi');
-const deleted=await sobi.send(`/api/pfriends/forum/messages/${deleteTarget.id}`,{method:'DELETE'});
-ok(deleted.deleted===true&&deleted.content==='Pesan telah dihapus.'&&deleted.canDelete===false,'Soft delete tidak menghasilkan tombstone yang benar.');
-await expectStatus(()=>women.send(`/api/pfriends/forum/messages/${deleteTarget.id}/reaction`,{method:'POST',body:{emoji,selected:true}}),400,'Pesan terhapus masih dapat diberi reaksi');
+await sobi.send(`/api/pfriends/forum/messages/${deleteTarget.id}`,{method:'DELETE'});
+rows=(await sobi.send('/api/pfriends/forum/channels/tanya-jawab/messages?perPage=50')).items;
+ok(!rows.some(x=>x.id===deleteTarget.id),'Pesan yang dihapus masih muncul pada riwayat kanal.');
+await expectStatus(()=>women.send(`/api/pfriends/forum/messages/${deleteTarget.id}/reaction`,{method:'POST',body:{emoji,selected:true}}),404,'Pesan yang sudah dihapus masih dapat diakses');
 await sobi.send('/api/pfriends/forum/presence/heartbeat',{method:'POST',body:{channel:'tanya-jawab'}});
 ok((await sobi.send('/api/pfriends/forum/presence')).items.some(x=>x.id===sobi.authStore.record.id&&x.state==='aktif'),'Heartbeat tidak menghasilkan presence aktif.');
 const tanya=sobiChannels.find(x=>x.slug==='tanya-jawab');let realtime=false;

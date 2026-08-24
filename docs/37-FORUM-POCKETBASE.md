@@ -25,7 +25,7 @@ Reaksi bersifat desired-state melalui nilai `selected`, sehingga retry tidak mem
 
 Presence diperbarui setiap 60 detik selama tab Forum terlihat. Heartbeat maksimal 90 detik ditampilkan `aktif`, antara 90 detik sampai lima menit ditampilkan `sibuk`, dan setelah itu tidak dikirim ke UI.
 
-Migration `1723969010_forum_message_moderation.js` menambahkan soft delete. Pengirim dapat menghapus pesan sendiri, sedangkan Admin dan Verifikator dapat menghapus pesan pengguna untuk moderasi. Pesan sistem tidak dapat dihapus. Konten terhapus ditampilkan sebagai `Pesan telah dihapus.`, seluruh reaksinya dibersihkan, dan referensi reply tetap utuh.
+Migration `1723969010_forum_message_moderation.js` menambahkan indeks moderasi dan migration `1723969020_forum_hard_delete.js` menetapkan penghapusan langsung tanpa tombstone. Pengirim dapat menghapus pesan sendiri, sedangkan Admin dan Verifikator dapat menghapus pesan pengguna untuk moderasi. Pesan sistem tidak dapat dihapus. Pesan dan reaksi terkait langsung hilang dari database serta UI.
 
 ## Batas saat ini
 
@@ -41,4 +41,4 @@ npm run verify:compile
 npm run build
 ```
 
-Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, pembatasan pesan duplikat, reply, penolakan reply lintas kanal, endpoint konteks, hak hapus dan tombstone, validasi emoji Unicode, toggle reaksi, heartbeat, dan pengiriman event SSE.
+Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, pembatasan pesan duplikat, reply, penolakan reply lintas kanal, endpoint konteks, hak hapus dan penghapusan langsung, validasi emoji Unicode, toggle reaksi, heartbeat, dan pengiriman event SSE.
