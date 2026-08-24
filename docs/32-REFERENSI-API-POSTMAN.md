@@ -52,10 +52,11 @@ Dasbor `/awardee` tidak memiliki endpoint agregat tersendiri. Untuk mereproduksi
 | POST | `/api/pfriends/forum/channels/{{channelSlug}}/messages` | `{ "content": "Pesan maksimal 600 karakter", "requestKey": "{{$guid}}", "replyTo": "{{forumMessageId}}" }`; `replyTo` opsional dan harus berasal dari kanal yang sama |
 | GET | `/api/pfriends/forum/messages/{{forumMessageId}}/context` | Pesan asal beserta maksimal 20 pesan sebelum dan sesudahnya untuk navigasi reply |
 | POST | `/api/pfriends/forum/messages/{{forumMessageId}}/reaction` | `{ "emoji": "🫶🏽", "selected": true }`; menerima satu emoji Unicode dari picker aplikasi |
+| DELETE | `/api/pfriends/forum/messages/{{forumMessageId}}` | Soft delete; pemilik dapat menghapus pesan sendiri, Admin dan Verifikator dapat memoderasi pesan pengguna |
 | GET | `/api/pfriends/forum/presence` | Anggota aktif maksimal lima menit terakhir |
 | POST | `/api/pfriends/forum/presence/heartbeat` | `{ "channel": "tanya-jawab" }` |
 
-`pengumuman` hanya dapat ditulis Admin dan Verifikator. Kanal `sobi-alumni` dan `pfpreneur` dibatasi pada komunitas Awardee terkait, sementara staf aktif dapat mengakses seluruh kanal. Frontend memakai topic SSE `forum:channel:{channelId}` dan `forum:presence` setelah initial load REST.
+`pengumuman` hanya dapat ditulis Admin dan Verifikator. Kanal `sobi-alumni` dan `pfpreneur` dibatasi pada komunitas Awardee terkait, sementara staf aktif dapat mengakses seluruh kanal. Pengiriman dibatasi enam pesan per 30 detik, 30 pesan per sepuluh menit, dan pesan identik pada kanal yang sama tidak dapat diulang selama dua menit. Frontend memakai topic SSE `forum:channel:{channelId}` dan `forum:presence` setelah initial load REST.
 
 ## 2. Auth dan sesi
 

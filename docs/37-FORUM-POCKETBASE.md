@@ -19,11 +19,13 @@ Migration `1723968990_forum.js` membuat `forum_channels`, `forum_messages`, `for
 
 Initial load dan seluruh mutation memakai `/api/pfriends/forum/**`. Setelah penyimpanan berhasil, hook menerbitkan custom SSE pada topic kanal. Hak subscription diperiksa kembali oleh `onRealtimeSubscribeRequest`. Store mendeduplikasi respons REST dan event SSE agar satu pesan tidak tampil dua kali.
 
-Pesan maksimal 600 karakter. Kombinasi penulis dan `requestKey` unik membuat retry aman. Server membatasi maksimal sepuluh pesan per menit. Migration `1723969000_forum_replies_emoji.js` menambahkan relasi `replyTo` dan mengubah nilai reaksi menjadi teks Unicode. Balasan menyimpan referensi ke pesan langsung pada kanal yang sama. Endpoint konteks memuat pesan di sekitar referensi bila pesan asal belum ada pada halaman aktif.
+Pesan maksimal 600 karakter. Kombinasi penulis dan `requestKey` unik membuat retry aman. Server membatasi maksimal enam pesan per 30 detik dan 30 pesan per sepuluh menit. Konten identik pada kanal yang sama juga ditolak selama dua menit. Pembatasan memakai riwayat PocketBase sehingga tidak bergantung pada state browser. Migration `1723969000_forum_replies_emoji.js` menambahkan relasi `replyTo` dan mengubah nilai reaksi menjadi teks Unicode. Balasan menyimpan referensi ke pesan langsung pada kanal yang sama. Endpoint konteks memuat pesan di sekitar referensi bila pesan asal belum ada pada halaman aktif.
 
 Reaksi bersifat desired-state melalui nilai `selected`, sehingga retry tidak membalik status dua kali. UI hanya menampilkan chip reaksi yang sudah dipakai. Reaksi baru dipilih dari menu tiga titik dan picker berisi 3.790 emoji Unicode beserta variasi warna kulit. Dataset picker dibundel oleh frontend, sedangkan hook memvalidasi input memakai allowlist yang dihasilkan dari versi dataset yang sama. Tidak ada pengambilan dataset dari CDN.
 
 Presence diperbarui setiap 60 detik selama tab Forum terlihat. Heartbeat maksimal 90 detik ditampilkan `aktif`, antara 90 detik sampai lima menit ditampilkan `sibuk`, dan setelah itu tidak dikirim ke UI.
+
+Migration `1723969010_forum_message_moderation.js` menambahkan soft delete. Pengirim dapat menghapus pesan sendiri, sedangkan Admin dan Verifikator dapat menghapus pesan pengguna untuk moderasi. Pesan sistem tidak dapat dihapus. Konten terhapus ditampilkan sebagai `Pesan telah dihapus.`, seluruh reaksinya dibersihkan, dan referensi reply tetap utuh.
 
 ## Batas saat ini
 
@@ -39,4 +41,4 @@ npm run verify:compile
 npm run build
 ```
 
-Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, reply, penolakan reply lintas kanal, endpoint konteks, validasi emoji Unicode, toggle reaksi, heartbeat, dan pengiriman event SSE.
+Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, pembatasan pesan duplikat, reply, penolakan reply lintas kanal, endpoint konteks, hak hapus dan tombstone, validasi emoji Unicode, toggle reaksi, heartbeat, dan pengiriman event SSE.

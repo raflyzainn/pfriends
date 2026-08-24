@@ -20,6 +20,7 @@ const announcement=await admin.send('/api/pfriends/forum/channels/pengumuman/mes
 ok(announcement.authorName===admin.authStore.record.displayName,'Identitas pengirim ditentukan bukan dari sesi Admin.');
 const requestKey=crypto.randomUUID(),first=await sobi.send('/api/pfriends/forum/channels/tanya-jawab/messages',{method:'POST',body:{content:'Pesan forum yang tersimpan nyata.',requestKey}}),second=await sobi.send('/api/pfriends/forum/channels/tanya-jawab/messages',{method:'POST',body:{content:'Pesan forum yang tersimpan nyata.',requestKey}});
 ok(first.id===second.id,'requestKey tidak mencegah pesan ganda.');
+ok(first.canDelete===true,'Pengirim tidak memperoleh hak hapus pesan sendiri.');
 let rows=(await sobi.send('/api/pfriends/forum/channels/tanya-jawab/messages?perPage=50')).items;
 ok(rows.some(x=>x.id===first.id),'Pesan tersimpan tidak terbaca kembali lewat REST.');
 const reply=await women.send('/api/pfriends/forum/channels/tanya-jawab/messages',{method:'POST',body:{content:'Ini adalah balasan yang tersimpan.',requestKey:crypto.randomUUID(),replyTo:first.id}});
@@ -35,6 +36,14 @@ ok(reaction.reactions.find(x=>x.emoji===emoji)?.count===1,'Emoji Unicode dari pi
 await expectStatus(()=>women.send(`/api/pfriends/forum/messages/${first.id}/reaction`,{method:'POST',body:{emoji:'bukan emoji',selected:true}}),400,'Nilai di luar allowlist emoji tidak ditolak');
 reaction=await women.send(`/api/pfriends/forum/messages/${first.id}/reaction`,{method:'POST',body:{emoji,selected:false}});
 ok(!reaction.reactions.some(x=>x.emoji===emoji),'Reaksi tidak dapat dibatalkan atau chip kosong masih dikembalikan.');
+const spamText=`Pesan duplikat ${crypto.randomUUID()}`;
+await verifier.send('/api/pfriends/forum/channels/mangrove/messages',{method:'POST',body:{content:spamText,requestKey:crypto.randomUUID()}});
+await expectStatus(()=>verifier.send('/api/pfriends/forum/channels/mangrove/messages',{method:'POST',body:{content:spamText,requestKey:crypto.randomUUID()}}),429,'Pesan duplikat dalam dua menit tidak dibatasi');
+const deleteTarget=await sobi.send('/api/pfriends/forum/channels/tanya-jawab/messages',{method:'POST',body:{content:`Pesan yang akan dihapus ${crypto.randomUUID()}`,requestKey:crypto.randomUUID()}});
+await expectStatus(()=>women.send(`/api/pfriends/forum/messages/${deleteTarget.id}`,{method:'DELETE'}),403,'Pengguna lain dapat menghapus pesan tanpa hak moderasi');
+const deleted=await sobi.send(`/api/pfriends/forum/messages/${deleteTarget.id}`,{method:'DELETE'});
+ok(deleted.deleted===true&&deleted.content==='Pesan telah dihapus.'&&deleted.canDelete===false,'Soft delete tidak menghasilkan tombstone yang benar.');
+await expectStatus(()=>women.send(`/api/pfriends/forum/messages/${deleteTarget.id}/reaction`,{method:'POST',body:{emoji,selected:true}}),400,'Pesan terhapus masih dapat diberi reaksi');
 await sobi.send('/api/pfriends/forum/presence/heartbeat',{method:'POST',body:{channel:'tanya-jawab'}});
 ok((await sobi.send('/api/pfriends/forum/presence')).items.some(x=>x.id===sobi.authStore.record.id&&x.state==='aktif'),'Heartbeat tidak menghasilkan presence aktif.');
 const tanya=sobiChannels.find(x=>x.slug==='tanya-jawab');let realtime=false;
