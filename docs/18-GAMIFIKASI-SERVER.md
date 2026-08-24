@@ -13,7 +13,7 @@ Status per 19 Agustus 2026: poin, tier, streak mingguan, badge, leaderboard, Koi
 
 Endpoint yang digunakan UI:
 
-- `GET /api/pfriends/gamification/me` untuk pencapaian Awardee;
+- `GET /api/pfriends/gamification/me` untuk pencapaian Awardee, ledger, dan kuota harian sembilan aksi;
 - `GET /api/pfriends/gamification/leaderboard` untuk global, komunitas, chapter, seluruh waktu, atau bulan berjalan;
 - `GET /api/pfriends/verifier/dashboard` untuk angka poin, tier, badge, streak, distribusi, dan leaderboard Verifikator;
 - `POST /api/pfriends/point-activities/{id}/revoke` untuk pencabutan poin oleh Admin.
@@ -22,9 +22,15 @@ Endpoint yang digunakan UI:
 
 Tier dihitung pada ambang 0, 25, 50, 100, dan 150 poin. Pekan streak dimulai Selasa pukul 00.00 WIB. Profil dan badge direkonsiliasi dari ledger sehingga nilai agregat dapat dibangun ulang.
 
+## Pusat Aksi
+
+`/awardee/aksi` membaca ledger dan `dailyUsage` dari endpoint gamifikasi. `dailyUsage` selalu memuat sembilan jenis aksi beserta `used`, `cap`, `remaining`, `exhausted`, dan `periodKey`. Penggunaan dihitung dari `verified_point_activities` milik Awardee pada hari server yang sama dengan pemeriksaan cap.
+
+Kartu Pusat Aksi hanya mengantar Awardee ke rumah operasional aksi. Kabar, Cerita, Calendar of Event, dan Gerakan membukukan poin melalui endpoint masing-masing. `KNOWLEDGE_QA` dan `SPEAKER_MENTOR` membuka formulir Bukti Keaktifan dengan jenis aktivitas terpilih. Tidak ada kartu yang memberikan poin langsung dari browser.
+
 ## Batas implementasi
 
-Hanya aktivitas yang mempunyai bukti dan keputusan Verifikator yang menjadi sumber poin backend. Aksi ringan seperti membaca kabar atau menekan CTA belum mempunyai engagement backend dan tidak boleh menambah ledger dari browser. Quest, simulator konfigurasi Admin, konten, cerita, kegiatan, gerakan, dan sebagian besar KPI masih memakai data lokal serta ditandai `DUMMY` di UI. Rincian koin dan Pesanan Saya ada di `docs/20-KOIN-REWARD-DAN-PENUKARAN.md`.
+Quest dan simulator konfigurasi Admin masih lokal serta ditandai `DUMMY` di UI. Rincian koin dan Pesanan Saya ada di `docs/20-KOIN-REWARD-DAN-PENUKARAN.md`.
 
 Pengecualian terkontrol hanya berlaku untuk lingkungan demo: `npm run pb:seed` mengimpor aktivitas seed berstatus `AWARDED` secara idempoten dengan `legacyActivityId`. Hal ini membuat akun demo mempertahankan poin, tier, streak, badge, dan leaderboard yang sama setelah sumber pembacaan dipindah dari Dexie ke PocketBase. Ledger hasil registrasi/verifikasi tidak ditimpa.
 

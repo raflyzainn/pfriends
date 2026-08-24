@@ -20,6 +20,9 @@ for (const account of bundle.accounts.filter((row) => row.role === 'AWARDEE' && 
 	const tierLevel = TierResolver.resolve(gamification.profile.totalPoints).level;
 	ok(gamification.wallet.balance === data.wallet.balance, `Saldo gamifikasi ${account.awardeeId} berbeda dari wallet.`);
 	ok(gamification.profile.tier === tierLevel, `Tier server ${account.awardeeId} salah: ${gamification.profile.tier}/${tierLevel}.`);
+	ok(gamification.dailyUsage?.length === 9, `Kuota aksi ${account.awardeeId} tidak memuat sembilan jenis.`);
+	ok(new Set(gamification.dailyUsage.map((row) => row.type)).size === 9, `Jenis kuota aksi ${account.awardeeId} tidak unik.`);
+	ok(gamification.dailyUsage.every((row) => Number.isInteger(row.used) && Number.isInteger(row.cap) && row.used >= 0 && row.used <= row.cap && row.remaining === row.cap - row.used && row.exhausted === (row.remaining === 0) && /^\d{4}-\d{2}-\d{2}$/.test(row.periodKey)), `Kontrak kuota aksi ${account.awardeeId} tidak valid.`);
 	const reward = data.rewards.find((row) => row.requiresApproval && row.status === 'TERSEDIA' && row.priceCoins <= data.wallet.balance && (row.remaining === null || row.remaining > 0) && tierRank.indexOf(tierLevel) >= tierRank.indexOf(row.minTierLevel));
 	if (reward) { actor = pb; snapshot = data; candidate = reward; expected = { id: account.awardeeId }; break; }
 }

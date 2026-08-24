@@ -50,7 +50,7 @@ class GamificationStore {
 			this.badges = result.badges;
 			this.streakWeeks = result.profile.currentStreakWeeks || 0;
 			this.coins = result.wallet.balance || 0;
-			this.dailyUsage = [];
+			this.dailyUsage = result.dailyUsage;
 		} catch (error) {
 			this.error = error instanceof Error ? error.message : 'Gamifikasi gagal dimuat.';
 			this.reset(false);
@@ -70,7 +70,7 @@ class GamificationStore {
 		return { allowed: false, points: 0, remaining: 0, reason: ALASAN_BACKEND };
 	}
 
-	usageFor() { return null; }
+	usageFor(type) { return this.dailyUsage.find((row) => row.type === type) ?? null; }
 }
 
 export const gamification = new GamificationStore();

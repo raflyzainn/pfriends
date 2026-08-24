@@ -6,6 +6,18 @@ const TIERS = [
 	{ level: 'CHAMPION', threshold: 150 }
 ];
 
+const ACTION_DAILY_CAPS = {
+	BROADCAST_VIEW: 3,
+	CTA_REACT: 5,
+	SHARE_PRIVATE: 3,
+	SHARE_PUBLIC: 2,
+	STORY_SUBMIT: 1,
+	SESSION_ATTEND: 2,
+	KNOWLEDGE_QA: 2,
+	SPEAKER_MENTOR: 1,
+	LEAD_ACTION: 1
+};
+
 function tierFor(points) {
 	let tier = TIERS[0].level;
 	for (const item of TIERS) if (points >= item.threshold) tier = item.level;
@@ -43,6 +55,25 @@ function activeLedger(app, awardeeId) {
 		'awardeeId = {:awardee} && status = "AWARDED"',
 		'occurredAt', 0, 0, { awardee: awardeeId }
 	);
+}
+
+function dailyUsage(app, awardeeId, value) {
+	const periodKey = new Date(value || new Date()).toISOString().slice(0, 10);
+	const entries = app.findRecordsByFilter(
+		'verified_point_activities',
+		'awardeeId = {:awardee} && occurredAt >= {:start} && occurredAt <= {:end}',
+		'occurredAt', 0, 0,
+		{ awardee: awardeeId, start: `${periodKey} 00:00:00.000Z`, end: `${periodKey} 23:59:59.999Z` }
+	);
+	const counts = {};
+	for (const entry of entries) {
+		const type = entry.getString('activityType');
+		counts[type] = (counts[type] || 0) + 1;
+	}
+	return Object.entries(ACTION_DAILY_CAPS).map(([type, cap]) => {
+		const used = Math.min(cap, counts[type] || 0);
+		return { type, used, cap, remaining: Math.max(0, cap - used), exhausted: used >= cap, periodKey };
+	});
 }
 
 function badgeCodes(entries, streak, tier, community) {
@@ -117,4 +148,4 @@ function ensureAll(app) {
 	return rows.map((awardee) => ensureProfile(app, awardee));
 }
 
-module.exports = { TIERS, tierFor, pfWeek, streakOf, activeLedger, ensureProfile, ensureAll };
+module.exports = { TIERS, ACTION_DAILY_CAPS, tierFor, pfWeek, streakOf, activeLedger, dailyUsage, ensureProfile, ensureAll };

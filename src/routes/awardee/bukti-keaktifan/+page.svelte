@@ -1,11 +1,13 @@
 <script>
+	import { page } from '$app/state';
 	import { PageHeader, Button, Card, StatusBadge, EmptyState, ICONS } from '$lib/components';
 	import { SCORING_TABLE } from '$lib/domain/constants/scoring-table.js';
 	import { activitySubmissions, SUBMISSION_STATUS_META, SubmissionStatus } from '$lib/stores/activity-submissions.svelte.js';
 	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
 
 	const TYPES = SCORING_TABLE.filter((rule) => rule.needsEvidence && !['SESSION_ATTEND','SHARE_PUBLIC'].includes(rule.type));
-	let activityType = $state(TYPES[0]?.type ?? 'SHARE_PUBLIC');
+	const requestedType = page.url.searchParams.get('activityType') ?? '';
+	let activityType = $state(TYPES.some((rule) => rule.type === requestedType) ? requestedType : (TYPES[0]?.type ?? 'SHARE_PUBLIC'));
 	let activityDate = $state(new Date().toISOString().slice(0, 10));
 	let title = $state(''); let description = $state(''); let externalUrl = $state('');
 	let files = $state.raw([]); let editingId = $state(''); let formError = $state('');

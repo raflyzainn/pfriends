@@ -16,9 +16,9 @@
 	 * "Membaca kabar mingguan" dari halaman katalog akan memberi poin tanpa ada
 	 * kabar yang benar-benar dibaca: itu persis perilaku yang diperingatkan Hal 11
 	 * ("reward meaningful contribution, not spammy activity"). Karena itu kartunya
-	 * MENGANTAR ke tempat aksinya terjadi. Hanya dua aksi yang tidak punya halaman
-	 * tersendiri di lingkup 25 route yang dapat diajukan langsung dari sini, dan
-	 * keduanya masuk sebagai menunggu verifikasi, bukan langsung berpoin.
+	 * MENGANTAR ke tempat aksinya terjadi. Aksi pengetahuan dan mentor membuka
+	 * formulir Bukti Keaktifan dengan jenis aktivitas terpilih; keduanya baru
+	 * menghasilkan ledger setelah bukti disetujui Verifikator.
 	 *
 	 * Seluruh angka berasal dari `SCORING_TABLE` dan `gamification.dailyUsage`
 	 * (yang bersumber pada AntiGamingPolicy). Tidak ada satu pun angka poin atau
@@ -99,8 +99,8 @@
 			cara: 'Tulis satu Blog kontribusi di komposer, lalu kirim ke antrean tinjauan verifikator.'
 		},
 		SESSION_ATTEND: { href: '/awardee/kalender', cara: 'Hadiri sesi daring lalu klaim dengan kode kehadiran.' },
-		KNOWLEDGE_QA: { href: '', cara: 'Ajukan pertanyaan atau jawaban bermanfaat yang sudah kamu bagikan.' },
-		SPEAKER_MENTOR: { href: '', cara: 'Ajukan sesi tempat kamu menjadi narasumber, mentor, atau fasilitator.' },
+		KNOWLEDGE_QA: { href: '/awardee/bukti-keaktifan?activityType=KNOWLEDGE_QA', cara: 'Ajukan pertanyaan atau jawaban bermanfaat yang sudah kamu bagikan.' },
+		SPEAKER_MENTOR: { href: '/awardee/bukti-keaktifan?activityType=SPEAKER_MENTOR', cara: 'Ajukan sesi tempat kamu menjadi narasumber, mentor, atau fasilitator.' },
 		LEAD_ACTION: { href: '/awardee/gerakan', cara: 'Pimpin aksi atau kampanye lokal lewat gerakan bersama.' }
 	});
 
@@ -168,20 +168,6 @@
 		{ id: 'katalog', label: 'Aksi & Kuota', count: SCORING_TABLE.length },
 		{ id: 'riwayat', label: 'Riwayat Poin', count: gamification.ledger.length }
 	]);
-
-	/**
-	 * Mengajukan aksi yang tidak punya halaman tersendiri.
-	 *
-	 * Tanpa bukti terlampir, mesin membukukannya sebagai menunggu verifikasi dengan
-	 * poin nol: dan itulah yang dijanjikan tombolnya, sehingga tidak ada kejutan.
-	 * @param {string} activityType
-	 * @returns {Promise<void>}
-	 */
-	async function ajukan(activityType) {
-		await gamification.perform(activityType, {
-			note: 'Diajukan dari Pusat Aksi, menunggu verifikasi bukti.'
-		});
-	}
 
 	/**
 	 * Kalimat sisa kuota. Kuota yang habis selalu disertai kapan ia pulih :
@@ -391,15 +377,8 @@
 											Buka halamannya
 										</Button>
 									{:else}
-										<Button
-											variant={habis ? 'ghost' : 'secondary'}
-											size="sm"
-											fullWidth
-											disabled={habis}
-											loading={gamification.busy === entri.rule.type}
-											onclick={() => ajukan(entri.rule.type)}
-										>
-											{habis ? 'Kuota penuh' : 'Ajukan untuk verifikasi'}
+										<Button variant="ghost" size="sm" fullWidth disabled>
+											Alur belum tersedia
 										</Button>
 									{/if}
 								</div>

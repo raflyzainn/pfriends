@@ -157,14 +157,16 @@ Halaman komunitas membaca jumlah anggota aktif, komposisi komunitas, sebaran cha
 
 ### Zona Awardee: 12 route
 
-Navbar: Beranda · Blog Saya · Forum · Calendar of Event · Pencapaian · Kabar · Direktori
+Sidebar/laci: Beranda · Aksi & Poin · Gerakan · Blog Saya · Forum · Calendar of Event · Pencapaian · Kabar · Bukti Keaktifan · Jejaring. BottomNav ponsel tetap memuat lima tujuan utama.
 
 Fitur Kabar menggunakan PocketBase: Admin menyusun/menjadwalkan/menerbitkan melalui `/admin/broadcast`, Awardee membaca dan melakukan amplifikasi dari `/awardee/kabar`, sedangkan bukti share publik diputuskan Verifikator.
 
 `/awardee` · `/awardee/cerita` · `/awardee/cerita/tulis` · `/awardee/forum` (**baru**: forum
 bergaya kanal) · `/awardee/kalender` · `/awardee/penghargaan` · `/awardee/kabar` ·
 `/awardee/kabar/[id]` · `/awardee/direktori` · `/awardee/aksi` · `/awardee/gerakan` ·
-`/awardee/profil` (tiga terakhir hidup tetapi di luar navbar)
+`/awardee/profil` (profil dibuka melalui kartu akun, bukan menu tersendiri)
+
+Pusat Aksi membaca sembilan kuota harian dan ledger poin dari PocketBase. Kartu aksi mengantar ke workflow server yang sesuai; pengajuan pengetahuan dan mentor membuka Bukti Keaktifan dengan jenis aktivitas terpilih. Lihat `docs/30-AKSI-DAN-POIN-POCKETBASE.md`.
 
 `/awardee/papan-peringkat` **dicabut**: peserta melihat capaiannya sebagai pencapaian
 pribadi, bukan sebagai peringkat antar-peserta. Papan peringkat hanya tampil di beranda

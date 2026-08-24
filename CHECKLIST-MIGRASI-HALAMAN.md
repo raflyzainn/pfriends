@@ -1,6 +1,6 @@
 # Checklist Migrasi Seluruh Halaman PFriends
 
-Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah menggunakan PocketBase. Tanda `[~]` berarti campuran PocketBase dan data lokal. Tanda `[ ]` berarti belum dimigrasikan dan harus terlihat sebagai `DUMMY` di UI. Halaman statis informasional ditandai terpisah karena tidak membutuhkan backend.
+Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah menggunakan PocketBase. Tanda `[~]` berarti campuran PocketBase dan data lokal. Tanda `[ ]` berarti belum dimigrasikan dan harus terlihat sebagai `DUMMY` di UI. Halaman statis informasional ditandai terpisah karena tidak membutuhkan backend.
 
 ## Publik dan autentikasi
 
@@ -19,7 +19,7 @@ Audit kode per 20 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah men
 
 - [~] `/awardee`: poin, tier, streak, badge, kegiatan, kabar, dan ringkasan Cerita dari PocketBase; sebagian ringkasan komunitas masih lokal (`DUMMY`).
 - [x] `/awardee/bukti-keaktifan` dan `/awardee/bukti-keaktifan/[id]`: pengajuan, file terlindungi, status, revisi, dan riwayat memakai PocketBase.
-- [~] `/awardee/aksi`: riwayat poin memakai ledger PocketBase; katalog aksi ringan dan interaksi langsung belum backend (`DUMMY`).
+- [x] `/awardee/aksi`: katalog sembilan aksi, kuota harian, dan riwayat poin memakai PocketBase; setiap kartu menuju workflow Kabar, Bukti Keaktifan, Cerita, Calendar of Event, atau Gerakan yang sesuai dan tidak membukukan poin langsung dari browser.
 - [x] `/awardee/penghargaan` atau Pencapaian: poin, tier, streak, badge, saldo Koin Tukar, katalog reward, kuota, penukaran, dan Pesanan Saya memakai PocketBase. Quest belum ditampilkan sebagai data operasional pada halaman ini.
 - [~] `/awardee/profil`: profil hasil approval dan gamifikasi terbaca dari PocketBase; edit profil umum, consent versioned, statistik konten, dan etalase masih hybrid/lokal (`DUMMY`).
 - [x] `/awardee/direktori` atau Jejaring: profil Awardee aktif, pencarian, filter, statistik, pagination, dan gamifikasi ringkas memakai endpoint PocketBase tersanitasi.

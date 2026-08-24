@@ -109,6 +109,12 @@ const NAV_AWARDEE = Object.freeze([
 		iconPath: ICONS.home,
 		primary: true
 	}),
+	Object.freeze({
+		id: 'actions',
+		label: 'Aksi & Poin',
+		href: '/awardee/aksi',
+		iconPath: ICONS.bolt
+	}),
 	Object.freeze({ id: 'movements', label: 'Gerakan', href: '/awardee/gerakan', iconPath: ICONS.flag, badgeKey: 'movementRevision' }),
 	Object.freeze({
 		id: 'stories',

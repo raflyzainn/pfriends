@@ -375,6 +375,13 @@ benar(
 );
 benar('zona tak dikenal fail-closed', AccessPolicy.canEnter(UserRole.ADMIN, 'ZONA_HANTU') === false);
 
+const sumberNavigasi = await readFile(fileURLToPath(new URL('../../src/lib/data/navigation.js', import.meta.url)), 'utf8');
+const blokNavAwardee = sumberNavigasi.slice(sumberNavigasi.indexOf('const NAV_AWARDEE'), sumberNavigasi.indexOf('const NAV_VERIFIER'));
+benar('navigasi Awardee memuat Aksi & Poin', blokNavAwardee.includes("label: 'Aksi & Poin'") && blokNavAwardee.includes("href: '/awardee/aksi'"));
+samaDengan('Aksi & Poin tidak mengubah lima menu utama ponsel', (blokNavAwardee.match(/primary: true/g) || []).length, 5);
+const blokAksi = blokNavAwardee.slice(blokNavAwardee.indexOf("id: 'actions'"), blokNavAwardee.indexOf("id: 'movements'"));
+benar('Aksi & Poin hanya ada di sidebar/laci', !blokAksi.includes('primary: true'));
+
 samaDengan('zoneOf("/") = PUBLIC', AccessPolicy.zoneOf('/'), Zone.PUBLIC);
 samaDengan('zoneOf("/kalender") = PUBLIC', AccessPolicy.zoneOf('/kalender'), Zone.PUBLIC);
 samaDengan('zoneOf("/Admin/?x=1") ternormalkan = ADMIN', AccessPolicy.zoneOf('/Admin/?x=1'), Zone.ADMIN);
