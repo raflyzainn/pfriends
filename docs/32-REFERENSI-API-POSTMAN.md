@@ -43,6 +43,19 @@ Role yang dipakai: `AWARDEE`, `VERIFIER`, dan `ADMIN`. Istilah **Staf** berarti 
 
 Dasbor `/awardee` tidak memiliki endpoint agregat tersendiri. Untuk mereproduksi datanya di Postman, login sebagai Awardee lalu jalankan `GET /api/pfriends/gamification/me`, `GET /api/pfriends/events`, `GET /api/pfriends/broadcasts`, dan `GET /api/pfriends/stories/mine` dengan `{{awardeeToken}}`.
 
+### Forum PFriends
+
+| Method | Endpoint | Body atau fungsi |
+|---|---|---|
+| GET | `/api/pfriends/forum/channels` | Daftar kanal yang boleh diakses pengguna aktif |
+| GET | `/api/pfriends/forum/channels/{{channelSlug}}/messages?perPage=50&before={{messageCursor}}` | Riwayat pesan berbasis cursor |
+| POST | `/api/pfriends/forum/channels/{{channelSlug}}/messages` | `{ "content": "Pesan maksimal 600 karakter", "requestKey": "{{$guid}}" }` |
+| POST | `/api/pfriends/forum/messages/{{forumMessageId}}/reaction` | `{ "emoji": "👍", "selected": true }`; emoji: `👍`, `❤️`, atau `🎉` |
+| GET | `/api/pfriends/forum/presence` | Anggota aktif maksimal lima menit terakhir |
+| POST | `/api/pfriends/forum/presence/heartbeat` | `{ "channel": "tanya-jawab" }` |
+
+`pengumuman` hanya dapat ditulis Admin dan Verifikator. Kanal `sobi-alumni` dan `pfpreneur` dibatasi pada komunitas Awardee terkait, sementara staf aktif dapat mengakses seluruh kanal. Frontend memakai topic SSE `forum:channel:{channelId}` dan `forum:presence` setelah initial load REST.
+
 ## 2. Auth dan sesi
 
 Endpoint auth di bawah adalah REST bawaan PocketBase.

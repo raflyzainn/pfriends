@@ -27,7 +27,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [x] `/awardee/kalender`: usulan, status keputusan, agenda, pendaftaran, kapasitas, bukti hadir, revisi, dan poin memakai PocketBase.
 - [x] `/awardee/gerakan`: usulan, partisipasi, laporan aksi, bukti terlindungi, status pemeriksaan, dan poin pemimpin memakai PocketBase.
 - [x] `/awardee/cerita` dan `/awardee/cerita/tulis`: draf, penyimpanan otomatis, unggah bukti, pengajuan, revisi, penerbitan ulang, dan status memakai PocketBase.
-- [ ] `/awardee/forum`: state halaman belum mempunyai persistence backend (`DUMMY`).
+- [x] `/awardee/forum`, `/verifikator/forum`, dan `/admin/forum`: kanal berbasis komunitas, pesan persisten, reaksi, presence, REST API, dan pembaruan realtime SSE memakai PocketBase; tidak memakai queue atau WebSocket khusus.
 
 ## Verifikator
 
@@ -67,7 +67,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [x] Kabar: publikasi Admin, audiens, read 15 detik, CTA, share WhatsApp, bukti share publik, review Verifikator, serta ledger server.
 - [ ] SSO OAuth Verifikator/Admin (`TODO`).
 - [ ] Reset password, verifikasi email, MFA, dan notifikasi.
-- [~] Consent versioned, profil penuh, forum, dan quest belum selesai. Workflow privat Cerita, Gerakan, pembacaan Cerita publik, serta KPI umum sudah backend.
+- [~] Consent versioned, profil penuh, Forum, workflow privat Cerita, Gerakan, pembacaan Cerita publik, serta KPI umum sudah backend. Quest masih belum selesai.
 
 ## Aturan label UI
 

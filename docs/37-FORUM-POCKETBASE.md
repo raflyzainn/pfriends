@@ -1,0 +1,40 @@
+# Forum PFriends dengan REST dan SSE
+
+Implementasi V1 mempertahankan komposisi visual Forum lama, tetapi seluruh kanal, pesan, reaksi, dan daftar anggota daring kini berasal dari PocketBase. Operasi data memakai REST API. Pembaruan antarklien memakai Server-Sent Events bawaan PocketBase, bukan WebSocket khusus dan bukan message queue.
+
+## Route dan akses
+
+Komponen Forum yang sama dipakai oleh `/awardee/forum`, `/verifikator/forum`, dan `/admin/forum`.
+
+- `pengumuman`: semua pengguna aktif dapat membaca; hanya Admin dan Verifikator dapat menulis.
+- `sobi-alumni`: Awardee SOBI dan staf aktif.
+- `pfpreneur`: Awardee WOMENPRENEUR dan staf aktif.
+- `mangrove` serta `tanya-jawab`: seluruh role aktif.
+
+Server mengambil identitas, role, komunitas, chapter, dan waktu dari sesi. Browser tidak dapat menentukan penulis atau melewati aturan kanal.
+
+## Persistensi dan realtime
+
+Migration `1723968990_forum.js` membuat `forum_channels`, `forum_messages`, `forum_reactions`, dan `forum_presences` dalam keadaan terkunci. Lima kanal dan satu pesan sambutan sistem per kanal dibuat saat migration. Percakapan peraga lama tidak dimigrasikan.
+
+Initial load dan seluruh mutation memakai `/api/pfriends/forum/**`. Setelah penyimpanan berhasil, hook menerbitkan custom SSE pada topic kanal. Hak subscription diperiksa kembali oleh `onRealtimeSubscribeRequest`. Store mendeduplikasi respons REST dan event SSE agar satu pesan tidak tampil dua kali.
+
+Pesan maksimal 600 karakter. Kombinasi penulis dan `requestKey` unik membuat retry aman. Server membatasi maksimal sepuluh pesan per menit. Reaksi bersifat desired-state melalui nilai `selected`, sehingga retry tidak membalik status dua kali.
+
+Presence diperbarui setiap 60 detik selama tab Forum terlihat. Heartbeat maksimal 90 detik ditampilkan `aktif`, antara 90 detik sampai lima menit ditampilkan `sibuk`, dan setelah itu tidak dikirim ke UI.
+
+## Batas V1
+
+V1 belum mencakup lampiran, balasan bertingkat, edit, hapus, moderasi, atau pengelolaan kanal. Karena tidak ada lampiran, integrasi Cloudflare R2 belum diperlukan. Queue baru diperlukan kelak untuk pekerjaan asinkron seperti pemindaian lampiran atau notifikasi pengguna offline.
+
+## Verifikasi
+
+Jalankan PocketBase yang sudah dimigrasikan dan di-seed, lalu:
+
+```powershell
+npm run verify:forum
+npm run verify:compile
+npm run build
+```
+
+Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, pembacaan ulang REST, toggle reaksi, heartbeat, dan pengiriman event SSE.

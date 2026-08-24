@@ -19,7 +19,7 @@ Dasbor tidak lagi memuat `catalog`, `editorial`, repository gabungan, Dexie, ata
 
 Awardee yang belum memiliki Cerita menerima daftar kosong dari endpoint `stories/mine`, lalu melihat empty state asli. Halaman `/awardee` dikecualikan dari `DummyRouteNotice` karena seluruh data operasionalnya telah dimigrasikan.
 
-Tautan Forum di kartu komunitas tetap menuju `/awardee/forum`. Halaman Forum masih memakai state lokal dan tetap berlabel `DUMMY` sampai migrasi Forum dikerjakan secara terpisah.
+Tautan Forum di kartu komunitas tetap menuju `/awardee/forum`. Sejak migrasi Forum V1, kanal, pesan, reaksi, dan presence pada halaman tersebut sudah memakai PocketBase sebagaimana dicatat di `docs/37-FORUM-POCKETBASE.md`.
 
 ## Kompatibilitas halaman Kabar
 

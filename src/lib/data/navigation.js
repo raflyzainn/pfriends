@@ -219,6 +219,7 @@ const NAV_VERIFIER = Object.freeze([
 		badgeKey: 'activityEvidenceQueue'
 	}),
 	Object.freeze({ id: 'movements', label: 'Verifikasi Gerakan', href: '/verifikator/gerakan', iconPath: ICONS.flag, badgeKey: 'movementQueue' }),
+	Object.freeze({ id: 'forum', label: 'Forum', href: '/verifikator/forum', iconPath: ICONS.chat }),
 	Object.freeze({
 		id: 'registrations',
 		label: 'Registrasi Awardee',
@@ -284,7 +285,8 @@ const NAV_ADMIN = Object.freeze([
 		iconPath: ICONS.trophy,
 		primary: true
 	}),
-	Object.freeze({ id: 'movements', label: 'Gerakan', href: '/admin/gerakan', iconPath: ICONS.flag })
+	Object.freeze({ id: 'movements', label: 'Gerakan', href: '/admin/gerakan', iconPath: ICONS.flag }),
+	Object.freeze({ id: 'forum', label: 'Forum', href: '/admin/forum', iconPath: ICONS.chat })
 ]);
 
 /**

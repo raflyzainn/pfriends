@@ -24,6 +24,7 @@
 		"verify:directory": "node scripts/verify/directory-test.mjs",
 		"verify:profile": "node scripts/verify/profile-test.mjs",
 		"verify:awardee-dashboard": "node scripts/verify/awardee-dashboard-test.mjs",
+		"verify:forum": "node scripts/verify/forum-test.mjs",
 		"verify:rewards": "node scripts/verify/reward-test.mjs",
 		"verify:calendar": "node scripts/verify/calendar-test.mjs",
 		"verify:public-content": "node scripts/verify/public-content-test.mjs",
@@ -35,7 +36,7 @@
 		"verify:verifier-dashboard": "node scripts/verify/verifier-dashboard-test.mjs",
 		"verify:point-actions": "node scripts/verify/point-action-test.mjs",
 		"verify:gamification-rules": "node scripts/verify/gamification-rules-test.mjs",
-		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:profile && npm run verify:awardee-dashboard && npm run verify:rewards && npm run verify:calendar && npm run verify:public-content && npm run verify:public-impact && npm run verify:movements && npm run verify:stories && npm run verify:admin-awardees && npm run verify:admin-dashboard && npm run verify:verifier-dashboard && npm run verify:point-actions && npm run verify:gamification-rules",
+		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:profile && npm run verify:awardee-dashboard && npm run verify:forum && npm run verify:rewards && npm run verify:calendar && npm run verify:public-content && npm run verify:public-impact && npm run verify:movements && npm run verify:stories && npm run verify:admin-awardees && npm run verify:admin-dashboard && npm run verify:verifier-dashboard && npm run verify:point-actions && npm run verify:gamification-rules",
 		"verify:browser": "npm run verify:e2e && npm run verify:gamification",
 		"screenshot": "node scripts/verify/screenshot.mjs"
 	},
