@@ -49,8 +49,9 @@ Dasbor `/awardee` tidak memiliki endpoint agregat tersendiri. Untuk mereproduksi
 |---|---|---|
 | GET | `/api/pfriends/forum/channels` | Daftar kanal yang boleh diakses pengguna aktif |
 | GET | `/api/pfriends/forum/channels/{{channelSlug}}/messages?perPage=50&before={{messageCursor}}` | Riwayat pesan berbasis cursor |
-| POST | `/api/pfriends/forum/channels/{{channelSlug}}/messages` | `{ "content": "Pesan maksimal 600 karakter", "requestKey": "{{$guid}}" }` |
-| POST | `/api/pfriends/forum/messages/{{forumMessageId}}/reaction` | `{ "emoji": "👍", "selected": true }`; emoji: `👍`, `❤️`, atau `🎉` |
+| POST | `/api/pfriends/forum/channels/{{channelSlug}}/messages` | `{ "content": "Pesan maksimal 600 karakter", "requestKey": "{{$guid}}", "replyTo": "{{forumMessageId}}" }`; `replyTo` opsional dan harus berasal dari kanal yang sama |
+| GET | `/api/pfriends/forum/messages/{{forumMessageId}}/context` | Pesan asal beserta maksimal 20 pesan sebelum dan sesudahnya untuk navigasi reply |
+| POST | `/api/pfriends/forum/messages/{{forumMessageId}}/reaction` | `{ "emoji": "🫶🏽", "selected": true }`; menerima satu emoji Unicode dari picker aplikasi |
 | GET | `/api/pfriends/forum/presence` | Anggota aktif maksimal lima menit terakhir |
 | POST | `/api/pfriends/forum/presence/heartbeat` | `{ "channel": "tanya-jawab" }` |
 

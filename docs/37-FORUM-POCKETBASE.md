@@ -19,13 +19,15 @@ Migration `1723968990_forum.js` membuat `forum_channels`, `forum_messages`, `for
 
 Initial load dan seluruh mutation memakai `/api/pfriends/forum/**`. Setelah penyimpanan berhasil, hook menerbitkan custom SSE pada topic kanal. Hak subscription diperiksa kembali oleh `onRealtimeSubscribeRequest`. Store mendeduplikasi respons REST dan event SSE agar satu pesan tidak tampil dua kali.
 
-Pesan maksimal 600 karakter. Kombinasi penulis dan `requestKey` unik membuat retry aman. Server membatasi maksimal sepuluh pesan per menit. Reaksi bersifat desired-state melalui nilai `selected`, sehingga retry tidak membalik status dua kali.
+Pesan maksimal 600 karakter. Kombinasi penulis dan `requestKey` unik membuat retry aman. Server membatasi maksimal sepuluh pesan per menit. Migration `1723969000_forum_replies_emoji.js` menambahkan relasi `replyTo` dan mengubah nilai reaksi menjadi teks Unicode. Balasan menyimpan referensi ke pesan langsung pada kanal yang sama. Endpoint konteks memuat pesan di sekitar referensi bila pesan asal belum ada pada halaman aktif.
+
+Reaksi bersifat desired-state melalui nilai `selected`, sehingga retry tidak membalik status dua kali. UI hanya menampilkan chip reaksi yang sudah dipakai. Reaksi baru dipilih dari menu tiga titik dan picker berisi 3.790 emoji Unicode beserta variasi warna kulit. Dataset picker dibundel oleh frontend, sedangkan hook memvalidasi input memakai allowlist yang dihasilkan dari versi dataset yang sama. Tidak ada pengambilan dataset dari CDN.
 
 Presence diperbarui setiap 60 detik selama tab Forum terlihat. Heartbeat maksimal 90 detik ditampilkan `aktif`, antara 90 detik sampai lima menit ditampilkan `sibuk`, dan setelah itu tidak dikirim ke UI.
 
-## Batas V1
+## Batas saat ini
 
-V1 belum mencakup lampiran, balasan bertingkat, edit, hapus, moderasi, atau pengelolaan kanal. Karena tidak ada lampiran, integrasi Cloudflare R2 belum diperlukan. Queue baru diperlukan kelak untuk pekerjaan asinkron seperti pemindaian lampiran atau notifikasi pengguna offline.
+Forum belum mencakup lampiran, tampilan thread bertingkat, mention/notifikasi, emoji gambar khusus, edit, hapus, moderasi, atau pengelolaan kanal. Reply dapat menunjuk pesan biasa maupun reply, tetapi selalu dirender satu tingkat agar alur kanal tetap ringkas. Karena tidak ada lampiran, integrasi Cloudflare R2 belum diperlukan. Queue baru diperlukan kelak untuk pekerjaan asinkron seperti pemindaian lampiran atau notifikasi pengguna offline.
 
 ## Verifikasi
 
@@ -37,4 +39,4 @@ npm run verify:compile
 npm run build
 ```
 
-Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, pembacaan ulang REST, toggle reaksi, heartbeat, dan pengiriman event SSE.
+Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, reply, penolakan reply lintas kanal, endpoint konteks, validasi emoji Unicode, toggle reaksi, heartbeat, dan pengiriman event SSE.

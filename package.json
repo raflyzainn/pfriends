@@ -54,6 +54,8 @@
 	"dependencies": {
 		"dexie": "^4.3.0",
 		"echarts": "^6.0.0",
+		"emoji-picker-element": "^1.29.1",
+		"emoji-picker-element-data": "^1.7.0",
 		"pocketbase": "0.27.3"
 	}
 }
