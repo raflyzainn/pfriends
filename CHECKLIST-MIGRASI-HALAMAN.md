@@ -21,7 +21,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [x] `/awardee/bukti-keaktifan` dan `/awardee/bukti-keaktifan/[id]`: pengajuan, file terlindungi, status, revisi, dan riwayat memakai PocketBase.
 - [x] `/awardee/aksi`: katalog aksi aktif, nilai poin, kuota harian, dan riwayat poin memakai PocketBase; aksi kustom buatan staf otomatis menuju Bukti Keaktifan dan tidak membukukan poin langsung dari browser.
 - [x] `/awardee/penghargaan` atau Pencapaian: poin, tier, streak, badge, saldo Koin Tukar, katalog reward, kuota, penukaran, dan Pesanan Saya memakai PocketBase. Quest belum ditampilkan sebagai data operasional pada halaman ini.
-- [~] `/awardee/profil`: profil hasil approval dan gamifikasi terbaca dari PocketBase; edit profil umum, consent versioned, statistik konten, dan etalase masih hybrid/lokal (`DUMMY`).
+- [x] `/awardee/profil`: identitas terverifikasi, edit profil aman, foto, visibilitas Jejaring, gamifikasi, statistik Cerita, consent berversi append-only, audit profil, profil usaha, kontak usaha, dan etalase maksimal lima produk memakai PocketBase.
 - [x] `/awardee/direktori` atau Jejaring: profil Awardee aktif, pencarian, filter, statistik, pagination, dan gamifikasi ringkas memakai endpoint PocketBase tersanitasi.
 - [x] `/awardee/kabar` dan `/awardee/kabar/[id]`: broadcast, dwell/read, CTA, bukti share WhatsApp, bukti share publik, review Verifikator, dan ledger poin memakai PocketBase; membuka tab WhatsApp saja tidak berpoin.
 - [x] `/awardee/kalender`: usulan, status keputusan, agenda, pendaftaran, kapasitas, bukti hadir, revisi, dan poin memakai PocketBase.

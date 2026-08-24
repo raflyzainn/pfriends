@@ -576,20 +576,47 @@ Semua akun aktif. Query opsional: `search`, `community`, `chapter`, `city`, `ski
 
 `PATCH {{baseUrl}}/api/pfriends/profile/me`
 
-Awardee aktif. Body:
+Awardee aktif. Gunakan `multipart/form-data` bila mengunggah `avatar`, atau JSON tanpa foto. Nama, email, komunitas, pilar, chapter, kampus, dan tahun lulus merupakan data terverifikasi yang tidak dapat diubah dari endpoint ini.
 
 ```json
 {
+	"whatsapp": "081234567890",
+	"city": "Bandung",
   "occupation": "Wirausaha sosial",
   "bio": "Profil singkat Awardee.",
   "skills": ["Fasilitasi", "Pengelolaan Sampah"],
   "openToMentoring": true,
+	"profileVisibility": "DIRECTORY",
+	"businessName": "Usaha Lestari",
+	"businessSector": "Kuliner",
+	"businessCity": "Bandung",
+	"businessDescription": "Produk pangan lokal.",
+	"businessContact": "081298765432",
   "businessEmployees": 8,
   "businessGrowthPercent": 12.5
 }
 ```
 
-Maksimal 12 skill, masing-masing 60 karakter. Field bisnis hanya diterapkan untuk WOMENPRENEUR.
+`GET {{baseUrl}}/api/pfriends/profile/me` mengembalikan profil pribadi, statistik Cerita, status dan riwayat consent, serta produk. Maksimal 12 skill, masing-masing 60 karakter. `profileVisibility` adalah `DIRECTORY` atau `PRIVATE`. Field bisnis hanya diterapkan untuk WOMENPRENEUR. Foto profil menerima JPEG, PNG, atau WebP maksimal 2 MB.
+
+### Consent profil
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| POST | `/api/pfriends/profile/consents/{{type}}/grant` | Memberikan consent memakai versi kebijakan aktif |
+| POST | `/api/pfriends/profile/consents/{{type}}/revoke` | Mencabut consent tanpa mengubah poin atau tier |
+
+Tanpa body. `type` adalah consent opsional, misalnya `PUBLIKASI_NAMA`, `PUBLIKASI_CERITA`, atau `PUBLIKASI_DATA_USAHA`. Consent internal tidak dapat diubah mandiri. Setiap tindakan menambah rekaman baru dan tidak menimpa riwayat lama.
+
+### Etalase Womenpreneur
+
+| Method | Endpoint | Body |
+|---|---|---|
+| POST | `/api/pfriends/profile/products` | `multipart/form-data`: `name`, `category`, `description`, dan `image` wajib |
+| PATCH | `/api/pfriends/profile/products/{{productId}}` | Field yang diubah; `image` opsional |
+| DELETE | `/api/pfriends/profile/products/{{productId}}` | Tanpa body |
+
+Maksimal lima produk per Awardee Womenpreneur. Foto menerima JPEG, PNG, atau WebP maksimal 5 MB. Etalase dan kontak usaha hanya muncul di Jejaring ketika profil berstatus `DIRECTORY` dan consent `PUBLIKASI_DATA_USAHA` aktif.
 
 ## 12. Administrasi Awardee
 

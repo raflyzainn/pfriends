@@ -27,6 +27,8 @@ const seededResult = await pb.send(`/api/pfriends/directory?search=${encodeURICo
 ok(seededResult.items.some((item) => item.id === seeded.id && item.points === seeded.points), 'Poin akun demo tidak direkonsiliasi dari ledger seed PocketBase.');
 
 const own = await pb.collection('awardees').getFirstListItem(pb.filter('user = {:user}', { user: pb.authStore.record.id }));
+const privateProfile = await pb.send('/api/pfriends/profile/me');
+if (!privateProfile.consents.effective.PUBLIKASI_NAMA) await pb.send('/api/pfriends/profile/consents/PUBLIKASI_NAMA/grant', { method: 'POST' });
 const visibleRecords = await pb.collection('awardees').getFullList();
 ok(visibleRecords.length === 1 && visibleRecords[0].id === own.id, 'Rule awardees tidak membatasi record lengkap ke pemilik.');
 const original = { occupation: own.occupation || '', bio: own.bio || '', skills: own.skills || [], openToMentoring: Boolean(own.openToMentoring), businessEmployees: own.businessEmployees || 0, businessGrowthPercent: own.businessGrowthPercent || 0 };

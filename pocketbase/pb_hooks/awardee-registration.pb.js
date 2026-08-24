@@ -121,9 +121,15 @@ routerAdd('POST', '/api/pfriends/registrations/{id}/decision', (e) => {
 				awardee.set('businessSector', registration.getString('businessSector'));
 				awardee.set('businessCity', registration.getString('businessCity'));
 				awardee.set('status', 'AKTIF');
-				awardee.set('consentActive', true);
+				awardee.set('consentActive', false);
+				awardee.set('profileVisibility', 'DIRECTORY');
+				awardee.set('nameConsentActive', false);
+				awardee.set('businessConsentActive', false);
 				awardee.set('joinedAt', new Date().toISOString());
 				tx.save(awardee);
+				const policy=tx.findFirstRecordByFilter('consent_policies','consentType = "PENGOLAHAN_DATA_INTERNAL" && status = "ACTIVE"');
+				const consent=new Record(tx.findCollectionByNameOrId('profile_consents')),grantedAt=registration.getString('consentedAt')||new Date().toISOString(),expires=new Date(grantedAt);expires.setMonth(expires.getMonth()+24);
+				consent.set('awardee',awardee.id);consent.set('owner',user.id);consent.set('consentType','PENGOLAHAN_DATA_INTERNAL');consent.set('eventType','GRANTED');consent.set('policyVersion',registration.getString('consentVersion')||policy.getString('version'));consent.set('purpose',policy.getString('purpose'));consent.set('statementText',policy.getString('statementText'));consent.set('scope',['SEMUA_KONTEN']);consent.set('channels',['LAPORAN_INTERNAL']);consent.set('occurredAt',grantedAt);consent.set('expiresAt',expires.toISOString());consent.set('via','FORM_MICROSITE');tx.save(consent);
 				user.set('awardeeId', awardeeId);
 			}
 			user.set('status', 'AKTIF');

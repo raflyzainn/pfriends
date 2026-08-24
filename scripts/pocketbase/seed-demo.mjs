@@ -11,7 +11,7 @@ const password = process.env.PB_SUPERUSER_PASSWORD;
 if (!email || !password) throw new Error('PB_SUPERUSER_EMAIL dan PB_SUPERUSER_PASSWORD wajib diisi.');
 const pb = new PocketBase(url);
 await pb.collection('_superusers').authWithPassword(email, password);
-const { accounts, awardees, activities, stories, movements, rewards, redemptions } = buildSeed();
+const { accounts, awardees, activities, stories, movements, rewards, redemptions, consents } = buildSeed();
 let created = 0;
 const usersByAwardeeId = new Map();
 const usersByLegacyAccountId = new Map();
@@ -44,13 +44,26 @@ for (const awardee of awardees) {
 		occupation: awardee.occupation || '', bio: awardee.bio || '', skills: awardee.skills || [],
 		openToMentoring: Boolean(awardee.openToMentoring), businessEmployees: business?.employees || 0,
 		businessGrowthPercent: business?.growthPercent || 0,
-		consentActive: Boolean(awardee.consentActive)
+		consentActive: Boolean(awardee.consentActive), profileVisibility: 'DIRECTORY',
+		nameConsentActive: true, businessConsentActive: awardee.community === 'WOMENPRENEUR',
+		businessDescription: business ? `${business.businessName} merupakan usaha binaan Womenpreneur PFriends.` : '',
+		businessContact: awardee.community === 'WOMENPRENEUR' ? (awardee.whatsapp || '') : ''
 	};
 	const record = existing
 		? await pb.collection('awardees').update(existing.id, data)
 		: await pb.collection('awardees').create(data);
 	if (!existing) profilesCreated++;
 	recordsByAwardeeId.set(awardee.id, record);
+}
+for (const consent of consents) {
+	const awardee = recordsByAwardeeId.get(consent.awardeeId); const owner = usersByAwardeeId.get(consent.awardeeId);
+	if (!awardee || !owner) continue;
+	const occurredAt = consent.status === 'DICABUT' ? consent.revokedAt : consent.grantedAt;
+	const eventType = consent.status === 'DICABUT' ? 'REVOKED' : 'GRANTED';
+	const expiry = new Date(consent.grantedAt); expiry.setMonth(expiry.getMonth() + 24);
+	let existing = null;
+	try { existing = await pb.collection('profile_consents').getFirstListItem(pb.filter('awardee = {:awardee} && consentType = {:type} && eventType = {:event} && occurredAt = {:at}', { awardee: awardee.id, type: consent.consentType, event: eventType, at: occurredAt })); } catch (error) { if (error?.status !== 404) throw error; }
+	if (!existing) await pb.collection('profile_consents').create({ awardee: awardee.id, owner, consentType: consent.consentType, eventType, policyVersion: consent.policyVersion, purpose: consent.purpose, statementText: consent.statementText, scope: consent.scope, channels: consent.channels, occurredAt, expiresAt: consent.expiresAt || expiry.toISOString(), via: eventType === 'GRANTED' ? 'FORM_MICROSITE' : 'SELF_SERVICE', reason: consent.revokedReason || '' });
 }
 let ledgerCreated = 0;
 const awardedActivities = activities.filter((activity) => activity.status === 'AWARDED');

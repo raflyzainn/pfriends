@@ -522,7 +522,28 @@
 					<span class="numeric font-semibold">{formatAngka(usaha.employees)}</span> tenaga kerja ·
 					pertumbuhan <span class="numeric font-semibold">{formatAngka(usaha.growthPercent)}%</span>
 				</p>
+				{#if usaha.description}
+					<p class="mt-2 text-[13px] leading-relaxed text-ink-700">{usaha.description}</p>
+				{/if}
+				{#if usaha.contact}
+					<a class="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand-700" href={`https://wa.me/${usaha.contact.replace(/^0/, '62')}`} target="_blank" rel="noreferrer">
+						<Icon path={ICONS.whatsapp} size={15} /> Hubungi WhatsApp usaha
+					</a>
+				{/if}
 			</div>
+			{#if usaha.products?.length}
+				<div class="mt-4">
+					<p class="label-micro">Etalase produk</p>
+					<div class="mt-2 grid grid-cols-2 gap-2">
+						{#each usaha.products as produk (produk.id)}
+							<div class="overflow-hidden rounded-xl border border-ink-100 bg-surface">
+								<img src={produk.imageUrl} alt={produk.name} width="320" height="200" class="h-24 w-full object-cover" />
+								<div class="p-2"><p class="text-xs font-bold text-ink-800">{produk.name}</p><p class="text-[11px] text-ink-600">{produk.category}</p></div>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
 		{/if}
 
 		<div class="mt-4 border-t border-ink-100 pt-4">

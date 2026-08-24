@@ -7,7 +7,14 @@ function client() {
 	return pb;
 }
 
-function mapAwardee(record) {
+function mapAwardee(record, pb, token) {
+	const businessProfile = record.businessProfile ? {
+		...record.businessProfile,
+		products: (record.businessProfile.products || []).map((product) => ({
+			...product,
+			imageUrl: product.image ? pb.files.getURL({ id: product.id, collectionName: product.collectionName || 'business_products' }, product.image, { token }) : ''
+		}))
+	} : null;
 	return new Awardee({
 		id: record.id, fullName: record.fullName,
 		email: `${record.id}@directory.invalid`, community: record.community, chapterId: record.chapterId,
@@ -16,7 +23,7 @@ function mapAwardee(record) {
 		graduationYear: record.graduationYear || null, occupation: record.occupation || '', bio: record.bio || '',
 		skills: record.skills || [], badgeCodes: record.badgeCodes || [],
 		openToMentoring: Boolean(record.openToMentoring), consentActive: true,
-		businessProfile: record.businessProfile, joinedAt: record.joinedAt
+		businessProfile, joinedAt: record.joinedAt
 	});
 }
 
@@ -24,8 +31,9 @@ export async function fetchDirectory(query = {}) {
 	try {
 		const params = new URLSearchParams();
 		for (const [key, value] of Object.entries(query)) if (value !== '' && value !== undefined && value !== false) params.set(key, String(value));
-		const response = await client().send(`/api/pfriends/directory?${params}`);
-		return { ...response, items: (response.items || []).map(mapAwardee) };
+		const pb = client();
+		const [response, token] = await Promise.all([pb.send(`/api/pfriends/directory?${params}`), pb.files.getToken()]);
+		return { ...response, items: (response.items || []).map((record) => mapAwardee(record, pb, token)) };
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Jejaring gagal dimuat.')); }
 }
 
