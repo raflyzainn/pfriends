@@ -572,6 +572,8 @@ Kategori: `MERCHANDISE`, `UPSKILLING`, `MENTORING`, `PROFIL`, `UNDANGAN`, `SERTI
 
 Semua akun aktif. Query opsional: `search`, `community`, `chapter`, `city`, `skill`, `mentor=true`, `page`, `perPage` maksimal 48.
 
+Respons hanya memuat data yang aman untuk Awardee lain. `avatar` hadir jika consent `PUBLIKASI_FOTO_WAJAH` aktif. `whatsapp` hadir jika consent `KONTAK_UNTUK_MENTORING` aktif dan pemilik profil mengaktifkan `openToMentoring`. Keduanya tidak dikirim ketika syaratnya tidak terpenuhi. Foto tetap memerlukan token file PocketBase.
+
 ### Ubah profil sendiri
 
 `PATCH {{baseUrl}}/api/pfriends/profile/me`
@@ -597,7 +599,7 @@ Awardee aktif. Gunakan `multipart/form-data` bila mengunggah `avatar`, atau JSON
 }
 ```
 
-`GET {{baseUrl}}/api/pfriends/profile/me` mengembalikan profil pribadi, statistik Cerita, status dan riwayat consent, serta produk. Maksimal 12 skill, masing-masing 60 karakter. `profileVisibility` adalah `DIRECTORY` atau `PRIVATE`. Field bisnis hanya diterapkan untuk WOMENPRENEUR. Foto profil menerima JPEG, PNG, atau WebP maksimal 2 MB.
+`GET {{baseUrl}}/api/pfriends/profile/me` mengembalikan profil pribadi, `avatarAsset`, statistik Cerita, status dan riwayat consent, serta produk. Pemilik selalu dapat membaca avatarnya sendiri. Maksimal 12 skill, masing-masing 60 karakter. `profileVisibility` adalah `DIRECTORY` atau `PRIVATE`. Field bisnis hanya diterapkan untuk WOMENPRENEUR. Foto profil menerima JPEG, PNG, atau WebP maksimal 2 MB.
 
 ### Consent profil
 
@@ -606,7 +608,7 @@ Awardee aktif. Gunakan `multipart/form-data` bila mengunggah `avatar`, atau JSON
 | POST | `/api/pfriends/profile/consents/{{type}}/grant` | Memberikan consent memakai versi kebijakan aktif |
 | POST | `/api/pfriends/profile/consents/{{type}}/revoke` | Mencabut consent tanpa mengubah poin atau tier |
 
-Tanpa body. `type` adalah consent opsional, misalnya `PUBLIKASI_NAMA`, `PUBLIKASI_CERITA`, atau `PUBLIKASI_DATA_USAHA`. Consent internal tidak dapat diubah mandiri. Setiap tindakan menambah rekaman baru dan tidak menimpa riwayat lama.
+Tanpa body. `type` adalah consent opsional, misalnya `PUBLIKASI_NAMA`, `PUBLIKASI_FOTO_WAJAH`, `KONTAK_UNTUK_MENTORING`, `PUBLIKASI_CERITA`, atau `PUBLIKASI_DATA_USAHA`. Consent internal tidak dapat diubah mandiri. Setiap tindakan menambah rekaman baru dan tidak menimpa riwayat lama. Pencabutan consent foto atau kontak menyembunyikan field terkait dari Jejaring, tetapi tidak menghapus data profil pribadi.
 
 ### Etalase Womenpreneur
 

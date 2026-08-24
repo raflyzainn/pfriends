@@ -10,13 +10,16 @@ Halaman `/awardee/profil` memakai PocketBase sebagai sumber tunggal untuk data p
 - `consent_policies` menyimpan teks dan versi kebijakan aktif.
 - `profile_consents` adalah log append-only. Pemberian dan pencabutan selalu membuat baris baru.
 - `profile_audits` mencatat perubahan profil serta produk dengan nilai sebelum dan sesudah.
+- `profile_avatars` menyimpan avatar terlindungi tanpa membawa email atau data pribadi lain dari record `awardees`.
 - `business_products` menyimpan maksimal lima produk Womenpreneur beserta foto terlindungi.
 
 Field identitas terverifikasi seperti nama, email, komunitas, pilar, chapter, kampus, dan tahun lulus tidak dapat diubah melalui Profil Saya. Nomor WhatsApp usaha disimpan terpisah dari WhatsApp pribadi.
 
 ## Privasi dan consent
 
-Profil hanya masuk Jejaring bila `profileVisibility` bernilai `DIRECTORY` dan consent publikasi nama aktif. Profil usaha, produk, dan kontak usaha hanya ikut bila consent publikasi data usaha aktif. File produk hanya dapat dibaca pemilik, staf, atau Awardee aktif yang memenuhi aturan visibilitas tersebut.
+Profil hanya masuk Jejaring bila `profileVisibility` bernilai `DIRECTORY` dan consent publikasi nama aktif. Avatar muncul di header pemilik tanpa syarat consent publik, sedangkan Awardee lain hanya dapat melihatnya ketika consent publikasi foto wajah aktif. WhatsApp pribadi hanya dikirim kepada Awardee aktif ketika consent kontak mentoring aktif dan pemilik membuka mentoring. Profil usaha, produk, dan kontak usaha hanya ikut bila consent publikasi data usaha aktif. File avatar dan produk hanya dapat dibaca pemilik, staf, atau Awardee aktif yang memenuhi aturan visibilitas masing-masing.
+
+Perubahan avatar memperbarui store profil bersama sehingga header dan halaman Profil memakai sumber yang sama tanpa login ulang. Pencabutan consent foto hanya menyembunyikan avatar dari Jejaring dan tidak menghapus file milik pengguna.
 
 Consent publikasi Cerita diperiksa langsung dari riwayat efektif sebelum pengiriman, approval, dan publikasi. Pencabutan mengarsipkan Cerita terbit dalam transaksi yang sama. Pemberian ulang tidak menerbitkan kembali Cerita lama. Proses berkala merekonsiliasi consent yang kedaluwarsa.
 
@@ -34,4 +37,4 @@ npm run verify:directory
 npm run verify:compile
 ```
 
-Pengujian integrasi memerlukan PocketBase yang sudah dimigrasikan dan diseed, serta `PB_SUPERUSER_EMAIL`, `PB_SUPERUSER_PASSWORD`, dan `VITE_PB_URL`.
+Pengujian integrasi memerlukan PocketBase yang sudah dimigrasikan dan diseed, serta `PB_SUPERUSER_EMAIL`, `PB_SUPERUSER_PASSWORD`, dan `VITE_PB_URL`. Skenario profil memeriksa avatar milik sendiri, pembacaan file oleh Awardee lain, serta grant dan revoke consent foto dan kontak mentoring.

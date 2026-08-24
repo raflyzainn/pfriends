@@ -56,6 +56,7 @@ export const MAKS_TOKEN_JEDA_AMAN = 2;
  * @property {string} fullName
  * @property {string} email
  * @property {string} [whatsapp]
+ * @property {string} [avatar]
  * @property {string} community        Salah satu CommunityType.
  * @property {string} chapterId        Identitas chapter, mis. 'PF11'.
  * @property {string} [status]         Salah satu AWARDEE_STATUS; default AKTIF.
@@ -113,6 +114,7 @@ export class Awardee {
 			fullName,
 			email,
 			whatsapp = '',
+			avatar = '',
 			community,
 			chapterId,
 			status = AWARDEE_STATUS.AKTIF,
@@ -172,6 +174,7 @@ export class Awardee {
 			fullName,
 			email,
 			whatsapp,
+			avatar,
 			community,
 			chapterId,
 			status,
@@ -215,6 +218,11 @@ export class Awardee {
 	/** @returns {string} */
 	get whatsapp() {
 		return this.#data.whatsapp;
+	}
+
+	/** @returns {string} */
+	get avatar() {
+		return this.#data.avatar;
 	}
 
 	/** @returns {string} Salah satu CommunityType. */
@@ -448,6 +456,7 @@ export class Awardee {
 			fullName: this.fullName,
 			email: this.email,
 			whatsapp: this.whatsapp,
+			avatar: this.avatar,
 			community: this.community,
 			chapterId: this.chapterId,
 			status: this.status,

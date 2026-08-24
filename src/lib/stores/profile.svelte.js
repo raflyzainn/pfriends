@@ -2,7 +2,8 @@ import { myProfile,updateProfile,grantConsent,revokeConsent,createProduct,update
 
 class ProfileStore {
 	data=$state.raw(null);loading=$state(false);working=$state(false);error=$state(null);
-	async load(){this.loading=true;this.error=null;try{this.data=await myProfile();return this.data;}catch(error){this.error=error instanceof Error?error.message:'Profil gagal dimuat.';throw error;}finally{this.loading=false;}}
+	#pending=null;
+	async load(){if(this.#pending)return this.#pending;this.loading=true;this.error=null;this.#pending=(async()=>{try{this.data=await myProfile();return this.data;}catch(error){this.error=error instanceof Error?error.message:'Profil gagal dimuat.';throw error;}finally{this.loading=false;this.#pending=null;}})();return this.#pending;}
 	async update(data){return this.#run(()=>updateProfile(data));}
 	async grant(type){await this.#run(()=>grantConsent(type));return this.load();}
 	async revoke(type){let result;await this.#run(async()=>{result=await revokeConsent(type);return result;});await this.load();return result;}

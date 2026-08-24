@@ -46,6 +46,7 @@ for (const awardee of awardees) {
 		businessGrowthPercent: business?.growthPercent || 0,
 		consentActive: Boolean(awardee.consentActive), profileVisibility: 'DIRECTORY',
 		nameConsentActive: true, businessConsentActive: awardee.community === 'WOMENPRENEUR',
+		avatarConsentActive: false, contactConsentActive: false,
 		businessDescription: business ? `${business.businessName} merupakan usaha binaan Womenpreneur PFriends.` : '',
 		businessContact: awardee.community === 'WOMENPRENEUR' ? (awardee.whatsapp || '') : ''
 	};
@@ -64,6 +65,17 @@ for (const consent of consents) {
 	let existing = null;
 	try { existing = await pb.collection('profile_consents').getFirstListItem(pb.filter('awardee = {:awardee} && consentType = {:type} && eventType = {:event} && occurredAt = {:at}', { awardee: awardee.id, type: consent.consentType, event: eventType, at: occurredAt })); } catch (error) { if (error?.status !== 404) throw error; }
 	if (!existing) await pb.collection('profile_consents').create({ awardee: awardee.id, owner, consentType: consent.consentType, eventType, policyVersion: consent.policyVersion, purpose: consent.purpose, statementText: consent.statementText, scope: consent.scope, channels: consent.channels, occurredAt, expiresAt: consent.expiresAt || expiry.toISOString(), via: eventType === 'GRANTED' ? 'FORM_MICROSITE' : 'SELF_SERVICE', reason: consent.revokedReason || '' });
+}
+for (const awardee of recordsByAwardeeId.values()) {
+	const rows = await pb.collection('profile_consents').getFullList({ filter: pb.filter('awardee = {:awardee}', { awardee: awardee.id }), sort: '-occurredAt' });
+	const active = (type) => {
+		const latest = rows.find((row) => row.consentType === type);
+		return Boolean(latest && latest.eventType === 'GRANTED' && new Date(latest.expiresAt) > new Date());
+	};
+	await pb.collection('awardees').update(awardee.id, {
+		avatarConsentActive: active('PUBLIKASI_FOTO_WAJAH'),
+		contactConsentActive: active('KONTAK_UNTUK_MENTORING')
+	});
 }
 let ledgerCreated = 0;
 const awardedActivities = activities.filter((activity) => activity.status === 'AWARDED');

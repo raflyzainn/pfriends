@@ -12,6 +12,9 @@ function item(app, awardee) {
 	const profile = require(`${__hooks}/gamification-utils.js`).ensureProfile(app, awardee).profile;
 	const badges = app.findRecordsByFilter('awardee_badges', 'awardee = {:awardee} && status = "ACTIVE"', '', 0, 0, { awardee: awardee.id });
 	const showBusiness = awardee.getString('community') === 'WOMENPRENEUR' && awardee.getBool('businessConsentActive');
+	const showAvatar = awardee.getBool('avatarConsentActive');
+	const showContact = awardee.getBool('contactConsentActive') && awardee.getBool('openToMentoring');
+	const avatar = showAvatar ? require(`${__hooks}/awardee-profile-utils.js`).avatarDto(app, awardee) : null;
 	const products = showBusiness ? app.findRecordsByFilter('business_products', 'awardee = {:awardee}', 'createdAt', 0, 0, { awardee: awardee.id }).map((row) => {
 		const image = row.getString('image');
 		return { id: row.id, name: row.getString('name'), category: row.getString('category'), description: row.getString('description'), image, collectionName: 'business_products' };
@@ -23,6 +26,7 @@ function item(app, awardee) {
 		graduationYear: awardee.getInt('graduationYear') || null,
 		occupation: awardee.getString('occupation'), bio: awardee.getString('bio'),
 		skills: skillsOf(awardee), openToMentoring: awardee.getBool('openToMentoring'),
+		avatar, ...(showContact ? { whatsapp: awardee.getString('whatsapp') } : {}),
 		businessProfile: showBusiness ? {
 			businessName: awardee.getString('businessName'), sector: awardee.getString('businessSector'),
 			city: awardee.getString('businessCity') || awardee.getString('city'),

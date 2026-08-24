@@ -38,6 +38,7 @@
 	import { goto } from '$app/navigation';
 	import {
 		BottomNav,
+		Avatar,
 		DummyRouteNotice,
 		Icon,
 		PointsChip,
@@ -52,6 +53,7 @@
 	import { Zone } from '$lib/domain/policies/AccessPolicy.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
+	import { awardeeProfile } from '$lib/stores/profile.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { toast } from '$lib/stores/toast.svelte.js';
 	import { activitySubmissions, SubmissionStatus } from '$lib/stores/activity-submissions.svelte.js';
@@ -99,7 +101,7 @@
 	 * @returns {Promise<void>}
 	 */
 	async function siapkanZona() {
-		await Promise.all([catalog.load(), gamification.refresh(), activitySubmissions.load({ mine: true }), workflowBadges.loadMovements()]);
+		await Promise.all([catalog.load(), gamification.refresh(), awardeeProfile.load(), activitySubmissions.load({ mine: true }), workflowBadges.loadMovements()]);
 		siap = true;
 	}
 
@@ -243,12 +245,7 @@
 					href="/awardee/profil"
 					class="hidden min-w-0 items-center gap-2 rounded-control border-l border-ink-100 py-1 pr-1 pl-3 transition-colors hover:bg-ink-50 md:flex"
 				>
-					<span
-						class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-chip bg-pertamina-navy-tint text-xs font-bold text-pertamina-navy"
-						aria-hidden="true"
-					>
-						{session.user?.initials ?? 'PF'}
-					</span>
+					<Avatar name={session.displayName} src={awardeeProfile.data?.profile?.avatarUrl || ''} size="sm" />
 					<span class="min-w-0">
 						<span class="block truncate text-xs leading-tight font-semibold text-heading">
 							{session.displayName}

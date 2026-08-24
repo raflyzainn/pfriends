@@ -162,6 +162,7 @@
 		return {
 			id: awardee.id,
 			name: awardee.fullName,
+			avatar: awardee.avatar,
 			community: awardee.community,
 			chapter: awardee.chapterDef.label,
 			tier: awardee.tierLevel,
@@ -433,6 +434,7 @@
 		<div class="flex items-start gap-4">
 			<Avatar
 				name={anggotaDipilih.fullName}
+				src={anggotaDipilih.avatar}
 				size="xl"
 				tier={anggotaDipilih.tierLevel}
 				showRing
@@ -510,6 +512,12 @@
 					{/each}
 				</div>
 			</div>
+		{/if}
+
+		{#if anggotaDipilih.openToMentoring && anggotaDipilih.whatsapp}
+			<a class="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand-700" href={`https://wa.me/${anggotaDipilih.whatsapp.replace(/^0/, '62')}`} target="_blank" rel="noreferrer">
+				<Icon path={ICONS.whatsapp} size={15} /> Hubungi WhatsApp untuk mentoring
+			</a>
 		{/if}
 
 		{#if anggotaDipilih.businessProfile}

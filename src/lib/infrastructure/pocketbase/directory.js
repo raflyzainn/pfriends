@@ -8,6 +8,9 @@ function client() {
 }
 
 function mapAwardee(record, pb, token) {
+	const avatarUrl = record.avatar?.image
+		? pb.files.getURL({ id: record.avatar.id, collectionName: record.avatar.collectionName || 'profile_avatars' }, record.avatar.image, { token })
+		: '';
 	const businessProfile = record.businessProfile ? {
 		...record.businessProfile,
 		products: (record.businessProfile.products || []).map((product) => ({
@@ -16,7 +19,7 @@ function mapAwardee(record, pb, token) {
 		}))
 	} : null;
 	return new Awardee({
-		id: record.id, fullName: record.fullName,
+		id: record.id, fullName: record.fullName, avatar: avatarUrl, whatsapp: record.whatsapp || '',
 		email: `${record.id}@directory.invalid`, community: record.community, chapterId: record.chapterId,
 		status: 'AKTIF', points: record.points || 0, coins: 0, seasonPoints: 0,
 		streakWeeks: record.streakWeeks || 0, university: record.university || '', city: record.city || '',

@@ -10,6 +10,7 @@
 		if (path.startsWith('/awardee/bukti-keaktifan')) return '';
 		if (path.startsWith('/awardee/aksi')) return '';
 		if (path.startsWith('/awardee/direktori')) return '';
+		if (path.startsWith('/awardee/profil')) return '';
 		if (path.startsWith('/awardee/penghargaan')) return '';
 		if (path.startsWith('/awardee/kalender')) return '';
 		if (path.startsWith('/awardee/gerakan')) return '';
