@@ -40,8 +40,9 @@ function syncWallet(app, awardee) {
 	for (const row of badges) {
 		const badge = app.findRecordById('badges', row.getString('badge'));
 		const bonus = BADGE_BONUS[badge.getString('rarity')] || 0;
-		addTransaction(app, awardee, `BADGE:${row.id}`, 'BADGE_BONUS', bonus, row.id, `Bonus lencana ${badge.getString('name')}.`, row.getString('awardedAt'));
-		if (row.getString('status') === 'REVOKED') addTransaction(app, awardee, `BADGE_REVOKE:${row.id}`, 'BADGE_REVERSAL', -bonus, row.id, `Pencabutan bonus lencana ${badge.getString('name')}.`, row.getString('revokedAt'));
+		const cycle=Math.max(1,row.getInt('awardCycle')||1), suffix=cycle===1?'':`:CYCLE:${cycle}`;
+		addTransaction(app, awardee, `BADGE:${row.id}${suffix}`, 'BADGE_BONUS', bonus, row.id, `Bonus lencana ${badge.getString('name')}.`, row.getString('awardedAt'));
+		if (row.getString('status') === 'REVOKED') addTransaction(app, awardee, `BADGE_REVOKE:${row.id}${suffix}`, 'BADGE_REVERSAL', -bonus, row.id, `Pencabutan bonus lencana ${badge.getString('name')}.`, row.getString('revokedAt'));
 	}
 	return recalculateAccount(app, awardee);
 }

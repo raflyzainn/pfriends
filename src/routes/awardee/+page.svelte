@@ -478,7 +478,7 @@
 				</div>
 
 				<div class="mt-5 border-t border-ink-100 pt-5">
-					<TierProgress points={gamification.points} />
+					<TierProgress points={gamification.points} tiers={gamification.tiers} />
 				</div>
 
 				<div class="mt-5 border-t border-ink-100 pt-4">

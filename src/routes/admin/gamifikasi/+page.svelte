@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { AdminGamificationNav, Card, DummyBadge, Icon, PageHeader, StatTile, ICONS } from '$lib/components';
+	import { AdminGamificationNav, Card, Icon, PageHeader, StatTile, ICONS } from '$lib/components';
 	import { adminRedemptions, staffRewards } from '$lib/infrastructure/pocketbase/achievements.js';
 
 	let loading = $state(true); let rewards = $state.raw([]); let orders = $state.raw([]);
@@ -13,7 +13,7 @@
 	const sections = [
 		{ title: 'Pemantauan Pesanan', description: 'Lihat Awardee yang menukar koin dan status pemenuhannya.', href: '/admin/gamifikasi/pesanan', icon: ICONS.inbox },
 		{ title: 'Katalog Hadiah', description: 'Tambah, ubah, atau nonaktifkan hadiah tukar.', href: '/admin/gamifikasi/hadiah', icon: ICONS.gift },
-		{ title: 'Aturan & Simulasi', description: 'Atur nilai poin, ambang tier, dan lihat simulasi dampak.', href: '/admin/gamifikasi/aturan', icon: ICONS.trophy, dummy: true }
+		{ title: 'Aturan & Simulasi', description: 'Atur nilai poin, ambang tier, dan lihat simulasi dampak.', href: '/admin/gamifikasi/aturan', icon: ICONS.trophy }
 	];
 </script>
 
@@ -31,7 +31,7 @@
 	{#each sections as section}
 		<a href={section.href} class="group block">
 			<Card class="h-full transition group-hover:-translate-y-0.5 group-hover:border-brand-300 group-hover:shadow-card">
-				<div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700"><Icon path={section.icon} size={20} /></span><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><h2 class="font-bold text-heading">{section.title}</h2>{#if section.dummy}<DummyBadge title="Bagian ini masih memakai data lokal Dexie." />{/if}</div><p class="mt-1 text-sm leading-relaxed text-ink-600">{section.description}</p><p class="mt-4 text-sm font-semibold text-brand-700">Buka bagian →</p></div></div>
+				<div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700"><Icon path={section.icon} size={20} /></span><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><h2 class="font-bold text-heading">{section.title}</h2></div><p class="mt-1 text-sm leading-relaxed text-ink-600">{section.description}</p><p class="mt-4 text-sm font-semibold text-brand-700">Buka bagian →</p></div></div>
 			</Card>
 		</a>
 	{/each}

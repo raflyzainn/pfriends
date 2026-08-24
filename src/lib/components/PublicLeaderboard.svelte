@@ -1,12 +1,12 @@
 <script>
-	import { tierUntukPoin } from '$lib/domain/constants/tier-table.js';
+	import { tierUntukLevel, tierUntukPoin } from '$lib/domain/constants/tier-table.js';
 	import { formatAngka, inisial } from '$lib/utils/format.js';
 
 	let { entries = [], loading = false, error = null } = $props();
 
 	const rows = $derived(
 		entries.map((awardee) => {
-			const tier = tierUntukPoin(awardee.points);
+			const tier = tierUntukLevel(awardee.tier) ?? tierUntukPoin(awardee.points);
 			return {
 				id: awardee.awardeeId,
 				rank: awardee.rank,

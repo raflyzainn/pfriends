@@ -94,13 +94,14 @@
 	let sedangMenukar = $state(false);
 
 	const awardee = $derived(session.awardee);
+	const tierCatalog = $derived(gamification.tiers.length ? gamification.tiers.map((tier) => ({ ...(TIER_TABLE.find((entry) => entry.level === tier.level) ?? {}), ...tier, deskripsi: tier.description || TIER_TABLE.find((entry) => entry.level === tier.level)?.deskripsi || '' })) : TIER_TABLE);
 
 	const lencanaTerkumpul = $derived(gamification.badges.filter((entri) => entri.unlocked).length);
 	const lencanaTerkunci = $derived(gamification.badges.length - lencanaTerkumpul);
 
 	/** Jenjang berikutnya beserta jarak yang tersisa; `null` bila sudah di puncak. */
 	const jenjangBerikut = $derived.by(() => {
-		const berikutnya = TIER_TABLE.find((tier) => tier.threshold > gamification.points);
+		const berikutnya = tierCatalog.find((tier) => tier.threshold > gamification.points);
 		if (!berikutnya) return null;
 		return { tier: berikutnya, kurang: berikutnya.threshold - gamification.points };
 	});
@@ -404,7 +405,7 @@
 	     menjulur setengah lebarnya melewati 100%. Tanpa padding pembungkus,
 	     julurannya melebarkan dokumen dan halaman ikut menggulir mendatar di 375px. -->
 	<Card padding="lg" class="mt-6">
-		<TierProgress points={gamification.points} />
+		<TierProgress points={gamification.points} tiers={gamification.tiers} />
 	</Card>
 
 	<div class="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -412,7 +413,7 @@
 		<section aria-labelledby="judul-tangga">
 			<h2 id="judul-tangga" class="mb-3 text-base font-bold text-heading">Tangga jenjang</h2>
 			<div class="space-y-3">
-				{#each TIER_TABLE as tier (tier.level)}
+				{#each tierCatalog as tier (tier.level)}
 					{@const tercapai = gamification.points >= tier.threshold}
 					<Card padding="md" accent={tercapai ? tier.color : ''}>
 						<div class="flex flex-wrap items-start justify-between gap-3">

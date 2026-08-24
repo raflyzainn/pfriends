@@ -24,6 +24,8 @@ Aksi inti atau aksi yang sudah dirujuk tidak dihapus fisik. Operasi hapus mengub
 ## Verifikasi
 
 - Migrasi `1723968900_point_actions.js` berhasil pada database PocketBase baru.
+
+Halaman `/admin/gamifikasi/aturan` memakai panel katalog ini sebagai satu-satunya editor nilai dan batas aksi. Editor tier serta simulator pada halaman yang sama memakai `gamification_tiers` dan `gamification_tier_audits`, bukan lagi meta Dexie.
 - `npm run verify:point-actions` memeriksa seed aksi inti, pembuatan oleh Admin, perubahan oleh Verifikator, audit, penghapusan aksi kustom, dan pengarsipan aksi inti.
 - `npm run verify:compile`, `verify:domain`, `verify:seed`, dan `verify:purity` tetap lulus.
 

@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import { TierResolver } from '$lib/domain/services/TierResolver.js';
+import { TIER_TABLE } from '$lib/domain/constants/tier-table.js';
 import { myGamification } from '$lib/infrastructure/pocketbase/gamification.js';
 import { engageBroadcast } from '$lib/infrastructure/pocketbase/broadcasts.js';
 import { session } from './session.svelte.js';
@@ -14,13 +15,28 @@ class GamificationStore {
 	dailyUsage = $state.raw([]);
 	actions = $state.raw([]);
 	badges = $state.raw([]);
+	tiers = $state.raw([]);
 	loading = $state(false);
 	busy = $state(null);
 	streakWeeks = $state(0);
 	error = $state(null);
 
-	tier = $derived(TierResolver.resolve(this.points));
-	progress = $derived(TierResolver.progress(this.points));
+	tier = $derived.by(() => {
+		if (!this.tiers.length) return TierResolver.resolve(this.points);
+		const sorted = [...this.tiers].sort((a, b) => a.threshold - b.threshold);
+		const selected = [...sorted].reverse().find((entry) => this.points >= entry.threshold) ?? sorted[0];
+		const visual = TIER_TABLE.find((entry) => entry.level === selected.level) ?? {};
+		return { ...visual, ...selected, deskripsi: selected.description || visual.deskripsi || '' };
+	});
+	progress = $derived.by(() => {
+		if (!this.tiers.length) return TierResolver.progress(this.points);
+		const sorted = [...this.tiers].sort((a, b) => a.threshold - b.threshold);
+		const current = this.tier;
+		const next = sorted.find((entry) => entry.threshold > this.points) ?? null;
+		const range = next ? next.threshold - current.threshold : 0;
+		const gained = this.points - current.threshold;
+		return { current, next, gained, needed: next ? next.threshold - this.points : 0, percent: next && range > 0 ? Math.min(100, Math.round(gained / range * 100)) : 100, points: this.points, isTertinggi: !next };
+	});
 	unlockedBadges = $derived(this.badges.filter((entry) => entry.unlocked));
 	availableActions = $derived(this.dailyUsage.filter((row) => !row.exhausted));
 
@@ -49,6 +65,7 @@ class GamificationStore {
 			this.points = result.profile.totalPoints || 0;
 			this.ledger = result.ledger;
 			this.badges = result.badges;
+			this.tiers = result.tiers;
 			this.streakWeeks = result.profile.currentStreakWeeks || 0;
 			this.coins = result.wallet.balance || 0;
 			this.dailyUsage = result.dailyUsage;
@@ -63,7 +80,7 @@ class GamificationStore {
 
 	reset(clearError = true) {
 		this.points = 0; this.coins = 0; this.ledger = []; this.dailyUsage = []; this.actions = [];
-		this.badges = []; this.streakWeeks = 0; this.busy = null;
+		this.badges = []; this.tiers = []; this.streakWeeks = 0; this.busy = null;
 		if (clearError) this.error = null;
 	}
 

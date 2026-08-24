@@ -33,7 +33,7 @@ export async function myGamification() {
 	try {
 		const response = await client().send('/api/pfriends/gamification/me');
 		const actions=response.actions||[];
-		return { profile: response.profile, wallet: response.wallet || { balance: 0 }, actions, dailyUsage: response.dailyUsage || [], ledger: (response.ledger || []).map((row)=>pointActivity(row,actions)), badges: (response.badges || []).map(badgeEntry) };
+		return { profile: response.profile, wallet: response.wallet || { balance: 0 }, tiers: response.tiers || [], actions, dailyUsage: response.dailyUsage || [], ledger: (response.ledger || []).map((row)=>pointActivity(row,actions)), badges: (response.badges || []).map(badgeEntry) };
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Gamifikasi gagal dimuat.')); }
 }
 

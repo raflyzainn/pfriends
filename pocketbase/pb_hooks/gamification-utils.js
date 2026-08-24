@@ -1,4 +1,4 @@
-const TIERS = [
+const CANONICAL_TIERS = [
 	{ level: 'NEWCOMER', threshold: 0 },
 	{ level: 'ACTIVE_MEMBER', threshold: 25 },
 	{ level: 'CONTRIBUTOR', threshold: 50 },
@@ -6,9 +6,16 @@ const TIERS = [
 	{ level: 'CHAMPION', threshold: 150 }
 ];
 
-function tierFor(points) {
-	let tier = TIERS[0].level;
-	for (const item of TIERS) if (points >= item.threshold) tier = item.level;
+function tiers(app) {
+	if (!app) return CANONICAL_TIERS.map((item, rank) => ({ ...item, rank }));
+	return app.findRecordsByFilter('gamification_tiers', 'id != ""', 'rank', 0, 0).map((row) => ({ id:row.id, level:row.getString('level'), rank:row.getInt('rank'), threshold:row.getInt('threshold'), canonicalThreshold:row.getInt('canonicalThreshold'), label:row.getString('label'), description:row.getString('description'), benefit:row.getString('benefit'), color:row.getString('color'), updatedAt:row.getString('updatedAt') }));
+}
+
+function tierFor(app, points) {
+	const list = typeof app === 'number' ? tiers(null) : tiers(app);
+	const value = typeof app === 'number' ? app : points;
+	let tier = list[0].level;
+	for (const item of list) if (value >= item.threshold) tier = item.level;
 	return tier;
 }
 
@@ -91,16 +98,16 @@ function badgeCodes(entries, streak, tier, community) {
 	return result;
 }
 
-function ensureProfile(app, awardee) {
+function ensureProfile(app, awardee, pointsOverride) {
 	const awardeeId = awardee.getString('legacyId');
 	const userId = awardee.getString('user');
 	let profile = null;
 	try { profile = app.findFirstRecordByData('gamification_profiles', 'awardee', awardee.id); } catch (_) {}
 	if (!profile) profile = new Record(app.findCollectionByNameOrId('gamification_profiles'));
 	const entries = activeLedger(app, awardeeId);
-	const total = entries.reduce((sum, row) => sum + row.getInt('points'), 0);
+	const total = pointsOverride === undefined ? entries.reduce((sum, row) => sum + row.getInt('points'), 0) : Number(pointsOverride);
 	const streak = streakOf(entries, new Date());
-	const tier = tierFor(total);
+	const tier = tierFor(app, total);
 	profile.set('awardee', awardee.id);
 	profile.set('user', userId);
 	profile.set('awardeeId', awardeeId);
@@ -120,11 +127,13 @@ function ensureProfile(app, awardee) {
 	const byCode = Object.fromEntries(existing.map((row) => [row.getString('badgeCode'), row]));
 	for (const code of activeCodes) {
 		let row = byCode[code];
+		const reactivated = row && row.getString('status') === 'REVOKED';
 		if (!row) row = new Record(app.findCollectionByNameOrId('awardee_badges'));
 		const badge = app.findFirstRecordByData('badges', 'code', code);
 		row.set('awardee', awardee.id); row.set('user', userId); row.set('badge', badge.id); row.set('badgeCode', code);
 		row.set('status', 'ACTIVE'); row.set('revokedAt', '');
-		if (!row.getString('awardedAt')) row.set('awardedAt', new Date().toISOString());
+		if (!row.getString('awardedAt') || reactivated) row.set('awardedAt', new Date().toISOString());
+		if (!row.getInt('awardCycle')) row.set('awardCycle', 1); else if (reactivated) row.set('awardCycle', row.getInt('awardCycle') + 1);
 		app.save(row);
 	}
 	for (const row of existing) if (activeCodes.indexOf(row.getString('badgeCode')) === -1 && row.getString('status') === 'ACTIVE') {
@@ -138,4 +147,4 @@ function ensureAll(app) {
 	return rows.map((awardee) => ensureProfile(app, awardee));
 }
 
-module.exports = { TIERS, tierFor, pfWeek, streakOf, activeLedger, dailyUsage, ensureProfile, ensureAll };
+module.exports = { CANONICAL_TIERS, tiers, tierFor, pfWeek, streakOf, activeLedger, dailyUsage, ensureProfile, ensureAll };

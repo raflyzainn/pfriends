@@ -17,6 +17,7 @@ routerAdd('GET', '/api/pfriends/gamification/me', (e) => {
 	return e.json(200, {
 		profile: result.profile,
 		wallet: { balance: wallet.getInt('balance'), lifetimeEarned: wallet.getInt('lifetimeEarned'), lifetimeSpent: wallet.getInt('lifetimeSpent') },
+		tiers: utils.tiers(e.app),
 		actions: e.app.findRecordsByFilter('point_actions', 'status = "ACTIVE"', 'actionClass,label', 0, 0).map(require(`${__hooks}/point-action-utils.js`).dto),
 		dailyUsage: utils.dailyUsage(e.app, awardee.getString('legacyId')),
 		ledger: result.entries.slice().reverse(),
@@ -64,7 +65,7 @@ routerAdd('GET', '/api/pfriends/verifier/dashboard', (e) => {
 		const bucket = monthly.find((row) => row.key === entry.getString('occurredAt').slice(0, 7));
 		if (bucket) bucket.points += entry.getInt('points');
 	}
-	const tiers = Object.fromEntries(utils.TIERS.map((item) => [item.level, 0]));
+	const tiers = Object.fromEntries(utils.tiers(e.app).map((item) => [item.level, 0]));
 	const chapter = {};
 	for (const item of all) {
 		tiers[item.profile.getString('tier')]++;

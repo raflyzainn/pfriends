@@ -26,6 +26,8 @@ Tier dihitung pada ambang 0, 25, 50, 100, dan 150 poin. Pekan streak dimulai Sel
 
 `/awardee/aksi` membaca ledger, katalog `actions`, dan `dailyUsage` dari endpoint gamifikasi. Katalog berasal dari `point_actions` berstatus aktif. `dailyUsage` memuat `actionId`, kode aksi, `used`, `cap`, `remaining`, `exhausted`, dan `periodKey`. Penggunaan dihitung dari `verified_point_activities` milik Awardee pada hari server yang sama dengan pemeriksaan cap.
 
+Ambang tier tidak lagi hanya berasal dari konstanta frontend. Collection `gamification_tiers` menjadi sumber aktif dan dikirim melalui `GET /api/pfriends/gamification/me`. Admin mengubahnya melalui alur pratinjau dan konfirmasi di `/admin/gamifikasi/aturan`. Penerapan memperbarui tier seluruh profil tanpa mengubah total poin, lalu menyelaraskan lencana dan saldo bonus terkait.
+
 Kartu Pusat Aksi hanya mengantar Awardee ke rumah operasional aksi. Kabar, Cerita, Calendar of Event, dan Gerakan membukukan poin melalui endpoint masing-masing. `KNOWLEDGE_QA`, `SPEAKER_MENTOR`, dan seluruh aksi kustom membuka formulir Bukti Keaktifan dengan aksi terpilih. Tidak ada kartu yang memberikan poin langsung dari browser. Rancangan CRUD dan audit dijelaskan di `docs/31-KATALOG-AKSI-DINAMIS-POCKETBASE.md`.
 
 ## Batas implementasi

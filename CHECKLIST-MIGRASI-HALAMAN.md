@@ -51,7 +51,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [x] `/admin/gamifikasi/pesanan` dan `/admin/gamifikasi/hadiah`: pemantauan penukaran serta CRUD katalog hadiah memakai PocketBase; keputusan pesanan tetap milik Verifikator.
 - [x] `/admin/gerakan`: pemantauan status, peserta, dan jumlah laporan Gerakan memakai PocketBase tanpa kewenangan keputusan.
 - [x] `/admin/cerita` dan `/admin/cerita/[id]`: pemantauan metadata seluruh status, penulis, Verifikator, keputusan, dan riwayat memakai PocketBase tanpa membuka isi atau berkas privat.
-- [~] `/admin/gamifikasi/aturan`: CRUD katalog aksi poin dan audit memakai PocketBase; konfigurasi tier dan simulator lama masih lokal (`DUMMY`).
+- [x] `/admin/gamifikasi/aturan`: CRUD katalog aksi poin, konfigurasi tier, pratinjau dampak, penerapan ulang tier Awardee, dan audit memakai PocketBase.
 
 ## Komponen lintas halaman yang sudah backend
 

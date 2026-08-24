@@ -172,7 +172,8 @@
 	});
 
 	/** Apakah ambang poin gate fitur publik Hal 12 sudah terlampaui. */
-	const poinFiturPublikTerpenuhi = $derived(gamification.points >= AMBANG_FITUR_PUBLIK);
+	const ambangFiturPublik = $derived(gamification.tiers.find((tier) => tier.level === 'FEATURED_CANDIDATE')?.threshold ?? AMBANG_FITUR_PUBLIK);
+	const poinFiturPublikTerpenuhi = $derived(gamification.points >= ambangFiturPublik);
 
 	/**
 	 * Jenis persetujuan yang menjadi dasar tayangnya sebuah naskah cerita.
@@ -405,7 +406,7 @@
 		<Card padding="lg">
 			<h2 class="text-sm font-bold text-heading">Tier & capaian</h2>
 			<div class="mt-4">
-				<TierProgress points={gamification.points} showLabels={false} />
+				<TierProgress points={gamification.points} tiers={gamification.tiers} showLabels={false} />
 			</div>
 
 			<div class="mt-5 grid grid-cols-2 gap-3 border-t border-ink-100 pt-4">
@@ -432,10 +433,10 @@
 				</p>
 				<p class="mt-1 text-[11px] leading-relaxed text-ink-600">
 					{#if poinFiturPublikTerpenuhi}
-						Ambang {formatAngka(AMBANG_FITUR_PUBLIK)} poin sudah terpenuhi. Syarat lainnya: Blog
+						Ambang {formatAngka(ambangFiturPublik)} poin sudah terpenuhi. Syarat lainnya: Blog
 						terverifikasi, consent aktif, validasi PF, dan bebas data sensitif: dinilai tim Corsec.
 					{:else}
-						Butuh {frasaHitung(AMBANG_FITUR_PUBLIK - gamification.points, 'poin')} lagi, ditambah Blog
+						Butuh {frasaHitung(ambangFiturPublik - gamification.points, 'poin')} lagi, ditambah Blog
 						terverifikasi, consent aktif, validasi PF, dan bebas data sensitif.
 					{/if}
 				</p>

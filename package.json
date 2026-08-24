@@ -31,7 +31,8 @@
 		"verify:admin-awardees": "node scripts/verify/admin-awardee-test.mjs",
 		"verify:admin-dashboard": "node scripts/verify/admin-dashboard-test.mjs",
 		"verify:point-actions": "node scripts/verify/point-action-test.mjs",
-		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards && npm run verify:calendar && npm run verify:public-content && npm run verify:public-impact && npm run verify:movements && npm run verify:stories && npm run verify:admin-awardees && npm run verify:admin-dashboard && npm run verify:point-actions",
+		"verify:gamification-rules": "node scripts/verify/gamification-rules-test.mjs",
+		"verify:backend": "npm run verify:pocketbase && npm run verify:registration && npm run verify:directory && npm run verify:rewards && npm run verify:calendar && npm run verify:public-content && npm run verify:public-impact && npm run verify:movements && npm run verify:stories && npm run verify:admin-awardees && npm run verify:admin-dashboard && npm run verify:point-actions && npm run verify:gamification-rules",
 		"verify:browser": "npm run verify:e2e && npm run verify:gamification",
 		"screenshot": "node scripts/verify/screenshot.mjs"
 	},
