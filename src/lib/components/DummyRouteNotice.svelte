@@ -13,6 +13,7 @@
 		if (path.startsWith('/awardee/profil')) return '';
 		if (path.startsWith('/awardee/penghargaan')) return '';
 		if (path.startsWith('/awardee/kalender')) return '';
+		if (path.startsWith('/awardee/kabar')) return '';
 		if (path.startsWith('/awardee/gerakan')) return '';
 		if (path.startsWith('/awardee/cerita')) return '';
 		if (path.startsWith('/awardee/forum') || path.startsWith('/admin/forum') || path.startsWith('/verifikator/forum')) return '';

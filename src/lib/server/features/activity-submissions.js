@@ -16,8 +16,13 @@ function validateFiles(items, required) {
 async function roleContext(ctx, roles) { const principal = await ctx.principal({ roles }); return { principal, pb: await ctx.admin() }; }
 async function actionFor(pb, body) {
 	let action;
-	if (body.pointAction) action = await pb.collection('point_actions').getOne(body.pointAction);
-	else action = await pb.collection('point_actions').getFirstListItem(pb.filter('code = {:code}', { code: text(body.actionCode || body.activityType) }));
+	try {
+		if (body.pointAction) action = await pb.collection('point_actions').getOne(body.pointAction);
+		else action = await pb.collection('point_actions').getFirstListItem(pb.filter('code = {:code}', { code: text(body.actionCode || body.activityType) }));
+	} catch (error) {
+		if (error?.status !== 404) throw error;
+	}
+	if (!action) throw new ApiError(503, `Katalog aksi ${text(body.actionCode || body.activityType) || 'yang dipilih'} belum tersedia.`);
 	if (action.status !== 'ACTIVE') throw new ApiError(400, 'Aksi poin sedang tidak aktif.');
 	if (action.workflow !== 'EVIDENCE') throw new ApiError(400, 'Aksi ini tidak diajukan melalui Bukti Keaktifan.');
 	return action;
