@@ -116,6 +116,8 @@
 	/** @type {string} Pesan galat pada dialog bukti. */
 	let galatBukti = $state('');
 	let berkasBukti = $state.raw([]);
+	/** @type {HTMLInputElement|null} */
+	let inputBukti = $state(null);
 	let jenisBukti = $state('SHARE_PUBLIC');
 	let sisaBaca = $state(15);
 	let sesiDimulai = $state('');
@@ -129,7 +131,10 @@
 		}).catch((error) => toast.error('Sesi baca gagal dimulai', error.message));
 	});
 
-	const PLATFORM = ['Instagram', 'LinkedIn', 'X', 'Facebook', 'TikTok', 'YouTube'];
+	const PLATFORM_PUBLIK = ['Instagram', 'LinkedIn', 'X', 'Facebook', 'TikTok', 'YouTube'];
+	const pilihanPlatform = $derived(
+		jenisBukti === 'SHARE_PRIVATE' ? ['WhatsApp'] : PLATFORM_PUBLIK
+	);
 
 	const tanggapanCukup = $derived(tanggapan.trim().length >= MIN_KARAKTER_TANGGAPAN);
 
@@ -184,9 +189,10 @@
 	function bagikanKeWhatsApp() {
 		if (!kabar) return;
 		jenisBukti = 'SHARE_PRIVATE'; platformBukti = 'WhatsApp'; tautanBukti = ''; berkasBukti = []; galatBukti = '';
-		window.open(`https://wa.me/?text=${encodeURIComponent(teksBagikan)}`, '_blank', 'noopener,noreferrer');
 		dialogBuktiTerbuka = true;
 	}
+
+	const tautanWhatsApp = $derived(`https://wa.me/?text=${encodeURIComponent(teksBagikan)}`);
 
 	function bukaDialogBukti() {
 		jenisBukti = 'SHARE_PUBLIC';
@@ -469,13 +475,24 @@
 		</p>
 
 		<div class="mt-4 space-y-4">
+			{#if jenisBukti === 'SHARE_PRIVATE'}
+				<a
+					href={tautanWhatsApp}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-pertamina-red-ink px-4 py-2.5 text-sm font-semibold text-white hover:bg-pertamina-red-dark"
+				>
+					<Icon path={ICONS.whatsapp} size={18} /> Buka WhatsApp
+				</a>
+				<p class="text-xs leading-relaxed text-ink-600">Setelah pesan terkirim, kembali ke dialog ini dan pilih tangkapan layarnya.</p>
+			{/if}
 			<label class="block">
 				<span class="label-micro">Platform tujuan</span>
 				<select
 					bind:value={platformBukti}
 					class="mt-1.5 w-full rounded-control border border-ink-200 bg-surface p-2.5 text-sm text-ink-800 outline-none focus:border-pertamina-blue"
 				>
-					{#each PLATFORM as nama (nama)}
+					{#each pilihanPlatform as nama (nama)}
 						<option value={nama}>{nama}</option>
 					{/each}
 				</select>
@@ -499,7 +516,30 @@
 					</span>
 				{/if}
 			</label>{/if}
-			<label class="block"><span class="label-micro">Tangkapan layar / PDF</span><input type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" class="mt-1.5 block w-full text-sm" onchange={(e)=>(berkasBukti=[...e.currentTarget.files])}/></label>
+			<div>
+				<span class="label-micro">Tangkapan layar / PDF</span>
+				<input
+					bind:this={inputBukti}
+					type="file"
+					multiple
+					accept="image/jpeg,image/png,image/webp,application/pdf"
+					class="sr-only"
+					onchange={(e) => (berkasBukti = [...e.currentTarget.files])}
+				/>
+				<div class="mt-1.5">
+					<Button variant="secondary" size="md" fullWidth onclick={() => inputBukti?.click()}>
+						Pilih file
+					</Button>
+				</div>
+				{#if berkasBukti.length > 0}
+					<p class="mt-2 text-xs font-semibold text-success">{berkasBukti.length} file dipilih</p>
+					<ul class="mt-1 space-y-1 text-xs text-ink-600">
+						{#each berkasBukti as file (file.name)}<li>{file.name}</li>{/each}
+					</ul>
+				{:else}
+					<p class="mt-2 text-xs text-ink-600">JPG, PNG, WebP, atau PDF. Maksimal 5 MB per file.</p>
+				{/if}
+			</div>
 			{#if jenisBukti === 'SHARE_PRIVATE' && galatBukti}<p class="text-xs font-semibold text-danger" role="alert">{galatBukti}</p>{/if}
 		</div>
 

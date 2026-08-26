@@ -152,18 +152,30 @@ Data uji Blog:
 
 ### Calendar dan Event
 
-- [ ] Awardee mendaftar ke event.
-- [ ] Status pendaftaran event tersimpan.
-- [ ] Awardee mengirim bukti kehadiran event.
-- [ ] Verifikator memeriksa bukti kehadiran.
-- [ ] Poin kehadiran event masuk ke ledger.
+- [x] Awardee mengusulkan event `Kelas Literasi Digital Komunitas E2E 26 Agustus 2026` dan status awal tersimpan sebagai `DIUSULKAN`.
+- [x] Verifikator menyetujui usulan; status berubah menjadi `TERJADWAL` dan event tampil pada kalender Awardee.
+- [x] Awardee mendaftar ke event; status pendaftaran tersimpan dan jumlah kursi terpesan berubah menjadi 1 tanpa pemberian poin.
+- [x] Verifikator menjalankan lifecycle event dari `TERJADWAL` menjadi `BERLANGSUNG`, lalu `SELESAI`.
+- [x] Awardee mengirim bukti kehadiran event; pengajuan `d5rppp62qkt1inj` tersimpan dan masuk antrean pemeriksaan.
+- [x] Verifikator memulai pemeriksaan dan menyetujui bukti kehadiran.
+- [x] Kehadiran berubah menjadi tercatat, jumlah peserta hadir menjadi 1 dari 1 pendaftar, dan saldo Awardee naik dari 25 menjadi 40 PK.
+- [x] Ledger mencatat `SESSION_ATTEND`, kelas C, sebesar `+15` PK pada 26 Agustus 2026.
+- [x] Kuota harian berubah menjadi terpakai 1 dari 2 dan tidak ada console error pada pemeriksaan akhir.
+- [ ] Flow penolakan atau permintaan revisi bukti kehadiran diuji.
+- [ ] Pembatalan event dan pencegahan registrasi setelah batas waktu diuji.
+- [ ] Batas harian `SESSION_ATTEND` diuji sampai menghasilkan ledger 0 dengan alasan `DAILY_CAP`.
 
 ### Kabar dan Aktivitas Lain
 
+- [x] Awardee membuka Kabar minimal 15 detik dan klaim `BROADCAST_VIEW` berhasil memberikan 1 PK tanpa respons 404.
+- [x] Awardee mengirim tanggapan bermakna dan `CTA_REACT` berhasil memberikan 2 PK tanpa respons 404.
+- [x] Dialog bagikan WhatsApp menampilkan WhatsApp sebagai platform, membuka pemilih file, menampilkan nama file terpilih, dan berhasil mengirim bukti untuk diperiksa.
+- [x] Dialog bagikan media sosial menampilkan pilihan platform publik dan pemilih file berhasil dibuka.
 - [ ] Flow interaksi Kabar yang memerlukan bukti diuji sampai keputusan Verifikator.
-- [ ] Poin dari aksi Kabar diverifikasi pada ledger.
+- [ ] Poin `SHARE_PRIVATE` atau `SHARE_PUBLIC` diverifikasi pada ledger setelah keputusan Verifikator.
 - [ ] Flow Jejaring yang memiliki aksi atau poin diuji end-to-end.
 - [ ] Flow Pencapaian diuji setelah beberapa transaksi poin dan perubahan tier.
+- [x] Homepage publik menghitung tier leaderboard dari 43 PK dan tabel tier PocketBase sehingga Achmad Rafly tampil sebagai `Active Member`, bukan snapshot `Newcomer` yang sudah kedaluwarsa.
 
 ### Reward
 

@@ -43,6 +43,8 @@ Aturan maksimum dua `SESSION_ATTEND` berpoin per Awardee per hari tetap berlaku.
 
 Bukti hadir dibuat pada `activity_submissions` dengan `activityType=SESSION_ATTEND`, `event`, dan `eventParticipant`. Endpoint review bukti yang sudah ada tetap digunakan sehingga riwayat keputusan dan file protected konsisten dengan Bukti Keaktifan.
 
+Katalog `point_actions` wajib memiliki aksi aktif `SESSION_ATTEND` dengan workflow `EVIDENCE`. Jika katalog tersebut belum tersedia, API pengajuan bukti mengembalikan status 503 dengan pesan konfigurasi yang jelas, bukan respons 404 generik dari PocketBase.
+
 ## Verifikasi
 
 Jalankan PocketBase dengan migration dan hook terbaru, seed akun demo, kemudian:
@@ -52,3 +54,5 @@ npm run verify:calendar
 ```
 
 Tes ini memastikan seeder tidak menghasilkan event ketika `EXPECT_EMPTY_EVENTS=1`, lalu menguji proposal sampai ledger 15 poin.
+
+Pengujian UI melalui Playwright MCP pada 26 Agustus 2026 juga berhasil mencakup usulan Awardee, persetujuan Verifikator, registrasi tanpa poin, transisi pelaksanaan, unggah dan review bukti protected, serta ledger `SESSION_ATTEND` sebesar 15 PK. Saldo akun uji berubah dari 25 menjadi 40 PK dan kehadiran tercatat 1 dari 1 pendaftar tanpa console error pada pemeriksaan akhir.

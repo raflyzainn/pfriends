@@ -3,6 +3,7 @@ import { createAdminPocketBase } from '$lib/server/pocketbase.js';
 import { ApiError } from '$lib/server/auth.js';
 import { apiFailure } from '$lib/server/response.js';
 import { communitySummary, jakartaMonthBounds, movementDto, storyDto } from '$lib/server/public-content.js';
+import { TIER_TABLE } from '$lib/domain/constants/tier-table.js';
 
 const CACHE = { 'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=60' };
 const STORY_FILTER = 'status = "TERPUBLIKASI" && consentActive = true && consentLegacyId != ""';
@@ -28,12 +29,18 @@ async function stories(pb, slug = '') {
 async function leaderboard(pb, url) {
 	const raw = Number(url.searchParams.get('limit') || 8);
 	const limit = Math.min(20, Math.max(1, Number.isFinite(raw) ? Math.floor(raw) : 8));
-	const [awardees, profiles] = await Promise.all([
+	const [awardees, profiles, tiers] = await Promise.all([
 		pb.collection('awardees').getFullList({ filter: 'status = "AKTIF"', fields: 'id' }),
-		pb.collection('gamification_profiles').getFullList({ filter: 'totalPoints > 0', sort: '-totalPoints,fullName', fields: 'awardee,awardeeId,fullName,community,chapterId,totalPoints,tier' })
+		pb.collection('gamification_profiles').getFullList({ filter: 'totalPoints > 0', sort: '-totalPoints,fullName', fields: 'awardee,awardeeId,fullName,community,chapterId,totalPoints' }),
+		pb.collection('gamification_tiers').getFullList({ sort: 'rank', fields: 'level,threshold,rank' })
 	]);
 	const active = new Set(awardees.map((row) => row.id));
-	const entries = profiles.filter((row) => active.has(row.awardee)).slice(0, limit).map((row, index) => ({ rank: index + 1, awardeeId: row.awardeeId, name: row.fullName, community: row.community, chapterId: row.chapterId, points: Number(row.totalPoints) || 0, tier: row.tier }));
+	const tierRules = tiers.length ? tiers : TIER_TABLE;
+	const tierFor = (points) => tierRules.filter((tier) => points >= Number(tier.threshold || 0)).at(-1)?.level || 'NEWCOMER';
+	const entries = profiles.filter((row) => active.has(row.awardee)).slice(0, limit).map((row, index) => {
+		const points = Number(row.totalPoints) || 0;
+		return { rank: index + 1, awardeeId: row.awardeeId, name: row.fullName, community: row.community, chapterId: row.chapterId, points, tier: tierFor(points) };
+	});
 	return { entries };
 }
 

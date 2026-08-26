@@ -1,4 +1,5 @@
 import { recordId } from './registration.js';
+import { ApiError } from './auth.js';
 
 export function pfWeek(value) {
 	const date = new Date(value);
@@ -96,5 +97,10 @@ export async function recalculateGamification(pb, userId) {
 }
 
 export async function pointAction(pb, code) {
-	return pb.collection('point_actions').getFirstListItem(pb.filter('code = {:code} && status = "ACTIVE"', { code }));
+	const action = await pb.collection('point_actions').getFirstListItem(pb.filter('code = {:code} && status = "ACTIVE"', { code })).catch((error) => {
+		if (error?.status === 404) return null;
+		throw error;
+	});
+	if (!action) throw new ApiError(503, `Katalog aksi ${code} belum tersedia.`);
+	return action;
 }
