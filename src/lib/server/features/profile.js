@@ -8,6 +8,18 @@ const OPTIONAL_TYPES = [
 	'PUBLIKASI_DATA_USAHA', 'PUBLIKASI_NOMINAL_OMZET', 'PUBLIKASI_INSTITUSI',
 	'AMPLIFIKASI_SOSMED', 'KONTAK_UNTUK_MENTORING'
 ];
+const CONSENT_POLICY_VERSION = 'PF-CONSENT-v1.0';
+const CONSENT_POLICY_STATEMENTS = Object.freeze({
+	PUBLIKASI_NAMA: 'Saya menyetujui nama saya ditampilkan pada kanal PFriends yang dipilih.',
+	PUBLIKASI_FOTO_WAJAH: 'Saya menyetujui foto wajah saya digunakan pada kanal PFriends yang dipilih.',
+	PUBLIKASI_CERITA: 'Saya menyetujui Cerita yang telah lolos verifikasi diterbitkan pada kanal PFriends.',
+	PUBLIKASI_VIDEO: 'Saya menyetujui rekaman video atau suara saya digunakan pada kanal yang dipilih.',
+	PUBLIKASI_DATA_USAHA: 'Saya menyetujui profil usaha, produk, dan kontak usaha ditampilkan kepada anggota PFriends.',
+	PUBLIKASI_NOMINAL_OMZET: 'Saya menyetujui nominal omzet usaha dipublikasikan pada ruang lingkup yang dipilih.',
+	PUBLIKASI_INSTITUSI: 'Saya menyetujui nama institusi saya ditampilkan pada kanal yang dipilih.',
+	AMPLIFIKASI_SOSMED: 'Saya menyetujui konten saya diamplifikasi melalui media sosial Pertamina Foundation.',
+	KONTAK_UNTUK_MENTORING: 'Saya menyetujui kontak mentoring dibagikan kepada anggota terverifikasi.'
+});
 const LOCKED_PROFILE_FIELDS = ['fullName', 'email', 'community', 'programPillar', 'chapterId', 'university', 'graduationYear'];
 const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
@@ -266,7 +278,16 @@ export async function consentMutation(ctx, eventType, consentType = '') {
 	const rows = await consentEvents(pb, awardee.id), active = effectiveFrom(rows, type);
 	if (eventType === 'GRANTED' && active) throw new ApiError(400, 'Persetujuan ini sudah aktif.');
 	if (eventType === 'REVOKED' && !active) throw new ApiError(400, 'Persetujuan ini tidak sedang aktif.');
-	const source = active || await pb.collection('consent_policies').getFirstListItem(filter(pb, 'consentType = {:type} && status = "ACTIVE"', { type }));
+	const configuredPolicy = active || await optionalOne(pb, 'consent_policies', filter(pb, 'consentType = {:type} && status = "ACTIVE"', { type }));
+	const fallbackStatement = CONSENT_POLICY_STATEMENTS[type];
+	if (!configuredPolicy && !fallbackStatement) throw new ApiError(503, 'Kebijakan persetujuan belum tersedia.');
+	const source = configuredPolicy || {
+		version: CONSENT_POLICY_VERSION,
+		purpose: fallbackStatement,
+		statementText: fallbackStatement,
+		scope: ['SEMUA_KONTEN'],
+		channels: ['MICROSITE_PFRIENDS']
+	};
 	const now = new Date(), expires = new Date(now); expires.setMonth(expires.getMonth() + 24);
 	const consent = {
 		id: recordId(), awardee: awardee.id, owner: principal.record.id, consentType: type, eventType,

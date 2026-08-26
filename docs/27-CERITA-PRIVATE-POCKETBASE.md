@@ -92,3 +92,6 @@ Tes integrasi Cerita mencakup persistensi berkas, akses bukti terlindungi oleh V
 ## Penyegaran Cerita Publik
 
 Saat pengguna kembali dari ruang Verifikator atau Awardee menuju landing page, layout publik memuat ulang katalog publik. Penyegaran ini memastikan Cerita yang baru berubah ke status `TERPUBLIKASI` langsung muncul di `/cerita` tanpa bergantung pada cache store dari kunjungan sebelumnya.
+# Catatan konfigurasi katalog aksi
+
+Pengajuan pertama dari status `DRAFT` membutuhkan aksi aktif berkode `STORY_SUBMIT` pada koleksi `point_actions`. Bila katalog tersebut belum tersedia, API mengembalikan `503` dengan pesan `Katalog aksi STORY_SUBMIT belum aktif.` agar masalah konfigurasi tidak tersamar sebagai 404 generik. Konfigurasi kanoniknya adalah kelas C, 10 Poin Kontribusi, dan batas satu kali per hari.

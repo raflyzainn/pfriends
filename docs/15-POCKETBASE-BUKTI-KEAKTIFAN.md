@@ -132,6 +132,12 @@ npm run dev
 6. Awardee yang menerima revisi memperbaiki pengajuan yang sama.
 7. Saat disetujui, poin tampil di ledger gabungan setelah refresh store/halaman.
 
+## Katalog aksi dinamis
+
+Pilihan Jenis aktivitas berasal dari `point_actions` aktif dengan workflow `EVIDENCE`. Jika katalog belum memiliki aksi yang sesuai, form menampilkan penjelasan dan tombol kirim dinonaktifkan. Verifikator atau Admin dapat menambah aksi melalui panel Kelola katalog aksi.
+
+Aksi kustom menyimpan relasi `pointAction` dan snapshot `actionCode`. Field legacy `activityType` dikosongkan karena pilihan schema tersebut hanya memuat kode aksi inti. Nilai poin, kuota harian, label, dan status selalu dibaca ulang dari `point_actions` pada saat Verifikator menyetujui pengajuan.
+
 ## Verifikasi
 
 ```powershell

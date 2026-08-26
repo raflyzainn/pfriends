@@ -117,7 +117,7 @@ class ActivitySubmissionStore {
 		this.working = true; this.error = '';
 		try {
 			await apiRequest(`/api/pfriends/activity-submissions/${id}/review`, { method: 'POST', body: { decision, note } });
-			await this.detail(id);
+			await Promise.all([this.detail(id), this.load()]);
 			return this.selected;
 		} catch (error) { this.error = pocketBaseMessage(error); throw error; }
 		finally { this.working = false; }

@@ -16,6 +16,7 @@ import { keTanggal, selisihHari, NAMA_BULAN, NAMA_BULAN_PENDEK, NAMA_HARI } from
 
 /** Locale tunggal seluruh aplikasi. */
 const LOCALE = 'id-ID';
+const ZONA_WAKTU_WIB = 'Asia/Jakarta';
 
 /** Ditampilkan sebagai pengganti nilai yang tidak sah: lebih jujur daripada "0" palsu. */
 const TANDA_KOSONG = '–';
@@ -151,6 +152,35 @@ export function formatTanggal(input, gaya = 'panjang') {
 		default:
 			return `${hari} ${NAMA_BULAN[bulan]} ${tahun}`;
 	}
+}
+
+/**
+ * Tanggal dan jam yang selalu ditampilkan dalam zona Asia/Jakarta.
+ * Dipakai untuk timestamp backend yang disimpan sebagai UTC agar hasilnya tidak
+ * bergantung pada zona waktu mesin atau browser yang membuka aplikasi.
+ *
+ * @param {Date|string|number|null|undefined} input
+ * @returns {string}
+ */
+export function formatWaktuWib(input) {
+	const tanggal = keTanggal(input);
+	if (!tanggal) return TANDA_KOSONG;
+	const bagian = Object.fromEntries(
+		new Intl.DateTimeFormat('en-GB', {
+			timeZone: ZONA_WAKTU_WIB,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			hourCycle: 'h23'
+		})
+			.formatToParts(tanggal)
+			.filter(({ type }) => type !== 'literal')
+			.map(({ type, value }) => [type, value])
+	);
+	const bulan = Number(bagian.month) - 1;
+	return `${Number(bagian.day)} ${NAMA_BULAN_PENDEK[bulan]} ${bagian.year}, ${bagian.hour}.${bagian.minute} WIB`;
 }
 
 /**

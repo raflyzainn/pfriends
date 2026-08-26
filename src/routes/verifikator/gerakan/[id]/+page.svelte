@@ -3,6 +3,7 @@
 	import { PageHeader, Card, StatusBadge, Button, EmptyState } from '$lib/components';
 	import { decideMovement, startMovementReportReview, decideMovementReport, completeMovement } from '$lib/infrastructure/pocketbase/movements.js';
 	import { workflowBadges } from '$lib/stores/workflow-badges.svelte.js';
+	import { formatWaktuWib } from '$lib/utils/format.js';
 
 	let movement = $state(null);
 	let loading = $state(true);
@@ -20,7 +21,7 @@
 		BERJALAN: { label: 'Berjalan', color: 'blue' }, SELESAI: { label: 'Selesai', color: 'green' }, DITOLAK: { label: 'Ditolak', color: 'slate' },
 		SUBMITTED: { label: 'Sudah dikirim', color: 'amber' }, IN_REVIEW: { label: 'Sedang diperiksa', color: 'blue' }, NEEDS_REVISION: { label: 'Menunggu Awardee', color: 'red' }, APPROVED: { label: 'Disetujui', color: 'green' }, REJECTED: { label: 'Ditolak', color: 'slate' }
 	};
-	const date = (value) => String(value || '').slice(0, 16).replace('T', ' ');
+	const date = (value) => formatWaktuWib(value);
 
 	async function load() {
 		loading = true;

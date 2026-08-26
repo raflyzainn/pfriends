@@ -5,6 +5,7 @@ import { recalculateGamification } from '../gamification.js';
 import { recordId } from '../registration.js';
 
 const FILE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+const LEGACY_ACTIVITY_TYPES = new Set(['SHARE_PUBLIC', 'STORY_SUBMIT', 'SESSION_ATTEND', 'KNOWLEDGE_QA', 'SPEAKER_MENTOR', 'LEAD_ACTION', 'SHARE_PRIVATE']);
 function text(value) { return String(value ?? '').trim(); }
 function formObject(form) { return Object.fromEntries([...form.entries()].filter(([, value]) => !(value instanceof File))); }
 function files(form) { return form.getAll('evidenceFiles').filter((value) => value instanceof File && value.size > 0); }
@@ -31,7 +32,7 @@ function assertOwnership(principal, submission) { if (principal.role !== 'VERIFI
 async function normalizeSubmission(pb, principal, body) {
 	const action = await actionFor(pb, body), values = {
 		owner: principal.record.id, awardeeId: principal.record.awardeeId, awardeeName: principal.record.displayName,
-		activityType: action.isCore ? action.code : text(body.activityType || action.code), pointAction: action.id, actionCode: action.code,
+		activityType: LEGACY_ACTIVITY_TYPES.has(action.code) ? action.code : '', pointAction: action.id, actionCode: action.code,
 		activityDate: text(body.activityDate), title: text(body.title), description: text(body.description), externalUrl: text(body.externalUrl), event: '', eventParticipant: '', broadcast: ''
 	};
 	if (!values.activityDate || values.title.length < 3 || values.description.length < 20) throw new ApiError(400, 'Tanggal, judul, dan deskripsi bukti belum lengkap.');

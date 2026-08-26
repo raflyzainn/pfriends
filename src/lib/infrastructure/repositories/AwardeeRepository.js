@@ -82,6 +82,9 @@ export class AwardeeRepository extends DexieRepository {
 		const local = await super.getAll();
 		const pb = getPocketBase();
 		if (!pb?.authStore?.isValid) return local;
+		// Awardee memakai endpoint direktori yang hanya mengirim profil yang sudah
+		// aman ditampilkan. Daftar penuh di endpoint ini memang khusus staf.
+		if (pb.authStore.record?.role === 'AWARDEE') return local;
 		try {
 			const remote = ((await apiRequest('/api/pfriends/awardees')).items || []).map(fromPocketBase);
 			const byId = new Map(local.map((awardee) => [awardee.id, awardee]));

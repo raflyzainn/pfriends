@@ -54,3 +54,11 @@ Admin membuka `/admin/gerakan` untuk memantau status, jumlah peserta, dan jumlah
 Poin `LEAD_ACTION` sebesar 50 dibuat oleh server hanya untuk laporan pemimpin yang disetujui. Indeks unik pada ledger mencegah pemberian poin lebih dari satu kali untuk pemimpin yang sama dalam satu Gerakan.
 
 Halaman publik tetap hanya menampilkan Gerakan berjalan dan selesai. Jumlah peserta sekarang dihitung dari participant aktif, sedangkan jumlah laporan dihitung dari laporan yang sudah disetujui.
+
+## Koreksi tampilan waktu dan akses katalog
+
+Detail Gerakan pada ruang Verifikator memformat timestamp backend secara eksplisit dalam zona `Asia/Jakarta` dan menambahkan label WIB. Nilai ISO UTC tidak boleh dipotong langsung karena hasilnya bergeser tujuh jam ketika browser pengujian memakai zona UTC.
+
+Katalog umum tidak meminta `GET /api/pfriends/awardees` saat sesi aktif berperan sebagai Awardee. Endpoint daftar penuh tetap dibatasi untuk staf. Awardee menggunakan endpoint direktori yang sudah menyaring profil aman untuk Jejaring, sehingga halaman lain tidak menghasilkan 403 atau mencoba membuka data profil privat.
+
+Verifikasi browser pada 26 Agustus 2026 memastikan periode `2026-09-05T02:00:00Z` sampai `2026-09-05T04:00:00Z` tampil sebagai `5 Sep 2026, 09.00 WIB` sampai `5 Sep 2026, 11.00 WIB`. Sesi Awardee yang membuka Calendar of Event juga tidak menghasilkan console error.

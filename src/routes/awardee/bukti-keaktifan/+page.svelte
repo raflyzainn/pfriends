@@ -41,10 +41,12 @@
 		<h2 class="text-lg font-semibold text-heading">{editingId ? 'Perbaiki pengajuan' : 'Unggah bukti baru'}</h2>
 		<form class="mt-5 grid gap-4" onsubmit={send}>
 			<label class="grid gap-1.5 text-sm font-medium text-ink-700">Jenis aktivitas
-				<select bind:value={pointAction} disabled={Boolean(editingId)} required class="rounded-xl border border-ink-200 bg-white px-3 py-2.5">
+				<select bind:value={pointAction} disabled={Boolean(editingId) || gamification.loading || TYPES.length === 0} required class="rounded-xl border border-ink-200 bg-white px-3 py-2.5">
+					{#if gamification.loading}<option value="">Memuat jenis aktivitas...</option>{/if}
 					{#each TYPES as rule}<option value={rule.id}>{rule.label} · {rule.points} poin</option>{/each}
 				</select>
 			</label>
+			{#if !gamification.loading && TYPES.length === 0}<p class="rounded-lg bg-warning-tint p-3 text-sm text-ink-700">Belum ada jenis aktivitas berbukti yang aktif. Hubungi Verifikator atau Admin untuk mengaktifkan katalog aksi.</p>{/if}
 			<label class="grid gap-1.5 text-sm font-medium text-ink-700">Tanggal aktivitas<input bind:value={activityDate} type="date" required max={new Date().toISOString().slice(0, 10)} class="rounded-xl border border-ink-200 px-3 py-2.5" /></label>
 			<label class="grid gap-1.5 text-sm font-medium text-ink-700">Judul<input bind:value={title} required minlength="3" maxlength="160" class="rounded-xl border border-ink-200 px-3 py-2.5" placeholder="Contoh: Menjadi mentor kelas UMKM" /></label>
 			<label class="grid gap-1.5 text-sm font-medium text-ink-700">Keterangan<textarea bind:value={description} required minlength="20" maxlength="3000" rows="5" class="rounded-xl border border-ink-200 px-3 py-2.5" placeholder="Jelaskan kegiatan, peranmu, dan hasilnya."></textarea></label>
@@ -54,7 +56,7 @@
 				<span class="text-xs font-normal text-ink-500">Maksimum 5 file, masing-masing 5 MB.{editingId ? ' Kosongkan bila lampiran lama tetap digunakan.' : ''}</span>
 			</label>
 			{#if formError}<p class="rounded-lg bg-danger-tint p-3 text-sm text-danger">{formError}</p>{/if}
-			<div class="flex flex-wrap gap-2"><Button type="submit" loading={activitySubmissions.working} iconPath={ICONS.upload}>{editingId ? 'Kirim ulang' : `Kirim untuk diverifikasi · ${selectedRule?.points ?? 0} poin`}</Button>{#if editingId}<Button variant="secondary" onclick={reset}>Batal</Button>{/if}</div>
+			<div class="flex flex-wrap gap-2"><Button type="submit" disabled={TYPES.length === 0} loading={activitySubmissions.working} iconPath={ICONS.upload}>{editingId ? 'Kirim ulang' : `Kirim untuk diverifikasi · ${selectedRule?.points ?? 0} poin`}</Button>{#if editingId}<Button variant="secondary" onclick={reset}>Batal</Button>{/if}</div>
 		</form>
 	</Card>
 

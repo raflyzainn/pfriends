@@ -9,6 +9,7 @@ Halaman `/awardee/profil` memakai PocketBase sebagai sumber tunggal untuk data p
 - `awardees` menyimpan identitas hasil approval dan field profil yang boleh diperbarui sendiri.
 - `consent_policies` menyimpan teks dan versi kebijakan aktif.
 - `profile_consents` adalah log append-only. Pemberian dan pencabutan selalu membuat baris baru.
+- Policy aktif dari `consent_policies` tetap menjadi sumber utama saat Awardee memberi persetujuan. Bila data referensi tersebut belum tersedia, API memakai snapshot policy bawaan versi `PF-CONSENT-v1.0` agar persetujuan mandiri tetap tercatat lengkap dan tidak berakhir sebagai respons 404 generik.
 - `profile_audits` mencatat perubahan profil serta produk dengan nilai sebelum dan sesudah.
 - `profile_avatars` menyimpan avatar terlindungi tanpa membawa email atau data pribadi lain dari record `awardees`.
 - `business_products` menyimpan maksimal lima produk Womenpreneur beserta foto terlindungi.
