@@ -1,6 +1,7 @@
 import { Badge } from '$lib/domain/entities/Badge.js';
 import { ACTIVITY_STATUS_META, PointActivity } from '$lib/domain/entities/PointActivity.js';
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() {
 	const pb = getPocketBase();
@@ -31,7 +32,8 @@ function badgeEntry(record) {
 
 export async function myGamification() {
 	try {
-		const response = await client().send('/api/pfriends/gamification/me');
+		client();
+		const response = await apiRequest('/api/pfriends/gamification/me');
 		const actions=response.actions||[];
 		return { profile: response.profile, wallet: response.wallet || { balance: 0 }, tiers: response.tiers || [], actions, dailyUsage: response.dailyUsage || [], ledger: (response.ledger || []).map((row)=>pointActivity(row,actions)), badges: (response.badges || []).map(badgeEntry) };
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Gamifikasi gagal dimuat.')); }
@@ -41,11 +43,12 @@ export async function leaderboardData(query = {}) {
 	try {
 		const params = new URLSearchParams();
 		for (const [key, value] of Object.entries(query)) if (value !== '' && value !== undefined) params.set(key, String(value));
-		return await client().send(`/api/pfriends/gamification/leaderboard?${params}`);
+		client();
+		return await apiRequest(`/api/pfriends/gamification/leaderboard?${params}`);
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Papan peringkat gagal dimuat.')); }
 }
 
 export async function verifierDashboard() {
-	try { return await client().send('/api/pfriends/verifier/dashboard'); }
+	try { client(); return await apiRequest('/api/pfriends/verifier/dashboard'); }
 	catch (error) { throw new Error(pocketBaseMessage(error, 'Dasbor Verifikator gagal dimuat.')); }
 }

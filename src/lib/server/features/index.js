@@ -1,0 +1,14 @@
+import './point-actions.js';
+import './broadcasts.js';
+import './profile.js';
+import './events.js';
+import './gamification-rules.js';
+import './rewards.js';
+import './gamification.js';
+import './activity-submissions.js';
+import './admin-awardees.js';
+import './admin-dashboard.js';
+import './stories.js';
+import './forum.js';
+import './movements.js';
+import './verifier-dashboard.js';

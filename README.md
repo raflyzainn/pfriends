@@ -28,37 +28,59 @@ Di mesin lain (mis. Windows), pasang Node dari <https://nodejs.org> lalu:
 ```bash
 npm install
 npm run pb:serve     # terminal 1: PocketBase pada http://127.0.0.1:8090
-npm run pb:seed      # sekali setelah superuser dibuat dan .env diisi
+$env:VITE_PB_URL='http://127.0.0.1:8090'; $env:ALLOW_DEMO_SEED='1'; $env:APP_ENV='development'; npm run pb:seed
 npm run dev          # buka http://localhost:5173
 ```
 
-Fitur **Bukti Keaktifan** dan **Registrasi Awardee** memakai PocketBase. Unduh PocketBase v0.39.9 untuk Windows ke
+Seluruh custom backend PFriends memakai SvelteKit API dan PocketBase. Unduh PocketBase v0.39.9 untuk Windows ke
 `pocketbase/pocketbase.exe`, salin `.env.example` menjadi `.env`, lalu isi kredensial
-superuser hanya untuk menjalankan seed. `PB_SUPERUSER_*` tidak pernah masuk bundle browser.
+superuser. `PB_SUPERUSER_*` tidak pernah masuk bundle browser. Runtime lokal memakai
+`pocketbase/pb_no_hooks`; folder `pocketbase/pb_hooks` hanya referensi legacy.
 Panduan dasar ada di `docs/15-POCKETBASE-BUKTI-KEAKTIFAN.md`. Pelacakan status Awardee dan
 riwayat keputusan Verifikator dijelaskan di `docs/16-RIWAYAT-DAN-PELACAKAN-BUKTI.md`.
 Alur registrasi, klarifikasi, dan ACC akun dijelaskan di `docs/17-REGISTRASI-AWARDEE.md`.
+
+Untuk menghubungkan SvelteKit lokal ke PocketBase production, gunakan URL yang sama pada kedua sisi:
+
+```dotenv
+VITE_PB_URL=https://friend-api.pertaminafoundation.org
+PB_URL=https://friend-api.pertaminafoundation.org
+PB_SUPERUSER_EMAIL=<email-superuser>
+PB_SUPERUSER_PASSWORD=<password-superuser>
+PB_REQUIRE_STAFF_SSO=0
+VITE_ENABLE_DEMO_LOGIN=0
+APP_ENV=production
+ALLOW_DEMO_SEED=0
+```
+
+`VITE_PB_URL` hanya memuat URL publik untuk sesi, protected file, dan SSE Forum. Kredensial
+`PB_SUPERUSER_*` harus menjadi secret server. Restart Vite setelah mengubah `.env`. Batch requests
+PocketBase harus aktif. Jangan menjalankan `pb:seed` ke production; akun demo hanya tersedia pada
+database lokal atau test sementara.
 
 ### Perintah
 
 ```bash
 npm run dev                  # server pengembangan
-npm run build                # build produksi statis ke folder build/
+npm run build                # build Cloudflare Pages dengan endpoint server
 npm run preview              # pratinjau hasil build
 npm run pb:serve             # backend PocketBase lokal
-npm run pb:seed              # seed akun, profil, poin, koin, 12 reward, dan 13 penukaran secara idempoten
+	 npm run pb:seed              # seed akun, profil, poin, koin, 12 reward, dan 13 penukaran secara idempoten
+	 npm run pb:seed:forum        # pratinjau reference seed lima kanal Forum, tanpa data demo
 
 npm run verify               # GERBANG UTAMA: compile + domain + seed + purity + build
 npm run verify:compile       # kompilasi seluruh .svelte dengan compiler Svelte 5
-npm run verify:domain        # 156 asersi aturan domain
-npm run verify:seed          #  70 asersi konsistensi data seed
+npm run verify:domain        # 210 asersi aturan domain
+npm run verify:seed          #  73 asersi konsistensi data seed
 npm run verify:purity        #   6 aturan kemurnian zona publik (PO-2 & anti "terlalu AI")
 npm run verify:registration  # 18 asersi registrasi dan gamifikasi pada PocketBase uji
 npm run verify:directory     # 13 asersi Jejaring, privasi profil, filter, dan poin demo
 npm run verify:rewards       # saldo, katalog, penukaran idempoten, RBAC Admin, dan refund
-npm run verify:backend       # seluruh integration test PocketBase di atas
+npm run verify:backend       # matriks migrasi + E2E PocketBase fresh tanpa pb_hooks
+npm run verify:legacy-hooks  # suite hook lama, hanya untuk referensi/regresi legacy
 npm run verify:public-content # endpoint cerita, leaderboard, komunitas, dan gerakan publik
 npm run verify:public-impact  # agregat metode pengukuran PocketBase
+npm run verify:sveltekit-api-matrix # inventaris 106 endpoint/event/cron dan status migrasinya
 
 # Gerbang peramban: server dev harus berjalan lebih dulu:
 npm run dev -- --port 5177
@@ -80,6 +102,11 @@ WebSocket bawaan Node: tanpa Playwright, Puppeteer, atau dependensi uji apa pun.
 ## Tiga peran & kredensial demo
 
 Peran **melekat pada akun**, bukan dipilih dari daftar.
+
+> Kredensial di bagian ini hanya ada setelah `npm run pb:seed` dijalankan terhadap PocketBase
+> lokal atau database test sementara. Kredensial tersebut tidak otomatis ada di production.
+> Login Dashboard PocketBase memakai collection `_superusers` dan tidak dapat dipakai pada form
+> login PFriends yang memakai collection `users`.
 
 Pada mode demo lokal, masuk dapat dilakukan dengan mengklik kartu pengguna di `/masuk`. Kartu
 tersebut hanya tampil ketika `VITE_ENABLE_DEMO_LOGIN=1`. Selama SSO belum tersedia, login password
@@ -142,7 +169,7 @@ Navbar hanya memuat tiga: **Beranda**, **Blog**, **Calendar of Event**.
 
 Calendar of Event memakai PocketBase dan sengaja tidak memiliki data event dari seeder. Awardee mengusulkan event, Verifikator menyetujui, lalu event tampil publik. Registrasi tidak berpoin; 15 poin kehadiran baru dibukukan setelah peserta mengunggah bukti dan Verifikator menyetujuinya. Lihat `docs/21-CALENDAR-OF-EVENT-POCKETBASE.md`.
 
-Beranda, papan peringkat publik, daftar blog, dan detail blog juga membaca PocketBase. Seeder memasukkan seluruh status cerita, sedangkan endpoint publik hanya membuka cerita yang sudah terbit dan memiliki consent aktif. Workflow privat cerita masih memakai Dexie. Lihat `docs/23-LANDING-DAN-BLOG-POCKETBASE.md`.
+Beranda, papan peringkat publik, daftar blog, dan detail blog juga membaca PocketBase. Seeder memasukkan seluruh status cerita, sedangkan endpoint publik hanya membuka cerita yang sudah terbit dan memiliki consent aktif. Workflow privat Cerita sekarang memakai SvelteKit API dan PocketBase. Lihat `docs/27-CERITA-PRIVATE-POCKETBASE.md`.
 
 Label `DUMMY` tidak ditampilkan pada landing, blog, komunitas, metode pengukuran, dan gerakan karena data operasionalnya sudah berasal dari PocketBase. Label tetap muncul pada area privat yang masih membaca data lokal.
 
@@ -362,11 +389,12 @@ Mockup ini tidak diserahkan berdasarkan asumsi. Berikut yang benar-benar dijalan
 terima ini, beserta hasilnya:
 
 ```
-npm run verify:compile        112 komponen · 0 gagal · 0 warning
-npm run verify:domain         156 asersi  · 0 gagal            (11 bagian)
-npm run verify:seed            70 asersi  · 0 gagal            (9 bagian)
-npm run verify:purity          14 berkas dipindai · 0 pelanggaran (6 aturan)
-npm run build                 sukses · adapter-static · 0 error
+npm run verify:compile        143 komponen · 0 gagal · 0 warning
+npm run verify:domain         210 asersi  · 0 gagal            (15 bagian)
+npm run verify:seed            73 asersi  · 0 gagal            (9 bagian)
+npm run verify:purity          15 route + 26 komponen · 0 pelanggaran (6 aturan)
+npm run build                 sukses · adapter-cloudflare · 0 error
+npm run verify:backend        matriks 106 item · 200 asersi tanpa pb_hooks lulus
 ────────────────────────────────────────────────────────────────────────────
 npm run verify:e2e             seluruh route · 0 bermasalah · 12 asersi guard lulus
 npm run verify:gamification    22 asersi · 0 gagal
@@ -397,13 +425,12 @@ Yang sudah terbukti: bukan diklaim:
 
 Ditulis di sini supaya tidak perlu ditanyakan saat presentasi.
 
-- **Migrasi backend masih bertahap.** Autentikasi, bukti keaktifan, riwayat review, dan poin hasil
-  verifikasi sudah berada di PocketBase. Pembacaan cerita publik dan kegiatan juga sudah memakai
-  PocketBase. Workflow privat cerita serta beberapa modul mockup lama masih memakai IndexedDB
-  (Dexie), sehingga perubahan pada modul tersebut belum tersinkron antarperamban.
-- **Keamanan fitur baru ditegakkan di PocketBase.** Collection rules dan hook server membatasi
-  kepemilikan submission serta keputusan verifikator. `ZoneGuard` di antarmuka tetap hanya lapisan
-  pengalaman pengguna; data backend tidak mengandalkannya sebagai otorisasi.
+- **Migrasi custom `pb_hooks` selesai lokal.** Seluruh 95 endpoint dan 9 lifecycle/realtime behavior
+  memiliki pengganti SvelteKit API. Dua cron masih menunggu scheduler otomatis dan production belum
+  menjalani E2E. Status lengkap ada di `docs/40-STATUS-AKHIR-MIGRASI-PB-HOOKS.md`.
+- **Keamanan backend ditegakkan di SvelteKit API dan PocketBase rules.** Server membatasi role,
+  status akun, ownership, transisi workflow, dan DTO. `ZoneGuard` tetap hanya lapisan pengalaman
+  pengguna dan tidak menjadi sumber otorisasi data.
 - **Nama, cerita, dan riwayat kontribusi adalah data sintetis** yang dibangkitkan deterministik
   untuk keperluan demo: bukan data penerima manfaat sungguhan. 60 awardee, 29 cerita, 20 kegiatan,
   639 entri aktivitas.
@@ -412,9 +439,10 @@ Ditulis di sini supaya tidak perlu ditanyakan saat presentasi.
 - **Angka kelas B dan C bukan hasil ukur.** Jangkauan organik adalah estimasi berparameter yang
   wajib disajikan sebagai rentang; benchmark komunikasi adalah rujukan industri. Keduanya dijelaskan
   di `/metode-pengukuran`.
-- **Titik sambung backend** ada di `src/lib/infrastructure/repositories/`. Mengganti implementasi
-  Dexie dengan pemanggilan REST tidak menyentuh lapisan domain sama sekali: dan itu diuji, bukan
-  diasumsikan.
+- **Titik sambung backend** ada di `src/lib/infrastructure/sveltekit-api/`, adapter pada
+  `src/lib/infrastructure/pocketbase/`, dan route server `src/routes/api/pfriends/`. Seluruh custom
+  endpoint frontend dipanggil same-origin; built-in PocketBase di browser hanya dipakai untuk token
+  file dan SSE Forum.
 - **Tombol merah gelap pada aksi berukuran kecil disengaja.** Putih di atas `#ED1C24` hanya mencapai
   rasio 4,38: belum lolos WCAG AA untuk teks kecil: sehingga varian `sm` memakai merah yang lebih
   gelap (6,53). Bila tim desain memilih konsistensi visual di atas kepatuhan AA, ubah di

@@ -1,6 +1,7 @@
 import { Broadcast } from '$lib/domain/entities/Broadcast.js';
 import { CommunityEvent } from '$lib/domain/entities/CommunityEvent.js';
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 import { listBroadcasts } from './broadcasts.js';
 import { myStories } from './stories.js';
 
@@ -49,7 +50,7 @@ export async function fetchAwardeeDashboard() {
 		const pb = client();
 		const [broadcasts, eventResponse, stories] = await Promise.all([
 			listBroadcasts(),
-			pb.send('/api/pfriends/events'),
+			apiRequest('/api/pfriends/events'),
 			myStories()
 		]);
 		return {

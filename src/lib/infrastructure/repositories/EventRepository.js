@@ -19,6 +19,7 @@
 
 import { CommunityEvent, EventStatus } from '$lib/domain/entities/CommunityEvent.js';
 import { getPocketBase, pocketBaseMessage } from '../pocketbase/client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 export class EventRepository {
 	#rows = [];
@@ -42,7 +43,7 @@ export class EventRepository {
 	async getAll() {
 		const pb = getPocketBase();
 		if (!pb) return [];
-		const response = await pb.send('/api/pfriends/events');
+		const response = await apiRequest('/api/pfriends/events');
 		this.#rows = response.items ?? [];
 		return this.#rows.map((row) => this.#entity(row));
 	}
@@ -158,25 +159,25 @@ export class EventRepository {
 
 	async propose(event) {
 		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
-		try { return await pb.send('/api/pfriends/events', { method: 'POST', body: CommunityEvent.from(event).toJSON() }); }
+		try { return await apiRequest('/api/pfriends/events', { method: 'POST', body: CommunityEvent.from(event).toJSON() }); }
 		catch (error) { throw new Error(pocketBaseMessage(error)); }
 	}
 
 	async decision(id, decision, note = '') {
 		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
-		try { return await pb.send(`/api/pfriends/events/${id}/decision`, { method: 'POST', body: { decision, note } }); }
+		try { return await apiRequest(`/api/pfriends/events/${id}/decision`, { method: 'POST', body: { decision, note } }); }
 		catch (error) { throw new Error(pocketBaseMessage(error)); }
 	}
 
 	async transition(id, status, note = '') {
 		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
-		try { return await pb.send(`/api/pfriends/events/${id}/transition`, { method: 'POST', body: { status, note } }); }
+		try { return await apiRequest(`/api/pfriends/events/${id}/transition`, { method: 'POST', body: { status, note } }); }
 		catch (error) { throw new Error(pocketBaseMessage(error)); }
 	}
 
 	async register(id) {
 		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
-		try { return await pb.send(`/api/pfriends/events/${id}/register`, { method: 'POST' }); }
+		try { return await apiRequest(`/api/pfriends/events/${id}/register`, { method: 'POST' }); }
 		catch (error) { throw new Error(pocketBaseMessage(error)); }
 	}
 
@@ -184,7 +185,7 @@ export class EventRepository {
 		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
 		const current = await this.getById(id); if (!current) throw new Error('Event tidak ditemukan.');
 		const body = current.withChanges(changes).toJSON();
-		try { return await pb.send(`/api/pfriends/events/${id}`, { method: 'PATCH', body }); }
+		try { return await apiRequest(`/api/pfriends/events/${id}`, { method: 'PATCH', body }); }
 		catch (error) { throw new Error(pocketBaseMessage(error)); }
 	}
 }

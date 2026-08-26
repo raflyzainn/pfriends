@@ -17,6 +17,15 @@ Server mengambil identitas, role, komunitas, chapter, dan waktu dari sesi. Brows
 
 Migration `1723968990_forum.js` membuat `forum_channels`, `forum_messages`, `forum_reactions`, dan `forum_presences` dalam keadaan terkunci. Lima kanal dan satu pesan sambutan sistem per kanal dibuat saat migration. Percakapan peraga lama tidak dimigrasikan.
 
+Untuk environment production yang menerima schema tanpa menjalankan data awal migration, gunakan reference seeder terpisah. Seeder ini hanya melakukan upsert lima kanal kanonik dan memastikan satu pesan sambutan sistem tersedia. Seeder tidak membuat akun, percakapan pengguna, reaksi, atau presence demo.
+
+```powershell
+npm run pb:seed:forum
+npm run pb:seed:forum -- --apply
+```
+
+Perintah pertama adalah pratinjau dan tidak menulis data. Periksa nilai `target` serta ringkasannya sebelum menjalankan mode `--apply`. Menjalankan mode apply berulang kali tidak menduplikasi kanal atau pesan sambutan. Jangan memakai `npm run pb:seed` untuk production karena perintah tersebut khusus data demo lokal.
+
 Initial load dan seluruh mutation memakai `/api/pfriends/forum/**`. Setelah penyimpanan berhasil, hook menerbitkan custom SSE pada topic kanal. Hak subscription diperiksa kembali oleh `onRealtimeSubscribeRequest`. Store mendeduplikasi respons REST dan event SSE agar satu pesan tidak tampil dua kali.
 
 Pesan maksimal 600 karakter. Kombinasi penulis dan `requestKey` unik membuat retry aman. Server membatasi maksimal enam pesan per 30 detik dan 30 pesan per sepuluh menit. Konten identik pada kanal yang sama juga ditolak selama dua menit. Pembatasan memakai riwayat PocketBase sehingga tidak bergantung pada state browser. Migration `1723969000_forum_replies_emoji.js` menambahkan relasi `replyTo` dan mengubah nilai reaksi menjadi teks Unicode. Balasan menyimpan referensi ke pesan langsung pada kanal yang sama. Endpoint konteks memuat pesan di sekitar referensi bila pesan asal belum ada pada halaman aktif.

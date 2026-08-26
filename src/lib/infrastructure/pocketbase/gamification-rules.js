@@ -1,4 +1,5 @@
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() {
 	const pb = getPocketBase();
@@ -8,7 +9,8 @@ function client() {
 
 async function send(path, options, fallback) {
 	try {
-		return await client().send(path, options);
+		client();
+		return await apiRequest(path, options);
 	} catch (error) {
 		throw new Error(pocketBaseMessage(error, fallback));
 	}

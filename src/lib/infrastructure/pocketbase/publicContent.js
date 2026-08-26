@@ -1,6 +1,7 @@
 import { Story } from '$lib/domain/entities/Story.js';
 import { REACH_PARAMETERS } from '$lib/domain/constants/kpi-targets.js';
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() {
 	const pb = getPocketBase();
@@ -27,7 +28,7 @@ function storyEntity(record) {
 
 export async function publicStories() {
 	try {
-		const response = await client().send('/api/pfriends/public/stories');
+		const response = await apiRequest('/api/pfriends/public/stories');
 		return (response.items || []).map(storyEntity);
 	} catch (error) {
 		throw new Error(pocketBaseMessage(error, 'Cerita publik gagal dimuat.'));
@@ -36,7 +37,7 @@ export async function publicStories() {
 
 export async function publicStoryBySlug(slug) {
 	try {
-		const response = await client().send(`/api/pfriends/public/stories/${encodeURIComponent(slug)}`);
+		const response = await apiRequest(`/api/pfriends/public/stories/${encodeURIComponent(slug)}`);
 		return storyEntity(response);
 	} catch (error) {
 		if (error?.status === 404) return null;
@@ -47,7 +48,7 @@ export async function publicStoryBySlug(slug) {
 export async function publicLeaderboard(limit = 8) {
 	try {
 		const params = new URLSearchParams({ limit: String(limit) });
-		const response = await client().send(`/api/pfriends/public/leaderboard?${params}`);
+		const response = await apiRequest(`/api/pfriends/public/leaderboard?${params}`);
 		return response.entries || [];
 	} catch (error) {
 		throw new Error(pocketBaseMessage(error, 'Papan peringkat gagal dimuat.'));
@@ -56,7 +57,7 @@ export async function publicLeaderboard(limit = 8) {
 
 export async function publicCommunitySummary() {
 	try {
-		return await client().send('/api/pfriends/public/communities');
+		return await apiRequest('/api/pfriends/public/communities');
 	} catch (error) {
 		throw new Error(pocketBaseMessage(error, 'Ringkasan komunitas gagal dimuat.'));
 	}
@@ -64,7 +65,7 @@ export async function publicCommunitySummary() {
 
 export async function publicMovements() {
 	try {
-		const response = await client().send('/api/pfriends/public/movements');
+		const response = await apiRequest('/api/pfriends/public/movements');
 		return (response.items || []).map((movement) => ({
 			...movement,
 			startsAt: new Date(movement.startsAt),
@@ -78,7 +79,7 @@ export async function publicMovements() {
 
 export async function publicImpactSnapshot() {
 	try {
-		const response = await client().send('/api/pfriends/public/impact');
+		const response = await apiRequest('/api/pfriends/public/impact');
 		const basis = Number(response.amplifiersThisMonth) || 0;
 		const remainingReach = 1 - REACH_PARAMETERS.overlapJaringan;
 		return {

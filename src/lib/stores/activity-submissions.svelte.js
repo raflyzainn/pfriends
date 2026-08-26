@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import { getPocketBase, pocketBaseMessage } from '$lib/infrastructure/pocketbase/client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 export const SubmissionStatus = Object.freeze({ SUBMITTED: 'SUBMITTED', IN_REVIEW: 'IN_REVIEW', NEEDS_REVISION: 'NEEDS_REVISION', APPROVED: 'APPROVED' });
 export const SUBMISSION_STATUS_META = Object.freeze({
@@ -36,10 +37,8 @@ class ActivitySubmissionStore {
 		if (!pb?.authStore.isValid) { this.items = []; return; }
 		this.loading = true; this.error = '';
 		try {
-			const filters = [];
-			if (status) filters.push(pb.filter('status = {:status}', { status }));
-			if (mine) filters.push(pb.filter('owner = {:owner}', { owner: pb.authStore.record.id }));
-			const records = await pb.collection('activity_submissions').getFullList({ sort: '-submittedAt', expand: 'owner,reviewer', filter: filters.join(' && ') });
+			const query = new URLSearchParams(); if (status) query.set('status', status); if (mine) query.set('mine', 'true');
+			const records = (await apiRequest(`/api/pfriends/activity-submissions?${query}`)).items || [];
 			this.items = records.map((item) => ({ ...item, expand: { ...item.expand, owner: item.expand?.owner ?? { displayName: item.awardeeName } } }));
 		} catch (error) { this.error = pocketBaseMessage(error); throw error; }
 		finally { this.loading = false; }
@@ -50,12 +49,8 @@ class ActivitySubmissionStore {
 		if (!pb) return null;
 		this.loading = true; this.error = '';
 		try {
-			[this.selected, this.reviews, this.events, this.fileToken] = await Promise.all([
-				pb.collection('activity_submissions').getOne(id, { expand: 'owner,reviewer' }),
-				pb.collection('submission_reviews').getFullList({ filter: pb.filter('submission = {:id}', { id }), sort: 'decidedAt', expand: 'reviewer' }),
-				pb.collection('submission_status_events').getFullList({ filter: pb.filter('submission = {:id}', { id }), sort: 'occurredAt', expand: 'actor' }),
-				pb.files.getToken()
-			]);
+			const [data, token] = await Promise.all([apiRequest(`/api/pfriends/activity-submissions/${id}`), pb.files.getToken()]);
+			[this.selected, this.reviews, this.events, this.fileToken] = [data.submission, data.reviews || [], data.events || [], token];
 			this.selected = { ...this.selected, expand: { ...this.selected.expand, owner: this.selected.expand?.owner ?? { displayName: this.selected.awardeeName } } };
 			this.reviews = this.reviews.map((review) => ({ ...review, expand: { ...review.expand, reviewer: review.expand?.reviewer ?? { displayName: review.reviewerName } } }));
 			this.events = this.events.map((event) => ({ ...event, expand: { ...event.expand, actor: event.expand?.actor ?? { displayName: event.actorName } } }));
@@ -70,8 +65,8 @@ class ActivitySubmissionStore {
 		if (!pb?.authStore.isValid) { this.reviewHistory = []; return; }
 		this.loading = true; this.error = '';
 		try {
-			const filter = decision ? pb.filter('decision = {:decision}', { decision }) : '';
-			const result = await pb.collection('submission_reviews').getList(page, 25, { sort: '-decidedAt', filter, expand: 'reviewer,submission,submission.owner' });
+			const query = new URLSearchParams({ page: String(page) }); if (decision) query.set('decision', decision);
+			const result = await apiRequest(`/api/pfriends/activity-submissions/reviews?${query}`);
 			this.reviewHistory = result.items.map((review) => {
 				const submission = review.expand?.submission;
 				return { ...review, expand: { ...review.expand, reviewer: review.expand?.reviewer ?? { displayName: review.reviewerName }, submission: submission ? { ...submission, expand: { ...submission.expand, owner: submission.expand?.owner ?? { displayName: submission.awardeeName } } } : submission } };
@@ -91,7 +86,7 @@ class ActivitySubmissionStore {
 		for (const file of values.files || []) data.append('evidenceFiles', file);
 		this.working = true; this.error = '';
 		try {
-			const result = existingId ? await pb.collection('activity_submissions').update(existingId, data) : await pb.collection('activity_submissions').create(data);
+			const result = await apiRequest(existingId ? `/api/pfriends/activity-submissions/${existingId}` : '/api/pfriends/activity-submissions', { method: existingId ? 'PATCH' : 'POST', body: data });
 			await this.load({ mine: true });
 			return result;
 		} catch (error) { this.error = pocketBaseMessage(error); throw error; }
@@ -105,7 +100,7 @@ class ActivitySubmissionStore {
 		data.set('activityType', 'SESSION_ATTEND'); data.set('event', event.id); data.set('activityDate', event.endsAt.toISOString()); data.set('title', `Kehadiran: ${event.title}`); data.set('description', `Bukti kehadiran pada event ${event.title}.`); data.set('owner', pb.authStore.record.id);
 		for (const file of files || []) data.append('evidenceFiles', file);
 		this.working = true; this.error = '';
-		try { const result = existingId ? await pb.collection('activity_submissions').update(existingId, data) : await pb.collection('activity_submissions').create(data); await this.load({ mine: true }); return result; }
+		try { const result = await apiRequest(existingId ? `/api/pfriends/activity-submissions/${existingId}` : '/api/pfriends/activity-submissions', { method: existingId ? 'PATCH' : 'POST', body: data }); await this.load({ mine: true }); return result; }
 		catch (error) { this.error = pocketBaseMessage(error); throw error; }
 		finally { this.working = false; }
 	}
@@ -113,7 +108,7 @@ class ActivitySubmissionStore {
 	async submitBroadcastShare(broadcast, platform, url, files, activityType = 'SHARE_PUBLIC') {
 		const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
 		const data = new FormData(); data.set('activityType',activityType); data.set('broadcast',broadcast.id); data.set('activityDate',new Date().toISOString()); data.set('title',`${activityType === 'SHARE_PRIVATE' ? 'Share WhatsApp' : 'Share publik'}: ${broadcast.title}`); data.set('description',`Dibagikan melalui ${platform}.`); data.set('externalUrl',url); data.set('owner',pb.authStore.record.id); for(const file of files)data.append('evidenceFiles',file);
-		this.working=true; try { const result=await pb.collection('activity_submissions').create(data); await this.load({mine:true}); return result; } catch(error){this.error=pocketBaseMessage(error);throw error} finally{this.working=false}
+		this.working=true; try { const result=await apiRequest('/api/pfriends/activity-submissions',{method:'POST',body:data}); await this.load({mine:true}); return result; } catch(error){this.error=pocketBaseMessage(error);throw error} finally{this.working=false}
 	}
 
 	async review(id, decision, note = '') {
@@ -121,7 +116,7 @@ class ActivitySubmissionStore {
 		if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
 		this.working = true; this.error = '';
 		try {
-			await pb.send(`/api/pfriends/activity-submissions/${id}/review`, { method: 'POST', body: { decision, note } });
+			await apiRequest(`/api/pfriends/activity-submissions/${id}/review`, { method: 'POST', body: { decision, note } });
 			await this.detail(id);
 			return this.selected;
 		} catch (error) { this.error = pocketBaseMessage(error); throw error; }
@@ -133,7 +128,7 @@ class ActivitySubmissionStore {
 		if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.');
 		this.working = true; this.error = '';
 		try {
-			await pb.send(`/api/pfriends/activity-submissions/${id}/start-review`, { method: 'POST' });
+			await apiRequest(`/api/pfriends/activity-submissions/${id}/start-review`, { method: 'POST' });
 			return await this.detail(id);
 		} catch (error) { this.error = pocketBaseMessage(error); throw error; }
 		finally { this.working = false; }

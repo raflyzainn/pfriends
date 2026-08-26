@@ -1,7 +1,8 @@
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() { const pb=getPocketBase();if(!pb?.authStore.isValid)throw new Error('Sesi PocketBase tidak tersedia.');return pb; }
-async function send(path,options={}){try{return await client().send(path,options);}catch(error){throw new Error(pocketBaseMessage(error,'Profil gagal diproses.'));}}
+async function send(path,options={}){try{return await apiRequest(path,options);}catch(error){throw new Error(pocketBaseMessage(error,'Profil gagal diproses.'));}}
 async function withUrls(response){const pb=client(),token=await pb.files.getToken(),asset=response.profile?.avatarAsset;const avatarUrl=asset?.image?pb.files.getURL({id:asset.id,collectionName:asset.collectionName||'profile_avatars'},asset.image,{token}):'';return{...response,profile:{...response.profile,avatarUrl},products:(response.products||[]).map(product=>({...product,imageUrl:product.image?pb.files.getURL({id:product.id,collectionName:'business_products'},product.image,{token}):''}))};}
 export async function myProfile(){return withUrls(await send('/api/pfriends/profile/me'));}
 export async function updateProfile(data){return withUrls(await send('/api/pfriends/profile/me',{method:'PATCH',body:data}));}

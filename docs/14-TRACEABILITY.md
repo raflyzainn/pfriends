@@ -1,5 +1,7 @@
 # 14: Matriks Ketertelusuran V2
 
+> Traceability migrasi runtime `pb_hooks` ke SvelteKit API dicatat per item dalam `docs/38-MATRIKS-MIGRASI-SVELTEKIT-API.md`. Status akhir, item belum selesai, dan blocker berada di `docs/40-STATUS-AKHIR-MIGRASI-PB-HOOKS.md`. Hasil saat ini adalah 104 dari 106 item `SELESAI_LOKAL`, 2 cron `BLOCKED_AUTOMATION`, dan 202 asersi E2E tanpa hook lulus.
+
 > Aturan tunggal dokumen ini: **kolom terakhir hanya boleh memuat perintah atau nama asersi yang
 > benar-benar ada dan benar-benar dijalankan.** Bukan rencana, bukan janji. Setiap nama asersi di
 > bawah muncul persis seperti tertulis pada **keluaran** gerbang yang disebut, dan sebagian besar
@@ -17,11 +19,12 @@
 
 | Kode | Perintah | Isi |
 |---|---|---|
-| **G-C** | `npm run verify:compile` | 112 komponen, 0 gagal, 0 warning |
-| **G-D** | `npm run verify:domain` | 203 asersi domain (14 bagian) |
+| **G-C** | `npm run verify:compile` | 143 komponen, 0 gagal, 0 warning |
+| **G-D** | `npm run verify:domain` | 210 asersi domain (15 bagian) |
 | **G-S** | `npm run verify:seed` | 73 asersi seed (9 bagian) |
-| **G-P** | `npm run verify:purity` | 7 aturan kemurnian zona publik; 14 berkas route + 23 komponen bersama yang terjangkau |
-| **G-B** | `npm run build` | Build produksi `adapter-static`, 0 error |
+| **G-P** | `npm run verify:purity` | 6 aturan kemurnian zona publik; 15 berkas route + 26 komponen bersama yang terjangkau |
+| **G-API** | `npm run verify:backend` | Matriks 106 item serta E2E fresh PocketBase tanpa `pb_hooks`; 202 asersi lulus, termasuk approval registrasi tanpa reference policy internal dan pembacaan antrean registrasi oleh Admin |
+| **G-B** | `npm run build` | Build produksi `adapter-cloudflare`, 0 error |
 | **G-E** | `npm run verify:e2e` | 36 route di peramban sungguhan + 31 asersi guard & sesi, lima fase (0–4) |
 | **G-G** | `npm run verify:gamification` | 22 asersi gamifikasi, termasuk anti-regresi hidrasi |
 | **G-V** | `npm run screenshot` | 27 tangkapan layar empat zona; berkas usang dihapus |
@@ -99,7 +102,7 @@ Judul dan penomoran mengikuti `docs/10-REVISION-SPEC.md` §8.
 | US-R | Judul | Berkas yang mewujudkannya | Gerbang yang membuktikannya |
 |---|---|---|---|
 | **US-R22** | Dasbor Awardee sebagai rumah gamifikasi | `routes/awardee/+page.svelte` · `stores/{gamification,awardee-dashboard}.svelte.js` · `infrastructure/pocketbase/awardeeDashboard.js` · `components/{PointsChip,TierProgress,TierBadge}.svelte` | `npm run verify:awardee-dashboard` menguji kegiatan, Kabar terkirim, Cerita milik pengguna, profil gamifikasi, empty state Cerita asli, larangan store/repository lokal pada dasbor, dan penghapusan label `DUMMY`; **G-G** tetap menguji pembukuan poin dan kestabilan saldo sesudah muat ulang |
-| **Forum PFriends** | Forum persisten lintas Awardee, Verifikator, dan Admin dengan antispam, hard delete, picker seluruh emoji Unicode, serta reply inline | `pocketbase/pb_hooks/forum.pb.js` · `src/lib/stores/forum.svelte.js` · `routes/{awardee,verifikator,admin}/forum/+page.svelte` | `npm run verify:forum` menguji pembatasan komunitas, rate limit, hak hapus, kanal pengumuman, identitas server, idempotensi, reply dan konteks, allowlist reaksi, heartbeat presence, dan SSE |
+| **Forum PFriends** | Forum persisten lintas Awardee, Verifikator, dan Admin dengan antispam, hard delete, picker seluruh emoji Unicode, reply inline, serta reference seed production tanpa akun atau percakapan demo | `pocketbase/pb_hooks/forum.pb.js` · `scripts/pocketbase/seed-forum-reference.mjs` · `src/lib/stores/forum.svelte.js` · `routes/{awardee,verifikator,admin}/forum/+page.svelte` | `npm run verify:forum` menguji pembatasan komunitas, rate limit, hak hapus, kanal pengumuman, identitas server, idempotensi, reply dan konteks, allowlist reaksi, heartbeat presence, dan SSE; `npm run pb:seed:forum` memverifikasi rencana upsert secara read-only |
 | **US-R23** | Papan peringkat hanya untuk Awardee | `routes/awardee/papan-peringkat/+page.svelte` · `AccessPolicy.canSeeLeaderboard()` · `domain/services/LeaderboardService.js` | **G-D** `canSeeLeaderboard(AWARDEE) = true`, `canSeeLeaderboard(ADMIN) = false`, `canSeeLeaderboard(tamu) = false` · **G-P** `Nol komponen gamifikasi terimpor` (mis. `LeaderboardRow`) |
 | **US-R24** | Verifikator mengesahkan bukti kontribusi | `routes/verifikator/bukti/+page.svelte` · `verifikator/_components/gates.js` · `domain/services/EsgEvidenceService.js` | **G-E** `/verifikator/bukti` hijau (8.431 chr) · **G-V** `21-verifikator-bukti-esg.png` |
 | **US-R25** | Papan SLA & beban antrean verifikator | `routes/verifikator/+page.svelte` · `verifikator/_components/SlaBadge.svelte` · `domain/services/_editorial-metrics.js` · `constants/content-workflow.js` (`SLA_HARI_KERJA`) | **G-E** `/verifikator` hijau · **G-V** `17-verifikator-beranda.png` (memperlihatkan tenggat 2/3/5/2 hari kerja yang seluruhnya berasal dari `SLA_HARI_KERJA`) |

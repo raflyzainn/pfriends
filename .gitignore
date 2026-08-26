@@ -2,6 +2,7 @@ node_modules
 /build
 /build-verify
 /.svelte-kit
+/.wrangler
 /package
 .env
 .env.*

@@ -20,6 +20,8 @@ export const PROGRAM_PILLARS = Object.freeze([
 ]);
 
 export const REGISTRATION_CONSENT_VERSION = 'awardee-registration-v1';
+export const REGISTRATION_CONSENT_PURPOSE = 'Verifikasi dan pengelolaan keanggotaan PFriends.';
+export const REGISTRATION_CONSENT_STATEMENT = 'Saya menyetujui pengolahan data pribadi untuk verifikasi dan pengelolaan keanggotaan PFriends.';
 
 export function isApprovedOnboarding(status) {
 	return status === RegistrationStatus.APPROVED || !status;

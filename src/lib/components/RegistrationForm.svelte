@@ -1,7 +1,7 @@
 <script>
 	import { untrack } from 'svelte';
 	import { CHAPTERS, COMMUNITIES, CommunityType } from '$lib/domain/constants/community.js';
-	import { PROGRAM_PILLARS } from '$lib/domain/constants/registration.js';
+	import { PROGRAM_PILLARS, REGISTRATION_CONSENT_STATEMENT } from '$lib/domain/constants/registration.js';
 
 	let {
 		initial = {},
@@ -190,7 +190,7 @@
 		<label class="flex items-start gap-3 rounded-control border border-ink-200 p-4">
 			<input class="mt-1 h-4 w-4" type="checkbox" bind:checked={consent} required />
 			<span class="text-sm leading-relaxed text-ink-700">
-				Saya menyetujui pengolahan data pribadi untuk verifikasi dan pengelolaan keanggotaan PFriends.
+				{REGISTRATION_CONSENT_STATEMENT}
 			</span>
 		</label>
 	{/if}

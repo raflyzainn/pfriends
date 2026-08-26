@@ -46,6 +46,7 @@ import { accountRepository, awardeeRepository } from '$lib/infrastructure/reposi
 import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
 import { getPocketBase } from '$lib/infrastructure/pocketbase/client.js';
 import { isApprovedOnboarding, RegistrationStatus } from '$lib/domain/constants/registration.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 /** Kunci penyimpanan sesi di localStorage. */
 const KUNCI_SESI = 'pfriends_session';
@@ -325,7 +326,8 @@ class SessionStore {
 			await bootstrapDatabase();
 			const pb = getPocketBase();
 			if (!pb) throw new Error('PocketBase tidak tersedia.');
-			const hasil = await pb.collection('users').authWithPassword(email, password);
+			const hasil = await apiRequest('/api/pfriends/auth/login', { method: 'POST', body: { email, password } });
+			pb.authStore.save(hasil.token, hasil.record);
 			const onboarding = hasil.record.onboardingStatus || RegistrationStatus.APPROVED;
 			const principal = principalPocketBase(hasil.record);
 			if (!isApprovedOnboarding(onboarding)) {
@@ -369,7 +371,7 @@ class SessionStore {
 	logout() {
 		const pb = getPocketBase();
 		if (this.impersonation && pb?.authStore.isValid) {
-			void pb.send(`/api/pfriends/admin/impersonations/${encodeURIComponent(this.impersonation.id)}/end`, { method: 'POST', requestKey: null }).catch(() => {});
+			void apiRequest(`/api/pfriends/admin/impersonations/${encodeURIComponent(this.impersonation.id)}/end`, { method: 'POST' }).catch(() => {});
 		}
 		pb?.authStore.clear();
 		this.role = null;
@@ -475,9 +477,8 @@ class SessionStore {
 			await bootstrapDatabase();
 			const pb = getPocketBase();
 			if (!pb?.authStore.isValid) { this.logout(); return; }
-			const auth = this.impersonation
-				? await pb.send('/api/pfriends/session/me')
-				: await pb.collection('users').authRefresh();
+			const auth = await apiRequest('/api/pfriends/session/me');
+			pb.authStore.save(auth.token, auth.record);
 			const onboarding = auth.record.onboardingStatus || RegistrationStatus.APPROVED;
 			const principal = principalPocketBase(auth.record);
 			if (!isApprovedOnboarding(onboarding)) {

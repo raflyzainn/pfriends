@@ -18,6 +18,7 @@ import { Awardee } from '$lib/domain/entities/Awardee.js';
 import { AWARDEE_STATUS } from '$lib/domain/constants/community.js';
 import { TABLE } from '../db.js';
 import { getPocketBase } from '../pocketbase/client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 import { DexieRepository } from './DexieRepository.js';
 
 function fromPocketBase(record) {
@@ -67,9 +68,7 @@ export class AwardeeRepository extends DexieRepository {
 	async getById(id) {
 		const pb = getPocketBase();
 		if (pb?.authStore?.isValid && id) try {
-			const record = await pb.collection('awardees').getFirstListItem(
-				pb.filter('legacyId = {:id}', { id })
-			);
+			const record = await apiRequest(`/api/pfriends/awardees/${encodeURIComponent(id)}`);
 			return fromPocketBase(record);
 		} catch (error) {
 			if (error?.status !== 404 && error?.status !== 403) throw error;
@@ -84,12 +83,12 @@ export class AwardeeRepository extends DexieRepository {
 		const pb = getPocketBase();
 		if (!pb?.authStore?.isValid) return local;
 		try {
-			const remote = (await pb.collection('awardees').getFullList()).map(fromPocketBase);
+			const remote = ((await apiRequest('/api/pfriends/awardees')).items || []).map(fromPocketBase);
 			const byId = new Map(local.map((awardee) => [awardee.id, awardee]));
 			for (const awardee of remote) byId.set(awardee.id, awardee);
 			return [...byId.values()];
 		} catch (error) {
-			if (error?.status === 404) return local;
+			if (error?.status === 403 || error?.status === 404) return local;
 			throw error;
 		}
 	}

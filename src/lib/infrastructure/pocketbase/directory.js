@@ -1,5 +1,6 @@
 import { Awardee } from '$lib/domain/entities/Awardee.js';
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() {
 	const pb = getPocketBase();
@@ -35,12 +36,12 @@ export async function fetchDirectory(query = {}) {
 		const params = new URLSearchParams();
 		for (const [key, value] of Object.entries(query)) if (value !== '' && value !== undefined && value !== false) params.set(key, String(value));
 		const pb = client();
-		const [response, token] = await Promise.all([pb.send(`/api/pfriends/directory?${params}`), pb.files.getToken()]);
+		const [response, token] = await Promise.all([apiRequest(`/api/pfriends/directory?${params}`), pb.files.getToken()]);
 		return { ...response, items: (response.items || []).map((record) => mapAwardee(record, pb, token)) };
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Jejaring gagal dimuat.')); }
 }
 
 export async function updateMyDirectoryProfile(data) {
-	try { return await client().send('/api/pfriends/profile/me', { method: 'PATCH', body: data }); }
+	try { return await apiRequest('/api/pfriends/profile/me', { method: 'PATCH', body: data }); }
 	catch (error) { throw new Error(pocketBaseMessage(error, 'Profil Jejaring gagal disimpan.')); }
 }

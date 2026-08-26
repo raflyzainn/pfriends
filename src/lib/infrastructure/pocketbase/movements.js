@@ -1,7 +1,8 @@
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() { const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.'); return pb; }
-async function send(path, options, fallback) { try { return await client().send(path, options); } catch (error) { throw new Error(pocketBaseMessage(error, fallback)); } }
+async function send(path, options, fallback) { try { client(); return await apiRequest(path, options); } catch (error) { throw new Error(pocketBaseMessage(error, fallback)); } }
 export async function listMovements() { return (await send('/api/pfriends/movements', {}, 'Data Gerakan gagal dimuat.')).items || []; }
 export async function proposeMovement(body) { return send('/api/pfriends/movements', { method: 'POST', body }, 'Usulan Gerakan gagal dikirim.'); }
 export async function joinMovement(id) { return send(`/api/pfriends/movements/${id}/join`, { method: 'POST' }, 'Pendaftaran Gerakan gagal.'); }

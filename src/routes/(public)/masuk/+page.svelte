@@ -48,7 +48,13 @@
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 
-	const DEMO_LOGIN = import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEMO_LOGIN === '1';
+	function isLocalPocketBase(value) {
+		try { return ['127.0.0.1', 'localhost', '::1'].includes(new URL(value).hostname); }
+		catch { return false; }
+	}
+	const DEMO_LOGIN = import.meta.env.DEV
+		&& import.meta.env.VITE_ENABLE_DEMO_LOGIN === '1'
+		&& isLocalPocketBase(import.meta.env.VITE_PB_URL || 'http://127.0.0.1:8090');
 
 	/** Banyaknya kartu awardee yang dipajang: enam, agar grid tiga kolom terisi rata. */
 	const JUMLAH_AWARDEE = 6;

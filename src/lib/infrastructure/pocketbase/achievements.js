@@ -1,5 +1,6 @@
 import { Reward } from '$lib/domain/entities/Reward.js';
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() {
 	const pb = getPocketBase();
@@ -22,42 +23,47 @@ function reward(record) {
 
 export async function achievementData() {
 	try {
-		const response = await client().send('/api/pfriends/achievements');
+		client();
+		const response = await apiRequest('/api/pfriends/achievements');
 		return { wallet: response.wallet, rewards: (response.rewards || []).map(reward), redemptions: response.redemptions || [] };
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Katalog pencapaian gagal dimuat.')); }
 }
 
 export async function redeemReward(rewardId, requestKey) {
 	try {
-		return await client().send('/api/pfriends/redemptions', { method: 'POST', body: { rewardId, requestKey } });
+		client();
+		return await apiRequest('/api/pfriends/redemptions', { method: 'POST', body: { rewardId, requestKey } });
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Penukaran belum dapat diproses.')); }
 }
 
 export async function adminRedemptions(status = '') {
 	try {
 		const query = status ? `?status=${encodeURIComponent(status)}` : '';
-		return await client().send(`/api/pfriends/admin/redemptions${query}`);
+		client();
+		return await apiRequest(`/api/pfriends/admin/redemptions${query}`);
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Antrean penukaran gagal dimuat.')); }
 }
 
 export async function transitionRedemption(id, status, note = '') {
 	try {
-		return await client().send(`/api/pfriends/admin/redemptions/${id}/transition`, { method: 'POST', body: { status, note } });
+		client();
+		return await apiRequest(`/api/pfriends/admin/redemptions/${id}/transition`, { method: 'POST', body: { status, note } });
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Status penukaran gagal diperbarui.')); }
 }
 
 export async function staffRewards() {
-	try { return await client().send('/api/pfriends/staff/rewards'); }
+	try { client(); return await apiRequest('/api/pfriends/staff/rewards'); }
 	catch (error) { throw new Error(pocketBaseMessage(error, 'Katalog hadiah gagal dimuat.')); }
 }
 
 export async function saveStaffReward(data, id = '') {
 	try {
-		return await client().send(id ? `/api/pfriends/staff/rewards/${id}` : '/api/pfriends/staff/rewards', { method: id ? 'PATCH' : 'POST', body: data });
+		client();
+		return await apiRequest(id ? `/api/pfriends/staff/rewards/${id}` : '/api/pfriends/staff/rewards', { method: id ? 'PATCH' : 'POST', body: data });
 	} catch (error) { throw new Error(pocketBaseMessage(error, 'Hadiah gagal disimpan.')); }
 }
 
 export async function deleteStaffReward(id) {
-	try { return await client().send(`/api/pfriends/staff/rewards/${id}`, { method: 'DELETE' }); }
+	try { client(); return await apiRequest(`/api/pfriends/staff/rewards/${id}`, { method: 'DELETE' }); }
 	catch (error) { throw new Error(pocketBaseMessage(error, 'Hadiah gagal dihapus.')); }
 }

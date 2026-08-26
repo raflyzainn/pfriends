@@ -1,19 +1,13 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
 	kit: {
-		// SPA statis: seluruh routing ditangani di sisi klien sehingga microsite
-		// dapat di-host di static hosting mana pun (sama seperti portal Enduro).
-		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
-			fallback: 'index.html',
-			precompress: false,
-			strict: false
-		}),
+		// UI tetap dirender di klien, sedangkan endpoint +server.js dijalankan
+		// sebagai Cloudflare Pages Functions.
+		adapter: adapter(),
 		prerender: {
 			handleMissingId: 'warn',
 			handleHttpError: 'warn',

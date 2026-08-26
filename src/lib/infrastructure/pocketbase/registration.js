@@ -1,4 +1,5 @@
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() {
 	const pb = getPocketBase();
@@ -8,7 +9,7 @@ function client() {
 
 export async function submitRegistration(formData) {
 	try {
-		return await client().send('/api/pfriends/registrations', { method: 'POST', body: formData });
+		return await apiRequest('/api/pfriends/registrations', { method: 'POST', body: formData });
 	} catch (error) {
 		throw new Error(pocketBaseMessage(error, 'Registrasi gagal dikirim.'));
 	}
@@ -18,9 +19,7 @@ export async function myRegistration() {
 	const pb = client();
 	if (!pb.authStore.isValid) return null;
 	try {
-		return await pb.collection('awardee_registrations').getFirstListItem(
-			pb.filter('owner = {:owner}', { owner: pb.authStore.record.id })
-		);
+		return (await apiRequest('/api/pfriends/registrations/me')).registration;
 	} catch (error) {
 		if (error?.status === 404) return null;
 		throw new Error(pocketBaseMessage(error, 'Status registrasi gagal dimuat.'));
@@ -29,7 +28,7 @@ export async function myRegistration() {
 
 export async function resubmitRegistration(formData) {
 	try {
-		return await client().send('/api/pfriends/registrations/me', { method: 'PATCH', body: formData });
+		return await apiRequest('/api/pfriends/registrations/me', { method: 'PATCH', body: formData });
 	} catch (error) {
 		throw new Error(pocketBaseMessage(error, 'Klarifikasi gagal dikirim.'));
 	}
@@ -37,7 +36,8 @@ export async function resubmitRegistration(formData) {
 
 export async function registrationQueue() {
 	try {
-		return await client().collection('awardee_registrations').getFullList({ sort: '-submittedAt' });
+		client();
+		return (await apiRequest('/api/pfriends/registrations')).items || [];
 	} catch (error) {
 		throw new Error(pocketBaseMessage(error, 'Antrean registrasi gagal dimuat.'));
 	}
@@ -45,11 +45,8 @@ export async function registrationQueue() {
 
 export async function registrationReviews(registrationId) {
 	try {
-		const pb = client();
-		return await pb.collection('registration_reviews').getFullList({
-			filter: pb.filter('registration = {:registration}', { registration: registrationId }),
-			sort: '-decidedAt'
-		});
+		client();
+		return (await apiRequest(`/api/pfriends/registrations/${encodeURIComponent(registrationId)}/reviews`)).items || [];
 	} catch (error) {
 		throw new Error(pocketBaseMessage(error, 'Riwayat keputusan gagal dimuat.'));
 	}
@@ -57,7 +54,7 @@ export async function registrationReviews(registrationId) {
 
 export async function decideRegistration(registrationId, decision, note = '') {
 	try {
-		return await client().send(`/api/pfriends/registrations/${registrationId}/decision`, {
+		return await apiRequest(`/api/pfriends/registrations/${registrationId}/decision`, {
 			method: 'POST',
 			body: { decision, note }
 		});

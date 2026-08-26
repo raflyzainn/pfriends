@@ -1,6 +1,8 @@
 # Checklist Migrasi Seluruh Halaman PFriends
 
-Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah menggunakan PocketBase. Tanda `[~]` berarti campuran PocketBase dan data lokal. Tanda `[ ]` berarti belum dimigrasikan dan harus terlihat sebagai `DUMMY` di UI. Halaman statis informasional ditandai terpisah karena tidak membutuhkan backend.
+> Migrasi custom backend dari `pb_hooks` ke SvelteKit API selesai pada level lokal. Matriks 106 endpoint, lifecycle/realtime behavior, dan cron job berada di `docs/38-MATRIKS-MIGRASI-SVELTEKIT-API.md`: 104 item `SELESAI_LOKAL` dan 2 cron `BLOCKED_AUTOMATION`. Seluruh halaman memakai SvelteKit API atau built-in PocketBase untuk token file dan SSE Forum; production belum diuji.
+
+Audit kode diperbarui 26 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah menggunakan PocketBase melalui SvelteKit API atau built-in API yang disebut eksplisit. Tanda `[~]` berarti campuran PocketBase dan data lokal. Tanda `[ ]` berarti belum dimigrasikan dan harus terlihat sebagai `DUMMY` di UI. Halaman statis informasional ditandai terpisah karena tidak membutuhkan backend.
 
 ## Publik dan autentikasi
 
@@ -27,13 +29,13 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [x] `/awardee/kalender`: usulan, status keputusan, agenda, pendaftaran, kapasitas, bukti hadir, revisi, dan poin memakai PocketBase.
 - [x] `/awardee/gerakan`: usulan, partisipasi, laporan aksi, bukti terlindungi, status pemeriksaan, dan poin pemimpin memakai PocketBase.
 - [x] `/awardee/cerita` dan `/awardee/cerita/tulis`: draf, penyimpanan otomatis, unggah bukti, pengajuan, revisi, penerbitan ulang, dan status memakai PocketBase.
-- [x] `/awardee/forum`, `/verifikator/forum`, dan `/admin/forum`: kanal berbasis komunitas, pesan persisten, rate limit antispam, hard delete dengan hak pemilik/staf, picker seluruh emoji Unicode, reply inline dan navigasi konteks, presence, REST API, serta pembaruan realtime SSE memakai PocketBase; tidak memakai queue atau WebSocket khusus.
+- [x] `/awardee/forum`, `/verifikator/forum`, dan `/admin/forum`: kanal berbasis komunitas, pesan persisten, rate limit antispam, hard delete dengan hak pemilik/staf, picker seluruh emoji Unicode, reply inline dan navigasi konteks, presence, REST API, serta pembaruan realtime SSE memakai PocketBase; reference seeder production tersedia melalui `pb:seed:forum` dan tidak membawa data demo.
 
 ## Verifikator
 
 - [x] `/verifikator/kabar`: pemantauan read-only atas draf, jadwal, kabar terkirim, audiens, dan jumlah penerima memakai PocketBase; bukti share publik diputuskan melalui Bukti Keaktifan.
 - [x] `/verifikator`: total poin, Awardee, tier, streak, badge, leaderboard, antrean, produktivitas bulanan, KPI resmi, laju peninjauan, dan rekam kerja seluruh workflow memakai PocketBase.
-- [x] `/verifikator/pendaftaran`: antrean, preview bukti terlindungi, WhatsApp, klarifikasi, approve, reject, dan audit memakai PocketBase.
+- [x] `/verifikator/pendaftaran`: antrean, preview bukti terlindungi, WhatsApp, klarifikasi, approve, reject, dan audit memakai PocketBase. Approval tetap menyimpan snapshot consent registrasi ketika reference policy internal belum tersedia.
 - [x] `/verifikator/bukti-keaktifan` dan `/verifikator/bukti-keaktifan/[id]`: antrean, preview bukti, review, revisi, approval, ledger poin, dan audit memakai PocketBase.
 - [x] `/verifikator/gamifikasi`: memproses penukaran, CRUD katalog hadiah, dan CRUD katalog aksi poin beserta audit memakai PocketBase.
 - [x] `/verifikator/cerita` dan `/verifikator/cerita/[id]`: antrean, seluruh status, bukti terlindungi, keputusan, revisi setelah publikasi, penerbitan, arsip, dan audit memakai PocketBase. Query seluruh Cerita memakai field tanggal schema dan sudah diuji agar tidak menghasilkan respons 400.
@@ -44,7 +46,7 @@ Audit kode diperbarui 24 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 
 - [x] `/admin/broadcast`: pembuatan, penyuntingan draf/jadwal, penerbitan, audiens, dan jumlah penerima Kabar memakai PocketBase.
 
-- [x] `/admin/pendaftaran`: monitoring registrasi memakai PocketBase; Admin tidak mengambil keputusan.
+- [x] `/admin/pendaftaran`: monitoring registrasi memakai PocketBase melalui endpoint antrean yang menerima Admin; Admin tidak mengambil keputusan.
 - [x] `/admin`: KPI, agregat akun, Cerita, Kabar, SLA, ESG, keterlibatan, chapter, dan rekap bulanan memakai endpoint agregat PocketBase.
 - [x] `/admin/awardee`: daftar, pencarian, filter, pagination, status akun, status keanggotaan, waktu masuk terakhir, riwayat audit, dan impersonasi Awardee selama 30 menit memakai PocketBase.
 - [x] `/admin/gamifikasi`: hub ringkasan gamifikasi memakai data PocketBase dan mengarahkan ke nested route agar tidak menjadi halaman panjang.

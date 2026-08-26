@@ -1,12 +1,13 @@
 import { PointActivity, ActivityStatus } from '$lib/domain/entities/PointActivity.js';
 import { getPocketBase } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 export class VerifiedActivityRepository {
 	async getAll() {
 		const pb = getPocketBase();
 		if (!pb?.authStore?.isValid) return [];
 		try {
-			const rows = await pb.collection('verified_point_activities').getFullList({ sort: '-occurredAt' });
+			const rows = (await apiRequest('/api/pfriends/point-activities')).items || [];
 			return rows.map((row) => PointActivity.from({
 				id: `PB-${row.id}`,
 				awardeeId: row.awardeeId,

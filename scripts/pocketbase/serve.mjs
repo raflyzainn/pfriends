@@ -13,7 +13,7 @@ const child = spawn(
 		'serve',
 		'--dir=pocketbase/pb_data',
 		'--migrationsDir=pocketbase/pb_migrations',
-		'--hooksDir=pocketbase/pb_hooks'
+		'--hooksDir=pocketbase/pb_no_hooks'
 	],
 	{
 		cwd: projectRoot,

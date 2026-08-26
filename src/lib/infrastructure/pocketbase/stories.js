@@ -1,9 +1,10 @@
 import { Story } from '$lib/domain/entities/Story.js';
 import { getPocketBase, pocketBaseMessage } from './client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 function client() { const pb = getPocketBase(); if (!pb?.authStore.isValid) throw new Error('Sesi PocketBase tidak tersedia.'); return pb; }
 function entity(value) { return Story.from(value); }
-async function send(path, options = {}) { try { return await client().send(path, options); } catch (error) { throw new Error(pocketBaseMessage(error, 'PocketBase tidak dapat memproses Cerita.')); } }
+async function send(path, options = {}) { try { client(); return await apiRequest(path, options); } catch (error) { throw new Error(pocketBaseMessage(error, 'PocketBase tidak dapat memproses Cerita.')); } }
 
 export async function myStories() { const response = await send('/api/pfriends/stories/mine'); return (response.items || []).map(entity); }
 export async function verifierStories(scope = 'queue') { const response = await send(`/api/pfriends/verifier/stories?scope=${encodeURIComponent(scope)}`); return (response.items || []).map(entity); }

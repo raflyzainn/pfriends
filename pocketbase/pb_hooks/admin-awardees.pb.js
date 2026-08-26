@@ -101,7 +101,11 @@ routerAdd('GET', '/api/pfriends/session/me', (e) => {
 }, $apis.requireAuth('users'));
 
 onRecordAuthRequest((e) => {
-	if (e.record.getString('status') !== 'AKTIF') throw new ForbiddenError('Akun tidak aktif.');
+	const role = e.record.getString('role');
+	const onboardingStatus = e.record.getString('onboardingStatus');
+	const applicantStatuses = ['PENDING', 'CLARIFICATION', 'REJECTED'];
+	const isApplicant = role === 'AWARDEE' && applicantStatuses.indexOf(onboardingStatus) !== -1;
+	if (e.record.getString('status') !== 'AKTIF' && !isApplicant) throw new ForbiddenError('Akun tidak aktif.');
 	if (e.authMethod !== 'refresh') { e.record.set('lastLoginAt', new Date().toISOString()); e.app.save(e.record); }
 	e.next();
 }, 'users');
