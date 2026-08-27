@@ -43,7 +43,7 @@ apiRoute('GET', '/gamification/leaderboard', async (ctx) => {
 	if (scope === 'community') rows = rows.filter((row) => row.profile.community === key);
 	if (scope === 'chapter') rows = rows.filter((row) => row.profile.chapterId === key);
 	rows.sort((a, b) => b.points - a.points || a.profile.fullName.localeCompare(b.profile.fullName));
-	return { entries: rows.slice(0, limit).map((row, index) => ({ rank: index + 1, awardeeId: row.profile.awardeeId, name: row.profile.anonymousOnLeaderboard ? 'Peserta anonim' : row.profile.fullName, community: row.profile.community, chapterId: row.profile.chapterId, points: row.points, tier: row.profile.tier, streakWeeks: Number(row.profile.currentStreakWeeks || 0) })) };
+	return { entries: rows.slice(0, limit).map((row, index) => ({ rank: index + 1, awardeeId: row.profile.awardeeId, name: row.profile.anonymousOnLeaderboard ? 'Peserta anonim' : row.profile.fullName, community: row.profile.community, chapterId: row.profile.chapterId, points: row.points, tier: row.profile.tier, streakDays: Number(row.profile.currentStreakDays || 0), activeToday: Boolean(row.profile.activeToday), streakWeeks: Number(row.profile.currentStreakWeeks || 0) })) };
 });
 
 apiRoute('POST', '/point-activities/{id}/revoke', async (ctx) => {

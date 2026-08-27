@@ -64,6 +64,7 @@ export const MAKS_TOKEN_JEDA_AMAN = 2;
  * @property {number} [coins]          Saldo Koin Tukar; default mengikuti points.
  * @property {number} [seasonPoints]   Poin musim berjalan; default mengikuti points.
  * @property {number} [streakWeeks]    Panjang streak mingguan berjalan.
+ * @property {number} [streakDays]     Panjang streak harian berdasarkan tanggal poin masuk.
  * @property {number} [freezeTokens]   Token Jeda Aman tersimpan.
  * @property {string} [university]     Kampus asal (relevan untuk SOBI).
  * @property {string} [city]           Kota domisili.
@@ -122,6 +123,7 @@ export class Awardee {
 			coins,
 			seasonPoints,
 			streakWeeks = 0,
+			streakDays = 0,
 			freezeTokens = 0,
 			university = '',
 			city = '',
@@ -182,6 +184,7 @@ export class Awardee {
 			coins: new Points(coins === undefined ? points : coins),
 			seasonPoints: musim,
 			streakWeeks,
+			streakDays,
 			freezeTokens,
 			university,
 			city,
@@ -258,6 +261,11 @@ export class Awardee {
 	/** @returns {number} */
 	get streakWeeks() {
 		return this.#data.streakWeeks;
+	}
+
+	/** @returns {number} */
+	get streakDays() {
+		return this.#data.streakDays;
 	}
 
 	/** @returns {number} */
@@ -464,6 +472,7 @@ export class Awardee {
 			coins: this.coins,
 			seasonPoints: this.seasonPoints,
 			streakWeeks: this.streakWeeks,
+			streakDays: this.streakDays,
 			freezeTokens: this.freezeTokens,
 			university: this.university,
 			city: this.city,

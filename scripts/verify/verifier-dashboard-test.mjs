@@ -16,6 +16,7 @@ const snapshot=await verifier.send('/api/pfriends/verifier/dashboard');
 expect(snapshot.monthly.length===7&&snapshot.monthly[0].key==='2026-01'&&snapshot.monthly[6].key==='2026-07','deret program lengkap Januari sampai Juli');
 expect(snapshot.kpis.length===5&&snapshot.kpis.map(row=>row.id).join(',')==='M-01,M-02,M-03,M-04,M-05','lima KPI resmi tersedia');
 expect(snapshot.monthly.every(row=>Number.isInteger(row.publishedStories)&&Number.isInteger(row.points)),'Cerita terbit dan poin bulanan berupa agregat numerik');
+expect(Number.isInteger(snapshot.activeStreaks),'jumlah streak harian aktif berupa agregat numerik');
 
 const adminSnapshot=await admin.send('/api/pfriends/admin/dashboard');
 expect(JSON.stringify(snapshot.kpis)===JSON.stringify(adminSnapshot.kpiActuals),'nilai KPI sama dengan sumber resmi dasbor Admin');

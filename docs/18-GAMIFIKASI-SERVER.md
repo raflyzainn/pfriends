@@ -1,11 +1,11 @@
 # Gamifikasi Server-side
 
-Status per 19 Agustus 2026: poin, tier, streak mingguan, badge, leaderboard, Koin Tukar, reward, penukaran, dan agregat gamifikasi dihitung atau diproses oleh PocketBase. Frontend hanya membaca hasil dan mengirim perintah.
+Status per 27 Agustus 2026: poin, tier, streak harian, badge, leaderboard, Koin Tukar, reward, penukaran, dan agregat gamifikasi dihitung atau diproses oleh PocketBase. Frontend hanya membaca hasil dan mengirim perintah.
 
 ## Sumber kebenaran
 
 - `verified_point_activities`: ledger poin server dengan sumber `EVIDENCE` untuk bukti yang disetujui Verifikator dan `DEMO_SEED` untuk akun demo. Entri aktif berstatus `AWARDED`; pencabutan Admin mengubahnya menjadi `REVOKED` beserta alasan dan aktor.
-- `gamification_profiles`: proyeksi total poin, tier, streak, dan identitas leaderboard per Awardee.
+- `gamification_profiles`: proyeksi total poin, tier, streak harian, streak mingguan internal, dan identitas leaderboard per Awardee.
 - `badges`: katalog 14 badge.
 - `awardee_badges`: hasil evaluasi badge per Awardee.
 - `coin_transactions` dan `coin_accounts`: ledger koin append-only dan proyeksi saldo.
@@ -20,7 +20,9 @@ Endpoint yang digunakan UI:
 - `GET /api/pfriends/achievements` dan `POST /api/pfriends/redemptions` untuk Pencapaian Awardee;
 - `GET /api/pfriends/admin/redemptions` dan endpoint `transition` untuk pemrosesan Admin.
 
-Tier dihitung pada ambang 0, 25, 50, 100, dan 150 poin. Pekan streak dimulai Selasa pukul 00.00 WIB. Profil dan badge direkonsiliasi dari ledger sehingga nilai agregat dapat dibangun ulang.
+Tier dihitung pada ambang 0, 25, 50, 100, dan 150 poin. Satu hari streak aktif jika minimal satu ledger berstatus `AWARDED` memiliki poin positif dengan `awardedAt` pada tanggal WIB tersebut. Beberapa poin pada hari yang sama tetap dihitung satu hari. Streak berjalan masih dapat dilanjutkan jika poin terakhir masuk kemarin, lalu menjadi nol setelah satu hari penuh terlewat. Entri bernilai nol, dicabut, atau bertanggal masa depan tidak dihitung.
+
+Streak mingguan lama tetap dihitung dari tanggal kegiatan untuk evaluasi lencana `BDG_RANTAI_PEKAN`. Syarat lencana tetap enam pekan dan tidak berubah menjadi enam hari.
 
 ## Pusat Aksi
 
@@ -42,6 +44,7 @@ Jalankan PocketBase terlebih dahulu, kemudian:
 
 ```powershell
 npm run verify:backend
+npm run verify:streak
 npm run verify:compile
 npm run build
 ```

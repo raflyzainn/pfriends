@@ -19,6 +19,8 @@ class GamificationStore {
 	loading = $state(false);
 	busy = $state(null);
 	streakWeeks = $state(0);
+	streakDays = $state(0);
+	activeToday = $state(false);
 	error = $state(null);
 
 	tier = $derived.by(() => {
@@ -67,6 +69,8 @@ class GamificationStore {
 			this.badges = result.badges;
 			this.tiers = result.tiers;
 			this.streakWeeks = result.profile.currentStreakWeeks || 0;
+			this.streakDays = result.profile.currentStreakDays || 0;
+			this.activeToday = Boolean(result.profile.activeToday);
 			this.coins = result.wallet.balance || 0;
 			this.dailyUsage = result.dailyUsage;
 			this.actions = result.actions;
@@ -80,7 +84,7 @@ class GamificationStore {
 
 	reset(clearError = true) {
 		this.points = 0; this.coins = 0; this.ledger = []; this.dailyUsage = []; this.actions = [];
-		this.badges = []; this.tiers = []; this.streakWeeks = 0; this.busy = null;
+		this.badges = []; this.tiers = []; this.streakWeeks = 0; this.streakDays = 0; this.activeToday = false; this.busy = null;
 		if (clearError) this.error = null;
 	}
 

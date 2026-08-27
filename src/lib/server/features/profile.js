@@ -1,6 +1,7 @@
 import { apiRoute } from '../api-router.js';
 import { ApiError } from '../auth.js';
 import { sendBatch } from '../batch.js';
+import { dailyProfileStatus } from '../streak.js';
 import { recordId } from '../registration.js';
 
 const OPTIONAL_TYPES = [
@@ -221,6 +222,7 @@ apiRoute('GET', '/directory', async (ctx) => {
 	const all = eligible.map((awardee) => {
 		const profile = profileBy.get(awardee.id) || {}, showBusiness = awardee.community === 'WOMENPRENEUR' && awardee.businessConsentActive,
 			showAvatar = awardee.avatarConsentActive, showContact = awardee.contactConsentActive && awardee.openToMentoring;
+		const daily = dailyProfileStatus(profile);
 		return {
 			id: awardee.legacyId, fullName: awardee.fullName, community: awardee.community, chapterId: awardee.chapterId,
 			city: awardee.city || '', university: awardee.university || '', graduationYear: Number(awardee.graduationYear || 0) || null,
@@ -232,7 +234,8 @@ apiRoute('GET', '/directory', async (ctx) => {
 				description: awardee.businessDescription || '', contact: awardee.businessContact || '', employees: Number(awardee.businessEmployees || 0),
 				growthPercent: Number(awardee.businessGrowthPercent || 0), products: grouped(productsBy, awardee.id).map((row) => ({ id: row.id, name: row.name, category: row.category, description: row.description || '', image: row.image || '', collectionName: 'business_products' }))
 			} : null,
-			points: Number(profile.totalPoints || 0), tier: profile.tier || 'NEWCOMER', streakWeeks: Number(profile.currentStreakWeeks || 0),
+			points: Number(profile.totalPoints || 0), tier: profile.tier || 'NEWCOMER', streakDays: daily.currentStreakDays,
+			activeToday: daily.activeToday, streakWeeks: Number(profile.currentStreakWeeks || 0),
 			badgeCodes: grouped(badgesBy, awardee.id).map((row) => row.badgeCode), joinedAt: awardee.joinedAt
 		};
 	});

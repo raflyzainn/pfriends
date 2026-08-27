@@ -1,6 +1,6 @@
 # Migrasi Dasbor Awardee ke PocketBase
 
-Dokumen ini mencatat implementasi penuh route `/awardee` per 24 Agustus 2026.
+Dokumen ini mencatat implementasi penuh route `/awardee` per 27 Agustus 2026.
 
 ## Hasil migrasi
 
@@ -14,6 +14,8 @@ Dasbor tidak lagi memuat `catalog`, `editorial`, repository gabungan, Dexie, ata
 | Ringkasan Cerita milik Awardee | `GET /api/pfriends/stories/mine` |
 
 `src/lib/stores/awardee-dashboard.svelte.js` menggabungkan tiga sumber konten PocketBase untuk halaman dan badge navigasi. Pengambilan paralel dideduplikasi agar layout dan halaman tidak mengirim permintaan ganda saat pertama dibuka. Jika PocketBase gagal, UI menampilkan kesalahan dan tidak menggantinya dengan konten peraga.
+
+Chip aktivitas memakai streak harian dari tanggal `awardedAt` WIB pada ledger poin sah. UI membedakan Awardee yang sudah menerima poin hari ini, masih dapat melanjutkan streak dari kemarin, dan belum memiliki streak berjalan. Tanggal kegiatan tidak dipakai untuk indikator ini karena keputusan produk mengukur hari ketika poin benar-benar masuk.
 
 ## Empty state dan label DUMMY
 
@@ -31,6 +33,7 @@ Jalankan PocketBase yang sudah dimigrasikan dan di-seed, lalu:
 
 ```powershell
 npm run verify:awardee-dashboard
+npm run verify:streak
 npm run verify:compile
 npm run build
 ```
