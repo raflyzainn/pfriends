@@ -28,6 +28,7 @@ ok(events.items.every((item) => ['TERJADWAL','BERLANGSUNG','SELESAI','DIUSULKAN'
 ok(Array.isArray(broadcasts.broadcasts) && broadcasts.broadcasts.every((item) => item.status === 'TERKIRIM'), 'Kabar dashboard memuat status nonpublik.');
 ok(Array.isArray(stories.items) && stories.items.every((item) => item.authorId === pb.authStore.record.awardeeId), 'Ringkasan Cerita memuat Cerita pengguna lain.');
 ok(gamification.profile?.awardeeId === pb.authStore.record.awardeeId, 'Gamifikasi dashboard tidak cocok dengan akun Awardee.');
+ok(Number.isInteger(gamification.profile.currentStreakDays) && typeof gamification.profile.activeToday === 'boolean', 'Dashboard tidak menerima status streak harian dari backend.');
 
 const root = new PocketBase(url);
 root.autoCancellation(false);

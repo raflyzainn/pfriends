@@ -16,6 +16,7 @@ ok(first.totalItems > 12 && first.totalPages > 1, 'Direktori tidak memuat profil
 ok(first.items.every((item) => !('email' in item) && !('user' in item)), 'Response direktori membocorkan email atau relasi auth.');
 ok(first.items.every((item) => !item.whatsapp || item.openToMentoring), 'WhatsApp muncul pada profil yang tidak membuka mentoring.');
 ok(first.items.every((item) => item.id && item.fullName && item.community && item.chapterId), 'Identitas aman direktori tidak lengkap.');
+ok(first.items.every((item) => Number.isInteger(item.streakDays) && typeof item.activeToday === 'boolean'), 'Jejaring tidak memakai proyeksi streak harian.');
 ok(first.stats.active === first.stats.sobi + first.stats.womenpreneur, 'Statistik komunitas tidak konsisten.');
 ok(first.facets.cities.length > 0 && first.facets.skills.length > 0, 'Facet kota/keahlian tidak berasal dari profil backend.');
 

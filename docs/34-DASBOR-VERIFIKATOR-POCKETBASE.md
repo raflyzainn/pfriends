@@ -6,7 +6,7 @@ Halaman `/verifikator` menjadi ringkasan operasional untuk melihat performa Awar
 
 ## Endpoint
 
-`GET /api/pfriends/verifier/dashboard` hanya menerima token user dengan role `VERIFIER`. Field lama seperti total poin, jumlah Awardee, tier, streak, badge, distribusi chapter, dan leaderboard tetap tersedia.
+`GET /api/pfriends/verifier/dashboard` hanya menerima token user dengan role `VERIFIER`. Field lama seperti total poin, jumlah Awardee, tier, streak, badge, distribusi chapter, dan leaderboard tetap tersedia. `activeStreaks` sekarang menghitung Awardee dengan streak harian yang masih berjalan berdasarkan tanggal poin masuk WIB.
 
 Respons juga membawa:
 
@@ -29,6 +29,7 @@ Jalankan:
 
 ```bash
 npm run verify:verifier-dashboard
+npm run verify:streak
 npm run verify:compile
 npm run verify:domain
 npm run verify:seed

@@ -1,23 +1,7 @@
 import { recordId } from './registration.js';
 import { ApiError } from './auth.js';
-
-export function pfWeek(value) {
-	const date = new Date(value);
-	const local = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-	const day = Math.floor(Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) / 86400000);
-	return Math.floor((day - 5) / 7);
-}
-
-export function streakOf(entries, now = new Date()) {
-	const weeks = [...new Set(entries.filter((row) => Number(row.points) > 0).map((row) => pfWeek(row.occurredAt)))].sort((a, b) => a - b);
-	let longest = 0, run = 0, previous = null;
-	for (const week of weeks) { run = previous !== null && week === previous + 1 ? run + 1 : 1; longest = Math.max(longest, run); previous = week; }
-	const currentWeek = pfWeek(now);
-	if (previous === null || previous < currentWeek - 1) return { current: 0, longest };
-	let current = 1;
-	for (let index = weeks.length - 2; index >= 0 && weeks[index] === weeks[index + 1] - 1; index--) current++;
-	return { current, longest };
-}
+import { dailyStreakOf, streakOf } from './streak.js';
+export { dailyProfileStatus, dailyStreakOf, pfWeek, streakOf, wibDay } from './streak.js';
 
 function badgeCodes(entries, streak, tier, community) {
 	const counts = {};
@@ -80,12 +64,13 @@ export async function recalculateGamification(pb, userId) {
 		optionalOne(pb, 'gamification_profiles', pb.filter('awardee = {:id}', { id: awardee.id }))
 	]);
 	const total = entries.reduce((sum, row) => sum + Number(row.points || 0), 0);
-	const streak = streakOf(entries);
+	const weeklyStreak = streakOf(entries), dailyStreak = dailyStreakOf(entries);
 	const tier = tiers.filter((row) => total >= Number(row.threshold)).at(-1)?.level || 'NEWCOMER';
 	const now = new Date().toISOString();
-	const values = { awardee: awardee.id, user: userId, awardeeId: awardee.legacyId, fullName: awardee.fullName, community: awardee.community, chapterId: awardee.chapterId, totalPoints: total, tier, currentStreakWeeks: streak.current, longestStreakWeeks: streak.longest, lastActiveAt: entries.at(-1)?.occurredAt || '', recalculatedAt: now };
+	const lastPointAwardedAt = entries.filter((row) => Number(row.points) > 0 && row.awardedAt).map((row) => row.awardedAt).sort().at(-1) || '';
+	const values = { awardee: awardee.id, user: userId, awardeeId: awardee.legacyId, fullName: awardee.fullName, community: awardee.community, chapterId: awardee.chapterId, totalPoints: total, tier, currentStreakWeeks: weeklyStreak.current, longestStreakWeeks: weeklyStreak.longest, currentStreakDays: dailyStreak.current, longestStreakDays: dailyStreak.longest, lastPointAwardedAt, lastActiveAt: entries.at(-1)?.occurredAt || '', recalculatedAt: now };
 	const savedProfile = await saveProfile(pb, profile, values);
-	const activeCodes = badgeCodes(entries, streak.current, tier, awardee.community);
+	const activeCodes = badgeCodes(entries, weeklyStreak.current, tier, awardee.community);
 	const byCode = new Map(existingAwards.map((row) => [row.badgeCode, row]));
 	for (const code of activeCodes) {
 		const existing = byCode.get(code), badge = badges.find((row) => row.code === code);
@@ -93,7 +78,7 @@ export async function recalculateGamification(pb, userId) {
 		await activateBadge(pb, existing, awardee, userId, badge, code, now);
 	}
 	for (const row of existingAwards) if (!activeCodes.includes(row.badgeCode) && row.status === 'ACTIVE') await pb.collection('awardee_badges').update(row.id, { status: 'REVOKED', revokedAt: now });
-	return { awardee, profile: savedProfile, entries, tiers, activeCodes };
+	return { awardee, profile: { ...savedProfile, currentStreakDays: dailyStreak.current, longestStreakDays: dailyStreak.longest, lastPointAwardedAt, activeToday: dailyStreak.activeToday }, entries, tiers, activeCodes };
 }
 
 export async function pointAction(pb, code) {

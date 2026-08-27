@@ -260,6 +260,7 @@ try {
 	ok(reviewed.status === 'APPROVED', 'Approval Bukti Keaktifan tidak tersimpan.');
 	const gamification = await request(appBase, '/api/pfriends/gamification/me', { token: awardee.token });
 	ok(gamification.ledger.some((row) => row.submission === submission.id), 'Ledger tidak mencatat bukti yang disetujui.');
+	ok(gamification.profile.currentStreakDays === 1 && gamification.profile.activeToday === true && Boolean(gamification.profile.lastPointAwardedAt), 'Streak harian tidak mengikuti tanggal poin sah masuk pada WIB.');
 	const submissionDetail = await request(appBase, `/api/pfriends/activity-submissions/${submission.id}`, { token: awardee.token });
 	ok(submissionDetail.events.some((row) => row.eventType === 'RESUBMITTED'), 'Timeline Bukti Keaktifan tidak memuat kirim ulang.');
 

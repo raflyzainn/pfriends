@@ -52,6 +52,31 @@ function activeLedger(app, awardeeId) {
 	);
 }
 
+function wibDay(value) {
+	const date = new Date(value);
+	if (Number.isNaN(date.getTime())) return null;
+	const local = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+	return Math.floor(Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) / 86400000);
+}
+
+function dailyStreakOf(entries, now) {
+	const today = wibDay(now || new Date());
+	const days = [...new Set(entries
+		.filter((row) => row.getInt('points') > 0)
+		.map((row) => wibDay(row.getString('awardedAt')))
+		.filter((day) => day !== null && day <= today))].sort((a, b) => a - b);
+	let longest = 0, run = 0, previous = null;
+	for (const day of days) {
+		run = previous !== null && day === previous + 1 ? run + 1 : 1;
+		if (run > longest) longest = run;
+		previous = day;
+	}
+	if (previous === null || previous < today - 1) return { current: 0, longest, activeToday: false };
+	let current = 1;
+	for (let index = days.length - 2; index >= 0 && days[index] === days[index + 1] - 1; index--) current++;
+	return { current, longest, activeToday: previous === today };
+}
+
 function dailyUsage(app, awardeeId, value) {
 	const periodKey = new Date(value || new Date()).toISOString().slice(0, 10);
 	const entries = app.findRecordsByFilter(
@@ -107,6 +132,7 @@ function ensureProfile(app, awardee, pointsOverride) {
 	const entries = activeLedger(app, awardeeId);
 	const total = pointsOverride === undefined ? entries.reduce((sum, row) => sum + row.getInt('points'), 0) : Number(pointsOverride);
 	const streak = streakOf(entries, new Date());
+	const dailyStreak = dailyStreakOf(entries, new Date());
 	const tier = tierFor(app, total);
 	profile.set('awardee', awardee.id);
 	profile.set('user', userId);
@@ -118,6 +144,10 @@ function ensureProfile(app, awardee, pointsOverride) {
 	profile.set('tier', tier);
 	profile.set('currentStreakWeeks', streak.current);
 	profile.set('longestStreakWeeks', streak.longest);
+	profile.set('currentStreakDays', dailyStreak.current);
+	profile.set('longestStreakDays', dailyStreak.longest);
+	const awarded = entries.filter((row) => row.getInt('points') > 0 && row.getString('awardedAt')).map((row) => row.getString('awardedAt')).sort();
+	profile.set('lastPointAwardedAt', awarded.length ? awarded[awarded.length - 1] : '');
 	profile.set('lastActiveAt', entries.length ? entries[entries.length - 1].getString('occurredAt') : '');
 	profile.set('recalculatedAt', new Date().toISOString());
 	app.save(profile);
@@ -147,4 +177,4 @@ function ensureAll(app) {
 	return rows.map((awardee) => ensureProfile(app, awardee));
 }
 
-module.exports = { CANONICAL_TIERS, tiers, tierFor, pfWeek, streakOf, activeLedger, dailyUsage, ensureProfile, ensureAll };
+module.exports = { CANONICAL_TIERS, tiers, tierFor, pfWeek, streakOf, wibDay, dailyStreakOf, activeLedger, dailyUsage, ensureProfile, ensureAll };
