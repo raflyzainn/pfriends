@@ -470,8 +470,8 @@
 				<p class="label-micro mt-0.5">Lencana</p>
 			</div>
 			<div>
-				<p class="numeric text-base font-bold text-ink-900">{anggotaDipilih.streakWeeks}</p>
-				<p class="label-micro mt-0.5">Pekan streak</p>
+				<p class="numeric text-base font-bold text-ink-900">{anggotaDipilih.streakDays}</p>
+				<p class="label-micro mt-0.5">Hari streak</p>
 			</div>
 		</div>
 

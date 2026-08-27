@@ -23,7 +23,7 @@ function mapAwardee(record, pb, token) {
 		id: record.id, fullName: record.fullName, avatar: avatarUrl, whatsapp: record.whatsapp || '',
 		email: `${record.id}@directory.invalid`, community: record.community, chapterId: record.chapterId,
 		status: 'AKTIF', points: record.points || 0, coins: 0, seasonPoints: 0,
-		streakWeeks: record.streakWeeks || 0, university: record.university || '', city: record.city || '',
+		streakWeeks: record.streakWeeks || 0, streakDays: record.streakDays || 0, university: record.university || '', city: record.city || '',
 		graduationYear: record.graduationYear || null, occupation: record.occupation || '', bio: record.bio || '',
 		skills: record.skills || [], badgeCodes: record.badgeCodes || [],
 		openToMentoring: Boolean(record.openToMentoring), consentActive: true,

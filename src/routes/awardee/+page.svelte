@@ -303,14 +303,19 @@
 
 			<div class="flex shrink-0 flex-wrap items-center gap-2">
 				<TierBadge tier={gamification.tier.level} size="md" />
-				{#if gamification.streakWeeks > 0}
-					<span
-						class="inline-flex items-center gap-1.5 rounded-chip border border-accent-300 bg-accent-100 px-2.5 py-1 text-xs font-semibold text-accent-700"
-					>
-						<Icon path={ICONS.fire} size={14} />
-						Aktif {frasaHitung(gamification.streakWeeks, 'minggu')} berturut-turut
-					</span>
-				{/if}
+				<span
+					class={`inline-flex items-center gap-1.5 rounded-chip border px-2.5 py-1 text-xs font-semibold ${gamification.activeToday ? 'border-accent-300 bg-accent-100 text-accent-700' : 'border-ink-200 bg-surface text-ink-600'}`}
+					title="Dihitung dari hari ketika poin sah masuk, berdasarkan waktu Indonesia Barat."
+				>
+					<Icon path={ICONS.fire} size={14} />
+					{#if gamification.activeToday}
+						Aktif {frasaHitung(gamification.streakDays, 'hari')} berturut-turut
+					{:else if gamification.streakDays > 0}
+						Streak {frasaHitung(gamification.streakDays, 'hari')}, raih poin hari ini
+					{:else}
+						Belum aktif hari ini
+					{/if}
+				</span>
 			</div>
 		</div>
 	</section>

@@ -102,6 +102,7 @@ const gamification = await applicant.send('/api/pfriends/gamification/me');
 ok(gamification.profile.totalPoints === 10, 'Total poin server tidak berasal dari ledger terverifikasi.');
 ok(gamification.profile.tier === 'NEWCOMER', 'Tier server tidak sesuai ambang poin.');
 ok(gamification.profile.currentStreakWeeks === 1, 'Streak mingguan server tidak dihitung.');
+ok(gamification.profile.currentStreakDays === 1 && gamification.profile.activeToday === true, 'Streak harian tidak berasal dari tanggal poin masuk.');
 ok(gamification.ledger.some((item) => item.submission === submission.id && item.status === 'AWARDED'), 'Ledger server tidak memuat bukti yang disetujui.');
 ok(gamification.badges.some((item) => item.code === 'BDG_LANGKAH_AWAL' && item.unlocked), 'Badge Langkah Awal tidak diberikan server.');
 
