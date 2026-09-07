@@ -11,6 +11,7 @@
 		"pb:serve": "node scripts/pocketbase/serve.mjs",
 		"pb:seed": "node scripts/pocketbase/seed-demo.mjs",
 		"pb:seed:forum": "node scripts/pocketbase/seed-forum-reference.mjs",
+		"pb:repair:forum": "node scripts/pocketbase/repair-forum-realtime.mjs",
 		"prepare": "svelte-kit sync || echo ''",
 		"verify:compile": "node scripts/verify/compile-all.mjs",
 		"verify:domain": "node scripts/verify/domain-test.mjs",

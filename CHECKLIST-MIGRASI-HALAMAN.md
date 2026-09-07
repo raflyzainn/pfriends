@@ -1,8 +1,8 @@
 # Checklist Migrasi Seluruh Halaman PFriends
 
-> Migrasi custom backend dari `pb_hooks` ke SvelteKit API selesai pada level lokal. Matriks 106 endpoint, lifecycle/realtime behavior, dan cron job berada di `docs/38-MATRIKS-MIGRASI-SVELTEKIT-API.md`: 104 item `SELESAI_LOKAL` dan 2 cron `BLOCKED_AUTOMATION`. Seluruh halaman memakai SvelteKit API atau built-in PocketBase untuk token file dan SSE Forum; production belum diuji.
+> Migrasi custom backend dari `pb_hooks` ke SvelteKit API selesai pada level lokal. Matriks 106 endpoint, lifecycle/realtime behavior, dan cron job berada di `docs/38-MATRIKS-MIGRASI-SVELTEKIT-API.md`: 104 item `SELESAI_LOKAL` dan 2 cron `BLOCKED_AUTOMATION`. Seluruh halaman memakai SvelteKit API atau built-in PocketBase untuk token file dan SSE Forum. Production baru diuji secara terbatas untuk schema/rule dan realtime Forum.
 
-Audit kode diperbarui 26 Agustus 2026. Tanda `[x]` berarti data utama halaman sudah menggunakan PocketBase melalui SvelteKit API atau built-in API yang disebut eksplisit. Tanda `[~]` berarti campuran PocketBase dan data lokal. Tanda `[ ]` berarti belum dimigrasikan dan harus terlihat sebagai `DUMMY` di UI. Halaman statis informasional ditandai terpisah karena tidak membutuhkan backend.
+Audit kode diperbarui 7 September 2026. Tanda `[x]` berarti data utama halaman sudah menggunakan PocketBase melalui SvelteKit API atau built-in API yang disebut eksplisit. Tanda `[~]` berarti campuran PocketBase dan data lokal. Tanda `[ ]` berarti belum dimigrasikan dan harus terlihat sebagai `DUMMY` di UI. Halaman statis informasional ditandai terpisah karena tidak membutuhkan backend.
 
 ## Publik dan autentikasi
 
@@ -29,7 +29,7 @@ Audit kode diperbarui 26 Agustus 2026. Tanda `[x]` berarti data utama halaman su
 - [x] `/awardee/kalender`: usulan, status keputusan, agenda, pendaftaran, kapasitas, bukti hadir, revisi, dan poin memakai PocketBase.
 - [x] `/awardee/gerakan`: usulan, partisipasi, laporan aksi, bukti terlindungi, status pemeriksaan, dan poin pemimpin memakai PocketBase.
 - [x] `/awardee/cerita` dan `/awardee/cerita/tulis`: draf, penyimpanan otomatis, unggah bukti, pengajuan, revisi, penerbitan ulang, dan status memakai PocketBase.
-- [x] `/awardee/forum`, `/verifikator/forum`, dan `/admin/forum`: kanal berbasis komunitas, pesan persisten, rate limit antispam, hard delete dengan hak pemilik/staf, picker seluruh emoji Unicode, reply inline dan navigasi konteks, presence, REST API, serta pembaruan realtime SSE memakai PocketBase; reference seeder production tersedia melalui `pb:seed:forum` dan tidak membawa data demo.
+- [x] `/awardee/forum`, `/verifikator/forum`, dan `/admin/forum`: kanal berbasis komunitas, pesan persisten, rate limit antispam, hard delete dengan hak pemilik/staf, picker seluruh emoji Unicode, reply inline dan navigasi konteks, presence, REST API, realtime SSE collection, reconnect, rekonsiliasi, serta polling fallback tiga detik; reference seeder dan repair production tersedia melalui `pb:seed:forum` dan `pb:repair:forum`. Realtime dua akun terhadap PocketBase production lulus tanpa reload pada 7 September 2026.
 
 ## Verifikator
 

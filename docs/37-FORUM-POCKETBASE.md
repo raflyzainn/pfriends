@@ -26,7 +26,16 @@ npm run pb:seed:forum -- --apply
 
 Perintah pertama adalah pratinjau dan tidak menulis data. Periksa nilai `target` serta ringkasannya sebelum menjalankan mode `--apply`. Menjalankan mode apply berulang kali tidak menduplikasi kanal atau pesan sambutan. Jangan memakai `npm run pb:seed` untuk production karena perintah tersebut khusus data demo lokal.
 
-Initial load dan seluruh mutation memakai `/api/pfriends/forum/**`. Setelah penyimpanan berhasil, hook menerbitkan custom SSE pada topic kanal. Hak subscription diperiksa kembali oleh `onRealtimeSubscribeRequest`. Store mendeduplikasi respons REST dan event SSE agar satu pesan tidak tampil dua kali.
+Initial load dan seluruh mutation memakai `/api/pfriends/forum/**`. Realtime memakai subscription collection bawaan PocketBase untuk `forum_messages`, `forum_reactions`, dan `forum_presences`. Rule list/view membatasi event sesuai role dan komunitas pengguna. Store mendeduplikasi respons REST dan event SSE agar satu pesan tidak tampil dua kali.
+
+Migration `1723969060_forum_realtime_repair.js` memastikan field `users.community`, melakukan backfill dari profil Awardee, dan memasang rule baca collection Forum yang diperlukan oleh subscription. Untuk target production yang belum menjalankan migration tersebut, periksa lalu terapkan repair idempoten berikut:
+
+```powershell
+npm run pb:repair:forum
+npm run pb:repair:forum -- --apply --confirm=friend-api.pertaminafoundation.org
+```
+
+SSE adalah jalur utama. Bila koneksi langsung gagal, UI menampilkan status pemulihan dan melakukan polling tiga detik tanpa meminta pengguna me-refresh halaman. Store mencoba menyambung ulang secara bertahap, melakukan rekonsiliasi 30 detik, serta memulihkan koneksi ketika tab kembali terlihat atau jaringan kembali online.
 
 Pesan maksimal 600 karakter. Kombinasi penulis dan `requestKey` unik membuat retry aman. Server membatasi maksimal enam pesan per 30 detik dan 30 pesan per sepuluh menit. Konten identik pada kanal yang sama juga ditolak selama dua menit. Pembatasan memakai riwayat PocketBase sehingga tidak bergantung pada state browser. Migration `1723969000_forum_replies_emoji.js` menambahkan relasi `replyTo` dan mengubah nilai reaksi menjadi teks Unicode. Balasan menyimpan referensi ke pesan langsung pada kanal yang sama. Endpoint konteks memuat pesan di sekitar referensi bila pesan asal belum ada pada halaman aktif.
 
@@ -38,7 +47,7 @@ Migration `1723969010_forum_message_moderation.js` menambahkan indeks moderasi d
 
 ## Batas saat ini
 
-Forum belum mencakup lampiran, tampilan thread bertingkat, mention/notifikasi, emoji gambar khusus, edit, hapus, moderasi, atau pengelolaan kanal. Reply dapat menunjuk pesan biasa maupun reply, tetapi selalu dirender satu tingkat agar alur kanal tetap ringkas. Karena tidak ada lampiran, integrasi Cloudflare R2 belum diperlukan. Queue baru diperlukan kelak untuk pekerjaan asinkron seperti pemindaian lampiran atau notifikasi pengguna offline.
+Forum belum mencakup lampiran, tampilan thread bertingkat, mention/notifikasi, emoji gambar khusus, edit, atau pengelolaan kanal dari UI. Reply dapat menunjuk pesan biasa maupun reply, tetapi selalu dirender satu tingkat agar alur kanal tetap ringkas. Karena tidak ada lampiran, integrasi Cloudflare R2 belum diperlukan. Queue baru diperlukan kelak untuk pekerjaan asinkron seperti pemindaian lampiran atau notifikasi pengguna offline.
 
 ## Verifikasi
 
@@ -50,4 +59,4 @@ npm run verify:compile
 npm run build
 ```
 
-Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, pembatasan pesan duplikat, reply, penolakan reply lintas kanal, endpoint konteks, hak hapus dan penghapusan langsung, validasi emoji Unicode, toggle reaksi, heartbeat, dan pengiriman event SSE.
+Pengujian Forum mencakup RBAC lintas komunitas, pengumuman staf, identitas server, idempotensi, pembatasan pesan duplikat, reply, penolakan reply lintas kanal, endpoint konteks, hak hapus dan penghapusan langsung, validasi emoji Unicode, toggle reaksi, heartbeat, dan event SSE collection. Pada 7 September 2026, Playwright dengan dua sesi Awardee terpisah membuktikan pesan dua arah muncul tanpa reload pada production PocketBase; pesan uji kemudian dihapus dan penghapusannya ikut tersinkron.
