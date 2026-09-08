@@ -4,6 +4,7 @@ import { ApiError, requirePrincipal } from '$lib/server/auth.js';
 import { sendBatch } from '$lib/server/batch.js';
 import { apiFailure, noStoreHeaders } from '$lib/server/response.js';
 import { CONSENT_VERSION, profileFields, recordId, text, validateRegistration } from '$lib/server/registration.js';
+import { passwordChecks } from '$lib/domain/constants/password-policy.js';
 
 async function exists(pb, collection, filter) {
 	try { await pb.collection(collection).getFirstListItem(filter, { fields: 'id' }); return true; }
@@ -27,7 +28,10 @@ export async function POST({ request }) {
 		const email = text(form.get('email')).toLowerCase();
 		const password = String(form.get('password') || '');
 		if (!/^\S+@\S+\.\S+$/.test(email)) throw new ApiError(400, 'Alamat email tidak sah.');
-		if (password.length < 8) throw new ApiError(400, 'Kata sandi minimal delapan karakter.');
+		const passwordStatus = passwordChecks(password);
+		if (!passwordStatus.length) throw new ApiError(400, 'Kata sandi minimal delapan karakter.');
+		if (!passwordStatus.uppercase) throw new ApiError(400, 'Kata sandi harus memiliki huruf kapital.');
+		if (!passwordStatus.number) throw new ApiError(400, 'Kata sandi harus memiliki angka.');
 		if (password !== String(form.get('passwordConfirm') || '')) throw new ApiError(400, 'Konfirmasi kata sandi tidak cocok.');
 		const fields = profileFields(form, normalized);
 		const pb = await createAdminPocketBase();
