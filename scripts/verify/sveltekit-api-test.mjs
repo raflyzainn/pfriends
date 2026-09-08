@@ -278,6 +278,9 @@ try {
 	ok(realtimeReceived,'Subscription collection tidak menerima pesan Forum dari SvelteKit API.');
 	const forumPage = await request(appBase, `/api/pfriends/forum/channels/${encodeURIComponent(channel.slug)}/messages`, { token: awardee.token });
 	ok(forumPage.items.some((row) => row.id === message.id), 'Pesan Forum baru tidak muncul pada daftar kanal.');
+	const forumSearch = await request(appBase, `/api/pfriends/forum/channels/${encodeURIComponent(channel.slug)}/search?q=${encodeURIComponent(`integrasi lokal ${suffix}`)}`, { token: awardee.token });
+	ok(forumSearch.items.some((row) => row.id === message.id) && forumSearch.totalItems >= 1, 'Pencarian per kanal tidak menemukan pesan yang sesuai.');
+	await request(appBase, `/api/pfriends/forum/channels/${encodeURIComponent(channel.slug)}/search?q=a`, { token: awardee.token }, 400);
 	const context = await request(appBase, `/api/pfriends/forum/messages/${message.id}/context`, { token: awardee.token });
 	ok(context.items.some((row) => row.id === message.id), 'Konteks pesan Forum tidak memuat pesan target.');
 	const emojiSource = await readFile(resolve(root, 'pocketbase/pb_hooks/forum-emoji-allowlist.js'), 'utf8');

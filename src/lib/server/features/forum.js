@@ -22,6 +22,25 @@ apiRoute('GET', '/forum/channels/{slug}/messages', async (ctx) => {
 	const before = text(ctx.url.searchParams.get('before')), limit = Math.min(50, Math.max(1, Number(ctx.url.searchParams.get('perPage') || 50))), filter = before ? pb.filter('channel = {:channel} && sentAt < {:before}', { channel: channel.id, before }) : pb.filter('channel = {:channel}', { channel: channel.id }), page = await pb.collection('forum_messages').getList(1, limit + 1, { filter, sort: '-sentAt' }), hasMore = page.items.length > limit, visible = page.items.slice(0, limit).reverse(), [messages, reactions] = await messageData(pb);
 	return { items: visible.map((row) => messageDto(row, messages, reactions, principal)), hasMore, nextCursor: hasMore ? page.items[limit - 1].sentAt : '' };
 });
+apiRoute('GET', '/forum/channels/{slug}/search', async (ctx) => {
+	const { principal, pb } = await context(ctx), profile = await awardee(pb, principal), channel = await pb.collection('forum_channels').getFirstListItem(pb.filter('slug = {:slug}', { slug: ctx.params.slug }));
+	if (!canRead(principal, profile, channel)) throw new ApiError(403, 'Kanal tidak dapat diakses.');
+	const query = text(ctx.url.searchParams.get('q'));
+	if (query.length < 2) throw new ApiError(400, 'Kata pencarian minimal dua karakter.');
+	if (query.length > 80) throw new ApiError(400, 'Kata pencarian maksimal 80 karakter.');
+	const requestedLimit = Number(ctx.url.searchParams.get('perPage') || 20);
+	const limit = Number.isFinite(requestedLimit)
+		? Math.min(20, Math.max(1, Math.trunc(requestedLimit)))
+		: 20;
+	const page = await pb.collection('forum_messages').getList(1, limit, {
+		filter: pb.filter('channel = {:channel} && content ~ {:query}', { channel: channel.id, query }),
+		sort: '-sentAt'
+	});
+	return {
+		items: page.items.map((row) => ({ id: row.id, authorName: row.authorName, authorLabel: row.authorLabel, content: row.content, createdAt: row.sentAt })),
+		totalItems: page.totalItems
+	};
+});
 apiRoute('GET', '/forum/messages/{id}/context', async (ctx) => { const { principal, pb } = await context(ctx), profile = await awardee(pb, principal), target = await pb.collection('forum_messages').getOne(ctx.params.id), channel = await pb.collection('forum_channels').getOne(target.channel); if (!canRead(principal, profile, channel)) throw new ApiError(403, 'Pesan tidak dapat diakses.'); const [messages, reactions] = await messageData(pb), sorted = messages.filter((row) => row.channel === channel.id).sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt)), index = sorted.findIndex((row) => row.id === target.id), rows = sorted.slice(Math.max(0, index - 20), index + 21); return { channelSlug: channel.slug, items: rows.map((row) => messageDto(row, messages, reactions, principal)) }; });
 apiRoute('POST', '/forum/channels/{slug}/messages', async (ctx) => {
 	const { principal, pb } = await context(ctx), profile = await awardee(pb, principal), channel = await pb.collection('forum_channels').getFirstListItem(pb.filter('slug = {:slug}', { slug: ctx.params.slug })); if (!canWrite(principal, profile, channel)) throw new ApiError(403, 'Anda tidak dapat menulis di kanal ini.'); const body = await ctx.body(), content = text(body.content), requestKey = text(body.requestKey), replyTo = text(body.replyTo); if (!content || content.length > 600) throw new ApiError(400, 'Pesan wajib berisi 1 sampai 600 karakter.'); if (!requestKey) throw new ApiError(400, 'requestKey wajib diisi.');

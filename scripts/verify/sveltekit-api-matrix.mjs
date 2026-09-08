@@ -85,6 +85,7 @@ const completedRoutes = new Set([
 	,'GET /api/pfriends/admin/stories/{id}'
 	,'GET /api/pfriends/forum/channels'
 	,'GET /api/pfriends/forum/channels/{slug}/messages'
+	,'GET /api/pfriends/forum/channels/{slug}/search'
 	,'GET /api/pfriends/forum/messages/{id}/context'
 	,'POST /api/pfriends/forum/channels/{slug}/messages'
 	,'POST /api/pfriends/forum/messages/{id}/reaction'
@@ -156,7 +157,7 @@ const disallowedCollections = directCollections.filter((item) => !allowedRealtim
 if (disallowedCollections.length) throw new Error(`Frontend masih mengakses collection langsung:\n${disallowedCollections.map((item) => `${item.path}: ${item.collection}.${item.operation}`).join('\n')}`);
 const serveSource = await readFile(resolve(root, 'scripts/pocketbase/serve.mjs'), 'utf8');
 if (serveSource.includes('--hooksDir=pocketbase/pb_hooks')) throw new Error('pb:serve masih mengaktifkan custom pb_hooks.');
-if (completedRoutes.size !== 95) throw new Error(`Daftar endpoint selesai berubah: diharapkan 95, ditemukan ${completedRoutes.size}.`);
+if (completedRoutes.size !== 96) throw new Error(`Daftar endpoint selesai berubah: diharapkan 96, ditemukan ${completedRoutes.size}.`);
 
 for (const file of files) {
 	const source = await readFile(resolve(hooksDir, file), 'utf8');
