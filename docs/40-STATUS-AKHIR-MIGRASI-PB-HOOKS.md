@@ -1,6 +1,6 @@
 # Status Akhir Migrasi `pb_hooks`
 
-Tanggal audit: 26 Agustus 2026.
+Tanggal audit: 7 September 2026.
 
 ## Sudah selesai lokal
 
@@ -11,7 +11,7 @@ Tanggal audit: 26 Agustus 2026.
 - [x] Bukti Keaktifan, timeline review, revisi, approval, ledger poin, dan pencabutan poin.
 - [x] Kabar, durasi baca, tanggapan CTA, publikasi, jadwal manual, dan poin engagement.
 - [x] Kalender kegiatan, usulan, keputusan, registrasi peserta, dan transisi status.
-- [x] Forum kanal, pesan, konteks, reaksi, hapus, presence, dan rule SSE.
+- [x] Forum kanal, pesan, konteks, reaksi, hapus, presence, rule SSE collection, reconnect, dan polling fallback.
 - [x] Gamifikasi, leaderboard, tier dinamis, preview dampak, optimistic concurrency, dan audit.
 - [x] Reward, wallet koin, penukaran atomik, workflow fulfillment, refund, arsip, dan hapus.
 - [x] Gerakan, revisi usulan, join, laporan leader/participant, review, poin, dan penyelesaian.
@@ -23,11 +23,12 @@ Tanggal audit: 26 Agustus 2026.
 - [x] PocketBase lokal berjalan dengan `pocketbase/pb_no_hooks`.
 - [x] Migration boundary menutup direct write yang sebelumnya bergantung lifecycle hook.
 - [x] Matrix audit menemukan 106 item: 104 `SELESAI_LOKAL`, 2 `BLOCKED_AUTOMATION`.
-- [x] E2E fresh database tanpa hook: 200 asersi lulus.
+- [x] E2E fresh database tanpa hook: 208 asersi lulus.
+- [x] E2E Playwright Forum memakai dua akun Awardee dan PocketBase production: pesan dua arah tampil otomatis tanpa reload, lalu pesan uji dibersihkan.
 
 ## Belum selesai
 
-- [ ] E2E terhadap PocketBase production. Tidak dijalankan agar tidak membaca atau mengubah data production tanpa izin terpisah.
+- [ ] E2E penuh seluruh fitur terhadap PocketBase production. Validasi production saat ini baru mencakup repair schema/rule Forum dan realtime dua akun yang diizinkan terpisah.
 - [ ] Deployment SvelteKit API ke Cloudflare Pages beserta secret production.
 - [ ] Aktivasi dan validasi Microsoft Entra SSO. Password staf masih dapat dipakai ketika `PB_REQUIRE_STAFF_SSO=0`.
 - [ ] Pengujian upload dan akses file terhadap Cloudflare R2 production.

@@ -1,6 +1,13 @@
 <script>
 	import { untrack } from 'svelte';
+	import Icon from './Icon.svelte';
+	import { ICONS } from '$lib/data/icons.js';
 	import { CHAPTERS, COMMUNITIES, CommunityType } from '$lib/domain/constants/community.js';
+	import {
+		PASSWORD_REQUIREMENTS,
+		isNewPasswordValid,
+		passwordChecks
+	} from '$lib/domain/constants/password-policy.js';
 	import { PROGRAM_PILLARS, REGISTRATION_CONSENT_STATEMENT } from '$lib/domain/constants/registration.js';
 
 	let {
@@ -17,6 +24,8 @@
 	let whatsapp = $state(defaults.whatsapp ?? '');
 	let password = $state('');
 	let passwordConfirm = $state('');
+	let showPassword = $state(false);
+	let showPasswordConfirm = $state(false);
 	let community = $state(defaults.community ?? CommunityType.SOBI);
 	let programPillar = $state(defaults.programPillar ?? PROGRAM_PILLARS[0].id);
 	let batch = $state(defaults.batch ?? CHAPTERS[0].id);
@@ -29,9 +38,11 @@
 	let consent = $state(false);
 	let files = $state([]);
 	let validationError = $state('');
+	const passwordStatus = $derived(passwordChecks(password));
 
 	const fieldClass =
 		'mt-2 min-h-11 w-full rounded-control border border-ink-200 bg-white px-3 py-2 text-sm text-heading outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100 disabled:bg-ink-50';
+	const PASSWORD_PATTERN = '(?=.*[A-Z])(?=.*[0-9]).{8,}';
 
 	function changedFiles(event) {
 		files = [...(event.currentTarget?.files ?? [])];
@@ -40,8 +51,8 @@
 	async function send(event) {
 		event.preventDefault();
 		validationError = '';
-		if (create && password.length < 8) {
-			validationError = 'Kata sandi minimal delapan karakter.';
+		if (create && !isNewPasswordValid(password)) {
+			validationError = 'Kata sandi harus minimal 8 karakter serta memiliki huruf kapital dan angka.';
 			return;
 		}
 		if (create && password !== passwordConfirm) {
@@ -97,49 +108,129 @@
 
 	<div class="grid gap-5 sm:grid-cols-2">
 		<label class="block sm:col-span-2">
-			<span class="text-sm font-semibold text-ink-800">Nama lengkap</span>
+			<span class="text-sm font-semibold text-ink-800">Nama lengkap <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 			<input class={fieldClass} bind:value={fullName} required minlength="3" autocomplete="name" />
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Email</span>
+			<span class="text-sm font-semibold text-ink-800">Email <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 			<input class={fieldClass} type="email" bind:value={email} required disabled={!create} autocomplete="email" />
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Nomor WhatsApp</span>
+			<span class="text-sm font-semibold text-ink-800">Nomor WhatsApp <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 			<input class={fieldClass} bind:value={whatsapp} required inputmode="tel" placeholder="08xxxxxxxxxx" />
 		</label>
 		{#if create}
-			<label class="block">
-				<span class="text-sm font-semibold text-ink-800">Kata sandi</span>
-				<input class={fieldClass} type="password" bind:value={password} required minlength="8" autocomplete="new-password" />
-			</label>
-			<label class="block">
-				<span class="text-sm font-semibold text-ink-800">Konfirmasi kata sandi</span>
-				<input class={fieldClass} type="password" bind:value={passwordConfirm} required minlength="8" autocomplete="new-password" />
-			</label>
+			<div class="block">
+				<label for="registration-password" class="text-sm font-semibold text-ink-800">Kata sandi <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></label>
+				<div class="relative">
+					<input
+						id="registration-password"
+						class="{fieldClass} pr-12"
+						type={showPassword ? 'text' : 'password'}
+						bind:value={password}
+						required
+						minlength="8"
+						pattern={PASSWORD_PATTERN}
+						autocomplete="new-password"
+						aria-describedby="password-requirements"
+					/>
+					<button
+						type="button"
+						class="absolute top-2 right-1 inline-flex h-9 w-10 items-center justify-center rounded-control text-ink-500 transition-colors hover:bg-ink-50 hover:text-heading focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+						aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+						aria-pressed={showPassword}
+						onclick={() => (showPassword = !showPassword)}
+					>
+						<Icon path={ICONS.eye} size={19} />
+						{#if showPassword}
+							<span class="absolute h-px w-5 rotate-45 bg-current" aria-hidden="true"></span>
+						{/if}
+					</button>
+				</div>
+				<ul id="password-requirements" class="mt-3 flex flex-col gap-2" aria-live="polite">
+					{#each PASSWORD_REQUIREMENTS as requirement (requirement.id)}
+						{@const fulfilled = passwordStatus[requirement.id]}
+						<li class="flex items-center gap-2 text-xs font-medium {fulfilled ? 'text-green-700' : 'text-ink-500'}">
+							{#if fulfilled}
+								<Icon path={ICONS.checkCircle} size={17} />
+							{:else}
+								<span class="h-[17px] w-[17px] shrink-0 rounded-full border border-ink-300" aria-hidden="true"></span>
+							{/if}
+							<span>{requirement.label}</span>
+						</li>
+					{/each}
+				</ul>
+			</div>
+			<div class="block">
+				<label for="registration-password-confirm" class="text-sm font-semibold text-ink-800">Konfirmasi kata sandi <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></label>
+				<div class="relative">
+					<input
+						id="registration-password-confirm"
+						class="{fieldClass} pr-12"
+						type={showPasswordConfirm ? 'text' : 'password'}
+						bind:value={passwordConfirm}
+						required
+						minlength="8"
+						autocomplete="new-password"
+						aria-describedby="password-match-status"
+					/>
+					<button
+						type="button"
+						class="absolute top-2 right-1 inline-flex h-9 w-10 items-center justify-center rounded-control text-ink-500 transition-colors hover:bg-ink-50 hover:text-heading focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+						aria-label={showPasswordConfirm ? 'Sembunyikan konfirmasi kata sandi' : 'Tampilkan konfirmasi kata sandi'}
+						aria-pressed={showPasswordConfirm}
+						onclick={() => (showPasswordConfirm = !showPasswordConfirm)}
+					>
+						<Icon path={ICONS.eye} size={19} />
+						{#if showPasswordConfirm}
+							<span class="absolute h-px w-5 rotate-45 bg-current" aria-hidden="true"></span>
+						{/if}
+					</button>
+				</div>
+				<p
+					id="password-match-status"
+					class="mt-3 flex items-center gap-2 text-xs font-medium {passwordConfirm === ''
+						? 'text-ink-500'
+						: password === passwordConfirm
+							? 'text-green-700'
+							: 'text-red-700'}"
+					aria-live="polite"
+				>
+					{#if passwordConfirm === ''}
+						<span class="h-[17px] w-[17px] shrink-0 rounded-full border border-ink-300" aria-hidden="true"></span>
+						<span>Konfirmasi password belum diisi</span>
+					{:else if password === passwordConfirm}
+						<Icon path={ICONS.checkCircle} size={17} />
+						<span>Password sama</span>
+					{:else}
+						<Icon path={ICONS.xCircle} size={17} />
+						<span>Password belum sama</span>
+					{/if}
+				</p>
+			</div>
 		{/if}
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Komunitas</span>
-			<select class={fieldClass} bind:value={community}>
+			<span class="text-sm font-semibold text-ink-800">Komunitas <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
+			<select class={fieldClass} bind:value={community} required>
 				{#each COMMUNITIES as item}
 					<option value={item.id}>{item.akronim}: {item.nama}</option>
 				{/each}
 			</select>
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Program asal</span>
-			<select class={fieldClass} bind:value={programPillar}>
+			<span class="text-sm font-semibold text-ink-800">Program asal <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
+			<select class={fieldClass} bind:value={programPillar} required>
 				{#each PROGRAM_PILLARS as item}<option value={item.id}>{item.label}</option>{/each}
 			</select>
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Batch / chapter</span>
-			<select class={fieldClass} bind:value={batch}>
+			<span class="text-sm font-semibold text-ink-800">Batch / chapter <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
+			<select class={fieldClass} bind:value={batch} required>
 				{#each CHAPTERS as item}<option value={item.id}>{item.label}</option>{/each}
 			</select>
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Wilayah domisili</span>
+			<span class="text-sm font-semibold text-ink-800">Wilayah domisili <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 			<input class={fieldClass} bind:value={region} required />
 		</label>
 	</div>
@@ -149,24 +240,24 @@
 		<div class="mt-4 grid gap-5 sm:grid-cols-2">
 			{#if community === CommunityType.SOBI}
 				<label class="block">
-					<span class="text-sm font-semibold text-ink-800">Kampus asal</span>
+					<span class="text-sm font-semibold text-ink-800">Kampus asal <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} bind:value={university} required />
 				</label>
 				<label class="block">
-					<span class="text-sm font-semibold text-ink-800">Tahun kelulusan</span>
+					<span class="text-sm font-semibold text-ink-800">Tahun kelulusan <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} type="number" min="1980" max="2100" bind:value={graduationYear} required />
 				</label>
 			{:else}
 				<label class="block sm:col-span-2">
-					<span class="text-sm font-semibold text-ink-800">Nama usaha</span>
+					<span class="text-sm font-semibold text-ink-800">Nama usaha <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} bind:value={businessName} required />
 				</label>
 				<label class="block">
-					<span class="text-sm font-semibold text-ink-800">Sektor usaha</span>
+					<span class="text-sm font-semibold text-ink-800">Sektor usaha <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} bind:value={businessSector} required />
 				</label>
 				<label class="block">
-					<span class="text-sm font-semibold text-ink-800">Kota usaha</span>
+					<span class="text-sm font-semibold text-ink-800">Kota usaha <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} bind:value={businessCity} required />
 				</label>
 			{/if}
@@ -174,7 +265,7 @@
 	</div>
 
 	<label class="block">
-		<span class="text-sm font-semibold text-ink-800">Bukti sebagai Awardee</span>
+		<span class="text-sm font-semibold text-ink-800">Bukti sebagai Awardee {#if create}<span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span>{/if}</span>
 		<input
 			class="mt-2 block w-full rounded-control border border-ink-200 bg-white p-3 text-sm"
 			type="file"
@@ -190,7 +281,7 @@
 		<label class="flex items-start gap-3 rounded-control border border-ink-200 p-4">
 			<input class="mt-1 h-4 w-4" type="checkbox" bind:checked={consent} required />
 			<span class="text-sm leading-relaxed text-ink-700">
-				{REGISTRATION_CONSENT_STATEMENT}
+				{REGISTRATION_CONSENT_STATEMENT} <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span>
 			</span>
 		</label>
 	{/if}

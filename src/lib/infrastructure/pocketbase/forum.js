@@ -12,18 +12,26 @@ export async function setForumReaction(id,emoji,selected){try{client();const dat
 export async function deleteForumMessage(id){try{client();await apiRequest(`/api/pfriends/forum/messages/${id}`,{method:'DELETE'});return id}catch(error){throw new Error(pocketBaseMessage(error,'Pesan gagal dihapus.'))}}
 export async function heartbeatForum(slug){try{client();await apiRequest('/api/pfriends/forum/presence/heartbeat',{method:'POST',body:{channel:slug}})}catch(error){throw new Error(pocketBaseMessage(error,'Status kehadiran gagal diperbarui.'))}}
 export async function listForumPresence(){try{client();return(await apiRequest('/api/pfriends/forum/presence')).items||[]}catch(error){throw new Error(pocketBaseMessage(error,'Anggota daring gagal dimuat.'))}}
-export async function subscribeForum(topic,callback){
+export async function subscribeForum(topic,callback,onStatus=()=>{}){
 	const pb=client();
-	if(topic==='forum:presence')return pb.collection('forum_presences').subscribe('*',()=>callback({data:{type:'presence.changed'}}));
+	if(topic==='forum:presence'){
+		try{const unsubscribe=await pb.collection('forum_presences').subscribe('*',()=>callback({data:{type:'presence.changed'}}));onStatus('live');return unsubscribe}
+		catch(error){onStatus('failed',error);throw error}
+	}
 	const prefix='forum:channel:',channelId=topic.startsWith(prefix)?topic.slice(prefix.length):'';
 	if(!channelId)throw new Error('Topik Forum tidak dikenal.');
+	const subscriptions=[];
+	try{
 	const messageSubscription=await pb.collection('forum_messages').subscribe('*',async(event)=>{
 		if(event.record.channel!==channelId)return;
 		if(event.action==='delete'){callback({data:{type:'message.deleted',messageId:event.record.id}});return;}
-		if(event.action==='create'){try{const data=await apiRequest(`/api/pfriends/forum/messages/${event.record.id}/context`),row=(data.items||[]).find(item=>item.id===event.record.id);if(row)callback({data:{type:'message.created',message:row}})}catch(_){} }
+		if(event.action==='create'){try{const data=await apiRequest(`/api/pfriends/forum/messages/${event.record.id}/context`),row=(data.items||[]).find(item=>item.id===event.record.id);if(row)callback({data:{type:'message.created',message:row}});else onStatus('stale')}catch(error){onStatus('stale',error)} }
 	},{filter:`channel = "${channelId}"`});
+	subscriptions.push(messageSubscription);
 	const reactionSubscription=await pb.collection('forum_reactions').subscribe('*',async(event)=>{
-		try{const data=await apiRequest(`/api/pfriends/forum/messages/${event.record.message}/context`),row=(data.items||[]).find(item=>item.id===event.record.message);if(row?.channelId===channelId)callback({data:{type:'message.reactions',messageId:row.id,reactions:row.reactions.map(item=>({emoji:item.emoji,count:item.count}))}})}catch(_){}
+		try{const data=await apiRequest(`/api/pfriends/forum/messages/${event.record.message}/context`),row=(data.items||[]).find(item=>item.id===event.record.message);if(row?.channelId===channelId)callback({data:{type:'message.reactions',messageId:row.id,reactions:row.reactions.map(item=>({emoji:item.emoji,count:item.count}))}});else onStatus('stale')}catch(error){onStatus('stale',error)}
 	},{filter:`message.channel = "${channelId}"`});
-	return async()=>{await messageSubscription();await reactionSubscription()};
+	subscriptions.push(reactionSubscription);onStatus('live');
+	return async()=>{for(const unsubscribe of subscriptions)await unsubscribe()};
+	}catch(error){for(const unsubscribe of subscriptions)await unsubscribe().catch(()=>{});onStatus('failed',error);throw error}
 }

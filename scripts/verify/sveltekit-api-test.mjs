@@ -166,7 +166,7 @@ try {
 	const seed = buildSeed(), awardeeById = new Map(seed.awardees.map((row) => [row.id, row]));
 	const activeAwardees = seed.accounts.filter((row) => row.role === 'AWARDEE' && row.status === 'AKTIF');
 	activeAwardees.sort((a, b) => Number(awardeeById.get(b.awardeeId)?.points || 0) - Number(awardeeById.get(a.awardeeId)?.points || 0));
-	const awardeeAccount = activeAwardees[0], womenAccount = activeAwardees.find((row) => awardeeById.get(row.awardeeId)?.community === 'WOMENPRENEUR'), participantAccount = activeAwardees.find((row) => row.id !== awardeeAccount.id), verifierAccount = seed.accounts.find((row) => row.role === 'VERIFIER' && row.status === 'AKTIF'), adminAccount = seed.accounts.find((row) => row.role === 'ADMIN' && row.status === 'AKTIF');
+	const awardeeAccount = activeAwardees[0], womenAccount = activeAwardees.find((row) => awardeeById.get(row.awardeeId)?.community === 'WOMENPRENEUR'), participantAccount = activeAwardees.find((row) => row.id !== awardeeAccount.id && awardeeById.get(row.awardeeId)?.community === awardeeById.get(awardeeAccount.awardeeId)?.community), verifierAccount = seed.accounts.find((row) => row.role === 'VERIFIER' && row.status === 'AKTIF'), adminAccount = seed.accounts.find((row) => row.role === 'ADMIN' && row.status === 'AKTIF');
 	ok(Boolean(awardeeAccount && womenAccount && participantAccount && verifierAccount && adminAccount), 'Aktor demo lokal tidak lengkap.');
 
 	const login = (account) => request(appBase, '/api/pfriends/auth/login', { method: 'POST', body: { email: account.email, password: SANDI_DEMO } });
@@ -267,7 +267,15 @@ try {
 	const channels = await request(appBase, '/api/pfriends/forum/channels', { token: awardee.token });
 	const channel = channels.items.find((row) => row.canPost);
 	ok(Boolean(channel), 'Kanal Forum yang dapat ditulis tidak tersedia.');
+	const realtimeStream = await fetch(`${pbBase}/api/realtime`),realtimeReader=realtimeStream.body.getReader(),realtimeDecoder=new TextDecoder();let realtimeBuffer='',realtimeClientId='';
+	while(!realtimeClientId){const chunk=await realtimeReader.read();if(chunk.done)break;realtimeBuffer+=realtimeDecoder.decode(chunk.value,{stream:true});const match=realtimeBuffer.match(/id:\s*([^\r\n]+)/);if(match)realtimeClientId=match[1].trim()}
+	ok(Boolean(realtimeClientId),'Koneksi SSE collection tidak menghasilkan clientId.');
+	const realtimeSubscription=await fetch(`${pbBase}/api/realtime`,{method:'POST',headers:{Authorization:participant.token,'Content-Type':'application/json'},body:JSON.stringify({clientId:realtimeClientId,subscriptions:['forum_messages/*']})});
+	ok(realtimeSubscription.status===204,'Subscription collection Forum ditolak oleh rules.');
 	const message = await request(appBase, `/api/pfriends/forum/channels/${encodeURIComponent(channel.slug)}/messages`, { method: 'POST', token: awardee.token, body: { content: `Pesan integrasi lokal ${suffix}`, requestKey: `sveltekit-api-${suffix}` } }, 201);
+	const realtimeRead=(async()=>{while(true){const chunk=await realtimeReader.read();if(chunk.done)return false;realtimeBuffer+=realtimeDecoder.decode(chunk.value,{stream:true});if(realtimeBuffer.includes(message.id))return true}})();
+	const realtimeReceived=await Promise.race([realtimeRead,new Promise(resolve=>setTimeout(()=>resolve(false),5000))]);await realtimeReader.cancel();
+	ok(realtimeReceived,'Subscription collection tidak menerima pesan Forum dari SvelteKit API.');
 	const forumPage = await request(appBase, `/api/pfriends/forum/channels/${encodeURIComponent(channel.slug)}/messages`, { token: awardee.token });
 	ok(forumPage.items.some((row) => row.id === message.id), 'Pesan Forum baru tidak muncul pada daftar kanal.');
 	const context = await request(appBase, `/api/pfriends/forum/messages/${message.id}/context`, { token: awardee.token });
@@ -277,6 +285,8 @@ try {
 	const reaction = await request(appBase, `/api/pfriends/forum/messages/${message.id}/reaction`, { method: 'POST', token: awardee.token, body: { emoji, selected: true } });
 	ok(reaction.reactions.some((row) => row.emoji === emoji && row.selected), 'Reaksi Forum tidak tersimpan.');
 	await request(appBase, '/api/pfriends/forum/presence/heartbeat', { method: 'POST', token: awardee.token, body: { channel: channel.slug } }, 204);
+	const forumPresence = await request(appBase, '/api/pfriends/forum/presence', { token: awardee.token });
+	ok(forumPresence.items.some((row) => row.id === awardee.record.id && row.state === 'aktif'), 'Heartbeat Forum tidak muncul sebagai presence aktif.');
 	await request(appBase, `/api/pfriends/forum/messages/${message.id}`, { method: 'DELETE', token: awardee.token }, 204);
 
 	const broadcastValues = { title: `Kabar Integrasi ${suffix}`, summary: 'Ringkasan kabar integrasi lokal.', body: 'Isi kabar integrasi lokal cukup panjang untuk memvalidasi seluruh alur publikasi.', channel: 'MICROSITE', contentSource: 'PFriends', lightCta: 'Berikan tanggapan', ctaLink: 'https://example.com/kabar', audience: 'SEMUA' };

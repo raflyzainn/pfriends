@@ -51,6 +51,7 @@ import { buildSeed, seedStats } from '../../src/lib/infrastructure/seed/seed-dat
 // ── Tambahan V2 ─────────────────────────────────────────────────────────────
 import { UserRole } from '../../src/lib/domain/constants/roles.js';
 import { STORY_STATUS } from '../../src/lib/domain/constants/community.js';
+import { isNewPasswordValid, passwordChecks } from '../../src/lib/domain/constants/password-policy.js';
 import {
 	allowedEventTransitions,
 	allowedStoryTransitions
@@ -650,6 +651,15 @@ melempar('status akun tak dikenal ditolak', () => new UserAccount(akunUji({ stat
 benar('seed: akun verifikator utama cocok SANDI_DEMO', akunVerifikator.matchesPassword(SANDI_DEMO));
 benar('seed: akun admin cocok SANDI_DEMO', akunAdmin.matchesPassword(SANDI_DEMO));
 benar('sandi keliru ditolak akun seed', akunAdmin.matchesPassword('pfriends2027') === false);
+samaDengan(
+	'kebijakan sandi baru mengevaluasi setiap syarat secara terpisah',
+	passwordChecks('Password8'),
+	{ length: true, uppercase: true, number: true }
+);
+benar('sandi baru tanpa huruf kapital ditolak', isNewPasswordValid('password8') === false);
+benar('sandi baru tanpa angka ditolak', isNewPasswordValid('Password') === false);
+benar('sandi baru kurang dari delapan karakter ditolak', isNewPasswordValid('Passw1') === false);
+benar('sandi baru yang memenuhi seluruh syarat diterima', isNewPasswordValid('Password8'));
 benar('akun TERKUNCI kehilangan seluruh kapabilitas', akunTerkunci.can('REVIEW_CONTENT') === false);
 samaDengan(
 	'toJSON() -> konstruktor menghasilkan akun setara',

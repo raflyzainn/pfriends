@@ -253,15 +253,6 @@
 		</p>
 	</header>
 
-	{#if galat}
-		<p
-			class="mx-auto mt-8 max-w-2xl rounded-control border-l-4 border-danger bg-danger-tint px-4 py-3 text-sm leading-relaxed text-ink-800"
-			role="alert"
-		>
-			{galat}
-		</p>
-	{/if}
-
 	{#if !session.ready}
 		<p class="mt-10 text-center text-[15px] text-ink-600" aria-busy="true">Memeriksa sesi…</p>
 	{:else if session.isAuthenticated}
@@ -413,6 +404,15 @@
 						class="mt-2 {KELAS_ISIAN}"
 					/>
 
+					{#if galat}
+						<p
+							class="mt-4 rounded-control border-l-4 border-danger bg-danger-tint px-4 py-3 text-sm leading-relaxed text-ink-800"
+							role="alert"
+						>
+							{galat}
+						</p>
+					{/if}
+
 					<button
 						type="submit"
 						disabled={email.trim() === '' || sandi === '' || sedangMasuk !== ''}
@@ -430,6 +430,14 @@
 					</button>
 				</form>
 			{:else}
+				{#if galat}
+					<p
+						class="mx-auto mb-4 max-w-sm rounded-control border-l-4 border-danger bg-danger-tint px-4 py-3 text-left text-sm leading-relaxed text-ink-800"
+						role="alert"
+					>
+						{galat}
+					</p>
+				{/if}
 				<button
 					type="button"
 					class="text-[13px] text-ink-600 underline underline-offset-4 hover:text-heading"
