@@ -9,6 +9,7 @@
 	let files = $state([]);
 	let filter = $state(RegistrationStatus.PENDING);
 	let note = $state('');
+	let decisionError = $state('');
 
 	$effect(() => {
 		if (initialized) return;
@@ -22,18 +23,25 @@
 	async function open(item) {
 		selected = item;
 		note = item.reviewNote ?? '';
+		decisionError = '';
 		files = await registration.files(item);
 	}
 
 	async function decide(decision) {
 		if (!selected) return;
+		decisionError = '';
+		if (decision !== 'APPROVE' && note.trim().length < 5) {
+			decisionError = 'Tulis catatan keputusan minimal lima karakter sebelum melanjutkan.';
+			return;
+		}
 		try {
 			await registration.decide(selected.id, decision, note);
 			toast.success('Keputusan tersimpan', 'Status registrasi dan audit telah diperbarui.');
 			selected = registration.items.find((item) => item.id === selected.id) ?? null;
 			note = '';
 		} catch (error) {
-			toast.error('Keputusan gagal', error instanceof Error ? error.message : 'Coba sekali lagi.');
+			decisionError = error instanceof Error ? error.message : 'Keputusan gagal disimpan. Coba sekali lagi.';
+			toast.error('Keputusan gagal', decisionError);
 		}
 	}
 </script>
@@ -94,16 +102,17 @@
 				</div>
 
 				{#if selected.status === RegistrationStatus.PENDING || selected.status === RegistrationStatus.REJECTED}
-					<label class="mt-6 block"><span class="text-sm font-bold text-heading">Catatan keputusan</span><textarea class="mt-2 min-h-24 w-full rounded-control border border-ink-200 p-3 text-sm" bind:value={note} placeholder="Wajib untuk klarifikasi, penolakan, atau buka kembali"></textarea></label>
+					<label class="mt-6 block"><span class="text-sm font-bold text-heading">Catatan keputusan</span><textarea class="mt-2 min-h-24 w-full rounded-control border border-ink-200 p-3 text-sm" bind:value={note} oninput={() => (decisionError = '')} placeholder="Wajib untuk klarifikasi, penolakan, atau buka kembali"></textarea><span class="mt-1.5 block text-xs text-ink-500">Minimal lima karakter untuk klarifikasi, penolakan, dan buka kembali.</span></label>
 					<div class="mt-4 flex flex-wrap gap-2">
 						{#if selected.status === RegistrationStatus.PENDING}
-							<button class="min-h-10 rounded-control bg-green-700 px-4 text-sm font-bold text-white" disabled={registration.working} onclick={() => decide('APPROVE')}>ACC akun</button>
-							<button class="min-h-10 rounded-control bg-amber-600 px-4 text-sm font-bold text-white" disabled={registration.working || note.trim().length < 5} onclick={() => decide('REQUEST_CLARIFICATION')}>Minta klarifikasi</button>
-							<button class="min-h-10 rounded-control bg-red-700 px-4 text-sm font-bold text-white" disabled={registration.working || note.trim().length < 5} onclick={() => decide('REJECT')}>Tolak</button>
+							<button type="button" class="min-h-10 rounded-control bg-green-700 px-4 text-sm font-bold text-white" disabled={registration.working} onclick={() => decide('APPROVE')}>ACC akun</button>
+							<button type="button" class="min-h-10 rounded-control bg-amber-600 px-4 text-sm font-bold text-white" disabled={registration.working} onclick={() => decide('REQUEST_CLARIFICATION')}>Minta klarifikasi</button>
+							<button type="button" class="min-h-10 rounded-control bg-red-700 px-4 text-sm font-bold text-white" disabled={registration.working} onclick={() => decide('REJECT')}>Tolak</button>
 						{:else}
-							<button class="min-h-10 rounded-control bg-brand-600 px-4 text-sm font-bold text-white" disabled={registration.working || note.trim().length < 5} onclick={() => decide('REOPEN')}>Buka kembali</button>
+							<button type="button" class="min-h-10 rounded-control bg-brand-600 px-4 text-sm font-bold text-white" disabled={registration.working} onclick={() => decide('REOPEN')}>Buka kembali</button>
 						{/if}
 					</div>
+					{#if decisionError}<div class="mt-3 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert" aria-live="polite">{decisionError}</div>{/if}
 				{:else if selected.reviewNote}
 					<div class="mt-6 rounded-control bg-ink-50 p-4 text-sm text-ink-700"><strong>Catatan terakhir:</strong> {selected.reviewNote}</div>
 				{/if}

@@ -51,10 +51,7 @@
 				</button>
 			</div>
 		{:else}
-			{#if error}
-				<div class="mb-5 rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{error}</div>
-			{/if}
-			<RegistrationForm busy={registration.working} {submit} />
+			<RegistrationForm busy={registration.working} {submit} {error} />
 		{/if}
 	</Card>
 

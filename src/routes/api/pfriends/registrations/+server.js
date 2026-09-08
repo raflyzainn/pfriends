@@ -36,6 +36,7 @@ export async function POST({ request }) {
 		const fields = profileFields(form, normalized);
 		const pb = await createAdminPocketBase();
 		if (await exists(pb, 'users', pb.filter('email = {:email}', { email }))) throw new ApiError(409, 'Email sudah terdaftar.');
+		if (await exists(pb, 'awardee_registrations', pb.filter('email = {:email}', { email }))) throw new ApiError(409, 'Email sudah pernah digunakan untuk registrasi. Silakan masuk atau hubungi pengelola jika akun tidak dapat diakses.');
 		if (await exists(pb, 'awardee_registrations', pb.filter('whatsapp = {:whatsapp}', { whatsapp: fields.whatsapp }))) throw new ApiError(409, 'Nomor WhatsApp sudah terdaftar.');
 		const userId = recordId();
 		const registrationId = recordId();

@@ -52,6 +52,7 @@ import { buildSeed, seedStats } from '../../src/lib/infrastructure/seed/seed-dat
 import { UserRole } from '../../src/lib/domain/constants/roles.js';
 import { STORY_STATUS } from '../../src/lib/domain/constants/community.js';
 import { isNewPasswordValid, passwordChecks } from '../../src/lib/domain/constants/password-policy.js';
+import { isWhatsappValid, whatsappResult } from '../../src/lib/domain/constants/whatsapp.js';
 import {
 	allowedEventTransitions,
 	allowedStoryTransitions
@@ -657,6 +658,9 @@ samaDengan(
 	{ length: true, uppercase: true, number: true }
 );
 benar('sandi baru tanpa huruf kapital ditolak', isNewPasswordValid('password8') === false);
+samaDengan('WhatsApp lokal dinormalisasi ke +62', whatsappResult('0812-2321 3232').normalized, '+6281223213232');
+benar('WhatsApp dengan karakter simbol ditolak', isWhatsappValid('081$#!@23213232') === false);
+benar('WhatsApp tanpa awalan Indonesia ditolak', isWhatsappValid('81223213232') === false);
 benar('sandi baru tanpa angka ditolak', isNewPasswordValid('Password') === false);
 benar('sandi baru kurang dari delapan karakter ditolak', isNewPasswordValid('Passw1') === false);
 benar('sandi baru yang memenuhi seluruh syarat diterima', isNewPasswordValid('Password8'));

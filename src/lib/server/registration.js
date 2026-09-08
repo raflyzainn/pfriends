@@ -1,4 +1,5 @@
 import { ApiError } from './auth.js';
+import { whatsappResult } from '$lib/domain/constants/whatsapp.js';
 
 export const REGISTRATION_STATUS = Object.freeze({ PENDING: 'PENDING', CLARIFICATION: 'CLARIFICATION', APPROVED: 'APPROVED', REJECTED: 'REJECTED' });
 export const CONSENT_VERSION = 'awardee-registration-v1';
@@ -13,11 +14,9 @@ export function required(value, label, min = 1) {
 	return result;
 }
 export function normalizeWhatsapp(value) {
-	let digits = text(value).replace(/\D/g, '');
-	if (digits.startsWith('0')) digits = `62${digits.slice(1)}`;
-	if (!digits.startsWith('62')) digits = `62${digits}`;
-	if (digits.length < 10 || digits.length > 15) throw new ApiError(400, 'Nomor WhatsApp tidak sah.');
-	return `+${digits}`;
+	const result = whatsappResult(value);
+	if (!result.valid) throw new ApiError(400, result.message);
+	return result.normalized;
 }
 export function validateRegistration(form, proofs, editing = false) {
 	const community = required(form.get('community'), 'Komunitas');

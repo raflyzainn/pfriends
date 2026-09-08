@@ -9,11 +9,13 @@
 		passwordChecks
 	} from '$lib/domain/constants/password-policy.js';
 	import { PROGRAM_PILLARS, REGISTRATION_CONSENT_STATEMENT } from '$lib/domain/constants/registration.js';
+	import { whatsappResult } from '$lib/domain/constants/whatsapp.js';
 
 	let {
 		initial = {},
 		create = true,
 		busy = false,
+		error = '',
 		submit,
 		submitLabel = create ? 'Kirim registrasi' : 'Kirim ulang klarifikasi'
 	} = $props();
@@ -64,7 +66,7 @@
 		}
 		if (step === 2) {
 			if (fullName.trim().length < 3) validationError = 'Nama lengkap minimal tiga karakter.';
-			else if (whatsapp.replace(/\D/g, '').length < 10 || whatsapp.replace(/\D/g, '').length > 15) validationError = 'Masukkan nomor WhatsApp yang sah.';
+			else if (!whatsappResult(whatsapp).valid) validationError = whatsappResult(whatsapp).message;
 			else if (region.trim().length < 2) validationError = 'Wilayah domisili wajib diisi.';
 		}
 		if (step === 3) {
@@ -278,7 +280,8 @@
 			{/if}
 			<label class="block">
 				<span class="text-sm font-semibold text-ink-800">Nomor WhatsApp <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
-				<input class={fieldClass} bind:value={whatsapp} required inputmode="tel" placeholder="08xxxxxxxxxx" />
+				<input class={fieldClass} bind:value={whatsapp} required inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" aria-describedby="whatsapp-help" />
+				<span id="whatsapp-help" class="mt-1.5 block text-xs text-ink-500">Gunakan format 08, 62, atau +62. Spasi dan tanda hubung diperbolehkan.</span>
 			</label>
 		<label class="block">
 			<span class="text-sm font-semibold text-ink-800">Komunitas <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
@@ -394,10 +397,6 @@
 	{/if}
 	</section>
 
-	{#if validationError}
-		<div class="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{validationError}</div>
-	{/if}
-
 	{#if create && currentStep < 4}
 		<div class="flex flex-col-reverse gap-3 border-t border-ink-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
 			{#if currentStep > 1}
@@ -412,5 +411,9 @@
 		{busy ? 'Memproses…' : submitLabel}
 	</button>
 		</div>
+	{/if}
+
+	{#if validationError || error}
+		<div class="rounded-control border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert" aria-live="polite">{validationError || error}</div>
 	{/if}
 </form>
