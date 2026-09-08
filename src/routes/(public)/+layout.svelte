@@ -110,6 +110,12 @@
 
 			<div class="flex shrink-0 items-center gap-2">
 				<a
+					href="/daftar"
+					class="hidden min-h-10 items-center rounded-control border border-white/55 px-5 text-sm font-bold text-white transition-colors hover:border-white hover:bg-white/10 sm:inline-flex"
+				>
+					Register
+				</a>
+				<a
 					href="/masuk"
 					class="hidden min-h-10 items-center rounded-control bg-accent-200 px-5 text-sm font-bold text-brand-800 transition-colors hover:bg-accent-300 sm:inline-flex"
 				>
@@ -169,7 +175,14 @@
 					</ul>
 				</nav>
 
-				<div class="shrink-0 border-t border-ink-200 p-4">
+				<div class="grid shrink-0 grid-cols-2 gap-3 border-t border-ink-200 p-4">
+					<a
+						href="/daftar"
+						onclick={() => (menuTerbuka = false)}
+						class="flex min-h-11 w-full items-center justify-center rounded-control border border-pertamina-blue px-4 text-sm font-bold text-pertamina-blue transition-colors hover:bg-brand-50"
+					>
+						Register
+					</a>
 					<a
 						href="/masuk"
 						onclick={() => (menuTerbuka = false)}

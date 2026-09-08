@@ -6,7 +6,7 @@
 	 * sehingga beranda pun dipangkas menjadi empat seksi yang masing-masing punya
 	 * satu pekerjaan:
 	 *
-	 *   1. Hero       : menyatakan ini situs apa, satu kalimat, satu tombol.
+	 *   1. Hero       : menyatakan ini situs apa dan membuka jalur masuk atau daftar.
 	 *   2. Billboard  : kegiatan terdekat sebagai papan reklame lebar penuh.
 	 *   3. Peringkat  : sepuluh peserta paling aktif beserta poinnya.
 	 *   4. Blog       : tiga cerita terbaru.
@@ -144,13 +144,37 @@
 			menemukan kegiatan berikutnya dan membaca cerita dari sesama anggota.
 		</p>
 
-		<a
-			href="/kalender"
-			class="mt-9 inline-flex min-h-12 items-center gap-2 rounded-control bg-accent-200 px-7 text-[15px] font-bold text-brand-800 transition-colors hover:bg-accent-300"
-		>
-			Lihat Calendar of Event
-			<Icon path={ICONS.arrowLongRight} size={18} />
-		</a>
+		<div class="mt-9 max-w-2xl rounded-card border border-white/20 bg-brand-900/35 p-5 sm:p-6">
+			<p class="text-[17px] font-bold text-white">Siap terhubung dengan komunitas?</p>
+			<p class="mt-2 text-[14px] leading-[1.6] text-white/80">
+				Masuk untuk mengakses ruang anggota, atau daftarkan diri jika Anda belum memiliki akun
+				Awardee.
+			</p>
+
+			<div class="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+				<a
+					href="/masuk"
+					class="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-accent-200 px-7 text-[15px] font-bold text-brand-900 transition-colors hover:bg-accent-300"
+				>
+					Masuk ke PFriends
+					<Icon path={ICONS.arrowLongRight} size={18} />
+				</a>
+				<a
+					href="/daftar"
+					class="inline-flex min-h-12 items-center justify-center rounded-control border border-white/55 px-7 text-[15px] font-bold text-white transition-colors hover:border-white hover:bg-white/10"
+				>
+					Daftar sebagai Awardee
+				</a>
+			</div>
+
+			<a
+				href="/kalender"
+				class="mt-5 inline-flex min-h-8 items-center gap-2 text-[14px] font-semibold text-white/85 underline underline-offset-4 transition-colors hover:text-white"
+			>
+				Lihat Calendar of Event
+				<Icon path={ICONS.arrowLongRight} size={16} />
+			</a>
+		</div>
 	</div>
 </section>
 
