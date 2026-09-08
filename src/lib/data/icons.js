@@ -1,5 +1,5 @@
 /**
- * REGISTRY IKON — seluruh atribut `d` SVG aplikasi, satu tempat.
+ * REGISTRY IKON: seluruh atribut `d` SVG aplikasi, satu tempat.
  *
  * Mandat 08-DESIGN-SYSTEM §8: ikon adalah inline SVG bergaya Heroicons Outline,
  * tanpa dependensi npm apa pun. Menyimpan seluruh path di satu berkas membuat
@@ -7,10 +7,10 @@
  * dua gambar berbeda untuk konsep yang sama.
  *
  * Semua path digambar pada kanvas `viewBox="0 0 24 24"`, tanpa `fill`, dan
- * mewarisi warna induk lewat `stroke="currentColor"` — lihat `Icon.svelte`.
+ * mewarisi warna induk lewat `stroke="currentColor"`: lihat `Icon.svelte`.
  * Jangan menuliskan warna di dalam path.
  *
- * @see docs/08-DESIGN-SYSTEM.md — §8 Ikon & ilustrasi
+ * @see docs/08-DESIGN-SYSTEM.md: §8 Ikon & ilustrasi
  */
 
 /**
@@ -116,7 +116,7 @@ export const ICONS = Object.freeze({
 		'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.008v.008H12v-.008Z',
 	inbox:
 		'M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z',
-	/* Dua gelembung percakapan — dipakai butir navigasi Forum zona awardee. */
+	/* Dua gelembung percakapan: dipakai butir navigasi Forum zona awardee. */
 	chat: 'M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155',
 
 	// ── Editorial (zona publik) ────────────────────────────────────────────
@@ -132,7 +132,7 @@ export const ICONS = Object.freeze({
 	arrowLongRight: 'M3 12h16.5m0 0-4.5-4.5m4.5 4.5-4.5 4.5',
 	arrowUpRight: 'M6 18 18 6m0 0H8.25M18 6v9.75',
 	// Tanda kutip ganda untuk PullQuote. Digambar sebagai dua glif kutip, bukan
-	// huruf — supaya ia mewarisi `stroke` seperti ikon lain dan tidak bergantung
+	// huruf: supaya ia mewarisi `stroke` seperti ikon lain dan tidak bergantung
 	// pada keluarga font yang sedang aktif.
 	quote:
 		'M9.75 6.75C7.679 6.75 6 8.429 6 10.5c0 2.071 1.679 3.75 3.75 3.75V15A2.25 2.25 0 0 1 7.5 17.25m2.25-10.5V17.25m8.25-10.5c-2.071 0-3.75 1.679-3.75 3.75 0 2.071 1.679 3.75 3.75 3.75V15a2.25 2.25 0 0 1-2.25 2.25M18 6.75V17.25',
@@ -146,7 +146,7 @@ export const ICONS = Object.freeze({
 
 /**
  * Mengambil path ikon dengan aman. Nama yang tidak dikenal mengembalikan string
- * kosong sehingga `Icon.svelte` merender SVG kosong alih-alih memutus render —
+ * kosong sehingga `Icon.svelte` merender SVG kosong alih-alih memutus render :
  * ikon yang hilang tidak boleh menjatuhkan halaman.
  *
  * @param {string} nama

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Sidebar — navigasi utama zona admin Pertamina Foundation.
+	 * Sidebar: navigasi utama zona admin Pertamina Foundation.
 	 *
 	 * Props (seluruhnya opsional):
 	 * @prop {boolean} open      Dapat di-`bind`; mengendalikan laci di mobile.
@@ -11,8 +11,8 @@
 	 * @prop {string} homeHref  Tujuan logo di kepala sidebar.
 	 * @prop {string} exitHref  Halaman publik tujuan sesudah keluar.
 	 *
-	 * DAFTAR MENU tetap datang dari props atau dari `$lib/data/navigation.js` —
-	 * data, bukan state — sehingga tidak ada daftar tandingan yang diam-diam
+	 * DAFTAR MENU tetap datang dari props atau dari `$lib/data/navigation.js` :
+	 * data, bukan state: sehingga tidak ada daftar tandingan yang diam-diam
 	 * menyimpang dari daftar zona.
 	 *
 	 * ── PERUBAHAN G5 · KAKI SESI ─────────────────────────────────────────────
@@ -21,7 +21,7 @@
 	 *    jalan keluarnya.** Empat peninjau menemukan hal yang sama pada aplikasi
 	 *    yang berjalan: berpindah peran mustahil dilakukan tanpa menghapus data
 	 *    situs. Dua konsol memang sudah punya tombol keluar, tetapi keduanya ikon
-	 *    telanjang di pojok bilah atas — tidak ada kata "keluar" di layar mana pun.
+	 *    telanjang di pojok bilah atas: tidak ada kata "keluar" di layar mana pun.
 	 *    Nama peran yang tercetak di kaki juga menjawab pertanyaan pertama peraga
 	 *    di ruang rapat ("ini sedang login sebagai siapa?") tanpa membuka profil.
 	 *
@@ -163,7 +163,7 @@
 			     dipakai apa adanya tanpa filter pemutih seperti di navbar publik. -->
 			<img src="/img/pf-logo.png" alt="" class="h-7 w-auto shrink-0" />
 			<span class="min-w-0">
-				<span class="block truncate text-sm leading-tight font-extrabold text-heading">PFfriends</span>
+				<span class="block truncate text-sm leading-tight font-extrabold text-heading">PFriends</span>
 				<span class="label-micro leading-tight">{title}</span>
 			</span>
 		</a>
@@ -238,7 +238,7 @@
 				>
 					<Icon path={ICONS.logout} size={18} />
 				</span>
-				<span class="min-w-0 flex-1 truncate text-left">Keluar dari PFfriends</span>
+				<span class="min-w-0 flex-1 truncate text-left">Keluar dari PFriends</span>
 			</button>
 		{/if}
 	</div>

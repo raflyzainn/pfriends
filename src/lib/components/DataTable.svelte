@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * DataTable — tabel data dengan pengurutan, kerangka pemuatan, dan keadaan kosong.
+	 * DataTable: tabel data dengan pengurutan, kerangka pemuatan, dan keadaan kosong.
 	 *
 	 * Props:
 	 * @prop {{key:string,label:string,align?:'left'|'right'|'center',width?:string,
@@ -16,7 +16,7 @@
 	 * @prop {import('svelte').Snippet<[any, any]>} cell  Perender sel kustom.
 	 *
 	 * Tabel membawa penggulung horizontalnya sendiri. Yang boleh bergulir ke
-	 * samping di lebar 375px hanyalah tabel — halamannya tidak pernah.
+	 * samping di lebar 375px hanyalah tabel: halamannya tidak pernah.
 	 */
 	import EmptyState from './EmptyState.svelte';
 	import Skeleton from './Skeleton.svelte';
@@ -135,7 +135,7 @@
 									{#if cell}
 										{@render cell(baris, kolom)}
 									{:else}
-										{baris[kolom.key] ?? '—'}
+										{baris[kolom.key] ?? ':'}
 									{/if}
 								</td>
 							{/each}

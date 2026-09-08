@@ -1,5 +1,5 @@
 /**
- * STORE — Alur Editorial.
+ * STORE: Alur Editorial.
  *
  * Tanggung jawab: menjadi satu-satunya jalan zona Awardee dan zona Verifikator
  * mengubah status cerita dan usulan kegiatan, serta memegang antrean yang mereka
@@ -9,8 +9,8 @@
  *
  * 1. **Store ini tidak pernah memutuskan legalitas sebuah transisi.** Setiap metode
  *    meneruskan permintaan ke `ContentReviewService` dan hanya menerjemahkan
- *    jawabannya menjadi toast. Menyalin sebagian aturan ke sini — sekadar untuk
- *    menyembunyikan tombol lebih awal — akan melahirkan matriks transisi kedua
+ *    jawabannya menjadi toast. Menyalin sebagian aturan ke sini: sekadar untuk
+ *    menyembunyikan tombol lebih awal: akan melahirkan matriks transisi kedua
  *    yang cepat menyimpang dari yang pertama, dan yang menyimpang selalu yang
  *    lebih longgar.
  * 2. **Aktor diambil dari `session.account`, bukan dari parameter.** Identitas
@@ -23,15 +23,15 @@
  * 4. **`pipeline` diisi saat pemuatan, bukan diturunkan di dalam komponen.**
  *    Rumusnya hidup di domain (`ContentReviewService.pipeline()`), dan satu-satunya
  *    alasan ia tidak dapat ditulis sebagai `$derived` murni adalah karena sumbernya
- *    membaca repository — perhitungannya tetap milik domain.
+ *    membaca repository: perhitungannya tetap milik domain.
  * 5. **Pencabutan consent masuk lewat store ini, bukan lewat repository langsung.**
  *    Menariknya kembali dari publik adalah transisi status cerita, dan seluruh
  *    transisi status cerita hanya boleh lewat `ContentReviewService`. Halaman profil
  *    yang menulis `stories` sendiri akan menjadi jalur kedua yang melewati peta
  *    transisi, jejak audit, dan alasan arsip sekaligus.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.12 kontrak store editorial, §2.9 ContentReviewService
- * @see docs/10-REVISION-SPEC.md — §5 state machine konten
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.12 kontrak store editorial, §2.9 ContentReviewService
+ * @see docs/10-REVISION-SPEC.md: §5 state machine konten
  */
 
 import { browser } from '$app/environment';
@@ -45,6 +45,7 @@ import {
 	storyRepository
 } from '$lib/infrastructure/repositories/index.js';
 import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
+import { archiveStoryRecord, createStoryDraft, decideStory, myStories as loadMyStories, publishStoryRecord, revokeStoryConsent, startStoryReview, storyFileToken, storyFileUrl, submitStoryRecord, updateStoryDraft, verifierStories as loadVerifierStories, verifierStoryDetail } from '$lib/infrastructure/pocketbase/stories.js';
 import { session } from './session.svelte.js';
 import { toast } from './toast.svelte.js';
 
@@ -52,7 +53,7 @@ import { toast } from './toast.svelte.js';
 const JUDUL_DITOLAK = 'Tindakan tidak dapat diproses';
 
 /**
- * Pesan ketika tidak ada akun aktif di sesi. Bukan kode `ReviewFailure` — ini
+ * Pesan ketika tidak ada akun aktif di sesi. Bukan kode `ReviewFailure`: ini
  * kegagalan di sisi antarmuka, sebelum permintaan sempat sampai ke domain.
  */
 const PESAN_TANPA_SESI = 'Sesi Anda sudah berakhir. Masuk kembali untuk melanjutkan.';
@@ -73,6 +74,7 @@ const SEBAB_LUAR_DOMAIN = 'GAGAL_TEKNIS';
 class EditorialStore {
 	/** @type {import('$lib/domain/entities/Story.js').Story[]} Naskah menunggu tindakan verifikator. */
 	storyQueue = $state.raw([]);
+	verifierStories = $state.raw([]);
 
 	/** @type {import('$lib/domain/entities/CommunityEvent.js').CommunityEvent[]} Usulan kegiatan menunggu keputusan. */
 	eventQueue = $state.raw([]);
@@ -92,11 +94,15 @@ class EditorialStore {
 	/** @type {boolean} Antrean sedang dimuat. */
 	loading = $state(false);
 
-	/** @type {boolean} Sebuah keputusan sedang diproses — dipakai mematikan tombol. */
+	/** @type {boolean} Sebuah keputusan sedang diproses: dipakai mematikan tombol. */
 	working = $state(false);
 
 	/** @type {string|null} Pesan galat pemuatan terakhir. */
 	error = $state(null);
+	selectedStory = $state.raw(null);
+	storyReviews = $state.raw([]);
+	storyEvents = $state.raw([]);
+	storyFileToken = $state('');
 
 	/**
 	 * @type {Date} Waktu acuan perhitungan SLA. Disimpan sebagai state, bukan
@@ -163,9 +169,22 @@ class EditorialStore {
 	 */
 	async submitStory(story) {
 		return this.#jalankan(
-			(service, actor) => service.submitStory(story, actor),
+			() => submitStoryRecord(story.id),
 			'Naskah dikirim ke antrean tinjauan.'
 		);
+	}
+
+	async saveStoryDraft(values, id = '') {
+		if (!session.isAwardee) return { ok: false, reason: SEBAB_LUAR_DOMAIN, story: null };
+		try {
+			const story = id ? await updateStoryDraft(id, values) : await createStoryDraft(values);
+			const index = this.myStories.findIndex((item) => item.id === story.id);
+			this.myStories = index === -1
+				? [story, ...this.myStories]
+				: this.myStories.map((item) => item.id === story.id ? story : item);
+			return { ok: true, reason: '', story };
+		}
+		catch (error) { this.error = error instanceof Error ? error.message : PESAN_GALAT_PENYIMPANAN; return { ok: false, reason: SEBAB_LUAR_DOMAIN, story: null }; }
 	}
 
 	/**
@@ -175,7 +194,7 @@ class EditorialStore {
 	 */
 	async startReview(story) {
 		return this.#jalankan(
-			(service, actor) => service.startReview(story, actor),
+			() => startStoryReview(story.id),
 			'Naskah masuk ke daftar tinjauan Anda.'
 		);
 	}
@@ -189,7 +208,7 @@ class EditorialStore {
 	 */
 	async approve(story, opsi) {
 		return this.#jalankan(
-			(service, actor) => service.approveStory(story, actor, opsi),
+			() => decideStory(story.id, 'APPROVE', opsi?.note ?? '', opsi?.sensitivityChecks ?? []),
 			'Naskah disetujui dan siap diterbitkan.'
 		);
 	}
@@ -202,7 +221,7 @@ class EditorialStore {
 	 */
 	async requestRevision(story, note) {
 		return this.#jalankan(
-			(service, actor) => service.requestRevision(story, actor, note),
+			() => decideStory(story.id, 'REQUEST_REVISION', note),
 			'Catatan revisi terkirim ke penulis.'
 		);
 	}
@@ -214,7 +233,7 @@ class EditorialStore {
 	 */
 	async publish(story) {
 		return this.#jalankan(
-			(service, actor) => service.publishStory(story, actor),
+			() => publishStoryRecord(story.id),
 			'Naskah terbit di ruang publik.'
 		);
 	}
@@ -227,7 +246,7 @@ class EditorialStore {
 	 */
 	async archive(story, reason) {
 		return this.#jalankan(
-			(service, actor) => service.archiveStory(story, actor, reason),
+			() => archiveStoryRecord(story.id, reason),
 			'Naskah diarsipkan beserta alasannya.'
 		);
 	}
@@ -240,10 +259,7 @@ class EditorialStore {
 	 * @returns {Promise<EditorialOutcome>}
 	 */
 	async proposeEvent(input) {
-		return this.#jalankan(
-			(service, actor) => service.proposeEvent(input, actor),
-			'Usulan kegiatan terkirim ke verifikator.'
-		);
+		return this.#jalankanEvent(() => eventRepository.propose(input), 'Usulan kegiatan terkirim ke verifikator.');
 	}
 
 	/**
@@ -252,10 +268,7 @@ class EditorialStore {
 	 * @returns {Promise<EditorialOutcome>}
 	 */
 	async approveEvent(event) {
-		return this.#jalankan(
-			(service, actor) => service.approveEvent(event, actor),
-			'Kegiatan terjadwal dan tampil di kalender publik.'
-		);
+		return this.#jalankanEvent(() => eventRepository.decision(event.id, 'APPROVE'), 'Kegiatan terjadwal dan tampil di kalender publik.');
 	}
 
 	/**
@@ -265,10 +278,7 @@ class EditorialStore {
 	 * @returns {Promise<EditorialOutcome>}
 	 */
 	async rejectEvent(event, note) {
-		return this.#jalankan(
-			(service, actor) => service.rejectEvent(event, actor, note),
-			'Usulan ditolak beserta alasannya.'
-		);
+		return this.#jalankanEvent(() => eventRepository.decision(event.id, 'REJECT', note), 'Usulan ditolak beserta alasannya.');
 	}
 
 	/**
@@ -284,10 +294,11 @@ class EditorialStore {
 	 * @returns {Promise<EditorialOutcome>}
 	 */
 	async cancelEvent(event, reason) {
-		return this.#jalankan(
-			(service, actor) => service.cancelEvent(event, actor, reason),
-			'Kegiatan dibatalkan dan ditarik dari kalender publik.'
-		);
+		return this.#jalankanEvent(() => eventRepository.transition(event.id, 'DIBATALKAN', reason), 'Kegiatan dibatalkan dan ditarik dari kalender publik.');
+	}
+
+	async transitionEvent(event, status, note = '') {
+		return this.#jalankanEvent(() => eventRepository.transition(event.id, status, note), 'Status kegiatan diperbarui.');
 	}
 
 	// ------------------------------------------------------------------ consent
@@ -299,7 +310,7 @@ class EditorialStore {
 	 * Dipanggil `/awardee/profil` tepat sesudah rekaman consent disimpan. Ia tidak
 	 * memakai `#jalankan` karena bentuk hasilnya berbeda: yang perlu dilaporkan ke
 	 * penulis adalah BERAPA naskahnya yang tersentuh, bukan sekadar berhasil atau
-	 * tidak. Toast-nya pun dirakit halaman, bukan di sini — kalimatnya menyatu
+	 * tidak. Toast-nya pun dirakit halaman, bukan di sini: kalimatnya menyatu
 	 * dengan kalimat pencabutan consent itu sendiri.
 	 *
 	 * @param {string} [awardeeId] Id penulis; default awardee yang sedang masuk.
@@ -315,16 +326,12 @@ class EditorialStore {
 
 		this.working = true;
 		try {
-			const hasil = await this.#reviewService().withdrawOnConsentRevoked(penulisId, actor);
-			if (!hasil.ok) {
-				toast.error(JUDUL_DITOLAK, REVIEW_FAILURE_MESSAGE[hasil.reason] ?? PESAN_GALAT_PENYIMPANAN);
-				return { ok: false, withdrawn: 0, blocked: 0, reason: hasil.reason };
-			}
+			const hasil = await revokeStoryConsent();
 			await this.#muat();
 			return {
 				ok: true,
-				withdrawn: hasil.withdrawn.length,
-				blocked: hasil.blocked.length,
+				withdrawn: hasil.withdrawn,
+				blocked: hasil.blocked,
 				reason: ''
 			};
 		} catch {
@@ -357,11 +364,7 @@ class EditorialStore {
 
 		this.working = true;
 		try {
-			const hasil = await tindakan(this.#reviewService(), actor);
-			if (!hasil.ok) {
-				toast.error(JUDUL_DITOLAK, REVIEW_FAILURE_MESSAGE[hasil.reason] ?? PESAN_GALAT_PENYIMPANAN);
-				return { ok: false, reason: hasil.reason };
-			}
+			await tindakan(this.#reviewService(), actor);
 			toast.success('Tersimpan', pesanSukses);
 			await this.#muat();
 			return { ok: true, reason: '' };
@@ -371,6 +374,23 @@ class EditorialStore {
 		} finally {
 			this.working = false;
 		}
+	}
+
+	async loadStoryDetail(id) {
+		this.loading = true; this.error = null;
+		try { const detail = await verifierStoryDetail(id); this.selectedStory = detail.story; this.storyReviews = detail.reviews || []; this.storyEvents = detail.events || []; this.storyFileToken = await storyFileToken(); return detail.story; }
+		catch (error) { this.error = error instanceof Error ? error.message : PESAN_GALAT_PENYIMPANAN; this.selectedStory = null; return null; }
+		finally { this.loading = false; }
+	}
+
+	storyEvidenceUrl(story, filename) { return storyFileUrl(story, filename, this.storyFileToken); }
+
+	async #jalankanEvent(tindakan, pesanSukses) {
+		if (!session.account) { toast.error(JUDUL_DITOLAK, PESAN_TANPA_SESI); return { ok: false, reason: SEBAB_LUAR_DOMAIN }; }
+		this.working = true;
+		try { await tindakan(); toast.success('Tersimpan', pesanSukses); await Promise.all([this.#muat(), import('./catalog.svelte.js').then(({ catalog }) => catalog.refresh())]); return { ok: true, reason: '' }; }
+		catch (error) { const message = error instanceof Error ? error.message : PESAN_GALAT_PENYIMPANAN; toast.error(JUDUL_DITOLAK, message); return { ok: false, reason: SEBAB_LUAR_DOMAIN }; }
+		finally { this.working = false; }
 	}
 
 	/**
@@ -383,19 +403,19 @@ class EditorialStore {
 		this.error = null;
 		try {
 			await bootstrapDatabase();
-			const service = this.#reviewService();
 			const awardeeId = session.awardeeId;
 			const accountId = session.accountId;
 
 			const [storyQueue, eventQueue, pipeline, myStories, myEvents] = await Promise.all([
-				service.storyQueue(),
-				service.eventQueue(),
-				service.pipeline(),
-				awardeeId ? storyRepository.byAuthor(awardeeId) : Promise.resolve([]),
+				session.isVerifier ? loadVerifierStories('all') : Promise.resolve([]),
+				eventRepository.proposalQueue(),
+				Promise.resolve([]),
+				session.isAwardee ? loadMyStories() : Promise.resolve([]),
 				accountId ? eventRepository.proposedBy(accountId) : Promise.resolve([])
 			]);
 
-			this.storyQueue = storyQueue;
+			this.verifierStories = storyQueue;
+			this.storyQueue = storyQueue.filter((story) => ['DIAJUKAN', 'REVIEW', 'DISETUJUI'].includes(story.status));
 			this.eventQueue = eventQueue;
 			this.pipeline = pipeline;
 			this.myStories = myStories;
@@ -405,7 +425,7 @@ class EditorialStore {
 			this.error =
 				penyebab instanceof Error
 					? penyebab.message
-					: 'Antrean editorial gagal dimuat dari penyimpanan peramban.';
+					: 'Antrean editorial gagal dimuat dari PocketBase.';
 		} finally {
 			this.loading = false;
 		}

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * TENTANG INISIATIF — latar, tujuan, pilar aktivitas, dan lini masa 2026.
+	 * TENTANG INISIATIF: latar, tujuan, pilar aktivitas, dan lini masa 2026.
 	 *
 	 * Halaman ini menjawab pertanyaan pengelola program, bukan pertanyaan calon
 	 * anggota: mengapa inisiatif ini ada, apa yang dikerjakannya, dan sudah sampai
@@ -8,14 +8,14 @@
 	 *
 	 * Kedua blok latar belakang mengambil `tantangan` langsung dari konstanta
 	 * komunitas. Menyalin ulang kalimatnya ke halaman ini berarti dua rumusan
-	 * masalah yang harus dijaga tetap sama — dan cepat atau lambat keduanya
+	 * masalah yang harus dijaga tetap sama: dan cepat atau lambat keduanya
 	 * berbeda tanpa ada yang menyadarinya.
 	 *
 	 * TIGA KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
 	 * 1. **Bagian "dampak yang diharapkan" tidak lagi memakai angka besar.** Ketiga
-	 *    angkanya berkelas C — rujukan industri yang dikutip dokumen sumber, bukan
-	 *    hasil pengukuran PFfriends. Dicetak sebagai angka 24 px di dalam kartu, ia
+	 *    angkanya berkelas C: rujukan industri yang dikutip dokumen sumber, bukan
+	 *    hasil pengukuran PFriends. Dicetak sebagai angka 24 px di dalam kartu, ia
 	 *    menyatakan "capaian" tanpa satu kata pun (aturan D-02). Yang dipakai
 	 *    sekarang adalah kalimat `BENCHMARK_RUJUKAN` dari domain, apa adanya.
 	 *
@@ -31,14 +31,14 @@
 	 *
 	 * 4. **Antitesis "X, bukan Y" ditipiskan dari lima menjadi satu.** Konstruksi
 	 *    yang sama sempat dipakai pada standfirst, ringkasan pilar 04, lead enam
-	 *    pilar, label bagian dampak, dan paragraf penutupnya — lima kali pada satu
+	 *    pilar, label bagian dampak, dan paragraf penutupnya: lima kali pada satu
 	 *    halaman, dan justru pengulangannya yang membuat teks terbaca seperti
 	 *    keluaran mesin. Yang bertahan hanyalah kalimat yang menanggung beban:
-	 *    penegasan bahwa angka rujukan bukan hasil pengukuran PFfriends.
+	 *    penegasan bahwa angka rujukan bukan hasil pengukuran PFriends.
 	 *    Menghapusnya berarti menghapus peringatannya sekalian.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 2 Background, Hal 4 Objective, Hal 5, Hal 6, Hal 7
-	 * @see docs/10-REVISION-SPEC.md — §4.4 kelas angka, §4.6 aturan bagian dampak
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 2 Background, Hal 4 Objective, Hal 5, Hal 6, Hal 7
+	 * @see docs/10-REVISION-SPEC.md: §4.4 kelas angka, §4.6 aturan bagian dampak
 	 */
 	import { Icon, ICONS, Timeline } from '$lib/components';
 	import { EditorialHero, PhotoFigure, PullQuote, SectionRule } from '$lib/components/editorial';
@@ -48,7 +48,7 @@
 
 	/**
 	 * Enam pilar aktivitas Hal 5. Isi tiap pilar adalah parafrase setia dari
-	 * dokumen sumber — tidak ada pilar tambahan dan tidak ada yang dihilangkan.
+	 * dokumen sumber: tidak ada pilar tambahan dan tidak ada yang dihilangkan.
 	 */
 	const PILAR = [
 		{
@@ -114,13 +114,13 @@
 	];
 
 	/**
-	 * Lini masa 2026 Hal 7. Tanggal memakai awal bulan sebagai penanda periode —
+	 * Lini masa 2026 Hal 7. Tanggal memakai awal bulan sebagai penanda periode :
 	 * dokumen sumber menyebut bulan, bukan tanggal pelaksanaan.
 	 */
 	const LINI_MASA = [
 		{
 			id: 'jan-2026',
-			title: 'Januari — Pendataan penerima manfaat',
+			title: 'Januari: Pendataan penerima manfaat',
 			description:
 				'Pengumpulan database penerima manfaat PFpreneur dan PFprestasi, dilanjutkan validasi keabsahan datanya.',
 			at: '2026-01-15T09:00:00+07:00',
@@ -129,7 +129,7 @@
 		},
 		{
 			id: 'feb-2026',
-			title: 'Februari — Perumusan konsep',
+			title: 'Februari: Perumusan konsep',
 			description:
 				'Pengajuan konsep Community Building & Engagement, serta diskusi bersama fungsi IT dan tim Corporate Secretary.',
 			at: '2026-02-15T09:00:00+07:00',
@@ -138,16 +138,16 @@
 		},
 		{
 			id: 'mar-2026',
-			title: 'Maret — PFfriends home dan sosialisasi',
+			title: 'Maret: PFriends home dan sosialisasi',
 			description:
-				'Pembuatan "PFfriends home" beserta konsep microsite, dibarengi sosialisasi kepada penerima manfaat untuk bergabung.',
+				'Pembuatan "PFriends home" beserta konsep microsite, dibarengi sosialisasi kepada penerima manfaat untuk bergabung.',
 			at: '2026-03-15T09:00:00+07:00',
 			iconPath: ICONS.home,
 			color: 'var(--color-pertamina-blue)'
 		},
 		{
 			id: 'apr-2026',
-			title: 'April — Pembentukan WA Komunitas',
+			title: 'April: Pembentukan WA Komunitas',
 			description:
 				'Penerima manfaat diundang bergabung ke WA Komunitas secara bertahap, disertai komunikasi rutin mengenai program.',
 			at: '2026-04-15T09:00:00+07:00',
@@ -156,16 +156,16 @@
 		},
 		{
 			id: 'mei-2026',
-			title: 'Mei — Microsite dan onboarding',
+			title: 'Mei: Microsite dan onboarding',
 			description:
-				'Pembuatan microsite PFfriends dan proses onboarding penerima manfaat ke dalamnya.',
+				'Pembuatan microsite PFriends dan proses onboarding penerima manfaat ke dalamnya.',
 			at: '2026-05-15T09:00:00+07:00',
 			iconPath: ICONS.globe,
 			color: 'var(--color-pertamina-green)'
 		},
 		{
 			id: 'jun-2026',
-			title: 'Juni — Pengakuan kontribusi mulai berjalan',
+			title: 'Juni: Pengakuan kontribusi mulai berjalan',
 			description:
 				'Pencatatan kontribusi anggota dan amplifikasi informasi dari komunitas mulai dijalankan, bersamaan dengan upskilling anggota.',
 			at: '2026-06-15T09:00:00+07:00',
@@ -174,7 +174,7 @@
 		},
 		{
 			id: 'jul-2026',
-			title: 'Juli — Agenda setting profil anggota',
+			title: 'Juli: Agenda setting profil anggota',
 			description:
 				'Diseminasi konten PF yang berkaitan dengan profil anggota PFprestasi dan PFpreneur, ditambah kelanjutan amplifikasi dan upskilling.',
 			at: '2026-07-15T09:00:00+07:00',
@@ -205,7 +205,7 @@
 </script>
 
 <svelte:head>
-	<title>Tentang Inisiatif — PFfriends</title>
+	<title>Tentang Inisiatif: PFriends</title>
 	<meta
 		name="description"
 		content="Latar belakang, tujuan, enam pilar aktivitas, dan lini masa 2026 Community Connect Initiative Pertamina Foundation."
@@ -223,7 +223,7 @@
 	secondary={{ label: 'Metode pengukuran', href: '/metode-pengukuran' }}
 	overlay="flat"
 	height="short"
-	caption="Pertemuan kerja — foto stok"
+	caption="Pertemuan kerja: foto stok"
 />
 
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -268,11 +268,11 @@
 				<p class="mt-6 max-w-[62ch] text-[16px] leading-[1.68] text-ink-700">
 					Wujudnya adalah platform ekosistem yang menghubungkan alumni Beasiswa Sobat Bumi sebagai
 					mitra muda dan mentor dengan PFpreneur sebagai mitra sekaligus entitas bisnis binaan.
-					Microsite ini menjadi rumah komunitas tersebut — tempat informasi disebarkan, agenda
+					Microsite ini menjadi rumah komunitas tersebut: tempat informasi disebarkan, agenda
 					disusun, dan kerja lapangan didokumentasikan.
 				</p>
 				<p class="mt-6 max-w-[62ch] text-[15px] leading-[1.6] text-ink-600">
-					Landasan konseptualnya adalah <span class="italic">Sense of Community Theory</span> —
+					Landasan konseptualnya adalah <span class="italic">Sense of Community Theory</span> :
 					McMillan &amp; Chavis (1986): komunitas menjadi kuat ketika anggotanya merasakan ikatan
 					psikologis dan rasa memiliki.
 				</p>
@@ -311,7 +311,7 @@
 					<ul class="mt-4 space-y-2">
 						{#each pilar.butir as butir (butir)}
 							<li class="flex gap-3 text-[15px] leading-[1.6] text-ink-600">
-								<span class="shrink-0" aria-hidden="true">—</span>
+								<span class="shrink-0" aria-hidden="true">:</span>
 								<span>{butir}</span>
 							</li>
 						{/each}
@@ -355,7 +355,7 @@
 				</ul>
 
 				<p class="mt-6 max-w-[62ch] text-[15px] leading-[1.6] text-ink-600">
-					Kedua kalimat itu adalah acuan perencanaan, bukan hasil pengukuran PFfriends. Angka yang
+					Kedua kalimat itu adalah acuan perencanaan, bukan hasil pengukuran PFriends. Angka yang
 					benar-benar terhitung dari catatan komunitas ditampilkan di beranda, lengkap dengan
 					tanggal potretnya.
 				</p>
@@ -388,7 +388,7 @@
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" style="padding-block:var(--rhythm-tight);">
 		<div class="grid grid-cols-1 gap-x-12 gap-y-8 lg:grid-cols-12">
 			<div class="min-w-0 lg:col-span-7">
-				<!-- `display-editorial` berbaris 0.98 — ukuran judul satu baris. Judul
+				<!-- `display-editorial` berbaris 0.98: ukuran judul satu baris. Judul
 				     yang dibatasi 22ch selalu pecah dua baris, dan leading itu membuat
 				     ekor huruf baris pertama menyentuh kepala huruf baris kedua. -->
 				<h2

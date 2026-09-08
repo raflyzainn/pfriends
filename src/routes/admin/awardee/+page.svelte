@@ -1,379 +1,50 @@
 <script>
-	/**
-	 * HALAMAN — Kontrol Akun.
-	 *
-	 * Tanggung jawab: satu daftar berisi SELURUH akun PFfriends — awardee,
-	 * verifikator, dan admin — beserta satu tindakan yang hanya boleh dimiliki
-	 * konsol ini: berpindah sesi ke akun mana pun untuk keperluan peragaan.
-	 *
-	 * ── Tiga keputusan yang tidak terbaca dari kode ──────────────────────────
-	 *
-	 * 1. **Sumbernya `accounts`, bukan `awardees`.** Versi sebelumnya hanya
-	 *    menampilkan enam puluh baris registry penerima manfaat, sehingga dua
-	 *    verifikator dan satu admin tidak terlihat di mana pun dalam aplikasi.
-	 *    Halaman yang bernama "Kontrol Akun" tetapi tidak dapat menampilkan akun
-	 *    yang sedang dipakai membukanya adalah daftar yang tidak lengkap menurut
-	 *    definisinya sendiri.
-	 * 2. **Perpindahan sesi berjalan lewat `session.login()`, bukan lewat
-	 *    penulisan peran langsung ke store.** Menyetel `session.role` dari
-	 *    halaman akan melewati `AuthService` — dan bersamanya melewati
-	 *    pemeriksaan akun nonaktif, pemuatan entity awardee, serta pencatatan
-	 *    waktu masuk terakhir. Sesi hasil jalan pintas itu tampak benar di layar
-	 *    dan salah di setiap tempat yang membacanya. Kata sandi demo seragam
-	 *    (`SANDI_DEMO`) memang membuat jalur resminya tetap murah.
-	 * 3. **Tujuan pengalihan diminta dari `session.homePath()`, bukan ditebak
-	 *    dari peran di sini.** Peta peran → beranda hidup di `AccessPolicy`;
-	 *    menyalinnya ke halaman ini melahirkan peta kedua yang cepat berbeda
-	 *    pendapat dengan `ZoneGuard` — dan pengguna akan terlempar bolak-balik di
-	 *    antara keduanya.
-	 *
-	 * Halaman ini TIDAK menyunting akun. Menonaktifkan, mengubah peran, dan
-	 * menyetel ulang sandi adalah tindakan bertanda tangan yang menuntut jejak
-	 * audit; menaruh tombolnya di mockup akan menjanjikan kemampuan yang belum
-	 * ada penampungnya.
-	 *
-	 * @see src/lib/stores/session.svelte.js — kontrak sesi dan hidrasi
-	 * @see src/lib/domain/services/AuthService.js — satu-satunya gerbang kredensial
-	 */
 	import { goto } from '$app/navigation';
-	import {
-		Avatar,
-		Button,
-		Card,
-		DataTable,
-		FilterChips,
-		Icon,
-		PageHeader,
-		SearchInput,
-		StatTile,
-		StatusBadge,
-		ICONS
-	} from '$lib/components';
-	import { ACCOUNT_STATUS_META } from '$lib/domain/entities/UserAccount.js';
-	import { UserRole, USER_ROLE_META } from '$lib/domain/constants/roles.js';
-	import { accountRepository } from '$lib/infrastructure/repositories/index.js';
-	import { SANDI_DEMO } from '$lib/infrastructure/seed/accounts.js';
-	import { bootstrapDatabase } from '$lib/infrastructure/seed/bootstrap.js';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
+	import { Button, Card, EmptyState, FilterChips, PageHeader, SearchInput, StatTile, StatusBadge, ICONS } from '$lib/components';
+	import { beginAwardeeImpersonation } from '$lib/infrastructure/pocketbase/adminAwardees.js';
+	import { adminAwardees } from '$lib/stores/admin-awardees.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
-	import { toast, ToastType } from '$lib/stores/toast.svelte.js';
-	import { formatAngka, formatRelatif } from '$lib/utils/format.js';
 
-	/** Warna lencana tiap peran; sekadar penanda visual, bukan kewenangan. */
-	const WARNA_PERAN = Object.freeze({
-		[UserRole.AWARDEE]: 'blue',
-		[UserRole.VERIFIER]: 'green',
-		[UserRole.ADMIN]: 'navy'
-	});
-
-	/** @type {import('$lib/domain/entities/UserAccount.js').UserAccount[]} */
-	let akun = $state.raw([]);
-	let memuat = $state(true);
-
-	let kataKunci = $state('');
-	let filterPeran = $state('');
-	let sortKey = $state('nama');
-	let sortDir = $state('asc');
-
-	/** @type {string|null} Id akun yang sedang dipindahi sesinya. */
-	let sedangMasuk = $state(null);
-
-	$effect(() => {
-		let dibatalkan = false;
-
-		(async () => {
-			try {
-				await bootstrapDatabase();
-				const baris = await accountRepository.getAll();
-				if (!dibatalkan) akun = baris;
-			} finally {
-				if (!dibatalkan) memuat = false;
-			}
-		})();
-
-		return () => {
-			dibatalkan = true;
-		};
-	});
-
-	/** Entity awardee dipetakan sekali; tabel membacanya per baris. */
-	const awardeeById = $derived(new Map(catalog.awardees.map((awardee) => [awardee.id, awardee])));
-
-	const cacahPeran = $derived(
-		Object.values(UserRole).map((peran) => ({
-			id: peran,
-			label: USER_ROLE_META[peran]?.label ?? peran,
-			count: akun.filter((baris) => baris.role === peran).length
-		}))
-	);
-
-	const akunAktif = $derived(akun.filter((baris) => baris.isActive).length);
-
-	const stafPf = $derived(akun.filter((baris) => !baris.isAwardee).length);
-
-	const pernahMasuk = $derived(akun.filter((baris) => baris.lastLoginAt !== null).length);
-
-	/**
-	 * Baris tabel. Entity akun ikut dibawa supaya sel dapat merender komponen
-	 * domain tanpa menyalin propertinya satu per satu ke objek datar.
-	 */
-	const baris = $derived.by(() => {
-		const kunci = kataKunci.trim().toLowerCase();
-
-		const tersaring = akun.filter((baris) => {
-			if (filterPeran && baris.role !== filterPeran) return false;
-			if (kunci === '') return true;
-
-			const awardee = baris.awardeeId ? awardeeById.get(baris.awardeeId) : null;
-			return [
-				baris.displayName,
-				baris.email,
-				baris.id,
-				baris.unit,
-				baris.roleLabel,
-				awardee?.chapterId,
-				awardee?.city
-			]
-				.filter(Boolean)
-				.some((bidang) => String(bidang).toLowerCase().includes(kunci));
-		});
-
-		const arah = sortDir === 'asc' ? 1 : -1;
-
-		/** @param {any} row */
-		const nilaiUrut = (row) => {
-			if (sortKey === 'peran') return row.akun.roleLabel.toLowerCase();
-			if (sortKey === 'status') return row.akun.status;
-			if (sortKey === 'masuk') return row.akun.lastLoginAt?.getTime() ?? 0;
-			return row.akun.displayName.toLowerCase();
-		};
-
-		return tersaring
-			.map((entity) => ({
-				id: entity.id,
-				akun: entity,
-				awardee: entity.awardeeId ? (awardeeById.get(entity.awardeeId) ?? null) : null
-			}))
-			.sort((a, b) => {
-				const kiri = nilaiUrut(a);
-				const kanan = nilaiUrut(b);
-				if (kiri === kanan) return a.akun.displayName.localeCompare(b.akun.displayName);
-				return kiri > kanan ? arah : -arah;
-			});
-	});
-
-	const KOLOM = Object.freeze([
-		{ key: 'nama', label: 'Akun', sortable: true },
-		{ key: 'peran', label: 'Peran', sortable: true },
-		{ key: 'konteks', label: 'Penempatan' },
-		{ key: 'status', label: 'Status akun', sortable: true },
-		{ key: 'masuk', label: 'Masuk terakhir', sortable: true },
-		{ key: 'aksi', label: 'Sesi', align: 'right' }
-	]);
-
-	function bersihkanFilter() {
-		kataKunci = '';
-		filterPeran = '';
-	}
-
-	/**
-	 * Berpindah sesi ke sebuah akun, lalu membuka zona miliknya.
-	 *
-	 * Memakai jalur masuk yang sama persis dengan halaman `/masuk`: sandi demo
-	 * seragam diperiksa `AuthService`, akun nonaktif ditolak dengan pesannya
-	 * sendiri, dan entity awardee ikut dimuat. Tidak ada jalan pintas — lihat
-	 * butir 2 pada catatan berkas.
-	 *
-	 * @param {import('$lib/domain/entities/UserAccount.js').UserAccount} entity
-	 * @returns {Promise<void>}
-	 */
-	async function masukSebagai(entity) {
-		sedangMasuk = entity.id;
-		try {
-			const hasil = await session.login(entity.email, SANDI_DEMO);
-			if (!hasil.success) {
-				toast.error('Perpindahan sesi ditolak', hasil.error);
-				return;
-			}
-
-			toast.push({
-				type: ToastType.SUCCESS,
-				title: `Kini masuk sebagai ${entity.displayName}`,
-				message: `Sesi berpindah ke peran ${entity.roleLabel}. Keluar dari zona itu untuk kembali ke konsol admin.`
-			});
-			await goto(session.homePath());
-		} finally {
-			sedangMasuk = null;
-		}
-	}
+	let query = $state(''); let accountStatus = $state(''); let membershipStatus = $state(''); let community = $state(''); let chapter = $state(''); let page = $state(1);
+	let selected = $state(null); let dialog = $state(''); let targetStatus = $state(''); let reason = $state(''); let success = $state(''); let timer;
+	const accountFilters = [{ id: 'AKTIF', label: 'Akun aktif' }, { id: 'TERKUNCI', label: 'Terkunci' }, { id: 'NONAKTIF', label: 'Akun nonaktif' }];
+	const membershipFilters = [{ id: 'AKTIF', label: 'Anggota aktif' }, { id: 'NONAKTIF', label: 'Keanggotaan nonaktif' }];
+	const communityFilters = [{ id: 'SOBI', label: 'Sobat Bumi' }, { id: 'WOMENPRENEUR', label: 'Womenpreneur' }];
+	const chapterFilters = [{ id: 'PF10', label: 'PF10' }, { id: 'PF11', label: 'PF11' }, { id: 'PF12', label: 'PF12' }];
+	function load() { return adminAwardees.load({ page, query, accountStatus, membershipStatus, community, chapter }); }
+	$effect(() => { query; accountStatus; membershipStatus; community; chapter; page; clearTimeout(timer); timer = setTimeout(load, query ? 350 : 0); return () => clearTimeout(timer); });
+	function openStatus(item, kind) { selected = item; dialog = kind; reason = ''; targetStatus = kind === 'account' ? (item.accountStatus === 'AKTIF' ? 'TERKUNCI' : 'AKTIF') : (item.membershipStatus === 'AKTIF' ? 'NONAKTIF' : 'AKTIF'); }
+	async function saveStatus() { const result = await adminAwardees.changeStatus(selected.id, dialog, targetStatus, reason); if (!result) return; success = 'Status berhasil diperbarui.'; dialog = ''; selected = null; await load(); }
+	async function openHistory(item) { selected = item; dialog = 'history'; await adminAwardees.loadHistory(item.id); }
+	async function impersonate(item) { adminAwardees.working = true; adminAwardees.error = ''; try { const result = await beginAwardeeImpersonation(item.id); await session.beginImpersonation(result); await goto('/awardee'); } catch (error) { adminAwardees.error = error instanceof Error ? error.message : 'Sesi Awardee gagal dibuka.'; } finally { adminAwardees.working = false; } }
+	const dateTime = (value) => value ? String(value).slice(0, 16).replace('T', ' ') : 'Belum pernah';
 </script>
 
-<PageHeader
-	eyebrow="Konsol Corporate Secretary"
-	title="Kontrol Akun"
-	subtitle="Seluruh akun PFfriends dalam satu daftar — awardee, verifikator, dan admin. Tombol “Masuk sebagai” memindahkan sesi ke akun terpilih dan membuka zonanya, supaya setiap peran dapat diperagakan tanpa perlu keluar-masuk halaman login."
-/>
+<svelte:head><title>Kontrol Awardee · PFriends</title></svelte:head>
+<PageHeader eyebrow="Konsol Corporate Secretary" title="Kontrol Awardee" subtitle="Pantau keanggotaan, kendalikan akses akun, dan buka sesi Awardee dengan jejak audit yang jelas." />
+{#if adminAwardees.error}<p class="mb-5 rounded-control border border-red-200 bg-red-50 p-3 text-sm text-red-800">{adminAwardees.error}</p>{/if}
+{#if success}<p class="mb-5 rounded-control border border-green-200 bg-green-50 p-3 text-sm text-green-800">{success}</p>{/if}
 
-<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-	<StatTile
-		label="Total akun"
-		value={akun.length}
-		unit="akun"
-		hint="Seluruh baris tabel identitas login"
-		iconPath={ICONS.users}
-		color="var(--color-pertamina-blue)"
-	/>
-	<StatTile
-		label="Akun aktif"
-		value={akunAktif}
-		unit="akun"
-		hint="Berstatus aktif dan dapat masuk"
-		iconPath={ICONS.checkCircle}
-		color="var(--color-pertamina-green)"
-	/>
-	<StatTile
-		label="Staf Pertamina Foundation"
-		value={stafPf}
-		unit="akun"
-		hint="Verifikator dan admin; tidak terhitung sebagai penerima manfaat"
-		iconPath={ICONS.shield}
-		color="var(--color-pertamina-navy)"
-	/>
-	<StatTile
-		label="Pernah masuk"
-		value={pernahMasuk}
-		unit="akun"
-		hint="Sisanya belum pernah membuka microsite sama sekali"
-		iconPath={ICONS.clock}
-		color="var(--color-tier-champion)"
-	/>
+<div class="mb-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
+	<StatTile label="Total Awardee" value={adminAwardees.stats.total} hint="Seluruh penerima manfaat terdaftar" iconPath={ICONS.users} color="var(--color-pertamina-blue)" />
+	<StatTile label="Akun aktif" value={adminAwardees.stats.activeAccounts} hint="Dapat masuk ke PFriends" iconPath={ICONS.checkCircle} color="var(--color-success)" />
+	<StatTile label="Keanggotaan nonaktif" value={adminAwardees.stats.inactiveMemberships} hint="Tidak masuk agregat anggota aktif" iconPath={ICONS.user} color="var(--color-warning)" />
+	<StatTile label="Pernah masuk" value={adminAwardees.stats.everLoggedIn} hint="Memiliki waktu masuk terakhir" iconPath={ICONS.clock} color="var(--color-pertamina-navy)" />
 </div>
 
-<Card class="mb-4" padding="sm">
-	<div class="space-y-3">
-		<div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-			<div class="min-w-0 flex-1">
-				<SearchInput
-					bind:value={kataKunci}
-					label="Cari akun"
-					placeholder="Cari nama, surel, identitas akun, unit kerja, atau chapter"
-				/>
-			</div>
-			<Button
-				variant="ghost"
-				size="sm"
-				iconPath={ICONS.refresh}
-				class="shrink-0"
-				onclick={bersihkanFilter}
-			>
-				Reset
-			</Button>
-		</div>
-
-		<FilterChips
-			label="Saring peran"
-			options={cacahPeran}
-			bind:selected={filterPeran}
-			showClear={false}
-		/>
-	</div>
+<Card padding="sm">
+	<SearchInput bind:value={query} label="Cari Awardee" placeholder="Cari nama, surel, identitas, kota, komunitas, atau chapter" />
+	<div class="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-4"><FilterChips options={accountFilters} bind:selected={accountStatus} label="Status akun" /><FilterChips options={membershipFilters} bind:selected={membershipStatus} label="Status keanggotaan" /><FilterChips options={communityFilters} bind:selected={community} label="Komunitas" /><FilterChips options={chapterFilters} bind:selected={chapter} label="Chapter" /></div>
 </Card>
+<p class="mt-4 text-sm text-ink-500">{adminAwardees.page.totalItems} Awardee ditemukan.</p>
 
-<p class="mb-2 text-xs text-ink-500">
-	Menampilkan <span class="numeric font-semibold text-ink-700">{formatAngka(baris.length)}</span>
-	dari {formatAngka(akun.length)} akun terdaftar.
-</p>
+{#if adminAwardees.loading && adminAwardees.items.length === 0}<p class="mt-6 text-sm text-ink-500">Memuat Awardee...</p>
+{:else if adminAwardees.items.length === 0}<div class="mt-6"><EmptyState title="Awardee tidak ditemukan" message="Coba longgarkan pencarian atau pilihan filter." /></div>
+{:else}<div class="mt-5 grid gap-3">{#each adminAwardees.items as item (item.id)}<Card><div class="flex flex-col justify-between gap-4 xl:flex-row xl:items-center"><div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><StatusBadge label={item.accountStatus === 'AKTIF' ? 'Akun aktif' : item.accountStatus === 'TERKUNCI' ? 'Akun terkunci' : 'Akun nonaktif'} color={item.accountStatus === 'AKTIF' ? 'green' : item.accountStatus === 'TERKUNCI' ? 'amber' : 'slate'} withDot /><StatusBadge label={item.membershipStatus === 'AKTIF' ? 'Anggota aktif' : 'Keanggotaan nonaktif'} color={item.membershipStatus === 'AKTIF' ? 'blue' : 'slate'} /></div><h2 class="mt-2 font-semibold text-heading">{item.name}</h2><p class="mt-1 text-sm text-ink-600">{item.email} · {item.legacyId}</p><p class="mt-1 text-xs text-ink-500">{item.community} · {item.chapterId} · {item.city || 'Kota belum diisi'} · Masuk terakhir {dateTime(item.lastLoginAt)}</p></div><div class="flex shrink-0 flex-wrap gap-2"><Button size="sm" variant="secondary" onclick={() => openHistory(item)}>Riwayat</Button><Button size="sm" variant="outline" onclick={() => openStatus(item, 'membership')}>Keanggotaan</Button><Button size="sm" variant="outline" onclick={() => openStatus(item, 'account')}>Akses akun</Button><Button size="sm" disabled={item.accountStatus !== 'AKTIF' || adminAwardees.working} onclick={() => impersonate(item)}>Masuk sebagai</Button></div></div></Card>{/each}</div>{/if}
 
-<DataTable
-	columns={KOLOM}
-	rows={baris}
-	bind:sortKey
-	bind:sortDir
-	loading={memuat && akun.length === 0}
-	caption="Daftar seluruh akun PFfriends beserta peran, penempatan, status akun, waktu masuk terakhir, dan tombol perpindahan sesi"
-	empty="Tidak ada akun yang cocok dengan penyaring ini. Longgarkan saringan peran atau kosongkan kata kunci pencarian."
->
-	{#snippet cell(row, kolom)}
-		{@const entity = row.akun}
+{#if adminAwardees.page.totalPages > 1}<div class="mt-5 flex items-center justify-between"><Button variant="secondary" disabled={page <= 1} onclick={() => page--}>Sebelumnya</Button><span class="text-sm text-ink-500">Halaman {page} dari {adminAwardees.page.totalPages}</span><Button variant="secondary" disabled={page >= adminAwardees.page.totalPages} onclick={() => page++}>Berikutnya</Button></div>{/if}
 
-		{#if kolom.key === 'nama'}
-			<div class="flex items-center gap-2.5">
-				<Avatar name={entity.displayName} size="sm" tier={row.awardee?.tierLevel ?? ''} showRing />
-				<span class="min-w-0">
-					<span class="block truncate font-semibold text-ink-900">{entity.displayName}</span>
-					<span class="block truncate text-xs text-ink-500">{entity.email}</span>
-				</span>
-			</div>
-		{:else if kolom.key === 'peran'}
-			<StatusBadge
-				label={entity.roleLabel}
-				color={WARNA_PERAN[entity.role] ?? 'slate'}
-				size="sm"
-				withDot
-			/>
-		{:else if kolom.key === 'konteks'}
-			{#if row.awardee}
-				<span class="block min-w-0">
-					<span class="block truncate text-sm text-ink-800">
-						{row.awardee.chapterDef?.label ?? row.awardee.chapterId}
-					</span>
-					<span class="block truncate text-xs text-ink-500">
-						{row.awardee.communityDef?.akronim ?? row.awardee.community}
-					</span>
-				</span>
-			{:else}
-				<span class="block truncate text-sm text-ink-800">{entity.unit || 'Pertamina Foundation'}</span>
-			{/if}
-		{:else if kolom.key === 'status'}
-			<StatusBadge
-				label={ACCOUNT_STATUS_META[entity.status]?.label ?? entity.status}
-				color={ACCOUNT_STATUS_META[entity.status]?.badgeColor ?? 'slate'}
-				size="sm"
-				withDot
-				title={ACCOUNT_STATUS_META[entity.status]?.deskripsi ?? ''}
-			/>
-		{:else if kolom.key === 'masuk'}
-			{#if entity.lastLoginAt}
-				<span class="whitespace-nowrap text-sm text-ink-700">{formatRelatif(entity.lastLoginAt)}</span>
-			{:else}
-				<span class="text-xs text-ink-400">Belum pernah</span>
-			{/if}
-		{:else if kolom.key === 'aksi'}
-			<div class="flex justify-end">
-				{#if session.accountId === entity.id}
-					<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700">
-						<Icon path={ICONS.checkCircle} size={14} />
-						Sesi berjalan
-					</span>
-				{:else if !entity.isActive}
-					<span class="text-xs text-ink-400">Akun nonaktif</span>
-				{:else}
-					<Button
-						variant="secondary"
-						size="sm"
-						iconPath={ICONS.logout}
-						loading={sedangMasuk === entity.id}
-						onclick={() => masukSebagai(entity)}
-					>
-						Masuk sebagai
-					</Button>
-				{/if}
-			</div>
-		{:else}
-			—
-		{/if}
-	{/snippet}
-</DataTable>
-
-<div class="card mt-4 p-4">
-	<p class="flex items-center gap-2 text-sm font-semibold text-heading">
-		<Icon path={ICONS.info} size={16} />
-		Tentang perpindahan sesi
-	</p>
-	<p class="mt-1.5 text-xs leading-relaxed text-ink-600">
-		Perpindahan memakai jalur masuk yang sama dengan halaman login: kredensial tetap diperiksa, akun
-		nonaktif tetap ditolak, dan waktu masuk terakhir tetap tercatat. Seluruh akun peragaan memakai
-		satu kata sandi yang sama. Setelah berpindah, sesi admin ini berakhir — kembali ke konsol dengan
-		keluar dari zona tujuan lalu masuk kembali sebagai Admin PF.
-	</p>
-</div>
+{#if dialog}<div class="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"><div class="w-full max-w-lg rounded-card bg-white p-6 shadow-xl">
+	{#if dialog === 'history'}<h2 class="text-xl font-semibold text-heading">Riwayat {selected.name}</h2>{#if adminAwardees.history.length === 0}<p class="mt-4 text-sm text-ink-500">Belum ada tindakan Admin.</p>{:else}<div class="mt-4 max-h-96 space-y-3 overflow-y-auto">{#each adminAwardees.history as item}<div class="rounded-control bg-ink-50 p-3"><p class="text-sm font-semibold text-ink-800">{item.action.replaceAll('_', ' ')}</p><p class="mt-1 text-xs text-ink-500">{item.actorName} · {dateTime(item.occurredAt)}</p>{#if item.reason}<p class="mt-2 text-sm text-ink-700">{item.reason}</p>{/if}</div>{/each}</div>{/if}<div class="mt-5"><Button variant="secondary" onclick={() => dialog = ''}>Tutup</Button></div>
+	{:else}<h2 class="text-xl font-semibold text-heading">Ubah {dialog === 'account' ? 'akses akun' : 'status keanggotaan'}</h2><p class="mt-1 text-sm text-ink-600">{selected.name}</p><label class="mt-5 block text-sm font-semibold text-ink-700">Status tujuan<select class="mt-1 w-full rounded-control border border-ink-200 p-2 font-normal" bind:value={targetStatus}>{#if dialog === 'account'}<option value="AKTIF">Aktif</option><option value="TERKUNCI">Terkunci</option><option value="NONAKTIF">Nonaktif</option>{:else}<option value="AKTIF">Aktif</option><option value="NONAKTIF">Nonaktif</option>{/if}</select></label><label class="mt-4 block text-sm font-semibold text-ink-700">Alasan<textarea class="mt-1 w-full rounded-control border border-ink-200 p-3 font-normal" rows="4" bind:value={reason} placeholder="Jelaskan alasan perubahan status"></textarea></label><div class="mt-5 flex gap-2"><Button disabled={adminAwardees.working || reason.trim().length < 10} onclick={saveStatus}>{adminAwardees.working ? 'Menyimpan...' : 'Simpan perubahan'}</Button><Button variant="secondary" disabled={adminAwardees.working} onclick={() => dialog = ''}>Batal</Button></div>{/if}
+</div></div>{/if}

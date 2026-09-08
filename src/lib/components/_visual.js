@@ -1,12 +1,12 @@
 /**
- * PEMBANTU VISUAL KOMPONEN — menerjemahkan entri konstanta domain menjadi gaya CSS.
+ * PEMBANTU VISUAL KOMPONEN: menerjemahkan entri konstanta domain menjadi gaya CSS.
  *
  * Mengapa berkas ini ada. Tailwind menghasilkan kelas secara statis, sehingga
  * `bg-{entry.token}` tidak akan pernah muncul di bundel CSS. Bila komponen ingin
  * memakai warna yang *datang dari data* (tier, pilar ESG, komunitas), satu-satunya
  * cara yang benar adalah merujuk custom property yang sudah didefinisikan di
  * `app.css` lewat `var(--color-…)`. Dengan begitu tabel tier tetap menjadi
- * satu-satunya sumber warna dan ambang — komponen tidak pernah menuliskan
+ * satu-satunya sumber warna dan ambang: komponen tidak pernah menuliskan
  * heksadesimal atau angka ambang apa pun.
  *
  * Berkas ini juga memuat perhitungan kontras. Polaritas teks pada chip tier solid
@@ -14,10 +14,10 @@
  * daftar tetap, melainkan DIHITUNG dari luminansi warna tier. Hasilnya identik
  * dengan tabel 08-DESIGN-SYSTEM §2.4, tetapi tetap benar bila tabel tier berubah.
  *
- * Awalan garis bawah menandai berkas internal paket komponen — tidak diekspor
+ * Awalan garis bawah menandai berkas internal paket komponen: tidak diekspor
  * lewat barrel dan bukan bagian dari kontrak lintas paket.
  *
- * @see docs/08-DESIGN-SYSTEM.md — §0.1 warna identitas, §2 tabel kontras
+ * @see docs/08-DESIGN-SYSTEM.md: §0.1 warna identitas, §2 tabel kontras
  * @see src/lib/domain/constants/tier-table.js
  */
 
@@ -25,7 +25,7 @@ import { TIER_TABLE, TierLevel, tierUntukLevel } from '$lib/domain/constants/tie
 import { ESG_PILLARS } from '$lib/domain/constants/esg-taxonomy.js';
 import { COMMUNITIES } from '$lib/domain/constants/community.js';
 
-/** Warna teks gelap universal, sebagai token — dipakai saat merender. */
+/** Warna teks gelap universal, sebagai token: dipakai saat merender. */
 const TEKS_GELAP = 'var(--color-ink-900)';
 /** Nilai heksadesimal `ink-900`, dibutuhkan karena perhitungan kontras tidak dapat membaca custom property. */
 const TEKS_GELAP_HEX = '#0f1b2d';
@@ -95,7 +95,7 @@ export function kontras(a, b) {
  * gelapnya adalah hitam murni; `ink-900` (#0F1B2D) adalah navy sangat gelap
  * dengan luminansi ~0,011, sehingga titik potongnya bergeser. Memakai ambang
  * itu apa adanya membuat tier biru dan merah salah memilih teks gelap
- * (3,81 dan 3,39 — gagal AA) padahal teks putih justru unggul di keduanya
+ * (3,81 dan 3,39: gagal AA) padahal teks putih justru unggul di keduanya
  * (4,54 dan 5,09 di atas varian `-fill`).
  *
  * Hasil fungsi ini mereproduksi persis tabel 08-DESIGN-SYSTEM §2.4:
@@ -111,7 +111,7 @@ export function teksKontras(hex) {
 /**
  * @typedef {object} GayaTier
  * @property {string} level     Level tier (TierLevel).
- * @property {string} label     Nama tier untuk teks — chip tier WAJIB memuatnya.
+ * @property {string} label     Nama tier untuk teks: chip tier WAJIB memuatnya.
  * @property {number} threshold Ambang poin tier.
  * @property {string} benefit   Kalimat benefit resmi.
  * @property {string} color     Heksadesimal identitas untuk dot, ring, dan seri chart.
@@ -146,7 +146,7 @@ export function entriTier(tier) {
  * Seluruh gaya yang dibutuhkan komponen untuk menggambar sebuah tier.
  *
  * @param {string|{level?: string}|null|undefined} tier
- * @returns {GayaTier|null} `null` bila tier tidak dikenal — pemanggil menampilkan keadaan netral.
+ * @returns {GayaTier|null} `null` bila tier tidak dikenal: pemanggil menampilkan keadaan netral.
  */
 export function gayaTier(tier) {
 	const entri = entriTier(tier);
@@ -172,14 +172,14 @@ export function gayaTier(tier) {
 }
 
 /**
- * Ambang tier tertinggi — dipakai `TierProgress` untuk menempatkan penanda rel
+ * Ambang tier tertinggi: dipakai `TierProgress` untuk menempatkan penanda rel
  * secara proporsional terhadap nilai, bukan berjarak sama rata.
  * @type {number}
  */
 export const AMBANG_TERTINGGI = TIER_TABLE[TIER_TABLE.length - 1].threshold;
 
 /**
- * Tier berambang (tanpa NEWCOMER) — inilah empat penanda yang tampil di rel progres.
+ * Tier berambang (tanpa NEWCOMER): inilah empat penanda yang tampil di rel progres.
  * @type {readonly import('$lib/domain/constants/tier-table.js').TierEntry[]}
  */
 export const TIER_BERAMBANG = TIER_TABLE.filter((entri) => entri.level !== TierLevel.NEWCOMER);
@@ -223,7 +223,7 @@ export function gayaKomunitas(id) {
  * Tingkat kelangkaan badge (03-GAMIFICATION-SPEC §6.2).
  *
  * Ini metadata TAMPILAN, bukan aturan domain: tidak ada ambang, poin, atau syarat
- * di sini — hanya nama tampil dan token warna yang sudah tersedia di app.css.
+ * di sini: hanya nama tampil dan token warna yang sudah tersedia di app.css.
  *
  * @type {Readonly<Record<string, { label: string, token: string, ink: string, berkilau: boolean }>>}
  */
@@ -269,7 +269,7 @@ export function kelas(...bagian) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   SISTEM VISUAL EDITORIAL — dipakai src/lib/components/editorial/**
+   SISTEM VISUAL EDITORIAL: dipakai src/lib/components/editorial/**
    Ditaruh di sini, bukan di berkas kedua, karena seluruh isinya adalah
    penerjemah data → CSS yang persis menjadi alasan berkas ini ada.
    ═════════════════════════════════════════════════════════════════════════ */
@@ -279,7 +279,7 @@ export function kelas(...bagian) {
  * menyentuh teks (`pertamina-red` 3.99 dan `pertamina-green` 3.30 di kanvas
  * hangat). Pada bar 4 px mereka sah: WCAG 1.4.11 menuntut 3.0:1 untuk elemen
  * non-teks, dan makna yang dibawanya SELALU juga ditulis sebagai kata di
- * sebelahnya — warna tidak pernah menjadi satu-satunya pembawa informasi.
+ * sebelahnya: warna tidak pernah menjadi satu-satunya pembawa informasi.
  *
  * @type {Readonly<Record<string, string>>}
  */
@@ -292,7 +292,7 @@ export const WARNA_KEYLINE = Object.freeze({
 /**
  * Nilai `style` untuk sebuah keying rule.
  * @param {'red'|'navy'|'green'|'none'|string} tone
- * @returns {string} String kosong bila tone `none`/tak dikenal — pemanggil tidak merender bar.
+ * @returns {string} String kosong bila tone `none`/tak dikenal: pemanggil tidak merender bar.
  */
 export function gayaKeyline(tone) {
 	const warna = WARNA_KEYLINE[tone];
@@ -301,7 +301,7 @@ export function gayaKeyline(tone) {
 
 /**
  * Keying rule pilar ESG. Pemetaan sengaja eksplisit: hijau untuk lingkungan,
- * navy untuk sosial, merah untuk tata kelola — tiga warna keyline yang sudah
+ * navy untuk sosial, merah untuk tata kelola: tiga warna keyline yang sudah
  * ada, bukan warna baru, sehingga kuota palet 90/7/3 tidak bertambah.
  *
  * @param {string} pillar 'E' | 'S' | 'G'
@@ -333,26 +333,26 @@ export const RASIO_FOTO = Object.freeze({
 /**
  * Nilai `aspect-ratio` untuk sebuah rasio manifes.
  * @param {string} ratio
- * @returns {string} `'16 / 9'` sebagai cadangan aman — rasio sampul cerita.
+ * @returns {string} `'16 / 9'` sebagai cadangan aman: rasio sampul cerita.
  */
 export function rasioFoto(ratio) {
 	return RASIO_FOTO[ratio] ?? RASIO_FOTO['16:9'];
 }
 
 /**
- * KETAHANAN RUNTIME — aksi Svelte yang melaporkan `<img>` yang berkasnya tidak ada.
+ * KETAHANAN RUNTIME: aksi Svelte yang melaporkan `<img>` yang berkasnya tidak ada.
  *
  * Mengapa ini dibutuhkan padahal `photos.js` sudah menyaring lewat `photo-credits.json`.
  * Penyaringan itu adalah gerbang STATIS: ia benar saat build, dan menjadi bohong begitu
  * seseorang menghapus, memindahkan, atau salah menamai satu berkas di `static/img/`
  * setelah build. Dalam keadaan itu `foto(key)` tetap mengembalikan entri lengkap dan
- * peramban merender ikon gambar rusak — persis yang dilarang `docs/12` §3.3(d) butir 4.
+ * peramban merender ikon gambar rusak: persis yang dilarang `docs/12` §3.3(d) butir 4.
  * Aksi ini menutup celah tersebut: pemanggil mengganti `<img>` dengan blok tipografis
  * yang sudah ada di cabang `{:else}` masing-masing komponen.
  *
  * Dua sumber galat ditangani, bukan satu:
- *   1. event `error` — kasus normal, berkas gagal diunduh setelah listener terpasang;
- *   2. pemeriksaan `complete && naturalWidth === 0` saat aksi dipasang — kasus hidrasi,
+ *   1. event `error`: kasus normal, berkas gagal diunduh setelah listener terpasang;
+ *   2. pemeriksaan `complete && naturalWidth === 0` saat aksi dipasang: kasus hidrasi,
  *      ketika galat sudah terjadi pada markup SSR SEBELUM listener sempat ada. Tanpa
  *      cabang kedua, halaman ter-prerender tetap menampilkan gambar rusak selamanya.
  *
@@ -377,7 +377,7 @@ export function pantauGagalMuat(node, laporkan) {
  *
  * Ritmenya sengaja tidak rata. Lima nilai untuk lima peran, dan `SectionRule`
  * memperingatkan di mode dev bila dua seksi bersebelahan memakai kombinasi
- * skala + ritme yang sama — cacat D-10 lahir dari halaman yang berdetak.
+ * skala + ritme yang sama: cacat D-10 lahir dari halaman yang berdetak.
  *
  * @param {'loose'|'base'|'snug'|'tight'|'flush'|string} rhythm
  * @returns {string} Nilai CSS siap pakai untuk `padding-block`.

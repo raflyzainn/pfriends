@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * CoverageSegmentBar (C-02) — segmen mana yang tertinggal dari target cakupan.
+	 * CoverageSegmentBar (C-02): segmen mana yang tertinggal dari target cakupan.
 	 *
 	 * Props:
 	 * @prop {{id:string,label:string,kind:string,registered:number,total:number,percent:number}[]} data
@@ -12,10 +12,10 @@
 	 * Batang ditumpuk sampai 100% dengan sisa berwarna abu, bukan dibiarkan
 	 * menggantung. Alasannya membaca: batang yang berhenti di 40% tanpa jejak sisa
 	 * membuat mata membandingkan panjang antarsegmen; batang bertumpuk penuh
-	 * memaksa mata membandingkan porsi terhadap keseluruhan — dan porsi itulah
+	 * memaksa mata membandingkan porsi terhadap keseluruhan: dan porsi itulah
 	 * yang ditanyakan target cakupan.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-02, §7.5 CH-6
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-02, §7.5 CH-6
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import { tip, legend, grid, valueAxis, categoryAxis, animasi, angka, palette, garisTarget } from './_chartTheme.js';

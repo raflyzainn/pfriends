@@ -1,12 +1,12 @@
 <script>
 	/**
-	 * ZoneGuard — penjaga tiga keadaan untuk zona ber-peran.
+	 * ZoneGuard: penjaga tiga keadaan untuk zona ber-peran.
 	 *
 	 * @prop {string} zone   Salah satu `Zone` dari AccessPolicy.
 	 * @prop {string} label  Sebutan zona pada panel penolakan, mis. 'zona awardee'.
 	 * @prop {import('svelte').Snippet} children Isi zona; hanya dirender bila berhak.
 	 *
-	 * Tiga keadaan, tiga perlakuan yang berbeda — dan perbedaannya disengaja:
+	 * Tiga keadaan, tiga perlakuan yang berbeda: dan perbedaannya disengaja:
 	 *
 	 * 1. `!session.ready` → splash. TIDAK mengalihkan dan TIDAK merender isi. Pada
 	 *    milidetik pertama sesudah muat ulang, jawaban "siapa yang masuk?" memang
@@ -20,7 +20,7 @@
 	 *    mengapa ia berhenti dan ke mana ia harus pergi; memindahkannya diam-diam
 	 *    hanya memindahkan kebingungan.
 	 *
-	 * Dua atribut data — `data-zone-splash` dan `data-zone-denied` — adalah kontrak
+	 * Dua atribut data: `data-zone-splash` dan `data-zone-denied`: adalah kontrak
 	 * dengan skrip e2e (§6.2). Keduanya ATRIBUT, bukan teks, supaya deteksi
 	 * "terlempar keluar" tidak ikut basi ketika kalimatnya diperbaiki.
 	 *
@@ -28,7 +28,7 @@
 	 * sesi (pengecualian tersurat pada D-6): tugasnya memang membaca sesi, dan
 	 * menerimanya lewat props hanya memindahkan kewajiban itu ke tujuh layout.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak ZoneGuard, §6.4 matriks perilaku guard
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak ZoneGuard, §6.4 matriks perilaku guard
 	 */
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -42,9 +42,11 @@
 	const jalurKini = $derived(page.url?.pathname ?? '/');
 
 	/** Peran yang sedang aktif berhak memasuki zona ini. */
-	const berhak = $derived(AccessPolicy.canEnter(session.role, zone));
+	const berhak = $derived(
+		AccessPolicy.canEnter(session.role, zone) && session.canAccess(jalurKini)
+	);
 
-	/** Beranda peran yang sedang aktif — tujuan tombol jalan keluar. */
+	/** Beranda peran yang sedang aktif: tujuan tombol jalan keluar. */
 	const beranda = $derived(session.homePath());
 
 	// Hidrasi dijalankan dari guard, bukan dari tiap layout: guard adalah komponen
@@ -55,7 +57,7 @@
 	});
 
 	// Tamu dialihkan ke halaman masuk sambil membawa tujuan semula. Efek ini juga
-	// berlaku SESUDAH `logout()` dari dalam zona — tanpa itu, pengguna yang menekan
+	// berlaku SESUDAH `logout()` dari dalam zona: tanpa itu, pengguna yang menekan
 	// keluar tetap menatap halaman milik sesi yang baru saja berakhir.
 	$effect(() => {
 		if (!session.ready || session.isAuthenticated) return;
@@ -77,7 +79,7 @@
 			>
 				<Icon path={ICONS.shield} size={24} />
 			</span>
-			<p class="mt-3 text-sm font-semibold text-heading">Menyiapkan PFfriends</p>
+			<p class="mt-3 text-sm font-semibold text-heading">Menyiapkan PFriends</p>
 			<p class="mt-1 text-xs text-ink-500">Memulihkan sesi Anda.</p>
 		</div>
 	</div>
@@ -126,12 +128,12 @@
 					href="/"
 					class="inline-flex min-h-11 items-center justify-center rounded-control border border-ink-200 px-4 text-sm font-semibold text-ink-700 transition-colors hover:bg-ink-50"
 				>
-					Buka halaman publik PFfriends
+					Buka halaman publik PFriends
 				</a>
 			</div>
 
 			<p class="mt-4 text-xs text-ink-500">
-				Butuh akses ke {label}? Hubungi Corporate Secretary Pertamina Foundation — peran diberikan
+				Butuh akses ke {label}? Hubungi Corporate Secretary Pertamina Foundation: peran diberikan
 				lewat akun, bukan lewat tautan.
 			</p>
 		</div>

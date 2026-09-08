@@ -1,5 +1,5 @@
 /**
- * REPOSITORY — Akun Pengguna.
+ * REPOSITORY: Akun Pengguna.
  *
  * Tanggung jawab: akses tabel `accounts` untuk autentikasi, penjagaan zona, dan
  * panel kredensial demo pada halaman masuk.
@@ -8,7 +8,7 @@
  *
  * 1. **Surel selalu dinormalkan sebelum dicari.** Indeks `&email` bersifat unik dan
  *    menyimpan bentuk huruf kecil tanpa spasi tepi; kueri yang tidak dinormalkan
- *    akan mengembalikan `null` untuk kredensial yang sebenarnya benar — kegagalan
+ *    akan mengembalikan `null` untuk kredensial yang sebenarnya benar: kegagalan
  *    login yang paling sulit dipercaya penggunanya karena ia yakin sudah mengetik
  *    dengan benar.
  * 2. **`demoAccounts()` tidak pernah mengembalikan kata sandi maupun hash.** Panel
@@ -17,8 +17,8 @@
  *    `seed/accounts.js`; menyalinnya ke komponen akan melahirkan sumber kebenaran
  *    kedua yang diam-diam basi begitu sandi diubah di satu sisi saja.
  *
- * @see src/lib/domain/entities/UserAccount.js — entity yang dipetakan
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.11 kontrak export AccountRepository, R-17
+ * @see src/lib/domain/entities/UserAccount.js: entity yang dipetakan
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.11 kontrak export AccountRepository, R-17
  */
 
 import { UserAccount } from '$lib/domain/entities/UserAccount.js';
@@ -37,7 +37,7 @@ import { akunSorotan } from '../seed/accounts.js';
  * Kalimat ini dirender di `/masuk`, yang berada di ZONA PUBLIK. Karena itu ia
  * tunduk pada PO-2: dilarang menyebut poin, jenjang, papan peringkat, maupun
  * lencana. Larangan itu berlaku pada teks yang sampai ke layar, bukan pada letak
- * berkasnya — `scripts/verify/public-purity.mjs` hanya memindai
+ * berkasnya: `scripts/verify/public-purity.mjs` hanya memindai
  * `src/routes/(public)/**`, sehingga kalimat yang masuk dari lapisan repository
  * seperti ini tidak akan tertangkap olehnya dan harus dijaga di sini.
  * @type {Readonly<Record<string, string>>}
@@ -98,11 +98,11 @@ export class AccountRepository extends DexieRepository {
 	}
 
 	/**
-	 * Kredensial demo untuk panel bantuan `/masuk` — TANPA hash, TANPA kata sandi.
+	 * Kredensial demo untuk panel bantuan `/masuk`: TANPA hash, TANPA kata sandi.
 	 *
 	 * Satu baris per peran yang perlu diperagakan: satu awardee sorotan, seluruh
 	 * verifikator (dua, supaya larangan meninjau usulan sendiri dapat ditunjukkan),
-	 * dan satu admin. Enam puluh akun awardee tidak pernah dipajang — panel bantuan
+	 * dan satu admin. Enam puluh akun awardee tidak pernah dipajang: panel bantuan
 	 * yang memuat seluruh daftar berhenti menjadi bantuan.
 	 *
 	 * Awardee sorotan dipilih lewat `akunSorotan()` dari `seed/accounts.js`, bukan

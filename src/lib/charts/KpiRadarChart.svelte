@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * KpiRadarChart (C-05) — bentuk capaian program pada kelima Key Objective.
+	 * KpiRadarChart (C-05): bentuk capaian program pada kelima Key Objective.
 	 *
 	 * Props:
 	 * @prop {import('$lib/domain/services/KpiCalculator.js').KpiSnapshotRow[]} kpi
@@ -8,15 +8,15 @@
 	 * @prop {boolean} loading
 	 *
 	 * Sumbunya adalah PERSEN CAPAIAN, bukan nilai mentah. Kelima KPI Hal 6
-	 * bersatuan berbeda — persen, konten per bulan, kali per bulan, kegiatan —
+	 * bersatuan berbeda: persen, konten per bulan, kali per bulan, kegiatan :
 	 * dan meletakkannya pada satu radar tanpa dinormalkan akan membuat metrik
 	 * bersatuan besar mendominasi bentuknya tanpa arti apa pun.
 	 *
 	 * Radar dipakai justru karena pertanyaannya soal BENTUK: sisi mana yang penyok.
-	 * Untuk membandingkan besaran antar-KPI, kartu KPI di atasnya lebih jujur — dan
+	 * Untuk membandingkan besaran antar-KPI, kartu KPI di atasnya lebih jujur: dan
 	 * itulah sebabnya keduanya ditampilkan berdampingan, bukan salah satu saja.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-05
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-05
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import { tip, legend, font, animasi, angka, palette } from './_chartTheme.js';
@@ -27,7 +27,7 @@
 	const MAKS_CAPAIAN = 100;
 
 	/**
-	 * `kpi.length` mencerminkan KATALOG Key Objective — lima baris selalu ada,
+	 * `kpi.length` mencerminkan KATALOG Key Objective: lima baris selalu ada,
 	 * bahkan pada basis data tanpa satu pun aktivitas. Menguji panjang larik saja
 	 * membuat radar ini menggambar segi lima acuan dengan capaian yang menciut ke
 	 * titik pusat, yaitu grafik nol yang dilarang CH-4. Penjagaannya harus pada

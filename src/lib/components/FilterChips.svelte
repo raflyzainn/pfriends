@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * FilterChips — baris pil filter, tunggal atau ganda.
+	 * FilterChips: baris pil filter, tunggal atau ganda.
 	 *
 	 * Props:
 	 * @prop {{id:string,label:string,count?:number}[]} options
@@ -47,7 +47,7 @@
 			onchange?.(berikut);
 			return;
 		}
-		// Menekan pil yang sudah aktif melepaskan filter — jalan keluar tercepat.
+		// Menekan pil yang sudah aktif melepaskan filter: jalan keluar tercepat.
 		const berikut = selected === id ? '' : id;
 		selected = berikut;
 		onchange?.(berikut);

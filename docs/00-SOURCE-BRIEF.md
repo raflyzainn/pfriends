@@ -1,17 +1,17 @@
-# Source Brief — Community Connect Initiative (Pfriends)
+# Source Brief: Community Connect Initiative (Pfriends)
 
 > Ekstraksi lengkap dari `2026 Community Connect Initiative update as 29052026.pdf` (12 halaman).
 > Dokumen ini adalah **single source of truth** untuk seluruh fase SDLC. Jangan berasumsi di luar isi ini.
 
 ---
 
-## Hal 1 — Judul
+## Hal 1: Judul
 **Community Connect Initiative**
-Pemilik: Divisi Corporate Secretary (Corsec) — Pertamina Foundation. Co-brand: Danantara Indonesia, PERTAMINA.
+Pemilik: Divisi Corporate Secretary (Corsec): Pertamina Foundation. Co-brand: Danantara Indonesia, PERTAMINA.
 
 ---
 
-## Hal 2 — BACKGROUND
+## Hal 2: BACKGROUND
 
 **Fragmentasi Alumni**
 - Ribuan penerima Beasiswa Sobat Bumi yang telah lulus, namun interaksi pasca program cenderung menurun.
@@ -23,7 +23,7 @@ Pemilik: Divisi Corporate Secretary (Corsec) — Pertamina Foundation. Co-brand:
 
 ---
 
-## Hal 3 — RISET PENGELOLAAN KOMUNITAS PENERIMA MANFAAT TJSL
+## Hal 3: RISET PENGELOLAAN KOMUNITAS PENERIMA MANFAAT TJSL
 
 | Aspek Pengelolaan | Kondisi Saat Ini |
 |---|---|
@@ -34,30 +34,30 @@ Pemilik: Divisi Corporate Secretary (Corsec) — Pertamina Foundation. Co-brand:
 
 ---
 
-## Hal 4 — STRATEGIC INITIATIVE: COMMUNITY CONNECT INITIATIVE
+## Hal 4: STRATEGIC INITIATIVE: COMMUNITY CONNECT INITIATIVE
 
 Merupakan **platform ekosistem** yang menghubungkan **alumni Beasiswa Sobat Bumi sebagai mitra muda/mentor** dengan **PFpreneur sebagai mitra sekaligus entitas bisnis binaan** Pertamina Foundation.
 
 **Objective:** Mengelola komunitas penerima manfaat Pertamina Foundation dan komunitas eksternal dengan lebih terarah, dan memudahkan diseminasi + amplifikasi informasi hal baik terkait Pertamina dan Pertamina Foundation.
 
 ### CHANNEL
-1. **WA Komunitas** — tempat berkomunikasi dan tukar informasi.
-   - WA Komunitas utama berisi kumpulan WAG masing-masing batch komunitas (WAG, PF 10, PF 11, PF 12, dst).
-2. **Website Pertaminafoundation.org** — sebagai "rumah" komunitas.
-   - "Kotak biru" = **Pfriends**, untuk kemudahan akses member masuk ke microsite komunitas. Penempatan dapat disesuaikan.
-3. **Microsite komunitas (Pfriends)** — landing page dari Pfriends.
-   - Dibuat sebagai **kontrol PF** kepada komunitas yang dibangun.
-   - Kontrol berupa: **penyebaran informasi, tracking amplifikasi konten, dan pengerjaan gamifikasi**.
+1. **WA Komunitas**: tempat berkomunikasi dan tukar informasi.
+  : WA Komunitas utama berisi kumpulan WAG masing-masing batch komunitas (WAG, PF 10, PF 11, PF 12, dst).
+2. **Website Pertaminafoundation.org**: sebagai "rumah" komunitas.
+  : "Kotak biru" = **Pfriends**, untuk kemudahan akses member masuk ke microsite komunitas. Penempatan dapat disesuaikan.
+3. **Microsite komunitas (Pfriends)**: landing page dari Pfriends.
+  : Dibuat sebagai **kontrol PF** kepada komunitas yang dibangun.
+  : Kontrol berupa: **penyebaran informasi, tracking amplifikasi konten, dan pengerjaan gamifikasi**.
 
 ### Dua komunitas utama
-- **Sobat Bumi Indonesia** (SOBI — alumni beasiswa)
-- **Womenpreneur** (PFpreneur — UMKM binaan)
+- **Sobat Bumi Indonesia** (SOBI: alumni beasiswa)
+- **Womenpreneur** (PFpreneur: UMKM binaan)
 
 ---
 
-## Hal 5 — AKTIVITAS
+## Hal 5: AKTIVITAS
 
-**Sense of Community Theory** — David W. McMillan & David M. Chavis (1986): komunitas yang kuat terbentuk ketika anggota merasakan ikatan psikologis dan rasa memiliki terhadap komunitas.
+**Sense of Community Theory**: David W. McMillan & David M. Chavis (1986): komunitas yang kuat terbentuk ketika anggota merasakan ikatan psikologis dan rasa memiliki terhadap komunitas.
 
 | # | Pilar | Isi |
 |---|---|---|
@@ -70,7 +70,7 @@ Merupakan **platform ekosistem** yang menghubungkan **alumni Beasiswa Sobat Bumi
 
 ---
 
-## Hal 6 — KPI DAN KELUARAN
+## Hal 6: KPI DAN KELUARAN
 
 ### Key Objectives
 - **75%** dari penerima manfaat Pertamina Foundation terdata dalam komunitas Pfriends.
@@ -91,7 +91,7 @@ Merupakan **platform ekosistem** yang menghubungkan **alumni Beasiswa Sobat Bumi
 
 ---
 
-## Hal 7 — TIMELINE 2026 (Januari–Juli)
+## Hal 7: TIMELINE 2026 (Januari–Juli)
 
 | Bulan | Milestone |
 |---|---|
@@ -101,16 +101,16 @@ Merupakan **platform ekosistem** yang menghubungkan **alumni Beasiswa Sobat Bumi
 | April | Mengundang penerima manfaat bergabung dalam WA Komunitas grup secara bertahap; Melakukan komunikasi terkait program |
 | Mei | Pembuatan microsite; On boarding penerima manfaat ke microsite |
 | Juni | Gamifikasi, amplifikasi informasi dari komunitas; Upskilling anggota komunitas |
-| Juli | Diseminasi konten PF yang berhubungan dengan profil anggota komunitas (PFprestasi & PFpreneur — agenda setting); Gamifikasi, amplifikasi informasi; Upskilling anggota komunitas |
+| Juli | Diseminasi konten PF yang berhubungan dengan profil anggota komunitas (PFprestasi & PFpreneur: agenda setting); Gamifikasi, amplifikasi informasi; Upskilling anggota komunitas |
 
 ---
 
-## Hal 8 — PROGRESS
+## Hal 8: PROGRESS
 Mengundang penerima manfaat untuk bergabung dalam WA Komunitas grup secara bertahap.
 
 ---
 
-## Hal 9 — STRATEGIC ENHANCEMENT
+## Hal 9: STRATEGIC ENHANCEMENT
 
 | Internal Direction | Strategic Enhancement |
 |---|---|
@@ -122,7 +122,7 @@ Mengundang penerima manfaat untuk bergabung dalam WA Komunitas grup secara berta
 
 ---
 
-## Hal 10 — ESG MEASUREMENT HINTS
+## Hal 10: ESG MEASUREMENT HINTS
 
 | Pilar | Cakupan | Bukti / Metrik |
 |---|---|---|
@@ -135,7 +135,7 @@ Mengundang penerima manfaat untuk bergabung dalam WA Komunitas grup secara berta
 
 ---
 
-## Hal 11 — GAMIFICATION SCORING MODEL
+## Hal 11: GAMIFICATION SCORING MODEL
 
 | Aksi | Poin |
 |---|---|
@@ -153,7 +153,7 @@ Mengundang penerima manfaat untuk bergabung dalam WA Komunitas grup secara berta
 
 ---
 
-## Hal 12 — SCORING TIERS AND FEATURE THRESHOLD
+## Hal 12: SCORING TIERS AND FEATURE THRESHOLD
 *How gamification can connect to recognition and ESG evidence*
 
 | Threshold | Tier | Benefit |

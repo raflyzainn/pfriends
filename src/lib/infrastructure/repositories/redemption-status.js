@@ -5,10 +5,10 @@
  * pihak yang tidak boleh saling bergantung: `RewardRepository` yang membacanya dari
  * Dexie, dan pembangkit seed yang harus dapat dijalankan di Node polos untuk
  * diverifikasi. Menaruhnya di dalam repository akan menyeret `$lib` dan
- * `$app/environment` — dua alias milik SvelteKit — ke dalam proses verifikasi yang
+ * `$app/environment`: dua alias milik SvelteKit: ke dalam proses verifikasi yang
  * seharusnya tidak memerlukan bundler sama sekali.
  *
- * @see ./RewardRepository.js — yang mengekspor ulang kosakata ini
+ * @see ./RewardRepository.js: yang mengekspor ulang kosakata ini
  */
 
 /**

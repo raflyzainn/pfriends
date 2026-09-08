@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN — Pusat Aksi & Poin.
+	 * HALAMAN: Pusat Aksi & Poin.
 	 *
 	 * Tanggung jawab: memperlihatkan seluruh sembilan cara memperoleh poin beserta
 	 * nilainya persis Hal 11, sisa kuota hari ini, dan buku besar poin awardee apa
@@ -14,18 +14,18 @@
 	 *
 	 * Kartu aksi tidak membukukan poin untuk aksi yang punya rumah sendiri. Menekan
 	 * "Membaca kabar mingguan" dari halaman katalog akan memberi poin tanpa ada
-	 * kabar yang benar-benar dibaca — itu persis perilaku yang diperingatkan Hal 11
+	 * kabar yang benar-benar dibaca: itu persis perilaku yang diperingatkan Hal 11
 	 * ("reward meaningful contribution, not spammy activity"). Karena itu kartunya
-	 * MENGANTAR ke tempat aksinya terjadi. Hanya dua aksi yang tidak punya halaman
-	 * tersendiri di lingkup 25 route yang dapat diajukan langsung dari sini, dan
-	 * keduanya masuk sebagai menunggu verifikasi, bukan langsung berpoin.
+	 * MENGANTAR ke tempat aksinya terjadi. Aksi pengetahuan dan mentor membuka
+	 * formulir Bukti Keaktifan dengan jenis aktivitas terpilih; keduanya baru
+	 * menghasilkan ledger setelah bukti disetujui Verifikator.
 	 *
 	 * Seluruh angka berasal dari `SCORING_TABLE` dan `gamification.dailyUsage`
 	 * (yang bersumber pada AntiGamingPolicy). Tidak ada satu pun angka poin atau
 	 * batas harian yang ditulis di berkas ini.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 Gamification Scoring Model
-	 * @see docs/03-GAMIFICATION-SPEC.md — §2.1 kelas aksi, §5 anti-gaming, §5.6 status entri
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 11 Gamification Scoring Model
+	 * @see docs/03-GAMIFICATION-SPEC.md: §2.1 kelas aksi, §5 anti-gaming, §5.6 status entri
 	 */
 	import {
 		Button,
@@ -42,14 +42,14 @@
 		ICONS
 	} from '$lib/components';
 	import { ActivityStatus } from '$lib/domain/entities/PointActivity.js';
-	import { ActionClass, SCORING_TABLE } from '$lib/domain/constants/scoring-table.js';
+	import { ActionClass } from '$lib/domain/constants/scoring-table.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { formatAngka, formatTanggal, frasaHitung } from '$lib/utils/format.js';
 
 	/**
 	 * Metadata tampilan kelas aksi (docs/03 §2.1).
 	 *
-	 * Ini murni penjelasan untuk awardee — tidak ada ambang, poin, maupun batas di
+	 * Ini murni penjelasan untuk awardee: tidak ada ambang, poin, maupun batas di
 	 * sini. Yang dijawab tabel ini hanyalah "siapa yang memverifikasi aksi ini dan
 	 * mengapa perlakuannya berbeda", pertanyaan yang selalu muncul begitu ada aksi
 	 * yang poinnya tidak langsung cair.
@@ -76,7 +76,7 @@
 		}),
 		[ActionClass.D]: Object.freeze({
 			label: 'Kepemimpinan',
-			deskripsi: 'Menggerakkan orang lain — bernilai tinggi dan divalidasi ganda.',
+			deskripsi: 'Menggerakkan orang lain: bernilai tinggi dan divalidasi ganda.',
 			verifikator: 'Admin Corsec + Validator PF',
 			warna: 'amber'
 		})
@@ -99,8 +99,8 @@
 			cara: 'Tulis satu Blog kontribusi di komposer, lalu kirim ke antrean tinjauan verifikator.'
 		},
 		SESSION_ATTEND: { href: '/awardee/kalender', cara: 'Hadiri sesi daring lalu klaim dengan kode kehadiran.' },
-		KNOWLEDGE_QA: { href: '', cara: 'Ajukan pertanyaan atau jawaban bermanfaat yang sudah kamu bagikan.' },
-		SPEAKER_MENTOR: { href: '', cara: 'Ajukan sesi tempat kamu menjadi narasumber, mentor, atau fasilitator.' },
+		KNOWLEDGE_QA: { href: '/awardee/bukti-keaktifan?activityType=KNOWLEDGE_QA', cara: 'Ajukan pertanyaan atau jawaban bermanfaat yang sudah kamu bagikan.' },
+		SPEAKER_MENTOR: { href: '/awardee/bukti-keaktifan?activityType=SPEAKER_MENTOR', cara: 'Ajukan sesi tempat kamu menjadi narasumber, mentor, atau fasilitator.' },
 		LEAD_ACTION: { href: '/awardee/gerakan', cara: 'Pimpin aksi atau kampanye lokal lewat gerakan bersama.' }
 	});
 
@@ -117,15 +117,15 @@
 	 * Sembilan aksi lengkap dengan keadaan kuotanya hari ini.
 	 *
 	 * `dailyUsage` diurutkan mengikuti SCORING_TABLE, tetapi dicocokkan lewat
-	 * `usageFor` alih-alih indeks — mengandalkan urutan dua daftar yang kebetulan
+	 * `usageFor` alih-alih indeks: mengandalkan urutan dua daftar yang kebetulan
 	 * sama adalah tautan tak tertulis yang akan putus diam-diam.
 	 */
 	const katalogAksi = $derived(
-		SCORING_TABLE.map((rule) => ({
-			rule,
-			kelas: KELAS_AKSI[rule.actionClass],
-			jalur: JALUR_AKSI[rule.type] ?? { href: '', cara: '' },
-			kuota: gamification.usageFor(rule.type)
+		gamification.actions.map((action) => ({
+			rule: { ...action, type: action.code, needsEvidence: action.workflow === 'EVIDENCE' },
+			kelas: KELAS_AKSI[action.actionClass],
+			jalur: JALUR_AKSI[action.code] ?? { href: `/awardee/bukti-keaktifan?action=${action.id}`, cara: action.description },
+			kuota: gamification.usageFor(action.code)
 		}))
 	);
 
@@ -165,26 +165,12 @@
 	);
 
 	const tabs = $derived([
-		{ id: 'katalog', label: 'Aksi & Kuota', count: SCORING_TABLE.length },
+		{ id: 'katalog', label: 'Aksi & Kuota', count: gamification.actions.length },
 		{ id: 'riwayat', label: 'Riwayat Poin', count: gamification.ledger.length }
 	]);
 
 	/**
-	 * Mengajukan aksi yang tidak punya halaman tersendiri.
-	 *
-	 * Tanpa bukti terlampir, mesin membukukannya sebagai menunggu verifikasi dengan
-	 * poin nol — dan itulah yang dijanjikan tombolnya, sehingga tidak ada kejutan.
-	 * @param {string} activityType
-	 * @returns {Promise<void>}
-	 */
-	async function ajukan(activityType) {
-		await gamification.perform(activityType, {
-			note: 'Diajukan dari Pusat Aksi, menunggu verifikasi bukti.'
-		});
-	}
-
-	/**
-	 * Kalimat sisa kuota. Kuota yang habis selalu disertai kapan ia pulih —
+	 * Kalimat sisa kuota. Kuota yang habis selalu disertai kapan ia pulih :
 	 * larangan tanpa jalan keluar membuat awardee berhenti mencoba.
 	 * @param {import('$lib/domain/services/GamificationEngine.js').DailyUsageRow|null} kuota
 	 * @returns {string}
@@ -194,17 +180,17 @@
 		if (kuota.exhausted) {
 			return `Kuota hari ini terpakai penuh (${formatAngka(kuota.used)} dari ${formatAngka(kuota.cap)}). Poin kembali besok.`;
 		}
-		return `Terpakai ${formatAngka(kuota.used)} dari ${formatAngka(kuota.cap)} — sisa ${frasaHitung(kuota.remaining, 'kali')} hari ini.`;
+		return `Terpakai ${formatAngka(kuota.used)} dari ${formatAngka(kuota.cap)}: sisa ${frasaHitung(kuota.remaining, 'kali')} hari ini.`;
 	}
 </script>
 
 <svelte:head>
-	<title>Pusat Aksi & Poin · PFfriends</title>
+	<title>Pusat Aksi & Poin · PFriends</title>
 </svelte:head>
 
 <PageHeader
 	title="Pusat Aksi & Poin"
-	subtitle="Sembilan cara memperoleh Poin Kontribusi, sisa kuota harianmu, dan seluruh riwayat poin apa adanya."
+	subtitle="Cara memperoleh Poin Kontribusi, sisa kuota harianmu, dan seluruh riwayat poin apa adanya."
 	eyebrow="Recognition & Gamifikasi"
 />
 
@@ -262,7 +248,7 @@
 					? 'Buku besar poinmu masih kosong'
 					: 'Tidak ada entri dengan status itu'}
 				message={gamification.ledger.length === 0
-					? 'Setiap aksi yang kamu lakukan akan tercatat di sini beserta poin dan statusnya — termasuk yang ditolak.'
+					? 'Setiap aksi yang kamu lakukan akan tercatat di sini beserta poin dan statusnya: termasuk yang ditolak.'
 					: 'Coba pilih status lain untuk melihat entri yang tersedia.'}
 				iconPath={ICONS.document}
 				actionLabel={gamification.ledger.length === 0 ? 'Mulai dari kabar terbaru' : ''}
@@ -309,7 +295,7 @@
 											? 'text-ink-900'
 											: 'text-ink-450'}"
 									>
-										{entri.isAwarded ? `+${formatAngka(entri.points)}` : '—'}
+										{entri.isAwarded ? `+${formatAngka(entri.points)}` : ':'}
 									</span>
 									{#if !entri.isAwarded}
 										<span class="numeric block text-[11px] text-ink-600">
@@ -325,7 +311,7 @@
 
 			<p class="mt-4 text-xs leading-relaxed text-ink-600">
 				Entri yang ditolak maupun ditarik tetap tersimpan sebagai jejak audit dan tidak pernah
-				dihapus — itulah yang membuat total poin di atas dapat direkonsiliasi kapan saja.
+				dihapus: itulah yang membuat total poin di atas dapat direkonsiliasi kapan saja.
 			</p>
 		{/if}
 	</div>
@@ -381,7 +367,7 @@
 								{#if entri.rule.needsEvidence}
 									<p class="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-ink-600">
 										<span class="mt-px shrink-0"><Icon path={ICONS.shield} size={12} /></span>
-										Butuh bukti — diverifikasi {kelompok.meta.verifikator.toLowerCase()}.
+										Butuh bukti: diverifikasi {kelompok.meta.verifikator.toLowerCase()}.
 									</p>
 								{/if}
 
@@ -391,15 +377,8 @@
 											Buka halamannya
 										</Button>
 									{:else}
-										<Button
-											variant={habis ? 'ghost' : 'secondary'}
-											size="sm"
-											fullWidth
-											disabled={habis}
-											loading={gamification.busy === entri.rule.type}
-											onclick={() => ajukan(entri.rule.type)}
-										>
-											{habis ? 'Kuota penuh' : 'Ajukan untuk verifikasi'}
+										<Button variant="ghost" size="sm" fullWidth disabled>
+											Alur belum tersedia
 										</Button>
 									{/if}
 								</div>

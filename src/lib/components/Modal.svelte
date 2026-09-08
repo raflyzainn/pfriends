@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Modal — dialog terpusat; sheet menempel di bawah pada mobile.
+	 * Modal: dialog terpusat; sheet menempel di bawah pada mobile.
 	 *
 	 * Props:
 	 * @prop {boolean} open

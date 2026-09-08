@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * StorySpread — hierarki cerita 1 + 2 + 4 (E5 beranda dan indeks `/cerita`).
+	 * StorySpread: hierarki cerita 1 + 2 + 4 (E5 beranda dan indeks `/cerita`).
 	 *
 	 * Tanggung jawab: menggantikan `grid-cols-3` yang membuat sebelas cerita
 	 * terbaca sama pentingnya (D-05 dan D-11). Satu lead besar, dua sekunder
@@ -14,15 +14,15 @@
 	 *
 	 * 2. **Byline tanpa `TierBadge`, tanpa cincin tier, tanpa poin.** Keputusan
 	 *    Pemilik Produk #2. Yang menggantikan lencana adalah keterangan orang yang
-	 *    sesungguhnya — nama penulis dan tanggal terbit. `StoryVM` memang tidak
+	 *    sesungguhnya: nama penulis dan tanggal terbit. `StoryVM` memang tidak
 	 *    memuat satu pun field skor, jadi kebocoran di sini mustahil.
 	 *
 	 * 3. **`foto === null` → kicker pilar besar, bukan gradien.** Sama persis dengan
 	 *    cabang `StoryCard`; `fotoCerita()` sengaja tidak jatuh ke satu foto default
 	 *    bersama (`docs/12` §3.3(d) butir 4).
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 StorySpread { lead, secondary, briefs }
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E5 hierarki 1 + 2 + 4
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 StorySpread { lead, secondary, briefs }
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E5 hierarki 1 + 2 + 4
 	 */
 	import PhotoFigure from './PhotoFigure.svelte';
 	import Avatar from '../Avatar.svelte';
@@ -124,7 +124,7 @@
 				{/if}
 
 				<div class="mt-5 flex items-center gap-3">
-					<!-- Avatar INISIAL — docs/11 §4.6 melarang menempelkan wajah stok ke nama orang. -->
+					<!-- Avatar INISIAL: docs/11 §4.6 melarang menempelkan wajah stok ke nama orang. -->
 					<Avatar name={lead.authorName} size="sm" />
 					<p class="min-w-0 text-[14px] leading-[1.5] text-ink-600">
 						<span class="font-medium text-ink-700">{lead.authorName}</span>

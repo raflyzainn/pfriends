@@ -1,5 +1,5 @@
 /**
- * BASIS DATA LOKAL — Dexie (IndexedDB).
+ * BASIS DATA LOKAL: Dexie (IndexedDB).
  *
  * Tanggung jawab: menyediakan satu instans Dexie bagi seluruh repository, dan
  * memastikan modul ini aman dipanggil saat prerender di server.
@@ -8,7 +8,7 @@
  *
  * 1. **SSR-safe.** SvelteKit menjalankan modul yang sama di server saat prerender,
  *    sedangkan IndexedDB hanya ada di peramban. Karena itu `getDb()` mengembalikan
- *    `null` di server dan Dexie diimpor secara dinamis — supaya paketnya tidak
+ *    `null` di server dan Dexie diimpor secara dinamis: supaya paketnya tidak
  *    ikut dievaluasi pada bundel server. Pemanggil WAJIB menangani `null`; itulah
  *    kontraknya, bukan kondisi error.
  * 2. **Hanya field terindeks yang dideklarasikan.** Dexie menyimpan seluruh isi
@@ -21,12 +21,12 @@
  *    lagi disebut pada versi lama dapat terhapus beserta isinya saat peramban lama
  *    melakukan lompatan versi.
  * 4. **Basis data dibuka di dalam `try`.** Tanpa `await instance.open()` yang
- *    eksplisit, Dexie membuka basis data secara malas pada operasi tabel pertama —
- *    di luar `try` mana pun — sehingga penanganan `VersionError` di bawah tidak
+ *    eksplisit, Dexie membuka basis data secara malas pada operasi tabel pertama :
+ *    di luar `try` mana pun: sehingga penanganan `VersionError` di bawah tidak
  *    pernah menyala dan seluruh aplikasi mati, bukan satu halaman.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.11 bentuk `getDb()` wajib, R-02/R-03/R-04
- * @see docs/09-BUILD-CONTRACT.md — §4 WP-3 Infrastruktur & seed
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.11 bentuk `getDb()` wajib, R-02/R-03/R-04
+ * @see docs/09-BUILD-CONTRACT.md: §4 WP-3 Infrastruktur & seed
  */
 
 import { browser } from '$app/environment';
@@ -39,13 +39,13 @@ export const DB_NAME = 'PfriendsDB';
  *
  * Naik ke 2 bersama `SEED_VERSION` (`seed/bootstrap.js`): tabel `members` berganti
  * menjadi `awardees` dan tabel `accounts` ditambahkan. Menaikkan salah satu saja
- * menghasilkan tabel `accounts` yang ada tetapi kosong selamanya — login mustahil,
+ * menghasilkan tabel `accounts` yang ada tetapi kosong selamanya: login mustahil,
  * tanpa satu pun pesan galat, karena kueri hanya mengembalikan array kosong.
  */
 export const DB_VERSION = 2;
 
 /**
- * Nama tabel sebagai konstanta agar repository tidak menuliskan string lepas —
+ * Nama tabel sebagai konstanta agar repository tidak menuliskan string lepas :
  * salah ketik nama tabel di Dexie menghasilkan `undefined`, bukan error.
  * @readonly
  * @enum {string}
@@ -66,7 +66,7 @@ export const TABLE = Object.freeze({
 });
 
 /**
- * Skema versi 1 — REKAMAN SEJARAH, dilarang disunting.
+ * Skema versi 1: REKAMAN SEJARAH, dilarang disunting.
  *
  * Tabel `'members'` ditulis sebagai literal, bukan `TABLE.MEMBERS`, karena kunci itu
  * sudah tidak ada lagi pada `TABLE`. Empat string indeks di bawah (`activities`,
@@ -95,19 +95,19 @@ const SCHEMA_V1 = Object.freeze({
 });
 
 /**
- * Skema versi 2 — kosakata peran baru.
+ * Skema versi 2: kosakata peran baru.
  *
  * Hanya tabel yang BERUBAH yang didaftarkan; sisanya (`movements`, `broadcasts`,
  * `rewards`, `badges`, `meta`) diwarisi apa adanya dari versi 1. Perubahannya:
  *
- * - `awardees` menggantikan `members`, dan `members: null` menghapus tabel lamanya.
+ *: `awardees` menggantikan `members`, dan `members: null` menghapus tabel lamanya.
  *   Isi tabel lama sengaja tidak dimigrasikan: seluruhnya data demo yang dibangkitkan
  *   ulang oleh `buildSeed()` pada bootstrap berikutnya, sehingga menulis fungsi
  *   migrasi hanya menambah kode yang tidak pernah menghadapi data sungguhan.
- * - `accounts` adalah tabel baru identitas login. `&email` menjadikan surel indeks
- *   UNIK — dua akun bersurel sama ditolak oleh basis data, bukan oleh disiplin
+ *: `accounts` adalah tabel baru identitas login. `&email` menjadikan surel indeks
+ *   UNIK: dua akun bersurel sama ditolak oleh basis data, bukan oleh disiplin
  *   pemanggil.
- * - `stories` bertambah indeks `reviewerId` dan memakai `authorId` sebagai kunci
+ *: `stories` bertambah indeks `reviewerId` dan memakai `authorId` sebagai kunci
  *   penulis; `events` bertambah `slug` dan `proposedBy` untuk antrean usulan.
  *
  * @type {Readonly<Record<string, string|null>>}
@@ -154,7 +154,7 @@ function bangunInstans(Dexie) {
  *
  * Janji dilepas lewat `finally`, bukan hanya pada jalur sukses. Bila pelepasan
  * hanya terjadi ketika berhasil, satu kegagalan impor akan membuat SETIAP
- * `getDb()` berikutnya mengembalikan janji ditolak yang sama selamanya — aplikasi
+ * `getDb()` berikutnya mengembalikan janji ditolak yang sama selamanya: aplikasi
  * tidak pernah pulih meski penyebabnya sudah hilang.
  *
  * @returns {Promise<import('dexie').Dexie|null>} `null` di lingkungan server.
@@ -178,7 +178,7 @@ export async function getDb() {
 			// Peramban pernah membuka versi yang lebih baru, atau upgrade-nya gagal
 			// di tengah jalan. Seluruh isinya data demo yang dapat dibangkitkan ulang,
 			// jadi jalan keluar yang paling jujur adalah menghapus lalu membangun ulang
-			// — bukan membiarkan aplikasi mati dengan basis data yang tidak terbuka.
+			//: bukan membiarkan aplikasi mati dengan basis data yang tidak terbuka.
 			await Dexie.delete(DB_NAME);
 			instance = bangunInstans(Dexie);
 			await instance.open();

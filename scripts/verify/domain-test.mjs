@@ -1,13 +1,13 @@
 /**
- * Uji domain — memverifikasi logika inti terhadap angka kanonik dokumen sumber
+ * Uji domain: memverifikasi logika inti terhadap angka kanonik dokumen sumber
  * DAN terhadap aturan peran, akses, serta alur editorial yang lahir di revisi V2.
  *
  * Ini BUKAN uji unit gaya framework; sengaja tanpa dependensi agar bisa dijalankan
  * dengan `node` polos. Fokusnya: apakah aturan bisnis benar-benar berperilaku
  * seperti yang dijanjikan Hal 11 dan Hal 12 PPT Corsec, dan apakah tujuh keputusan
- * pemilik produk benar-benar ditegakkan oleh kode — bukan oleh kesepakatan lisan.
+ * pemilik produk benar-benar ditegakkan oleh kode: bukan oleh kesepakatan lisan.
  *
- * Empat belas bagian:
+ * Lima belas bagian:
  *   1–5  angka kanonik gamifikasi (warisan V1, tidak berubah)
  *   6    matriks AccessPolicy 4 peran × 4 zona + jangkar PO-2 (`canSeeScoring`)
  *   7    peta transisi cerita & kegiatan per peran (PO-4)
@@ -18,6 +18,7 @@
  *   12   consent tidak aktif memblokir approve & publish (gelombang G5)
  *   13   SroiCalculator: rantai penyesuaian, rasio, pembagi nol (gelombang G5)
  *   14   kuota reward berkurang dan menolak saat habis (gelombang G5)
+ *   15   angka notifikasi hanya menghitung pekerjaan aktif
  *
  * ── MENGAPA BAGIAN 12–14 ADA ────────────────────────────────────────────────
  * Ketiganya menutup cacat yang LOLOS seluruh gerbang sebelumnya dan baru
@@ -30,8 +31,8 @@
  *
  * Jalankan: node scripts/verify/domain-test.mjs
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §6.2 baris `domain-test.mjs`, §6.4 matriks guard
- * @see docs/14-TRACEABILITY.md — kolom "gerbang yang membuktikan"
+ * @see docs/12-BUILD-CONTRACT-V2.md: §6.2 baris `domain-test.mjs`, §6.4 matriks guard
+ * @see docs/14-TRACEABILITY.md: kolom "gerbang yang membuktikan"
  */
 
 import { readdir, readFile } from 'node:fs/promises';
@@ -42,6 +43,7 @@ import { SCORING_TABLE, ActivityType, aturanSkor, poinUntuk } from '../../src/li
 import { TIER_TABLE, TierLevel, tierUntukPoin, tierBerikutnya } from '../../src/lib/domain/constants/tier-table.js';
 import { TierResolver } from '../../src/lib/domain/services/TierResolver.js';
 import { GamificationEngine } from '../../src/lib/domain/services/GamificationEngine.js';
+import { countAwardeeMovementRevisions, countRedemptionQueue, countVerifierMovementQueue } from '../../src/lib/domain/services/WorkflowBadgeCounter.js';
 import { AntiGamingPolicy } from '../../src/lib/domain/policies/AntiGamingPolicy.js';
 import { Points } from '../../src/lib/domain/value-objects/Points.js';
 import { buildSeed, seedStats } from '../../src/lib/infrastructure/seed/seed-data.js';
@@ -141,7 +143,7 @@ samaDengan('9999 poin -> CHAMPION', level(9999), TierLevel.CHAMPION);
 samaDengan('tier tertinggi tidak punya tier berikutnya', tierBerikutnya(150), null);
 samaDengan('ambang TIER_TABLE', TIER_TABLE.map((t) => t.threshold), [0, 25, 50, 100, 150]);
 
-// Tier HARUS murni ambang poin — tanpa syarat kualitatif tersembunyi (Keputusan K-3).
+// Tier HARUS murni ambang poin: tanpa syarat kualitatif tersembunyi (Keputusan K-3).
 samaDengan('TierResolver sepakat dengan tabel di 50', TierResolver.resolve(50).level, TierLevel.CONTRIBUTOR);
 const prog = TierResolver.progress(40);
 samaDengan('progress(40).next = CONTRIBUTOR', prog.next?.level, TierLevel.CONTRIBUTOR);
@@ -275,7 +277,7 @@ const namaBuruk = bundle.awardees.filter((m) => /user\s*\d|lorem|placeholder|tes
 benar('tidak ada nama placeholder', namaBuruk.length === 0, namaBuruk.slice(0, 3).map((m) => m.name).join(', '));
 
 // ═══════════════════════════════════════════════════════════════════════════
-// TAMBAHAN V2 — aturan peran, akses, alur editorial, dan kemurnian zona publik.
+// TAMBAHAN V2: aturan peran, akses, alur editorial, dan kemurnian zona publik.
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
@@ -283,7 +285,7 @@ benar('tidak ada nama placeholder', namaBuruk.length === 0, namaBuruk.slice(0, 3
  *
  * Sengaja menyimpan baris POLOS, bukan entity: itulah bentuk yang benar-benar
  * dikembalikan repository Dexie, sehingga service ikut teruji pada jalur
- * `Entity.from(row)`-nya — jalur yang paling mungkin patah saat skema berubah.
+ * `Entity.from(row)`-nya: jalur yang paling mungkin patah saat skema berubah.
  */
 class RepoMemori {
 	/** @param {readonly Record<string, any>[]} rows */
@@ -325,7 +327,7 @@ console.log('── 6. AccessPolicy: matriks peran × zona (PO-2, PO-3) ──')
 
 /**
  * Matriks §6.4 kontrak: empat keadaan aktor × empat zona.
- * Tamu diwakili `null` — bukan peran bernama "GUEST", supaya "tidak punya peran"
+ * Tamu diwakili `null`: bukan peran bernama "GUEST", supaya "tidak punya peran"
  * tidak pernah dapat menyamar sebagai peran yang sah.
  * @type {{aktor: string, role: string|null, boleh: Record<string, boolean>}[]}
  */
@@ -372,6 +374,13 @@ benar(
 	AccessPolicy.canEnter(UserRole.VERIFIER, Zone.ADMIN) === false
 );
 benar('zona tak dikenal fail-closed', AccessPolicy.canEnter(UserRole.ADMIN, 'ZONA_HANTU') === false);
+
+const sumberNavigasi = await readFile(fileURLToPath(new URL('../../src/lib/data/navigation.js', import.meta.url)), 'utf8');
+const blokNavAwardee = sumberNavigasi.slice(sumberNavigasi.indexOf('const NAV_AWARDEE'), sumberNavigasi.indexOf('const NAV_VERIFIER'));
+benar('navigasi Awardee memuat Aksi & Poin', blokNavAwardee.includes("label: 'Aksi & Poin'") && blokNavAwardee.includes("href: '/awardee/aksi'"));
+samaDengan('Aksi & Poin tidak mengubah lima menu utama ponsel', (blokNavAwardee.match(/primary: true/g) || []).length, 5);
+const blokAksi = blokNavAwardee.slice(blokNavAwardee.indexOf("id: 'actions'"), blokNavAwardee.indexOf("id: 'movements'"));
+benar('Aksi & Poin hanya ada di sidebar/laci', !blokAksi.includes('primary: true'));
 
 samaDengan('zoneOf("/") = PUBLIC', AccessPolicy.zoneOf('/'), Zone.PUBLIC);
 samaDengan('zoneOf("/kalender") = PUBLIC', AccessPolicy.zoneOf('/kalender'), Zone.PUBLIC);
@@ -463,7 +472,7 @@ const review = new ContentReviewService({
 	clock: JAM_UJI
 });
 
-// Kegiatan yang diusulkan verifikator utama sendiri — inilah kasus X-01.
+// Kegiatan yang diusulkan verifikator utama sendiri: inilah kasus X-01.
 const usulanSendiri = new CommunityEvent({
 	.../** @type {any} */ (bundle.events.find((e) => e.status === EventStatus.DIUSULKAN)),
 	status: EventStatus.DIUSULKAN,
@@ -508,7 +517,7 @@ samaDengan(
 	ReviewFailure.CATATAN_WAJIB
 );
 // Pasangan kendali: tanpa ini, asersi di atas akan tetap hijau seandainya
-// `cancelEvent` menolak SEMUA pembatalan — agenda yang batal lalu tidak pernah
+// `cancelEvent` menolak SEMUA pembatalan: agenda yang batal lalu tidak pernah
 // dapat dicabut, dan gerbangnya justru memuji kegagalan itu.
 const batalSah = await review.cancelEvent(
 	terjadwal,
@@ -565,7 +574,7 @@ const potret = await impact.publicSnapshot();
 
 /**
  * Kata yang menandakan mekanik gamifikasi. Diuji pada NAMA KUNCI, bukan nilai:
- * PO-2 melarang zona publik memiliki angka itu untuk dirender sama sekali —
+ * PO-2 melarang zona publik memiliki angka itu untuk dirender sama sekali :
  * bukan sekadar melarang menampilkannya.
  */
 const KATA_TERLARANG = /poin|point|tier|jenjang|badge|lencana|peringkat|rank|leaderboard|score|skor|coin|streak|reward/i;
@@ -678,7 +687,7 @@ for (const jalur of berkasDomain) {
 	const isi = await readFile(jalur, 'utf8');
 	for (const [nomor, baris] of isi.split('\n').entries()) {
 		if (IMPOR_TERLARANG.test(baris)) {
-			pelanggaranLapisan.push(`${jalur.slice(AKAR_DOMAIN.length)}:${nomor + 1} — ${baris.trim()}`);
+			pelanggaranLapisan.push(`${jalur.slice(AKAR_DOMAIN.length)}:${nomor + 1}: ${baris.trim()}`);
 		}
 	}
 }
@@ -719,7 +728,7 @@ function reviewDenganPenulis(consentPenulis) {
 
 // ── Kendali: penulis ber-consent aktif WAJIB bisa disetujui ─────────────────
 // Tanpa pasangan kendali ini, asersi penolakan di bawah akan tetap hijau
-// seandainya `approveStory` menolak SEMUA naskah — kegagalan yang menyamar
+// seandainya `approveStory` menolak SEMUA naskah: kegagalan yang menyamar
 // sebagai keamanan.
 const setujuConsentAktif = await reviewDenganPenulis(true).approveStory(
 	naskahConsent(),
@@ -774,7 +783,7 @@ samaDengan(
 	).reason,
 	ReviewFailure.CONSENT_DICABUT
 );
-// `consentId: ''` berarti hal yang sama dengan `null` — kolom kosong dari basis
+// `consentId: ''` berarti hal yang sama dengan `null`: kolom kosong dari basis
 // data atau formulir. Uji "bukan null" saja meluluskannya, dan naskah tanpa dasar
 // persetujuan lolos gerbang terbit. Asersi ini menahan lubang itu tetap tertutup.
 samaDengan(
@@ -856,7 +865,7 @@ const sroiUji = new SroiCalculator({
 const rantai = sroiUji.adjustmentChain(100);
 samaDengan('rantai penyesuaian punya satu baris per penyesuaian', rantai.length, 2);
 // INI jangkar utamanya: dua faktor 50% BERURUTAN menyisakan 25, bukan 0.
-// Menjumlahkan keduanya lebih dulu (50%+50% = 100%) menghasilkan 0 — kekeliruan
+// Menjumlahkan keduanya lebih dulu (50%+50% = 100%) menghasilkan 0: kekeliruan
 // paling sering pada perhitungan SROI buatan sendiri.
 samaDengan('langkah 1 memotong 50 dan menyisakan 50', [rantai[0].potongan, rantai[0].sisa], [50, 50]);
 samaDengan('langkah 2 memotong 25 dan menyisakan 25', [rantai[1].potongan, rantai[1].sisa], [25, 25]);
@@ -948,7 +957,7 @@ const kuota0 = rewardUji();
 samaDengan('sisa kuota awal = kuota bulanan', kuota0.remainingQuotaFor(BULAN_UJI), 2);
 
 // Pencacah HARUS benar-benar naik. Sebelum `withRedemptionRecorded()` ada,
-// `redeemedThisMonth` hanya pernah dibaca — kuota bulanan sekadar hiasan.
+// `redeemedThisMonth` hanya pernah dibaca: kuota bulanan sekadar hiasan.
 const kuota1 = kuota0.withRedemptionRecorded(BULAN_UJI);
 samaDengan('penukaran ke-1 menurunkan sisa menjadi 1', kuota1.remainingQuotaFor(BULAN_UJI), 1);
 samaDengan('pencacah bulan berjalan naik menjadi 1', kuota1.redeemedIn(BULAN_UJI), 1);
@@ -973,11 +982,11 @@ samaDengan('item tanpa kuota melaporkan sisa null', tanpaBatas.remainingQuotaFor
 benar('item tanpa kuota tetap tersedia', tanpaBatas.isAvailableFor(BULAN_UJI) === true);
 
 // `canBeRedeemedBy` wajib menyebut sebab yang dapat dibaca anggota, dan sebab
-// "kuota habis" wajib DIBEDAKAN dari "sedang tidak tersedia" — yang pertama
+// "kuota habis" wajib DIBEDAKAN dari "sedang tidak tersedia": yang pertama
 // terbuka lagi bulan depan, yang kedua belum tentu.
 // Anggota uji dibuat kaya secara sengaja: bagian ini menguji KUOTA, bukan saldo.
 // Memakai anggota seed apa adanya membuat asersi "masih boleh menukar" gagal
-// karena sebab yang sama sekali lain — dan kegagalan yang salah alamat lebih
+// karena sebab yang sama sekali lain: dan kegagalan yang salah alamat lebih
 // buruk daripada tidak diuji, sebab ia mengajari pembacanya mengabaikan gerbang.
 const awardeeUji = new Awardee(
 	/** @type {any} */ ({
@@ -999,7 +1008,7 @@ benar(
 	String(kuota1.canBeRedeemedBy(awardeeUji, BULAN_UJI).reason)
 );
 
-// Seed: setiap item berkuota wajib konsisten — pencacah tidak boleh melampaui kuota.
+// Seed: setiap item berkuota wajib konsisten: pencacah tidak boleh melampaui kuota.
 const rewardSeedCacat = bundle.rewards.filter(
 	(r) => r.monthlyQuota !== null && r.redeemedThisMonth > r.monthlyQuota
 );
@@ -1007,6 +1016,39 @@ benar(
 	'seed: nol reward dengan pencacah melampaui kuotanya',
 	rewardSeedCacat.length === 0,
 	rewardSeedCacat.map((r) => `${r.id} ${r.redeemedThisMonth}/${r.monthlyQuota}`).join(', ')
+);
+
+console.log('── 15. Angka notifikasi pekerjaan aktif ──');
+
+const gerakanBadgeUji = [
+	{
+		status: 'DIUSULKAN',
+		proposedBy: 'awardee-a',
+		reports: [
+			{ status: 'SUBMITTED' },
+			{ status: 'IN_REVIEW' },
+			{ status: 'NEEDS_REVISION' },
+			{ status: 'APPROVED' }
+		]
+	},
+	{ status: 'PERLU_REVISI', proposedBy: 'awardee-a', reports: [] },
+	{ status: 'PERLU_REVISI', proposedBy: 'awardee-b', reports: [] },
+	{ status: 'BERJALAN', proposedBy: 'awardee-a', reports: [] }
+];
+
+samaDengan('verifikator menghitung usulan baru dan laporan yang perlu diperiksa', countVerifierMovementQueue(gerakanBadgeUji), 3);
+samaDengan('awardee hanya menghitung revisi miliknya dan laporan yang dikembalikan', countAwardeeMovementRevisions(gerakanBadgeUji, 'awardee-a'), 2);
+samaDengan('awardee tidak melihat revisi usulan milik orang lain', countAwardeeMovementRevisions(gerakanBadgeUji, 'awardee-b'), 2);
+samaDengan(
+	'penukaran menghitung seluruh status yang masih membutuhkan tindak lanjut',
+	countRedemptionQueue([
+		{ status: 'DIAJUKAN' },
+		{ status: 'DISETUJUI' },
+		{ status: 'DIKIRIM' },
+		{ status: 'SELESAI' },
+		{ status: 'DITOLAK' }
+	]),
+	3
 );
 
 console.log(`\n${'='.repeat(60)}`);

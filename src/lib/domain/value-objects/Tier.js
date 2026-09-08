@@ -1,5 +1,5 @@
 /**
- * VALUE OBJECT — Tier Kontribusi.
+ * VALUE OBJECT: Tier Kontribusi.
  *
  * Tanggung jawab: membungkus satu entri TIER_TABLE menjadi objek yang dapat
  * dibandingkan, dan menyediakan satu jalan resmi dari poin ke tier.
@@ -9,12 +9,12 @@
  * menambahkan perilaku (perbandingan, kesetaraan, progres) di atas data itu.
  *
  * Sesuai keputusan K-3 pada kontrak build, penentuan tier murni berdasarkan ambang
- * poin. Syarat kualitatif seperti komposisi kontribusi tidak dievaluasi di sini —
+ * poin. Syarat kualitatif seperti komposisi kontribusi tidak dievaluasi di sini :
  * itu milik FeatureEligibilityPolicy, dan memisahkannya menjaga jawaban atas
  * pertanyaan "kenapa tier saya segini?" tetap sesederhana satu angka.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 12 Scoring Tiers and Feature Threshold
- * @see docs/09-BUILD-CONTRACT.md — K-3
+ * @see docs/00-SOURCE-BRIEF.md: Hal 12 Scoring Tiers and Feature Threshold
+ * @see docs/09-BUILD-CONTRACT.md: K-3
  */
 
 import {
@@ -41,7 +41,7 @@ export class Tier {
 
 	/**
 	 * Konstruktor menerima entri TIER_TABLE. Untuk pemakaian sehari-hari pakai
-	 * `Tier.fromPoints` atau `Tier.fromLevel` — keduanya menjamin entri yang sah.
+	 * `Tier.fromPoints` atau `Tier.fromLevel`: keduanya menjamin entri yang sah.
 	 * @param {import('../constants/tier-table.js').TierEntry} entry
 	 * @throws {TypeError} bila entri bukan salah satu anggota TIER_TABLE.
 	 */
@@ -149,7 +149,7 @@ export class Tier {
 		return this.#entry.label;
 	}
 
-	/** @returns {string} Level tier — bentuk yang disimpan ke basis data. */
+	/** @returns {string} Level tier: bentuk yang disimpan ke basis data. */
 	toJSON() {
 		return this.#entry.level;
 	}

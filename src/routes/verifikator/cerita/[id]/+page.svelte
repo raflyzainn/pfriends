@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN `/verifikator/cerita/[id]` — meja peninjauan satu submission blog.
+	 * HALAMAN `/verifikator/cerita/[id]`: meja peninjauan satu submission blog.
 	 *
 	 * Tanggung jawab: menempatkan naskah utuh berdampingan dengan KETIGA gerbang
 	 * keputusan, lalu menawarkan tepat keputusan yang sah dari keadaan naskah itu.
@@ -31,11 +31,12 @@
 	 *    `story.authorId` selalu menunjuk orang lain. Pemeriksaan ini pertahanan
 	 *    berlapis untuk data yang lolos invarian karena kekeliruan migrasi kelak.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §6.4 detail peninjauan, §5.3 tabel transisi, US-R16
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 12 minimum for public feature & minimum for ESG evidence
-	 * @see docs/04-ESG-GOVERNANCE.md — §6 checklist data sensitif 21 butir
+	 * @see docs/10-REVISION-SPEC.md: §6.4 detail peninjauan, §5.3 tabel transisi, US-R16
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 12 minimum for public feature & minimum for ESG evidence
+	 * @see docs/04-ESG-GOVERNANCE.md: §6 checklist data sensitif 21 butir
 	 */
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import { EmptyState, PageHeader, StatusBadge, ICONS } from '$lib/components';
 	import { AccessPolicy } from '$lib/domain/policies/AccessPolicy.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
@@ -68,17 +69,17 @@
 	const idNaskah = $derived(page.params.id ?? '');
 
 	/** @type {import('$lib/domain/entities/Story.js').Story|null} */
-	const naskah = $derived(catalog.stories.find((story) => story.id === idNaskah) ?? null);
+	const naskah = $derived(editorial.selectedStory?.id === idNaskah ? editorial.selectedStory : null);
 
 	/** Penulis naskah; dibutuhkan gerbang kelayakan fitur publik. */
 	const penulis = $derived(
 		naskah ? (catalog.awardees.find((awardee) => awardee.id === naskah.authorId) ?? null) : null
 	);
 
-	/** Gerbang 1 — kelayakan fitur publik; `null` bila penulisnya tidak ditemukan. */
+	/** Gerbang 1: kelayakan fitur publik; `null` bila penulisnya tidak ditemukan. */
 	const gerbangSatu = $derived(naskah ? gerbangFiturPublik(penulis, naskah, sekarang) : null);
 
-	/** Gerbang 2 — kesiapan bukti ESG. */
+	/** Gerbang 2: kesiapan bukti ESG. */
 	const gerbangDua = $derived(naskah ? gerbangBuktiEsg(naskah) : null);
 
 	/**
@@ -106,7 +107,7 @@
 	 *
 	 * Sengaja TIDAK diketik ulang sebagai kalimat tetap. Rumusan yang ditulis lepas
 	 * mengeja ambang kontribusinya sebagai angka di dalam teks, dan angka itu akan
-	 * tetap berbunyi demikian pada hari `AMBANG_FITUR_PUBLIK` berubah — persis jenis
+	 * tetap berbunyi demikian pada hari `AMBANG_FITUR_PUBLIK` berubah: persis jenis
 	 * pergeseran yang dilarang A-1. Merangkainya dari daftar syarat membuat judul
 	 * panel mustahil berselisih dengan isi panelnya sendiri.
 	 *
@@ -133,15 +134,19 @@
 	 */
 	async function kirim(payload) {
 		if (!naskah || !keputusanTerbuka || keputusanTerbuka.jalankan === null) return;
-		const hasil = await keputusanTerbuka.jalankan(naskah, payload);
+		const hasil = await keputusanTerbuka.jalankan(naskah, { ...payload, sensitivityChecks: [...butirDikonfirmasi] });
 		if (hasil.ok) {
 			keputusanTerbuka = null;
-			await catalog.refresh();
+			await Promise.all([editorial.loadStoryDetail(idNaskah), catalog.refresh()]);
 		}
 	}
+
+	onMount(() => editorial.loadStoryDetail(idNaskah));
 </script>
 
-{#if !naskah}
+{#if editorial.loading && !naskah}
+	<p class="mt-6 text-sm text-ink-600">Memuat submission Blog...</p>
+{:else if !naskah}
 	<PageHeader
 		eyebrow="Submission Blog"
 		title="Submission tidak ditemukan"
@@ -250,6 +255,16 @@
 							{naskah.outcome.metric}: {naskah.outcome.value}
 							{naskah.outcome.unit}
 						</p>
+					</div>
+				{/if}
+				{#if naskah.evidenceFiles.length > 0}
+					<div class="mt-4 border-t border-ink-100 pt-4">
+						<p class="label-micro">Berkas bukti terlindungi</p>
+						<div class="mt-2 flex flex-wrap gap-2">
+							{#each naskah.evidenceFiles as file}
+								<a class="rounded-control border border-ink-200 px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50" href={editorial.storyEvidenceUrl(naskah, file)} target="_blank" rel="noreferrer">Lihat bukti</a>
+							{/each}
+						</div>
 					</div>
 				{/if}
 			</section>

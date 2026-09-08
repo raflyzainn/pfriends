@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * AmplificationTrendLine (C-04) — tren amplification rate, dua penyebut.
+	 * AmplificationTrendLine (C-04): tren amplification rate, dua penyebut.
 	 *
 	 * Props:
 	 * @prop {{monthKey:string,label:string,activeRate:number,totalRate:number,amplifiers:number}[]} data
@@ -9,7 +9,7 @@
 	 * @prop {boolean} loading
 	 *
 	 * Dua garis, satu utuh dan satu putus-putus. Garis utuh memakai penyebut
-	 * anggota AKTIF — itulah definisi KPI Hal 6 dan angka yang dilaporkan. Garis
+	 * anggota AKTIF: itulah definisi KPI Hal 6 dan angka yang dilaporkan. Garis
 	 * putus-putus memakai penyebut SELURUH anggota terdaftar; ia bukan KPI, ia
 	 * pengingat.
 	 *
@@ -17,7 +17,7 @@
 	 * registrasi bertambah tanpa diikuti keterlibatan, dan itu justru tidak terlihat
 	 * pada angka KPI yang penyebutnya ikut menyusut bersama.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-04, §7.5 CH-3
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-04, §7.5 CH-3
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import {

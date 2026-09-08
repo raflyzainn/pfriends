@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * MASUK — gerbang peragaan: satu klik pada kartu akun, tanpa mengetik apa pun.
+	 * MASUK: gerbang peragaan: satu klik pada kartu akun, tanpa mengetik apa pun.
 	 *
 	 * Ini MOCKUP. Autentikasinya tiruan, kata sandinya satu untuk seluruh akun, dan
 	 * mengetiknya di depan ruang rapat hanya menambah langkah yang tidak menjelaskan
@@ -17,14 +17,14 @@
 	 * 2. **Alur sesinya tetap alur yang sama.** `session.login()` memanggil
 	 *    `bootstrapDatabase()` lebih dulu, memvalidasi kredensial lewat `AuthService`,
 	 *    menyimpan potret sesi, lalu `session.nextAfterLogin()` yang memutuskan
-	 *    tujuannya — bukan `homePath` yang ditebak di berkas ini. Yang dipangkas
+	 *    tujuannya: bukan `homePath` yang ditebak di berkas ini. Yang dipangkas
 	 *    hanyalah dua kolom isian, bukan penjagaannya.
 	 *
 	 * 3. **Daftar akun dirakit dari repository, bukan dari daftar tulis tangan.**
 	 *    `accountRepository.demoAccounts()` hanya mengembalikan empat baris (satu
 	 *    awardee sorotan, dua verifikator, satu admin), sementara peragaan menuntut
 	 *    lima awardee dari komunitas dan chapter berbeda. Karena itu awardee-nya
-	 *    diambil dari `awardeeRepository.getActive()` — awardee AKTIF dijamin punya
+	 *    diambil dari `awardeeRepository.getActive()`: awardee AKTIF dijamin punya
 	 *    akun berstatus aktif, sehingga tidak ada kartu yang ditolak saat diklik.
 	 *
 	 * 4. **Pengguna yang sudah masuk tidak dipantulkan diam-diam.** Panelnya
@@ -34,7 +34,7 @@
 	 *
 	 * 5. **Formulir manual tetap ada, tetapi dilipat.** Ia dibutuhkan untuk
 	 *    menunjukkan pesan galat kredensial dan tetap menjadi jalan masuk bagi akun
-	 *    yang tidak dipajang sebagai kartu — hanya saja bukan lagi jalur utama.
+	 *    yang tidak dipajang sebagai kartu: hanya saja bukan lagi jalur utama.
 	 */
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -48,7 +48,15 @@
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 
-	/** Banyaknya kartu awardee yang dipajang — enam, agar grid tiga kolom terisi rata. */
+	function isLocalPocketBase(value) {
+		try { return ['127.0.0.1', 'localhost', '::1'].includes(new URL(value).hostname); }
+		catch { return false; }
+	}
+	const DEMO_LOGIN = import.meta.env.DEV
+		&& import.meta.env.VITE_ENABLE_DEMO_LOGIN === '1'
+		&& isLocalPocketBase(import.meta.env.VITE_PB_URL || 'http://127.0.0.1:8090');
+
+	/** Banyaknya kartu awardee yang dipajang: enam, agar grid tiga kolom terisi rata. */
 	const JUMLAH_AWARDEE = 6;
 
 	/**
@@ -75,7 +83,7 @@
 	let galat = $state('');
 
 	/** Formulir manual terbuka. */
-	let manualTerbuka = $state(false);
+	let manualTerbuka = $state(!DEMO_LOGIN);
 
 	let email = $state('');
 	let sandi = $state('');
@@ -86,7 +94,7 @@
 	/** Jalur yang ingin dibuka pengguna sebelum ia diminta masuk. */
 	const tujuanDiminta = $derived(page.url?.searchParams?.get('next') ?? '');
 
-	/** Tujuan yang aman bagi peran yang sedang aktif — dipakai panel "sesi aktif". */
+	/** Tujuan yang aman bagi peran yang sedang aktif: dipakai panel "sesi aktif". */
 	const tujuanAman = $derived(session.nextAfterLogin(tujuanDiminta));
 
 	const adaKartu = $derived(kartuStaf.length > 0 || kartuAwardee.length > 0);
@@ -110,6 +118,11 @@
 		try {
 			await catalog.load();
 			await session.hydrate();
+			if (!DEMO_LOGIN) {
+				kartuStaf = [];
+				kartuAwardee = [];
+				return;
+			}
 
 			const [admin, verifikator, awardee] = await Promise.all([
 				accountRepository.byRole(UserRole.ADMIN),
@@ -125,7 +138,7 @@
 				keterangan: akun.unit
 			}));
 
-			// Poin tertinggi lebih dulu, seri diputus oleh id — deterministik supaya
+			// Poin tertinggi lebih dulu, seri diputus oleh id: deterministik supaya
 			// naskah peragaan dan tangkapan layar tidak basi tiap kali data dibangun.
 			const terpilih = [...awardee]
 				.sort((a, b) => b.points - a.points || a.id.localeCompare(b.id))
@@ -206,7 +219,7 @@
 	}
 
 	/**
-	 * Mengakhiri sesi tanpa meninggalkan halaman ini — daftar kartu langsung
+	 * Mengakhiri sesi tanpa meninggalkan halaman ini: daftar kartu langsung
 	 * menggantikan panel, siap menerima akun peran berikutnya.
 	 * @returns {void}
 	 */
@@ -223,19 +236,20 @@
 </script>
 
 <svelte:head>
-	<title>Masuk — PFfriends</title>
-	<meta name="description" content="Masuk ke portal komunitas PFfriends Pertamina Foundation." />
+	<title>Masuk: PFriends</title>
+	<meta name="description" content="Masuk ke portal komunitas PFriends Pertamina Foundation." />
 </svelte:head>
 
 <div class="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
 	<header class="text-center">
 		<p class="kicker">Ruang anggota</p>
 		<h1 class="display-editorial mt-4 text-[clamp(28px,4vw,42px)] leading-[1.08] text-heading">
-			Pilih akun untuk masuk
+			{DEMO_LOGIN ? 'Pilih akun untuk masuk' : 'Masuk ke PFriends'}
 		</h1>
 		<p class="mx-auto mt-5 max-w-[58ch] text-[16px] leading-[1.65] text-ink-700">
-			Ini prototipe peragaan. Klik salah satu kartu di bawah dan Anda langsung masuk ke ruang
-			sesuai peran akun itu — tanpa perlu mengetik kata sandi.
+			{DEMO_LOGIN
+				? 'Mode demo lokal aktif. Pilih kartu akun atau gunakan email dan kata sandi.'
+				: 'Awardee dapat masuk setelah mengirim registrasi. Akun yang belum disetujui hanya membuka portal status.'}
 		</p>
 	</header>
 
@@ -251,7 +265,7 @@
 	{#if !session.ready}
 		<p class="mt-10 text-center text-[15px] text-ink-600" aria-busy="true">Memeriksa sesi…</p>
 	{:else if session.isAuthenticated}
-		<!-- Panel "sesi aktif" — pengganti pantulan senyap. Lihat keputusan 4. -->
+		<!-- Panel "sesi aktif": pengganti pantulan senyap. Lihat keputusan 4. -->
 		<div class="mx-auto mt-10 max-w-2xl rounded-card border border-ink-200 bg-surface p-6 sm:p-8">
 			<p class="kicker">Sesi aktif</p>
 			<h2 class="display-editorial mt-3 text-[24px] text-heading">
@@ -285,7 +299,8 @@
 		<p class="mt-10 text-center text-[15px] text-ink-600" aria-busy="true">
 			Menyiapkan akun peragaan…
 		</p>
-	{:else if adaKartu}
+	{:else}
+		{#if adaKartu}
 		<!-- ── Pengelola & verifikator ─────────────────────────────────────── -->
 		<section class="mt-12" aria-labelledby="staf-judul">
 			<h2 id="staf-judul" class="kicker">Pengelola program</h2>
@@ -366,6 +381,7 @@
 		</section>
 
 		<!-- ── Masuk manual ─────────────────────────────────────────────────── -->
+		{/if}
 		<div class="mt-14 border-t border-ink-200 pt-6 text-center">
 			{#if manualTerbuka}
 				<form class="mx-auto max-w-sm text-left" onsubmit={kirimManual} novalidate>
@@ -423,16 +439,17 @@
 				</button>
 			{/if}
 		</div>
-	{:else}
-		<p class="mx-auto mt-10 max-w-[60ch] text-center text-[15px] leading-[1.6] text-ink-600">
-			Daftar akun peragaan belum tersedia di peramban ini. Muat ulang halaman untuk
-			menyiapkannya.
-		</p>
 	{/if}
 
-	<p class="mx-auto mt-12 max-w-[64ch] text-center text-[13px] leading-[1.6] text-ink-600">
-		Prototipe ini memakai autentikasi tiruan, bukan mekanisme keamanan. Data tersimpan di peramban
-		Anda sendiri. Pada penerapan nyata, akun diterbitkan lewat direktori pengguna Pertamina
-		Foundation dan kata sandi tidak pernah dibagikan bersama.
-	</p>
+	<div class="mx-auto mt-10 max-w-xl rounded-card border border-ink-200 bg-surface p-6 text-center">
+		<h2 class="text-lg font-bold text-heading">Belum punya akun Awardee?</h2>
+		<p class="mt-2 text-sm leading-relaxed text-ink-600">Daftarkan data diri dan bukti keanggotaan untuk diperiksa Verifikator.</p>
+		<a href="/daftar" class="mt-5 inline-flex min-h-11 items-center rounded-control bg-brand-600 px-6 text-sm font-bold text-white">Daftar sebagai Awardee</a>
+	</div>
+
+	<div class="mx-auto mt-6 max-w-xl rounded-control bg-ink-50 p-4 text-center text-sm text-ink-600">
+		<strong class="text-heading">Login Verifikator dan Admin</strong>
+		<p class="mt-1">SSO OAuth sedang dipersiapkan. Akun password staf hanya tersedia ketika mode demo lokal diaktifkan.</p>
+		<!-- TODO(SSO): ganti pesan ini dengan tombol authWithOAuth2 setelah provider dan pemetaan claim disepakati. -->
+	</div>
 </div>

@@ -1,12 +1,12 @@
 <script>
 	/**
-	 * StoryCard — kartu cerita komunitas.
+	 * StoryCard: kartu cerita komunitas.
 	 *
 	 * EMPAT PERUBAHAN KONTRAK YANG WAJIB DIKETAHUI PEMANGGIL:
 	 *
 	 * 1. **Sampul kini datang dari prop `foto` bertipe `Photo|null`, BUKAN dari
 	 *    `story.cover`.** `Story` tidak pernah punya field `cover` maupun
-	 *    `coverImage` — diverifikasi ke typedef `StoryInput` dan ke `seed-data.js`.
+	 *    `coverImage`: diverifikasi ke typedef `StoryInput` dan ke `seed-data.js`.
 	 *    Cabang lama `{#if story?.cover}` karena itu **selalu salah**, dan itulah
 	 *    sebabnya tidak satu pun kartu cerita pernah menampilkan sampul (cacat D-08).
 	 *    Pengisinya adalah `fotoCerita(story.slug)`; kepemilikan pemetaan itu ada
@@ -22,7 +22,7 @@
 	 *    penyaringan statis di `photos.js`.
 	 *    Gradien sebagai pengganti foto adalah cacat D-08 ("placeholder
 	 *    dipromosikan menjadi desain"), dan satu foto default yang dipakai bersama
-	 *    seluruh kartu cerita dilarang eksplisit oleh `docs/12` §3.3(d) butir 4 —
+	 *    seluruh kartu cerita dilarang eksplisit oleh `docs/12` §3.3(d) butir 4 :
 	 *    dua belas kartu bersampul sama persis terbaca LEBIH otomatis daripada dua
 	 *    belas kartu tanpa sampul.
 	 *
@@ -38,8 +38,8 @@
 	 * @prop {'grid'|'feature'|'compact'} variant
 	 * @prop {boolean} showStatus  Tampilan pengurus: memperlihatkan status moderasi.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 StoryCard { story, foto, href, variant, showStatus }
-	 * @see docs/11-VISUAL-DIRECTION.md — §9 baris StoryCard, §4.3 butir 4 fallback tipografis
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 StoryCard { story, foto, href, variant, showStatus }
+	 * @see docs/11-VISUAL-DIRECTION.md: §9 baris StoryCard, §4.3 butir 4 fallback tipografis
 	 */
 	import Avatar from './Avatar.svelte';
 	import StatusBadge from './StatusBadge.svelte';

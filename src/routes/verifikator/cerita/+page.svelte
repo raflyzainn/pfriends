@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN `/verifikator/cerita` — Submission Blog, antrean FIFO.
+	 * HALAMAN `/verifikator/cerita`: Submission Blog, antrean FIFO.
 	 *
 	 * Tanggung jawab: menampilkan submission blog yang menunggu tindakan verifikator
 	 * dengan urutan tertua lebih dahulu, usia antrean dalam hari kerja, penanda
@@ -14,7 +14,7 @@
 	 * 2. **Tombol keputusan tiap baris dirender dari
 	 *    `allowedStoryTransitions(status, role)`.** Baris berstatus `DIAJUKAN`
 	 *    karena itu hanya menawarkan "Ambil untuk ditinjau", sedangkan baris
-	 *    `REVIEW` menawarkan tiga keputusan — bukan karena halaman ini tahu
+	 *    `REVIEW` menawarkan tiga keputusan: bukan karena halaman ini tahu
 	 *    aturannya, melainkan karena peta transisi domain yang menjawabnya
 	 *    (`docs/12` §3.5 WP-06 butir 2).
 	 * 3. **Penyaring status memakai daftar dari antrean itu sendiri**, bukan daftar
@@ -23,21 +23,22 @@
 	 * 4. **Konflik kepentingan tetap diperiksa pada jalur cerita.** `WRITE_CONTENT`
 	 *    bukan milik VERIFIER, sehingga `story.authorId` selalu menunjuk Awardee dan
 	 *    pemeriksaan ini secara sah tidak pernah menyala. Ia dipasang sebagai
-	 *    pertahanan berlapis — untuk menangkap data yang lolos invarian karena
+	 *    pertahanan berlapis: untuk menangkap data yang lolos invarian karena
 	 *    kekeliruan migrasi kelak (`docs/12` §3.5 WP-06 butir 3).
 	 * 5. **Nol angka hari kerja tertulis di berkas ini.** Usia dan batas datang dari
 	 *    `slaAntrean()`, yang bersumber pada `SLA_HARI_KERJA`.
 	 * 6. **`DecisionBar` dirender `compact` di dalam daftar.** Penjelasan tiap
-	 *    keputusan tetap ada — ia pindah ke atribut `title` tombolnya — karena tiga
+	 *    keputusan tetap ada: ia pindah ke atribut `title` tombolnya: karena tiga
 	 *    paragraf penjelasan yang berulang pada setiap baris menenggelamkan judul
 	 *    submission yang justru harus dibaca lebih dulu. Penjelasan lengkapnya hidup
 	 *    di halaman detail, tempat keputusan sesungguhnya diambil.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — US-R26 antrean tinjauan FIFO, §5.6 SLA
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-06 butir 2, 4, dan 6
+	 * @see docs/10-REVISION-SPEC.md: US-R26 antrean tinjauan FIFO, §5.6 SLA
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-06 butir 2, 4, dan 6
 	 */
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { EmptyState, Icon, PageHeader, Tabs, ICONS } from '$lib/components';
+	import { Button, EmptyState, Icon, PageHeader, Tabs, ICONS } from '$lib/components';
 	import { STORY_STATUS_META } from '$lib/domain/constants/community.js';
 	import { AccessPolicy } from '$lib/domain/policies/AccessPolicy.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
@@ -56,9 +57,12 @@
 
 	/** Kunci tab yang berarti "tanpa penyaring". */
 	const SEMUA = 'SEMUA';
+	const MODE_ANTREAN = 'ANTREAN';
+	const MODE_SEMUA = 'SEMUA_CERITA';
+	let mode = $state(MODE_ANTREAN);
 
 	/**
-	 * Waktu acuan seluruh perhitungan usia di halaman ini — satu nilai untuk
+	 * Waktu acuan seluruh perhitungan usia di halaman ini: satu nilai untuk
 	 * seluruh baris. Lihat catatan yang sama pada papan antrean.
 	 * @type {Date}
 	 */
@@ -71,24 +75,30 @@
 	let keputusanTerbuka = $state(null);
 
 	/** Status yang benar-benar ada di antrean saat ini, urut sesuai antrean. */
-	const statusDiAntrean = $derived([...new Set(editorial.storyQueue.map((story) => story.status))]);
+	const sumber = $derived(mode === MODE_ANTREAN ? editorial.storyQueue : editorial.verifierStories);
+	const statusDiAntrean = $derived([...new Set(sumber.map((story) => story.status))]);
 
 	/** Tab penyaring: "Semua" ditambah status yang benar-benar ada. */
 	const tabs = $derived([
-		{ id: SEMUA, label: 'Semua', count: editorial.storyQueue.length },
+		{ id: SEMUA, label: 'Semua', count: sumber.length },
 		...statusDiAntrean.map((status) => ({
 			id: status,
 			label: STORY_STATUS_META[status]?.label ?? status,
-			count: editorial.storyQueue.filter((story) => story.status === status).length
+			count: sumber.filter((story) => story.status === status).length
 		}))
 	]);
 
 	/** Antrean sesudah disaring; urutannya tetap urutan asal dari domain. */
 	const antrean = $derived(
 		tabAktif === SEMUA
-			? editorial.storyQueue
-			: editorial.storyQueue.filter((story) => story.status === tabAktif)
+			? sumber
+			: sumber.filter((story) => story.status === tabAktif)
 	);
+
+	function gantiMode(value) {
+		mode = value;
+		tabAktif = SEMUA;
+	}
 
 	/**
 	 * Tiga angka ringkas di kepala halaman.
@@ -166,6 +176,11 @@
 		const hasil = await terbuka.decision.jalankan(terbuka.story, payload);
 		if (hasil.ok) keputusanTerbuka = null;
 	}
+
+	onMount(async () => {
+		if (!session.ready) await session.hydrate();
+		if (session.isVerifier) await editorial.refresh();
+	});
 </script>
 
 <PageHeader
@@ -174,7 +189,12 @@
 	subtitle="Naskah yang dikirim awardee, tertua lebih dahulu. Tombol keputusan tiap baris berasal dari peta transisi domain, sehingga daftarnya tidak pernah berbeda dari aturan alur editorial."
 />
 
-<section class="mt-5 grid gap-4 sm:grid-cols-3" aria-label="Ringkasan submission">
+<div class="mb-5 flex gap-2 border-b border-ink-200">
+	<button type="button" class={`px-4 py-3 text-sm font-semibold ${mode === MODE_ANTREAN ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => gantiMode(MODE_ANTREAN)}>Antrean</button>
+	<button type="button" class={`px-4 py-3 text-sm font-semibold ${mode === MODE_SEMUA ? 'border-b-2 border-pertamina-red text-heading' : 'text-ink-500'}`} onclick={() => gantiMode(MODE_SEMUA)}>Semua Cerita</button>
+</div>
+
+{#if mode === MODE_ANTREAN}<section class="mt-5 grid gap-4 sm:grid-cols-3" aria-label="Ringkasan submission">
 	{#each ringkasan as kartu (kartu.id)}
 		<div class="card p-4">
 			<span class="flex items-center gap-2 {kartu.tegas ? 'text-pertamina-red-ink' : 'text-ink-600'}">
@@ -190,15 +210,21 @@
 			</span>
 		</div>
 	{/each}
-</section>
+</section>{/if}
 
-{#if editorial.storyQueue.length > 0}
+{#if sumber.length > 0}
 	<div class="mt-6">
 		<Tabs {tabs} bind:active={tabAktif} variant="pill" />
 	</div>
 {/if}
 
-{#if editorial.loading && editorial.storyQueue.length === 0}
+{#if editorial.error && sumber.length === 0}
+	<div class="mt-5 rounded-card border border-danger/30 bg-danger-tint/40 p-5" role="alert">
+		<p class="text-sm font-semibold text-heading">Antrean Cerita gagal dimuat</p>
+		<p class="mt-1 text-sm leading-relaxed text-ink-600">{editorial.error}</p>
+		<div class="mt-4"><Button size="sm" variant="secondary" onclick={() => editorial.refresh()}>Coba lagi</Button></div>
+	</div>
+{:else if editorial.loading && sumber.length === 0}
 	<div class="mt-5 space-y-3" aria-busy="true" aria-label="Memuat Submission Blog">
 		{#each ['a', 'b', 'c'] as kunci (kunci)}
 			<div class="skeleton h-28 w-full rounded-card"></div>
@@ -223,7 +249,7 @@
 					subtitle={naskah.summary}
 					statusLabel={naskah.statusMeta.label}
 					statusColor={naskah.statusMeta.badgeColor}
-					sla={slaAntrean(naskah, sekarang)}
+					sla={mode === MODE_ANTREAN ? slaAntrean(naskah, sekarang) : null}
 					meta={[
 						`Penulis: ${naskah.authorName}`,
 						`${naskah.wordCount} kata`,
@@ -258,7 +284,7 @@
 
 <p class="mt-6 text-xs leading-relaxed text-ink-600">
 	Persetujuan submission menuntut checklist data sensitif {TOTAL_BUTIR_SENSITIF} butir dikonfirmasi
-	lebih dahulu. Buka halaman detail submission untuk menjalankannya — checklist itu harus dibaca
+	lebih dahulu. Buka halaman detail submission untuk menjalankannya: checklist itu harus dibaca
 	berdampingan dengan naskahnya, bukan dicentang dari daftar. Keterangan tiap tombol keputusan
 	tersedia sebagai penjelasan singkat saat kursor menyinggahinya, dan tertulis lengkap di halaman
 	detail.

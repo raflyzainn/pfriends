@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * VerifAwardeePerforma — produktivitas awardee dan poin yang lahir darinya.
+	 * VerifAwardeePerforma: produktivitas awardee dan poin yang lahir darinya.
 	 *
 	 * Props:
 	 * @prop {string[]} labels     Label bulan, urut menaik.
@@ -17,7 +17,7 @@
 	 *    kedua di samping warna, sehingga chart tetap terbaca saat dicetak abu-abu.
 	 * 2. **Sumbu kanan tidak menggambar garis bantunya sendiri.** Dua kisi yang
 	 *    tidak sejajar membuat pembaca mengira ada makna pada titik potongnya.
-	 * 3. **Tanpa data, `option` bernilai `null` — bukan deret nol.** Bulan yang
+	 * 3. **Tanpa data, `option` bernilai `null`: bukan deret nol.** Bulan yang
 	 *    seluruhnya nol tidak dapat dibedakan dari data yang gagal dimuat, padahal
 	 *    keduanya menuntut tindakan berbeda.
 	 */

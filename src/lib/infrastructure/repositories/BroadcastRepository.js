@@ -1,28 +1,26 @@
 /**
- * REPOSITORY — Kabar Pfriends (Hal 5 pilar 04).
+ * REPOSITORY: Kabar Pfriends (Hal 5 pilar 04).
  *
  * Tanggung jawab: akses data peristiwa diseminasi informasi, sumber KPI-02
  * (volume konten) dan KPI-03 (frekuensi diseminasi) Hal 6.
  *
  * @see src/lib/domain/entities/Broadcast.js
- * @see docs/02-KPI-MODEL.md — M-02, M-03
+ * @see docs/02-KPI-MODEL.md: M-02, M-03
  */
 
 import { Broadcast, BroadcastStatus } from '$lib/domain/entities/Broadcast.js';
-import { TABLE } from '../db.js';
-import { DexieRepository } from './DexieRepository.js';
+import { listBroadcasts } from '../pocketbase/broadcasts.js';
+import { getPocketBase } from '../pocketbase/client.js';
 
-export class BroadcastRepository extends DexieRepository {
-	constructor() {
-		super({
-			tableName: TABLE.BROADCASTS,
-			entity: Broadcast,
-			indexedFields: ['status', 'channel']
-		});
+export class BroadcastRepository {
+	async getAll() {
+		if (getPocketBase()?.authStore?.record?.role !== 'AWARDEE') return [];
+		const rows = await listBroadcasts();
+		return rows.map((row) => new Broadcast({ ...row, contentIds: [row.id], openedBy: row.read ? ['ME'] : [], amplifiedBy: row.privateShares ? ['ME'] : [] }));
 	}
 
 	/**
-	 * Kabar yang sudah terkirim, terbaru lebih dulu — inilah daftar yang dilihat
+	 * Kabar yang sudah terkirim, terbaru lebih dulu: inilah daftar yang dilihat
 	 * awardee di `/awardee/kabar`.
 	 * @returns {Promise<Broadcast[]>}
 	 */
@@ -42,7 +40,7 @@ export class BroadcastRepository extends DexieRepository {
 	}
 
 	/**
-	 * Kabar yang belum dibuka seorang awardee — kandidat aksi BROADCAST_VIEW.
+	 * Kabar yang belum dibuka seorang awardee: kandidat aksi BROADCAST_VIEW.
 	 * @param {string} awardeeId
 	 * @returns {Promise<Broadcast[]>}
 	 */
@@ -64,7 +62,7 @@ export class BroadcastRepository extends DexieRepository {
 	}
 
 	/**
-	 * Rekap jumlah hari kirim unik per bulan — bentuk mentah chart tren diseminasi.
+	 * Rekap jumlah hari kirim unik per bulan: bentuk mentah chart tren diseminasi.
 	 * @returns {Promise<Map<string, number>>} Kunci `'2026-07'`, nilai jumlah hari unik.
 	 */
 	async disseminationDaysByMonth() {

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * GatePanel — satu gerbang keputusan, berdiri sendiri.
+	 * GatePanel: satu gerbang keputusan, berdiri sendiri.
 	 *
 	 * @prop {string} kicker       Penanda urutan gerbang, mis. 'Gerbang 1 dari 3'.
 	 * @prop {string} title        Nama gerbang.
@@ -19,7 +19,7 @@
 	 *    mengundang pembacaan "hampir lolos"; pada gerbang konjungtif, empat dari
 	 *    lima syarat sama artinya dengan tidak lolos.
 	 * 3. **`hint` syarat yang belum terpenuhi selalu ikut tampil.** Penolakan tanpa
-	 *    langkah berikutnya hanya memindahkan pertanyaan ke luar sistem — dan
+	 *    langkah berikutnya hanya memindahkan pertanyaan ke luar sistem: dan
 	 *    verifikator akan menanyakannya lewat kanal yang tidak tercatat.
 	 * 4. **Keadaan "belum dapat dinilai" dibedakan dari "tidak lolos".** Naskah yang
 	 *    penulisnya tidak ditemukan di katalog bukan naskah yang gagal; menyamakan
@@ -84,7 +84,7 @@
 					<span class="min-w-0">
 						<span class="block text-sm leading-snug font-medium text-ink-800">
 							{check.label}
-							<span class="sr-only">{check.passed ? '— terpenuhi' : '— belum terpenuhi'}</span>
+							<span class="sr-only">{check.passed ? ': terpenuhi' : ': belum terpenuhi'}</span>
 						</span>
 						{#if check.labelSumber}
 							<span class="block text-xs text-ink-500">{check.labelSumber}</span>

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * DETAIL CERITA — satu naskah komunitas dibaca utuh oleh publik.
+	 * DETAIL CERITA: satu naskah komunitas dibaca utuh oleh publik.
 	 *
 	 * Tiga keadaan yang wajib dibedakan halaman ini, dan sering tertukar:
 	 *
@@ -17,23 +17,23 @@
 	 *
 	 * 1. **Byline memuat orang, bukan capaiannya.** Lencana capaian dan cincin
 	 *    penanda pada avatar dicabut, dan bersamanya pembacaan profil penulis dari
-	 *    katalog — data itu dimuat semata-mata untuk mengambil tingkat capaian, dan
+	 *    katalog: data itu dimuat semata-mata untuk mengambil tingkat capaian, dan
 	 *    tanpa keperluan itu pembacaannya menjadi pekerjaan tanpa hasil.
 	 *
 	 * 2. **Sampul memakai foto sungguhan dari manifes, bukan gradien.** Gradien
-	 *    sebagai pengganti foto adalah cacat D-08 — placeholder yang dipromosikan
+	 *    sebagai pengganti foto adalah cacat D-08: placeholder yang dipromosikan
 	 *    menjadi desain. Bila berkas sampulnya tidak ada, `PhotoFigure` jatuh ke
 	 *    blok tipografis, bukan ke gradien pengganti.
 	 *
 	 * 3. **Panel agenda di sisi artikel adalah `EventListPanel` yang sama** dengan
-	 *    beranda dan indeks cerita — pemakaian ketiga dari lima (KP-3).
+	 *    beranda dan indeks cerita: pemakaian ketiga dari lima (KP-3).
 	 *
 	 * 4. **Cerita terkait dirender sebagai judul teks murni.** Tiga kartu bergambar
 	 *    di kaki artikel bergambar hanya mengulang bentuk yang sudah dipakai di
 	 *    indeks; teks murni memberi halaman ini akhir yang tenang.
 	 *
-	 * @see docs/11-VISUAL-DIRECTION.md — §7.2 rancangan `/cerita/[slug]`
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-04
+	 * @see docs/11-VISUAL-DIRECTION.md: §7.2 rancangan `/cerita/[slug]`
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-04
 	 */
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
@@ -41,6 +41,7 @@
 	import EventListPanel from '$lib/components/EventListPanel.svelte';
 	import { PhotoFigure } from '$lib/components/editorial';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
+	import { publicContent } from '$lib/stores/publicContent.svelte.js';
 	import { komunitas, chapter } from '$lib/domain/constants/community.js';
 	import { fotoCerita } from '$lib/data/photos.js';
 	import { formatAngka, formatTanggal, frasaHitung } from '$lib/utils/format.js';
@@ -65,7 +66,7 @@
 	const KEYLINE_PILAR = Object.freeze({ E: 'green', S: 'navy', G: 'red' });
 
 	const slug = $derived(page.params.slug ?? '');
-	const cerita = $derived(catalog.storyBySlug(slug));
+	const cerita = $derived(publicContent.storyBySlug(slug));
 	const sampul = $derived(slug ? fotoCerita(slug) : null);
 	const agenda = $derived(agendaPublik(catalog.upcomingEvents()));
 
@@ -85,7 +86,7 @@
 	/** Cerita lain yang berbagi minimal satu pilar ESG dengan cerita ini. */
 	const ceritaTerkait = $derived(
 		cerita
-			? catalog.publishedStories
+			? publicContent.stories
 					.filter(
 						(lain) =>
 							lain.id !== cerita.id && lain.pillars.some((pilar) => cerita.pillars.includes(pilar))
@@ -96,7 +97,7 @@
 
 	const tautanPenuh = $derived(browser ? page.url.href : '');
 	const pesanBagikan = $derived(
-		cerita ? `${cerita.title} — cerita dari komunitas PFfriends Pertamina Foundation` : ''
+		cerita ? `${cerita.title}: cerita dari komunitas PFriends Pertamina Foundation` : ''
 	);
 	const tautanWa = $derived(
 		`https://wa.me/?text=${encodeURIComponent(`${pesanBagikan} ${tautanPenuh}`)}`
@@ -118,13 +119,13 @@
 </script>
 
 <svelte:head>
-	<title>{cerita?.isPublic ? `${cerita.title} — PFfriends` : 'Cerita Komunitas — PFfriends'}</title>
+	<title>{cerita?.isPublic ? `${cerita.title}: PFriends` : 'Cerita Komunitas: PFriends'}</title>
 	{#if cerita?.isPublic}
 		<meta name="description" content={cerita.summary} />
 	{/if}
 </svelte:head>
 
-{#if !catalog.loaded && catalog.loading}
+{#if !publicContent.loaded && publicContent.loading}
 	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8" aria-busy="true">
 		<Skeleton variant="card" />
 		<Skeleton variant="title" class="mt-8" />

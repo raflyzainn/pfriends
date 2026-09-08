@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * EventProposalForm — formulir usulan kegiatan komunitas.
+	 * EventProposalForm: formulir usulan kegiatan komunitas.
 	 *
 	 * Komponen lokal zona Awardee (KP-5). Awardee mengusulkan agenda; verifikator
 	 * memutuskan. Formulir ini adalah sisi awardee dari alur E-01 `docs/10` §5.4.
@@ -9,7 +9,7 @@
 	 *
 	 * 1. **Usulan dikirim lewat `editorial.proposeEvent`, bukan repository.** Store
 	 *    meneruskannya ke `ContentReviewService`, yang mencatat pengusul DARI AKTOR
-	 *    SESI — bukan dari isian formulir. Identitas pengusul adalah dasar
+	 *    SESI: bukan dari isian formulir. Identitas pengusul adalah dasar
 	 *    pemeriksaan konflik kepentingan saat persetujuan; nilai yang boleh dikirim
 	 *    dari formulir membuat pemeriksaan itu dapat dilewati dengan mengetik id
 	 *    orang lain.
@@ -18,14 +18,14 @@
 	 *    diperiksa. Menyetel `DIUSULKAN` langsung di sini akan melompati satu-
 	 *    satunya gerbang yang ada.
 	 * 3. **Penolakan menyebut isian mana yang belum benar**, lewat `Validator` dan
-	 *    galat per field — bukan satu kalimat "formulir belum lengkap" yang memaksa
+	 *    galat per field: bukan satu kalimat "formulir belum lengkap" yang memaksa
 	 *    pengusul menebak kolomnya.
 	 * 4. **Kuota, poin, dan daftar peserta TIDAK ada di formulir ini.** Usulan
 	 *    kegiatan bukan mekanik gamifikasi, dan menaruh nilai poin di sini akan
 	 *    mendorong orang mengusulkan agenda demi angkanya.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.9 ContentReviewService.proposeEvent
-	 * @see docs/10-REVISION-SPEC.md — §5.4 alur usulan kegiatan
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.9 ContentReviewService.proposeEvent
+	 * @see docs/10-REVISION-SPEC.md: §5.4 alur usulan kegiatan
 	 */
 	import { Button, Card, Icon, ICONS } from '$lib/components';
 	import { CHAPTERS } from '$lib/domain/constants/community.js';
@@ -47,7 +47,7 @@
 	const LINTAS_CHAPTER = '';
 
 	/**
-	 * Tanggal waktu lokal untuk `<input type="date">` — bukan `toISOString()`, yang
+	 * Tanggal waktu lokal untuk `<input type="date">`: bukan `toISOString()`, yang
 	 * memundurkan tanggal satu hari bagi pengusul di zona WIB setiap sore.
 	 * @param {Date} tanggal
 	 * @returns {string}
@@ -62,11 +62,11 @@
 	const validator = new Validator({
 		title: [
 			Rule.required('Judul kegiatan wajib diisi.'),
-			Rule.minLength(10, 'Judul terlalu pendek untuk menerangkan isi kegiatan — minimal 10 karakter.'),
+			Rule.minLength(10, 'Judul terlalu pendek untuk menerangkan isi kegiatan: minimal 10 karakter.'),
 			Rule.maxLength(120, 'Judul maksimal 120 karakter.')
 		],
 		description: [
-			Rule.required('Deskripsi wajib diisi — verifikator memutuskan dari penjelasan ini.'),
+			Rule.required('Deskripsi wajib diisi: verifikator memutuskan dari penjelasan ini.'),
 			Rule.minLength(40, 'Jelaskan setidaknya dalam 40 karakter: untuk siapa dan apa yang dikerjakan.')
 		],
 		date: [
@@ -158,7 +158,7 @@
 	/**
 	 * Mengirim usulan ke antrean verifikator.
 	 *
-	 * Penolakan menyebut isian mana yang belum benar, satu per satu — pesan galat
+	 * Penolakan menyebut isian mana yang belum benar, satu per satu: pesan galat
 	 * umum membuat pengusul menekan tombol yang sama berulang kali.
 	 * @returns {Promise<void>}
 	 */
@@ -167,7 +167,7 @@
 		if (!layakKirim) {
 			const pesan = Object.values(validasi.errors);
 			if (!rentangWaktuSah) pesan.push('Jam selesai harus berada sesudah jam mulai.');
-			if (!awardee) pesan.push('Sesi awardee belum termuat — masuk kembali untuk mengusulkan.');
+			if (!awardee) pesan.push('Sesi awardee belum termuat: masuk kembali untuk mengusulkan.');
 			toast.push({
 				type: ToastType.WARNING,
 				title: 'Usulan belum dapat dikirim',

@@ -1,5 +1,5 @@
 /**
- * VALUE OBJECT — Tag ESG.
+ * VALUE OBJECT: Tag ESG.
  *
  * Tanggung jawab: memasangkan satu pilar ESG dengan satu tujuan SDG sebagai satu
  * kesatuan yang tervalidasi.
@@ -15,8 +15,8 @@
  * komunitas ini akan menghasilkan laporan ESG yang mengklaim lebih dari yang
  * benar-benar terjadi.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 10 ESG Measurement Hints, Hal 12 Minimum for ESG evidence
- * @see docs/04-ESG-GOVERNANCE.md — §2 Pemetaan Aktivitas ke Tag ESG dan SDG
+ * @see docs/00-SOURCE-BRIEF.md: Hal 10 ESG Measurement Hints, Hal 12 Minimum for ESG evidence
+ * @see docs/04-ESG-GOVERNANCE.md: §2 Pemetaan Aktivitas ke Tag ESG dan SDG
  */
 
 import { pilarEsg, tujuanSdg } from '../constants/esg-taxonomy.js';
@@ -106,7 +106,7 @@ export class EsgTag {
 	}
 
 	/**
-	 * Perbandingan berbasis nilai — dua tag dengan pilar dan SDG sama dianggap
+	 * Perbandingan berbasis nilai: dua tag dengan pilar dan SDG sama dianggap
 	 * identik, sehingga deduplikasi daftar tag dapat mengandalkannya.
 	 * @param {unknown} other
 	 * @returns {boolean}
@@ -140,7 +140,7 @@ export class EsgTag {
 	}
 
 	/**
-	 * Membangun seluruh tag untuk satu pemetaan aktivitas komunitas — satu tag per
+	 * Membangun seluruh tag untuk satu pemetaan aktivitas komunitas: satu tag per
 	 * SDG yang dapat diklaim aktivitas tersebut.
 	 * @param {import('../constants/esg-taxonomy.js').EsgActivityMapping} mapping
 	 * @returns {readonly EsgTag[]}

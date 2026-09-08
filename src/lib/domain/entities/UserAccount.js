@@ -1,8 +1,8 @@
 /**
- * ENTITY — Akun Pengguna.
+ * ENTITY: Akun Pengguna.
  *
- * Tanggung jawab: memegang identitas LOGIN — surel, hash kata sandi, peran, status
- * akun — dan menjawab "akun ini boleh apa" dengan membaca matriks kewenangan.
+ * Tanggung jawab: memegang identitas LOGIN: surel, hash kata sandi, peran, status
+ * akun: dan menjawab "akun ini boleh apa" dengan membaca matriks kewenangan.
  *
  * Mengapa akun terpisah dari `Awardee`, bukan sekadar menambah field `role` pada
  * penerima manfaat:
@@ -15,14 +15,14 @@
  *    hanya lewat `visibleOnLeaderboard`, dan distribusi tier akan menghitung staf
  *    sebagai tier terendah.
  * 3. Menambal ketiganya dengan filter peran akan menyebarkan pengetahuan peran ke
- *    tiga tempat berbeda — persis yang hendak dicegah oleh pemisahan ini.
+ *    tiga tempat berbeda: persis yang hendak dicegah oleh pemisahan ini.
  *
  * Relasi final: `UserAccount 1..0/1 Awardee`. Hanya akun berperan AWARDEE yang
  * menunjuk seorang awardee; peran lain wajib `awardeeId === null`, dan invarian
  * itulah yang membuat pemeriksaan konflik kepentingan pada jalur cerita bermakna.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.4 kontrak export dan daftar invarian
- * @see docs/10-REVISION-SPEC.md — §2.4 mengapa UserAccount terpisah dari Awardee
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.4 kontrak export dan daftar invarian
+ * @see docs/10-REVISION-SPEC.md: §2.4 mengapa UserAccount terpisah dari Awardee
  */
 
 import { bolehkan, peranPengguna, USER_ROLE_META, UserRole } from '../constants/roles.js';
@@ -281,7 +281,7 @@ export class UserAccount {
 	/**
 	 * Apakah akun memegang sebuah kapabilitas.
 	 *
-	 * Akun yang tidak aktif kehilangan seluruh kapabilitasnya — penonaktifan yang
+	 * Akun yang tidak aktif kehilangan seluruh kapabilitasnya: penonaktifan yang
 	 * hanya menghalangi login, tetapi membiarkan sesi lama tetap berwenang, bukan
 	 * penonaktifan.
 	 *
@@ -294,7 +294,7 @@ export class UserAccount {
 	}
 
 	/**
-	 * Apakah kata sandi polos cocok. Sinkron — lihat peringatan `PasswordHash.js`.
+	 * Apakah kata sandi polos cocok. Sinkron: lihat peringatan `PasswordHash.js`.
 	 * @param {string} plain
 	 * @returns {boolean}
 	 */

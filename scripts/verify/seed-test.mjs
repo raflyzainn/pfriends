@@ -4,7 +4,7 @@
  * Menguji tiga hal yang dituntut kontrak §6, ditambah pemeriksaan yang jauh lebih
  * keras: SETIAP baris seed dikonstruksi menjadi entity domain sungguhan. Entity
  * Pfriends menegakkan invariannya sendiri di konstruktor, sehingga konstruksi yang
- * lolos tanpa lemparan sudah membuktikan seluruh aturan domain terpenuhi — jauh
+ * lolos tanpa lemparan sudah membuktikan seluruh aturan domain terpenuhi: jauh
  * lebih meyakinkan daripada memeriksa bentuk objek satu per satu di sini.
  *
  * Jalankan: node scripts/verify/seed-test.mjs
@@ -53,7 +53,7 @@ function cek(nama, kondisi, detail = '') {
 		console.log(`  ✓ ${nama}`);
 	} else {
 		gagal += 1;
-		console.error(`  ✗ ${nama}${detail ? ` — ${detail}` : ''}`);
+		console.error(`  ✗ ${nama}${detail ? `: ${detail}` : ''}`);
 	}
 }
 
@@ -118,7 +118,7 @@ for (const rencana of RENCANA_TIER) {
 	);
 }
 
-// Diuji lewat entity Awardee, yang menurunkan tiernya sendiri dari Tier.fromPoints —
+// Diuji lewat entity Awardee, yang menurunkan tiernya sendiri dari Tier.fromPoints :
 // sehingga yang diperiksa di sini adalah tier yang benar-benar dilihat aplikasi,
 // bukan hasil hitungan ulang milik skrip ini.
 const tierSalah = bundle.awardees.filter((row) => {
@@ -184,14 +184,14 @@ const hariKirim = new Set(
 		.filter((b) => b.sentAt && b.sentAt.slice(0, 7) === BULAN_INI)
 		.map((b) => b.sentAt.slice(0, 10))
 );
-cek(`KPI-03 — ≥2 hari diseminasi pada ${BULAN_INI}`, hariKirim.size >= 2, `${hariKirim.size} hari`);
+cek(`KPI-03: ≥2 hari diseminasi pada ${BULAN_INI}`, hariKirim.size >= 2, `${hariKirim.size} hari`);
 
 const kontenBulanIni = new Set(
 	bundle.broadcasts
 		.filter((b) => b.sentAt && b.sentAt.slice(0, 7) === BULAN_INI)
 		.flatMap((b) => b.contentIds)
 );
-cek(`KPI-02 — ≥1 konten terdiseminasi pada ${BULAN_INI}`, kontenBulanIni.size >= 1, `${kontenBulanIni.size} konten`);
+cek(`KPI-02: ≥1 konten terdiseminasi pada ${BULAN_INI}`, kontenBulanIni.size >= 1, `${kontenBulanIni.size} konten`);
 
 const aktif = bundle.awardees.filter((m) => m.status === AWARDEE_STATUS.AKTIF);
 const idAktif = new Set(aktif.map((m) => m.id));
@@ -207,16 +207,16 @@ const amplifier = new Set(
 		.map((e) => e.awardeeId)
 );
 const rasioAmplifikasi = Math.round((amplifier.size / aktif.length) * 100);
-cek(`KPI-04 — amplifikasi ${rasioAmplifikasi}% dari anggota aktif (target 50%)`, rasioAmplifikasi >= 50);
+cek(`KPI-04: amplifikasi ${rasioAmplifikasi}% dari anggota aktif (target 50%)`, rasioAmplifikasi >= 50);
 
 const berkuorum = bundle.events.filter(
 	(e) => e.status === 'SELESAI' && e.evidenceRefs.length > 0 && e.attendeeAwardeeIds.length >= 10
 );
-cek('KPI-05 — ≥2 kegiatan terlaksana berkuorum', berkuorum.length >= 2, `${berkuorum.length} kegiatan`);
+cek('KPI-05: ≥2 kegiatan terlaksana berkuorum', berkuorum.length >= 2, `${berkuorum.length} kegiatan`);
 
 const terdata = bundle.awardees.filter((m) => m.status === AWARDEE_STATUS.AKTIF && m.consentActive);
 const coverage = Math.round((terdata.length / bundle.awardees.length) * 100);
-cek(`KPI-01 — coverage ${coverage}% (target 75%)`, coverage >= 75);
+cek(`KPI-01: coverage ${coverage}% (target 75%)`, coverage >= 75);
 
 console.log('\n=== G. INTEGRITAS RUJUKAN ===');
 const idAnggota = new Set(bundle.awardees.map((m) => m.id));
@@ -260,7 +260,7 @@ const perPeran = {};
 for (const akun of bundle.accounts) perPeran[akun.role] = (perPeran[akun.role] ?? 0) + 1;
 cek('60 akun berperan AWARDEE', perPeran[UserRole.AWARDEE] === 60, `diterima ${perPeran[UserRole.AWARDEE] ?? 0}`);
 cek(
-	'≥2 akun berperan VERIFIER — tanpa dua verifikator, larangan self-review membuntukan antrean',
+	'≥2 akun berperan VERIFIER: tanpa dua verifikator, larangan self-review membuntukan antrean',
 	(perPeran[UserRole.VERIFIER] ?? 0) >= 2,
 	`diterima ${perPeran[UserRole.VERIFIER] ?? 0}`
 );
@@ -347,16 +347,16 @@ console.log(`  distribusi status kegiatan: ${JSON.stringify(perStatusKegiatan)}`
 /* ── Kalender diukur terhadap HARI INI, bukan terhadap TODAY yang beku ────────
  *
  * Versi sebelumnya membandingkan `startsAt` dengan konstanta `TODAY`
- * (20 Juli 2026) — tanggal acuan yang sama dengan yang dipakai MEMBANGKITKAN
+ * (20 Juli 2026): tanggal acuan yang sama dengan yang dipakai MEMBANGKITKAN
  * kegiatannya. Perbandingan itu tidak pernah bisa gagal: ia menanyakan apakah
  * data yang dibuat setelah `TODAY` memang jatuh setelah `TODAY`. Gerbangnya
  * hijau selamanya, termasuk pada hari kalender publik benar-benar kosong bagi
- * pengunjung — persis cacat yang dilaporkan peninjau.
+ * pengunjung: persis cacat yang dilaporkan peninjau.
  *
  * Acuan yang benar adalah jam yang sama dengan yang dipakai peramban pengunjung.
  * Karena `bangkitkanAgendaBergulir()` menjadwalkan enam kegiatan rutin 21–126
  * hari ke depan terhitung saat data dipasang, asersi ini akan tetap hijau kapan
- * pun ia dijalankan — dan akan MERAH begitu mekanisme bergulir itu dicabut,
+ * pun ia dijalankan: dan akan MERAH begitu mekanisme bergulir itu dicabut,
  * yang memang satu-satunya keadaan yang perlu diketahui.
  */
 const SEKARANG = new Date();
@@ -377,7 +377,7 @@ cek(
 
 // Jangkar anti-regresi: perbandingan terhadap TODAY tidak boleh dipakai lagi
 // untuk kegiatan mendatang. Bila `TODAY` sudah lewat, sebuah asersi berbasis
-// TODAY akan lulus meski agenda nyata sudah habis — itulah bentuk kegagalannya.
+// TODAY akan lulus meski agenda nyata sudah habis: itulah bentuk kegagalannya.
 cek(
 	'acuan uji kalender BUKAN konstanta TODAY yang beku',
 	SEKARANG.getTime() !== TODAY.getTime(),
@@ -387,7 +387,7 @@ cek(
 /* ── Cakrawala agenda ────────────────────────────────────────────────────────
  * Kalender yang berisi enam kegiatan yang semuanya jatuh pekan depan tetap akan
  * kosong bulan depan. Yang menjaga PO-1 bukan JUMLAH agenda, melainkan seberapa
- * JAUH agenda terakhirnya — dan itulah yang diukur di sini terhadap ambang
+ * JAUH agenda terakhirnya: dan itulah yang diukur di sini terhadap ambang
  * kanonik `CAKRAWALA_AGENDA_MINIMUM_HARI` (bukan angka literal di skrip uji).
  */
 const terjadwalSemua = bundle.events.filter((e) => e.status === EventStatus.TERJADWAL);
@@ -401,7 +401,7 @@ const cakrawalaHari = kegiatanTerjauh
 cek(
 	`kegiatan TERJADWAL terakhir ≥${CAKRAWALA_AGENDA_MINIMUM_HARI} hari dari HARI INI`,
 	cakrawalaHari >= CAKRAWALA_AGENDA_MINIMUM_HARI,
-	`cakrawala ${cakrawalaHari} hari (terjauh ${kegiatanTerjauh?.toISOString().slice(0, 10) ?? '—'})`
+	`cakrawala ${cakrawalaHari} hari (terjauh ${kegiatanTerjauh?.toISOString().slice(0, 10) ?? ':'})`
 );
 
 // Agenda bergulir wajib TERSEBAR, bukan menumpuk di satu pekan: enam kegiatan

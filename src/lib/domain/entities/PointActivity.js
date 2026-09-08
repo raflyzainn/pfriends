@@ -1,7 +1,7 @@
 /**
- * ENTITY — Entri Buku Besar Poin.
+ * ENTITY: Entri Buku Besar Poin.
  *
- * Tanggung jawab: merekam satu aksi berpoin secara utuh — apa yang dilakukan,
+ * Tanggung jawab: merekam satu aksi berpoin secara utuh: apa yang dilakukan,
  * kapan, berapa poin yang dibukukan, dan mengapa poinnya sebesar itu.
  *
  * Ini objek terpenting di sistem. Tier, papan peringkat, badge, KPI amplifikasi
@@ -11,12 +11,12 @@
  * jumlah poin. Menghapus entri berarti memalsukan laporan.
  *
  * Invarian yang dijaga: `points <= basePoints` selalu. Pengali dan pemotongan cap
- * hanya boleh mengurangi, tidak pernah menambah — dengan begitu tabel Hal 11
+ * hanya boleh mengurangi, tidak pernah menambah: dengan begitu tabel Hal 11
  * tetap menjadi batas atas yang tidak dapat dilampaui mekanisme apa pun.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 11 Gamification Scoring Model
- * @see docs/03-GAMIFICATION-SPEC.md — §5.6 state machine entri poin
- * @see docs/05-ARCHITECTURE.md — §4.2 PointActivity
+ * @see docs/00-SOURCE-BRIEF.md: Hal 11 Gamification Scoring Model
+ * @see docs/03-GAMIFICATION-SPEC.md: §5.6 state machine entri poin
+ * @see docs/05-ARCHITECTURE.md: §4.2 PointActivity
  */
 
 import { aturanSkor } from '../constants/scoring-table.js';
@@ -152,7 +152,7 @@ export class PointActivity {
 			throw new RangeError(`Alasan pemotongan poin tidak dikenal: "${capReason}".`);
 		}
 
-		// Melempar RangeError bila jenis aksi tidak dikenal — poin dasar wajib kanonik.
+		// Melempar RangeError bila jenis aksi tidak dikenal: poin dasar wajib kanonik.
 		const rule = aturanSkor(activityType);
 		const base = new Points(rule.points);
 		const awarded = new Points(points === undefined ? rule.points : points);
@@ -294,7 +294,7 @@ export class PointActivity {
 
 	/**
 	 * Apakah entri ini memakai jatah kuota harian. Entri yang ditolak tidak
-	 * memakan kuota — menolak aksi lalu tetap membebankan kuotanya adalah hukuman
+	 * memakan kuota: menolak aksi lalu tetap membebankan kuotanya adalah hukuman
 	 * ganda yang tidak dijelaskan di mana pun kepada anggota.
 	 * @returns {boolean}
 	 */

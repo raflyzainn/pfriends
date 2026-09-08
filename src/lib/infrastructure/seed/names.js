@@ -11,15 +11,15 @@
  * peringkat dapat dinilai sebagaimana adanya nanti.
  *
  * Universitas yang terdaftar adalah mitra penerima Beasiswa Sobat Bumi yang tersebar
- * di berbagai pulau — sebaran itu memang bagian dari cerita program, sehingga daftar
+ * di berbagai pulau: sebaran itu memang bagian dari cerita program, sehingga daftar
  * yang hanya berisi kampus Jawa akan menghilangkan salah satu poinnya.
  *
- * @see docs/09-BUILD-CONTRACT.md — §6 Aturan seed data
+ * @see docs/09-BUILD-CONTRACT.md: §6 Aturan seed data
  */
 
 /**
  * Nama depan perempuan. Dipisahkan dari nama laki-laki karena komunitas
- * Womenpreneur seluruhnya perempuan — menggabungkannya akan menghasilkan daftar
+ * Womenpreneur seluruhnya perempuan: menggabungkannya akan menghasilkan daftar
  * "Womenpreneur" berisi nama laki-laki, dan itu langsung terlihat keliru.
  * @type {readonly string[]}
  */
@@ -133,7 +133,7 @@ export const KOTA = Object.freeze([
 
 /**
  * Bidang usaha UMKM binaan PFpreneur beserta contoh penamaan usaha dan satuan
- * produksinya. `satuan` dipakai untuk menyusun metrik dampak yang masuk akal —
+ * produksinya. `satuan` dipakai untuk menyusun metrik dampak yang masuk akal :
  * "120 kg" untuk keripik dan "340 helai" untuk batik, bukan satuan seragam.
  * @type {readonly {sektor: string, contohNama: readonly string[], satuan: string}[]}
  */
@@ -182,7 +182,7 @@ export const BIDANG_USAHA = Object.freeze([
 
 /**
  * Bidang pekerjaan alumni Sobat Bumi. Sengaja memuat sektor energi, lingkungan,
- * pendidikan, dan teknologi — sektor yang membuat alumni relevan sebagai mentor
+ * pendidikan, dan teknologi: sektor yang membuat alumni relevan sebagai mentor
  * bagi UMKM binaan, sesuai peran "mitra muda/mentor" pada Hal 4.
  * @type {readonly string[]}
  */
@@ -211,8 +211,8 @@ export const PEKERJAAN_ALUMNI = Object.freeze([
 
 /**
  * Keahlian yang ditawarkan anggota untuk mentoring lintas komunitas. Daftar ini
- * dipasangkan dengan kebutuhan Womenpreneur pada `COMMUNITIES` — pemasaran, riset
- * pasar, dan keahlian digital — supaya direktori mentoring benar-benar menjawab
+ * dipasangkan dengan kebutuhan Womenpreneur pada `COMMUNITIES`: pemasaran, riset
+ * pasar, dan keahlian digital: supaya direktori mentoring benar-benar menjawab
  * kendala yang disebut Hal 2, bukan sekadar menampilkan tagar keahlian acak.
  * @type {readonly string[]}
  */

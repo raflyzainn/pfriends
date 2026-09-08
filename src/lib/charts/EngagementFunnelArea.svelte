@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * EngagementFunnelArea (C-14) — dari terdaftar menjadi aktif, lalu menjadi
+	 * EngagementFunnelArea (C-14): dari terdaftar menjadi aktif, lalu menjadi
 	 * pengamplifikasi.
 	 *
 	 * Props:
@@ -10,15 +10,15 @@
 	 * @prop {boolean} loading
 	 *
 	 * Tiga area bertumpang tindih, BUKAN bertumpuk. Ketiga deret adalah himpunan
-	 * bersarang — setiap pengamplifikasi juga aktif, setiap yang aktif juga
-	 * terdaftar — sehingga menumpuknya akan menjumlahkan orang yang sama sampai
+	 * bersarang: setiap pengamplifikasi juga aktif, setiap yang aktif juga
+	 * terdaftar: sehingga menumpuknya akan menjumlahkan orang yang sama sampai
 	 * tiga kali. Corong yang menggelembung karena penjumlahan ganda adalah cara
 	 * paling halus untuk melaporkan keterlibatan yang tidak ada.
 	 *
 	 * Yang perlu dibaca adalah JARAK vertikal antarpita, bukan tinggi masing-masing:
 	 * di situlah terlihat berapa banyak yang berhenti pada setiap anak tangga.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-14
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-14
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import {

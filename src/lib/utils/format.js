@@ -1,5 +1,5 @@
 /**
- * UTILITAS FORMAT — mengubah nilai mentah menjadi teks Bahasa Indonesia.
+ * UTILITAS FORMAT: mengubah nilai mentah menjadi teks Bahasa Indonesia.
  *
  * Satu-satunya tempat locale `id-ID` boleh disebut. Alasannya bukan kerapian
  * semata: angka `1.250` (Indonesia) dan `1,250` (Inggris) berarti hal berbeda,
@@ -8,16 +8,17 @@
  *
  * Perhitungan kalender tinggal di `date.js`; file ini hanya menampilkan.
  *
- * @see docs/08-DESIGN-SYSTEM.md — §3.3 Aturan angka
- * @see docs/09-BUILD-CONTRACT.md — §4 WP-5, §7 butir 5
+ * @see docs/08-DESIGN-SYSTEM.md: §3.3 Aturan angka
+ * @see docs/09-BUILD-CONTRACT.md: §4 WP-5, §7 butir 5
  */
 
 import { keTanggal, selisihHari, NAMA_BULAN, NAMA_BULAN_PENDEK, NAMA_HARI } from './date.js';
 
 /** Locale tunggal seluruh aplikasi. */
 const LOCALE = 'id-ID';
+const ZONA_WAKTU_WIB = 'Asia/Jakarta';
 
-/** Ditampilkan sebagai pengganti nilai yang tidak sah — lebih jujur daripada "0" palsu. */
+/** Ditampilkan sebagai pengganti nilai yang tidak sah: lebih jujur daripada "0" palsu. */
 const TANDA_KOSONG = '–';
 
 const AMBANG_RIBUAN = 1_000;
@@ -48,7 +49,7 @@ export function formatAngka(nilai, opsi = {}) {
 
 /**
  * Angka ringkas untuk ruang sempit: `12500` → `12,5 rb`, `2400000` → `2,4 jt`.
- * Dipakai pada kartu statistik dan label chart, bukan pada tabel — tabel selalu
+ * Dipakai pada kartu statistik dan label chart, bukan pada tabel: tabel selalu
  * menampilkan angka penuh agar dapat direkonsiliasi.
  *
  * @param {number|null|undefined} nilai
@@ -86,7 +87,7 @@ export function formatPersen(nilai, desimal = 0) {
 }
 
 /**
- * Angka bertanda eksplisit — dipakai untuk delta poin dan perubahan peringkat,
+ * Angka bertanda eksplisit: dipakai untuk delta poin dan perubahan peringkat,
  * di mana arah perubahan sama pentingnya dengan besarannya.
  *
  * @param {number|null|undefined} nilai
@@ -154,6 +155,35 @@ export function formatTanggal(input, gaya = 'panjang') {
 }
 
 /**
+ * Tanggal dan jam yang selalu ditampilkan dalam zona Asia/Jakarta.
+ * Dipakai untuk timestamp backend yang disimpan sebagai UTC agar hasilnya tidak
+ * bergantung pada zona waktu mesin atau browser yang membuka aplikasi.
+ *
+ * @param {Date|string|number|null|undefined} input
+ * @returns {string}
+ */
+export function formatWaktuWib(input) {
+	const tanggal = keTanggal(input);
+	if (!tanggal) return TANDA_KOSONG;
+	const bagian = Object.fromEntries(
+		new Intl.DateTimeFormat('en-GB', {
+			timeZone: ZONA_WAKTU_WIB,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			hourCycle: 'h23'
+		})
+			.formatToParts(tanggal)
+			.filter(({ type }) => type !== 'literal')
+			.map(({ type, value }) => [type, value])
+	);
+	const bulan = Number(bagian.month) - 1;
+	return `${Number(bagian.day)} ${NAMA_BULAN_PENDEK[bulan]} ${bagian.year}, ${bagian.hour}.${bagian.minute} WIB`;
+}
+
+/**
  * Rentang tanggal yang meringkas bagian yang sama: dua tanggal pada bulan yang
  * sama ditulis `12–14 Maret 2026`, bukan diulang dua kali penuh.
  *
@@ -179,7 +209,7 @@ export function formatRentangTanggal(mulai, selesai = null) {
 /**
  * Waktu relatif Bahasa Indonesia: "baru saja", "3 jam lalu", "dalam 2 hari".
  *
- * Tanggal yang lebih tua dari satu tahun dikembalikan sebagai tanggal absolut —
+ * Tanggal yang lebih tua dari satu tahun dikembalikan sebagai tanggal absolut :
  * "428 hari lalu" tidak memberi informasi apa pun kepada pembaca.
  *
  * @param {Date|string|number|null|undefined} input
@@ -214,7 +244,7 @@ export function formatRelatif(input, acuan = new Date()) {
  * Bentuk kata benda yang tepat untuk sebuah jumlah.
  *
  * Bahasa Indonesia tidak mengenal infleksi jamak, sehingga secara baku fungsi ini
- * mengembalikan kata yang sama untuk berapa pun jumlahnya — `pluralId(5,'cerita')`
+ * mengembalikan kata yang sama untuk berapa pun jumlahnya: `pluralId(5,'cerita')`
  * tetap `'cerita'`, bukan `'cerita-cerita'` yang justru salah bila didahului
  * numeralia. Argumen ketiga disediakan untuk kata yang memang punya bentuk jamak
  * lazim (`'orang'` → `'orang-orang'` saat tanpa numeralia).
@@ -244,7 +274,7 @@ export function frasaHitung(jumlah, tunggal, jamak = '') {
 }
 
 /**
- * Inisial nama untuk avatar tanpa foto — maksimal dua huruf, mengambil kata
+ * Inisial nama untuk avatar tanpa foto: maksimal dua huruf, mengambil kata
  * pertama dan terakhir sehingga "Siti Nurhaliza Putri" menjadi "SP".
  *
  * @param {string} nama

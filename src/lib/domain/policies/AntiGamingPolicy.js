@@ -1,11 +1,11 @@
 /**
- * POLICY — Anti-Gaming & Anti-Spam.
+ * POLICY: Anti-Gaming & Anti-Spam.
  *
  * Tanggung jawab: memutuskan apakah satu aksi berpoin masih layak dihitung, atau
  * sudah melewati batas wajar untuk hari itu.
  *
  * Ini terjemahan teknis dari satu kalimat Hal 11: *"Points should reward
- * meaningful contribution, not spammy activity."* Kalimat itu bukan hiasan — ia
+ * meaningful contribution, not spammy activity."* Kalimat itu bukan hiasan: ia
  * kendala desain. Tanpa batas harian, seseorang bisa mencapai tier Champion hanya
  * dengan menekan tombol bagikan ratusan kali dalam semalam, dan benefit Champion
  * (*"mentor / speaker / regional champion invitation"*) menjadi tidak koheren
@@ -14,13 +14,13 @@
  * Policy, bukan service: kelas ini murni fungsi keputusan tanpa I/O sama sekali.
  * Ia tidak tahu basis data, tidak tahu anggota, dan tidak menghitung apa pun
  * selain membandingkan dua angka yang diberikan pemanggil. Kalau sebuah kelas
- * butuh `await`, ia service — bukan policy.
+ * butuh `await`, ia service: bukan policy.
  *
  * Batas harian TIDAK ditulis di sini melainkan dibaca dari `dailyCap` pada tabel
  * skor, agar seluruh angka gamifikasi tetap berada di satu berkas kanonik.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 11 "reward meaningful contribution, not spammy activity"
- * @see docs/03-GAMIFICATION-SPEC.md — §5 Anti-Gaming & Anti-Spam
+ * @see docs/00-SOURCE-BRIEF.md: Hal 11 "reward meaningful contribution, not spammy activity"
+ * @see docs/03-GAMIFICATION-SPEC.md: §5 Anti-Gaming & Anti-Spam
  */
 
 /**
@@ -43,7 +43,7 @@ export const AntiGamingReason = Object.freeze({
  * @property {number} remaining     Sisa kuota hari ini setelah aksi ini, bila lolos.
  */
 
-/** Keputusan lolos — dipakai berulang, dibuat sekali agar tidak boros alokasi. */
+/** Keputusan lolos: dipakai berulang, dibuat sekali agar tidak boros alokasi. */
 const LOLOS_TANPA_BATAS = Object.freeze({
 	allowed: true,
 	reason: null,
@@ -53,7 +53,7 @@ const LOLOS_TANPA_BATAS = Object.freeze({
 
 export class AntiGamingPolicy {
 	/**
-	 * Kelas ini murni statis — seluruh keputusannya hanya bergantung pada argumen.
+	 * Kelas ini murni statis: seluruh keputusannya hanya bergantung pada argumen.
 	 * @throws {TypeError} bila diinstansiasi.
 	 */
 	constructor() {
@@ -78,7 +78,7 @@ export class AntiGamingPolicy {
 			);
 		}
 
-		// dailyCap 0 berarti tanpa batas harian — tidak ada aksi yang memakainya
+		// dailyCap 0 berarti tanpa batas harian: tidak ada aksi yang memakainya
 		// saat ini, tetapi tabel skor mengizinkannya dan kontraknya harus dihormati.
 		if (rule.dailyCap === 0) return LOLOS_TANPA_BATAS;
 
@@ -102,7 +102,7 @@ export class AntiGamingPolicy {
 	/**
 	 * Sisa kuota harian sebuah aksi.
 	 * Dipakai Pusat Aksi untuk menampilkan "sisa kuota hari ini" sebelum anggota
-	 * menekan tombol — mencegah kekecewaan setelah aksi terlanjur dilakukan.
+	 * menekan tombol: mencegah kekecewaan setelah aksi terlanjur dilakukan.
 	 *
 	 * @param {import('../constants/scoring-table.js').ScoringRule} rule
 	 * @param {number} todayCount
@@ -135,7 +135,7 @@ export class AntiGamingPolicy {
 	 *
 	 * Nada pesan disengaja: menyebut kapan kuota pulih ("besok") dan tetap
 	 * mengakui aksinya. Pesan larangan yang buntu membuat anggota berhenti
-	 * mencoba — persis kebalikan dari tujuan gamifikasi.
+	 * mencoba: persis kebalikan dari tujuan gamifikasi.
 	 *
 	 * @param {import('../constants/scoring-table.js').ScoringRule} rule
 	 * @returns {string}

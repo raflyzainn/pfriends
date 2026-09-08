@@ -3,7 +3,7 @@
  *
  * Berkas ini melayani KEEMPAT halaman `/verifikator/**` saja. Ia sengaja TIDAK
  * di-reexport dari `$lib/components`: komponen di dalamnya mengenal registri
- * keputusan editorial dan checklist data sensitif — pengetahuan yang hanya berlaku
+ * keputusan editorial dan checklist data sensitif: pengetahuan yang hanya berlaku
  * di ruang kerja verifikator, dan yang bila dibagikan ke barrel bersama akan
  * mengundang zona lain merender tombol keputusan tanpa penjagaan zonanya.
  *
@@ -11,7 +11,7 @@
  * SvelteKit mengabaikan berkas non-`+page`/`+layout`, sehingga direktori ini tidak
  * pernah menjadi route.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §1.1 KP-5, §3.5 WP-06
+ * @see docs/12-BUILD-CONTRACT-V2.md: §1.1 KP-5, §3.5 WP-06
  */
 
 export { default as SlaBadge } from './SlaBadge.svelte';

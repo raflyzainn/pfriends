@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * DisseminationComboChart (C-03) — ritme diseminasi konten per bulan.
+	 * DisseminationComboChart (C-03): ritme diseminasi konten per bulan.
 	 *
 	 * Props:
 	 * @prop {{monthKey:string,label:string,contents:number,days:number}[]} data
@@ -10,8 +10,8 @@
 	 * @prop {boolean} loading
 	 *
 	 * Dua sumbu nilai, dan itu disengaja. Volume konten dan hari diseminasi
-	 * menjawab pertanyaan yang berbeda — "berapa banyak yang dikirim" versus
-	 * "seberapa sering ritmenya" — dan skalanya memang tidak sebanding.
+	 * menjawab pertanyaan yang berbeda: "berapa banyak yang dikirim" versus
+	 * "seberapa sering ritmenya": dan skalanya memang tidak sebanding.
 	 * Memaksanya ke satu sumbu akan membuat salah satu deret rata di dasar chart
 	 * dan berhenti terbaca.
 	 *
@@ -19,7 +19,7 @@
 	 * antarbulan, garis mengundang pembacaan arah. Keduanya sesuai dengan
 	 * pertanyaannya masing-masing.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-03
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-03
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import {

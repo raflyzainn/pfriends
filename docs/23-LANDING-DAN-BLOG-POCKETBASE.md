@@ -1,0 +1,61 @@
+# Migrasi Landing dan Blog ke PocketBase
+
+## Ketahanan pemuatan publik
+
+Leaderboard dan Cerita memakai keadaan pemuatan serta galat yang terpisah. Kegagalan salah satu endpoint tidak mengosongkan data endpoint lainnya. Endpoint leaderboard hanya membaca profil gamifikasi yang sudah terbentuk dan tidak menjalankan perubahan profil atau badge pada permintaan publik.
+
+Halaman `/cerita` membaca seluruh record yang berstatus `TERPUBLIKASI` dengan consent aktif. Halaman ini tidak membatasi jumlah Cerita. Landing page utama tetap menampilkan cuplikan Cerita terbaru.
+
+Dokumen ini mencatat implementasi halaman publik yang selesai pada 20 Agustus 2026. Ruang lingkupnya adalah beranda, daftar cerita, detail cerita, dan papan peringkat publik.
+
+## Keputusan implementasi
+
+| Bagian | Keputusan |
+| --- | --- |
+| Sumber cerita publik | Collection `stories` di PocketBase |
+| Status yang masuk seed | Seluruh 32 cerita dengan semua status workflow |
+| Cerita yang dapat dibaca tamu | Hanya `TERPUBLIKASI`, consent aktif, dan memiliki tanggal publikasi |
+| Identitas leaderboard | Nama lengkap Awardee aktif selalu ditampilkan sesuai keputusan produk |
+| Gambar cerita | Aset editorial terkurasi tetap dibaca dari `static/` melalui referensi media |
+| Workflow privat | Halaman Awardee dan Verifikator memakai endpoint PocketBase khusus |
+
+## Backend
+
+Migration `1723968660_public_stories.js` membuat collection `stories` dalam keadaan terkunci. Akses publik tidak diberikan langsung kepada collection. Hook server menyediakan tiga endpoint yang hanya mengirim field aman.
+
+| Endpoint | Fungsi |
+| --- | --- |
+| `GET /api/pfriends/public/stories` | Daftar cerita publik yang sudah terbit |
+| `GET /api/pfriends/public/stories/{slug}` | Detail satu cerita publik |
+| `GET /api/pfriends/public/leaderboard?limit=8` | Peringkat Awardee aktif berdasarkan ledger PocketBase |
+
+Endpoint cerita tidak mengirim catatan review, pemeriksa, data consent privat, maupun metadata workflow internal. Detail cerita yang tidak terbit memberikan respons 404.
+
+## Seeder
+
+`scripts/pocketbase/seed-demo.mjs` melakukan upsert berdasarkan `legacyId`. Seeder memasukkan 32 cerita dan mempertahankan seluruh status. Lima status privat juga memperoleh berkas bukti dan calon sampul contoh agar dapat diperiksa melalui halaman Verifikator. Pengujian dua kali berturut turut menghasilkan jumlah record yang sama tanpa duplikasi.
+
+## Frontend
+
+Adapter `src/lib/infrastructure/pocketbase/publicContent.js` memetakan respons server menjadi entity domain. Store `src/lib/stores/publicContent.svelte.js` menjadi sumber data bersama untuk seluruh layout publik.
+
+Beranda membaca leaderboard dan tiga cerita terbaru dari PocketBase. `/cerita` membaca daftar publik yang sama. `/cerita/[slug]` membaca detail berdasarkan slug dan tidak memakai fallback Dexie.
+
+Layout publik tidak menampilkan pemberitahuan `DUMMY` pada `/`, `/cerita`, dan seluruh detail cerita. Pemberitahuan tersebut tetap dipakai oleh halaman publik lain yang sumber data operasionalnya masih lokal.
+
+## Verifikasi
+
+Jalankan perintah berikut dengan PocketBase aktif dan data demo sudah disiapkan.
+
+```powershell
+npm run verify:public-content
+npm run verify:compile
+npm run verify:purity
+npm run build
+```
+
+Integration test memeriksa filter publikasi dan consent, urutan cerita, detail slug, respons 404, collection yang terkunci, urutan leaderboard, nama lengkap, dan ketiadaan field privat.
+
+## Kelanjutan workflow privat
+
+Pembuatan draf, penyimpanan otomatis, pengajuan, pemeriksaan, revisi, persetujuan, penerbitan, pengarsipan, bukti privat, sampul publik, audit status, consent, dan ledger poin sudah dipindahkan ke PocketBase. Rincian implementasinya tersedia di `docs/27-CERITA-PRIVATE-POCKETBASE.md`.

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * StatusBadge — pil status semantik.
+	 * StatusBadge: pil status semantik.
 	 *
 	 * Props:
 	 * @prop {string} label

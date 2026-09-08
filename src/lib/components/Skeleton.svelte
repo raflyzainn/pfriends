@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Skeleton — kerangka pemuatan yang meniru tata letak akhir.
+	 * Skeleton: kerangka pemuatan yang meniru tata letak akhir.
 	 *
 	 * Props:
 	 * @prop {'text'|'title'|'avatar'|'card'|'chart'|'row'} variant
@@ -8,7 +8,7 @@
 	 * @prop {string} class
 	 *
 	 * Lebar baris sengaja bervariasi (100/85/60%) agar terbaca sebagai paragraf,
-	 * bukan sebagai balok. Seluruh kerangka `aria-hidden` — pembaca layar cukup
+	 * bukan sebagai balok. Seluruh kerangka `aria-hidden`: pembaca layar cukup
 	 * mendengar `aria-busy` pada kontainer pemanggil.
 	 */
 	import { kelas } from './_visual.js';

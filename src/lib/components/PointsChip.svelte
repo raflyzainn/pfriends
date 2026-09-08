@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * PointsChip — pil saldo poin.
+	 * PointsChip: pil saldo poin.
 	 *
 	 * Props:
 	 * @prop {number} points     Nilai poin (kontrak 09 §5).

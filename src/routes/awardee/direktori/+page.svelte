@@ -1,10 +1,10 @@
 <script>
 	/**
-	 * HALAMAN — Jejaring Komunitas (`/awardee/direktori`).
+	 * HALAMAN: Jejaring Komunitas (`/awardee/direktori`).
 	 *
 	 * Labelnya "Jejaring", routenya tetap `/direktori`: mengganti route hanya demi
 	 * kecocokan label akan menyentuh tautan silang di forum, profil, dan seed
-	 * sekaligus — lihat catatan yang sama pada `data/navigation.js`.
+	 * sekaligus: lihat catatan yang sama pada `data/navigation.js`.
 	 *
 	 * Pilar 01 Hal 5 dan inti Strategic Initiative Hal 4: mempertemukan **alumni
 	 * Beasiswa Sobat Bumi sebagai mitra muda/mentor** dengan **PFpreneur sebagai
@@ -21,8 +21,8 @@
 	 * ditampilkan, sekalipun tersimpan pada entity. Direktori mempertemukan orang
 	 * lewat kanal resmi komunitas, bukan dengan membocorkan kontak pribadinya.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 2 Background, Hal 4 Strategic Initiative
-	 * @see docs/07-UX-SITEMAP.md — §4.2 Direktori, NFR-017 kontak pribadi
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 2 Background, Hal 4 Strategic Initiative
+	 * @see docs/07-UX-SITEMAP.md: §4.2 Direktori, NFR-017 kontak pribadi
 	 */
 
 	import { onMount } from 'svelte';
@@ -43,7 +43,7 @@
 		TierBadge
 	} from '$lib/components';
 	import { CHAPTERS, COMMUNITIES, CommunityType } from '$lib/domain/constants/community.js';
-	import { catalog, CatalogKind } from '$lib/stores/catalog.svelte.js';
+	import { directory } from '$lib/stores/directory.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { formatAngka } from '$lib/utils/format.js';
 
@@ -80,7 +80,7 @@
 	const saya = $derived(session.awardee);
 
 	/** Direktori hanya memuat awardee berstatus aktif. */
-	const anggotaAktif = $derived(catalog.activeAwardees);
+	const anggotaAktif = $derived(directory.items);
 
 	const opsiKomunitas = [
 		{ id: SEMUA, label: 'Semua komunitas' },
@@ -93,59 +93,18 @@
 	];
 
 	/** Daftar kota yang benar-benar ada di direktori, bukan daftar tetap yang bisa kosong. */
-	const opsiKota = $derived(
-		[...new Set(anggotaAktif.map((awardee) => awardee.city).filter(Boolean))].sort((a, b) =>
-			a.localeCompare(b, 'id')
-		)
-	);
+	const opsiKota = $derived(directory.facets.cities);
 
-	const opsiKeahlian = $derived(
-		[...new Set(anggotaAktif.flatMap((awardee) => awardee.skills))].sort((a, b) =>
-			a.localeCompare(b, 'id')
-		)
-	);
+	const opsiKeahlian = $derived(directory.facets.skills);
 
-	const hasil = $derived.by(() => {
-		const cari = kueri.trim().toLowerCase();
-		return anggotaAktif.filter((awardee) => {
-			if (komunitas !== SEMUA && awardee.community !== komunitas) return false;
-			if (chapterId !== SEMUA && awardee.chapterId !== chapterId) return false;
-			if (kota !== SEMUA && awardee.city !== kota) return false;
-			if (keahlian !== SEMUA && !awardee.skills.includes(keahlian)) return false;
-			if (hanyaMentor && !awardee.openToMentoring) return false;
-			if (cari === '') return true;
+	const hasil = $derived(directory.items);
+	const tampil = $derived(directory.items);
 
-			const ladang = [
-				awardee.fullName,
-				awardee.occupation,
-				awardee.university,
-				awardee.city,
-				awardee.bio,
-				awardee.skills.join(' '),
-				awardee.businessProfile?.businessName ?? '',
-				awardee.businessProfile?.sector ?? ''
-			]
-				.join(' ')
-				.toLowerCase();
-			return ladang.includes(cari);
-		});
-	});
+	const jumlahSobi = $derived(directory.stats.sobi);
 
-	const tampil = $derived(hasil.slice(0, batas));
+	const jumlahWomenpreneur = $derived(directory.stats.womenpreneur);
 
-	const jumlahSobi = $derived(
-		anggotaAktif.filter((awardee) => awardee.community === CommunityType.SOBI).length
-	);
-
-	const jumlahWomenpreneur = $derived(
-		anggotaAktif.filter((awardee) => awardee.community === CommunityType.WOMENPRENEUR).length
-	);
-
-	const mentorSobi = $derived(
-		anggotaAktif.filter(
-			(awardee) => awardee.community === CommunityType.SOBI && awardee.openToMentoring
-		).length
-	);
+	const mentorSobi = $derived(directory.stats.mentors);
 
 	const adaPenyaringAktif = $derived(
 		kueri.trim() !== '' ||
@@ -158,7 +117,18 @@
 
 	onMount(async () => {
 		if (!session.ready) await session.hydrate();
-		await catalog.load();
+	});
+
+	let timerPencarian;
+	$effect(() => {
+		const query = {
+			search: kueri.trim(), community: komunitas === SEMUA ? '' : komunitas,
+			chapter: chapterId === SEMUA ? '' : chapterId, city: kota === SEMUA ? '' : kota,
+			skill: keahlian === SEMUA ? '' : keahlian, mentor: hanyaMentor
+		};
+		clearTimeout(timerPencarian);
+		timerPencarian = setTimeout(() => void directory.load(query), kueri.trim() ? 250 : 0);
+		return () => clearTimeout(timerPencarian);
 	});
 
 	/**
@@ -167,7 +137,7 @@
 	 *
 	 * `FilterChips` melepaskan pilihan menjadi string kosong ketika pil aktif ditekan
 	 * lagi. Kedua penyaring di halaman ini sudah menyediakan opsi "Semua", sehingga
-	 * string kosong bukan keadaan yang sah — ia akan mencari awardee berkomunitas ""
+	 * string kosong bukan keadaan yang sah: ia akan mencari awardee berkomunitas ""
 	 * dan mengosongkan direktori tanpa sebab yang terlihat.
 	 *
 	 * Batas tampil ikut disetel ulang karena hasil penyaringan yang baru hampir
@@ -184,7 +154,7 @@
 
 	/**
 	 * Bentuk yang dibaca `AwardeeCard`.
-	 * Kontak pribadi sengaja tidak ikut — lihat catatan privasi di kepala berkas.
+	 * Kontak pribadi sengaja tidak ikut: lihat catatan privasi di kepala berkas.
 	 * @param {import('$lib/domain/entities/Awardee.js').Awardee} awardee
 	 * @returns {Record<string, unknown>}
 	 */
@@ -192,6 +162,7 @@
 		return {
 			id: awardee.id,
 			name: awardee.fullName,
+			avatar: awardee.avatar,
 			community: awardee.community,
 			chapter: awardee.chapterDef.label,
 			tier: awardee.tierLevel,
@@ -208,11 +179,11 @@
 	 * @returns {void}
 	 */
 	function bukaProfil(tampilan) {
-		anggotaDipilih = catalog.byId(CatalogKind.AWARDEE, /** @type {string} */ (tampilan.id));
+		anggotaDipilih = directory.byId(/** @type {string} */ (tampilan.id));
 	}
 
 	/**
-	 * Mengarahkan awardee ke komunitas seberang — inti dari jembatan SOBI ×
+	 * Mengarahkan awardee ke komunitas seberang: inti dari jembatan SOBI ×
 	 * PFpreneur. Penyaring lain dikosongkan supaya hasilnya tidak terpotong oleh
 	 * pilihan sebelumnya yang sudah tidak relevan.
 	 * @param {string} tujuan Salah satu CommunityType.
@@ -242,20 +213,20 @@
 </script>
 
 <svelte:head>
-	<title>Jejaring Komunitas — PFfriends</title>
+	<title>Jejaring Komunitas: PFriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 01 · Open Community Ecosystem"
 	title="Jejaring"
-	subtitle="Temukan orang yang tepat di komunitas PFfriends. Alumni Sobat Bumi dan pelaku usaha Womenpreneur saling mencari berdasarkan keahlian, kota, atau chapter — lalu membuka percakapan lewat kanal resmi komunitas."
+	subtitle="Temukan orang yang tepat di komunitas PFriends. Alumni Sobat Bumi dan pelaku usaha Womenpreneur saling mencari berdasarkan keahlian, kota, atau chapter: lalu membuka percakapan lewat kanal resmi komunitas."
 />
 
 <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
 	<StatTile
 		label="Anggota aktif"
-		value={anggotaAktif.length}
-		hint="Terdata di komunitas PFfriends"
+		value={directory.stats.active}
+		hint="Terdata di komunitas PFriends"
 		iconPath={ICONS.users}
 		color="var(--color-pertamina-navy)"
 	/>
@@ -406,7 +377,7 @@
 <div class="mt-5 flex flex-wrap items-center justify-between gap-2">
 	<p class="text-[13px] text-ink-600">
 		Menampilkan <span class="numeric font-semibold text-ink-800">{formatAngka(tampil.length)}</span>
-		dari {formatAngka(hasil.length)} awardee
+		dari {formatAngka(directory.totalItems)} awardee
 	</p>
 	{#if adaPenyaringAktif}
 		<Button variant="ghost" size="sm" iconPath={ICONS.refresh} onclick={bersihkanPenyaring}>
@@ -415,14 +386,24 @@
 	{/if}
 </div>
 
-{#if catalog.loading && anggotaAktif.length === 0}
+{#if directory.loading && anggotaAktif.length === 0}
 	<p class="mt-8 text-sm text-ink-600">Memuat direktori awardee…</p>
-{:else if hasil.length === 0}
+{:else if directory.error}
+	<div class="mt-4">
+		<EmptyState
+			icon={ICONS.refresh}
+			title="Jejaring belum dapat dimuat"
+			message={directory.error}
+			actionLabel="Coba lagi"
+			onAction={() => directory.load()}
+		/>
+	</div>
+{:else if directory.totalItems === 0}
 	<div class="mt-4">
 		<EmptyState
 			icon={ICONS.search}
 			title="Belum ada awardee yang cocok"
-			message="Coba kurangi penyaring atau gunakan kata kunci yang lebih umum — misalnya nama kota saja, tanpa nama keahlian."
+			message="Coba kurangi penyaring atau gunakan kata kunci yang lebih umum: misalnya nama kota saja, tanpa nama keahlian."
 			actionLabel="Bersihkan penyaring"
 			onAction={bersihkanPenyaring}
 		/>
@@ -434,10 +415,10 @@
 		{/each}
 	</div>
 
-	{#if tampil.length < hasil.length}
+	{#if directory.page < directory.totalPages}
 		<div class="mt-6 flex justify-center">
-			<Button variant="outline" onclick={() => (batas += UKURAN_HALAMAN)}>
-				Muat {formatAngka(Math.min(UKURAN_HALAMAN, hasil.length - tampil.length))} awardee lagi
+			<Button variant="outline" loading={directory.loading} onclick={() => directory.loadMore()}>
+				Muat {formatAngka(Math.min(UKURAN_HALAMAN, directory.totalItems - tampil.length))} awardee lagi
 			</Button>
 		</div>
 	{/if}
@@ -453,6 +434,7 @@
 		<div class="flex items-start gap-4">
 			<Avatar
 				name={anggotaDipilih.fullName}
+				src={anggotaDipilih.avatar}
 				size="xl"
 				tier={anggotaDipilih.tierLevel}
 				showRing
@@ -488,8 +470,8 @@
 				<p class="label-micro mt-0.5">Lencana</p>
 			</div>
 			<div>
-				<p class="numeric text-base font-bold text-ink-900">{anggotaDipilih.streakWeeks}</p>
-				<p class="label-micro mt-0.5">Pekan streak</p>
+				<p class="numeric text-base font-bold text-ink-900">{anggotaDipilih.streakDays}</p>
+				<p class="label-micro mt-0.5">Hari streak</p>
 			</div>
 		</div>
 
@@ -532,6 +514,12 @@
 			</div>
 		{/if}
 
+		{#if anggotaDipilih.openToMentoring && anggotaDipilih.whatsapp}
+			<a class="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand-700" href={`https://wa.me/${anggotaDipilih.whatsapp.replace(/^0/, '62')}`} target="_blank" rel="noreferrer">
+				<Icon path={ICONS.whatsapp} size={15} /> Hubungi WhatsApp untuk mentoring
+			</a>
+		{/if}
+
 		{#if anggotaDipilih.businessProfile}
 			{@const usaha = anggotaDipilih.businessProfile}
 			<div class="mt-4 rounded-xl border border-pertamina-red-tint bg-pertamina-red-tint/50 p-3">
@@ -542,7 +530,28 @@
 					<span class="numeric font-semibold">{formatAngka(usaha.employees)}</span> tenaga kerja ·
 					pertumbuhan <span class="numeric font-semibold">{formatAngka(usaha.growthPercent)}%</span>
 				</p>
+				{#if usaha.description}
+					<p class="mt-2 text-[13px] leading-relaxed text-ink-700">{usaha.description}</p>
+				{/if}
+				{#if usaha.contact}
+					<a class="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand-700" href={`https://wa.me/${usaha.contact.replace(/^0/, '62')}`} target="_blank" rel="noreferrer">
+						<Icon path={ICONS.whatsapp} size={15} /> Hubungi WhatsApp usaha
+					</a>
+				{/if}
 			</div>
+			{#if usaha.products?.length}
+				<div class="mt-4">
+					<p class="label-micro">Etalase produk</p>
+					<div class="mt-2 grid grid-cols-2 gap-2">
+						{#each usaha.products as produk (produk.id)}
+							<div class="overflow-hidden rounded-xl border border-ink-100 bg-surface">
+								<img src={produk.imageUrl} alt={produk.name} width="320" height="200" class="h-24 w-full object-cover" />
+								<div class="p-2"><p class="text-xs font-bold text-ink-800">{produk.name}</p><p class="text-[11px] text-ink-600">{produk.category}</p></div>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
 		{/if}
 
 		<div class="mt-4 border-t border-ink-100 pt-4">
@@ -571,7 +580,7 @@
 			{/if}
 			<p class="mt-3 text-xs leading-relaxed text-ink-600">
 				Nomor WhatsApp dan surel pribadi tidak ditampilkan di Jejaring. Perkenalan difasilitasi lewat
-				kanal resmi komunitas PFfriends.
+				kanal resmi komunitas PFriends.
 			</p>
 		</div>
 	{/if}

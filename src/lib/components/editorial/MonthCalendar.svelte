@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * MonthCalendar — grid bulan dengan penanda tanggal ber-kegiatan.
+	 * MonthCalendar: grid bulan dengan penanda tanggal ber-kegiatan.
 	 *
 	 * Tanggung jawab: kolom kiri E4 beranda dan halaman `/kalender`. Ia sekaligus
 	 * MENGELUARKAN perhitungan grid bulan dari dalam halaman kalender, tempat ia
@@ -9,7 +9,7 @@
 	 * EMPAT KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
 	 * 1. **Prop `events` adalah `EventCardVM[]`, BUKAN `markers[]`.** `docs/11` §8.6
-	 *    memakai `{date,type,color}[]`; `docs/12` §2.13 menggantinya — beda BENTUK
+	 *    memakai `{date,type,color}[]`; `docs/12` §2.13 menggantinya: beda BENTUK
 	 *    DATA, bukan sekadar nama. Menerima VM utuh berarti sel dapat mengumumkan
 	 *    judul kegiatan kepada pembaca layar tanpa pemanggil menyusun label sendiri.
 	 *
@@ -27,8 +27,8 @@
 	 *    untuk memberi tahu "tidak ada apa-apa di sini" memperpanjang jalur papan
 	 *    ketik tanpa menambah satu pun informasi.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak props FINAL
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E4, §8.6 aksesibilitas, §10.4 kontras penanda
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak props FINAL
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E4, §8.6 aksesibilitas, §10.4 kontras penanda
 	 */
 	import Icon from '../Icon.svelte';
 	import { ICONS } from '$lib/data/icons.js';
@@ -70,7 +70,7 @@
 
 	/**
 	 * Warna penanda per jenis kegiatan. Ketiganya adalah warna keying rule yang
-	 * sudah ada — tidak ada warna baru yang masuk ke palet.
+	 * sudah ada: tidak ada warna baru yang masuk ke palet.
 	 * @type {Readonly<Record<string, string>>}
 	 */
 	const WARNA_PENANDA = Object.freeze({
@@ -103,7 +103,7 @@
 
 	/**
 	 * Sel grid: `null` untuk padding awal bulan, angka untuk tanggal.
-	 * Padding akhir sengaja tidak diisi — baris terakhir yang pendek lebih jujur
+	 * Padding akhir sengaja tidak diisi: baris terakhir yang pendek lebih jujur
 	 * daripada tujuh sel kosong yang terlihat dapat diklik.
 	 * @type {(number|null)[][]}
 	 */

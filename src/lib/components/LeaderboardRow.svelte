@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * LeaderboardRow — satu baris papan peringkat.
+	 * LeaderboardRow: satu baris papan peringkat.
 	 *
 	 * Props:
 	 * @prop {number} rank

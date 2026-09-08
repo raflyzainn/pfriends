@@ -1,5 +1,5 @@
 /**
- * SERVICE — Papan Peringkat.
+ * SERVICE: Papan Peringkat.
  *
  * Tanggung jawab: menyusun peringkat awardee menurut lingkup dan periode yang
  * diminta, serta menemukan posisi seorang awardee di dalamnya.
@@ -13,13 +13,13 @@
  * 2. **Papan hanya menampilkan puncak, bukan dasar.** `top()` memang hanya
  *    mengembalikan yang teratas, dan posisi seorang awardee diambil terpisah lewat
  *    `rankOf()`. Tidak ada satu pun jalan di kelas ini untuk menghasilkan daftar
- *    peringkat terbawah — rasa malu publik tidak pernah menjadi motivator yang baik.
+ *    peringkat terbawah: rasa malu publik tidak pernah menjadi motivator yang baik.
  *
  * Awardee yang tidak layak tampil (ditangguhkan, dorman, belum terverifikasi)
  * disaring lewat `visibleOnLeaderboard`, bukan lewat rangkaian if di sini.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 4 dua komunitas dan chapter
- * @see docs/03-GAMIFICATION-SPEC.md — §9 leaderboard, §9.2 anti-demotivasi, §9.3 aturan tampilan
+ * @see docs/00-SOURCE-BRIEF.md: Hal 4 dua komunitas dan chapter
+ * @see docs/03-GAMIFICATION-SPEC.md: §9 leaderboard, §9.2 anti-demotivasi, §9.3 aturan tampilan
  */
 
 import { Awardee } from '../entities/Awardee.js';
@@ -148,7 +148,7 @@ export class LeaderboardService {
 	 * Papan kolektif antar-chapter, berbasis RATA-RATA poin per awardee.
 	 *
 	 * Sengaja rata-rata dan bukan total: chapter PF12 yang baru terbentuk akan
-	 * selalu kalah dari PF10 yang besar bila dibandingkan lewat total — masalah
+	 * selalu kalah dari PF10 yang besar bila dibandingkan lewat total: masalah
 	 * klasik papan peringkat tim yang membuat awardee chapter kecil berhenti
 	 * mencoba sejak hari pertama.
 	 *
@@ -215,11 +215,8 @@ export class LeaderboardService {
 	 * @returns {Promise<Map<string, number>>}
 	 */
 	async #scoreMap(awardees, period, pada) {
-		if (period !== LeaderboardPeriod.MONTH) {
-			return new Map(awardees.map((awardee) => [awardee.id, awardee.points]));
-		}
 		if (!this.#activityRepo) {
-			return new Map(awardees.map((awardee) => [awardee.id, awardee.seasonPoints]));
+			return new Map(awardees.map((awardee) => [awardee.id, period === LeaderboardPeriod.MONTH ? awardee.seasonPoints : awardee.points]));
 		}
 
 		const monthKey = LeaderboardService.#monthKey(pada);
@@ -231,7 +228,7 @@ export class LeaderboardService {
 			const entry = PointActivity.from(row);
 			// Entri menunggu verifikasi tidak dihitung: peringkat yang berubah-ubah
 			// setelah verifikasi membuat papan terasa tidak dapat dipercaya.
-			if (!entry.isAwarded || entry.monthKey !== monthKey) continue;
+			if (!entry.isAwarded || (period === LeaderboardPeriod.MONTH && entry.monthKey !== monthKey)) continue;
 			if (!skor.has(entry.awardeeId)) continue;
 			skor.set(entry.awardeeId, (skor.get(entry.awardeeId) ?? 0) + entry.points);
 		}
@@ -254,7 +251,7 @@ export class LeaderboardService {
 	/**
 	 * Pengurutan papan: poin menurun, lalu nama menaik.
 	 *
-	 * Pemecah seri berupa nama — bukan waktu bergabung — disengaja: awardee lama
+	 * Pemecah seri berupa nama: bukan waktu bergabung: disengaja: awardee lama
 	 * tidak seharusnya otomatis mengungguli awardee baru yang berkontribusi sama
 	 * banyak, dan urutan alfabet setidaknya netral dan dapat dijelaskan.
 	 *

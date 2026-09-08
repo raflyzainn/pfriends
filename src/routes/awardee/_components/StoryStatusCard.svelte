@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * StoryStatusCard — kartu naskah milik penulis, dilihat dari sisi penulisnya.
+	 * StoryStatusCard: kartu naskah milik penulis, dilihat dari sisi penulisnya.
 	 *
 	 * Komponen lokal zona Awardee (KP-5). Menjawab satu pertanyaan yang paling
 	 * sering diajukan penulis: *"naskah saya sekarang di mana, dan bola ada di
@@ -8,7 +8,7 @@
 	 *
 	 * TIGA KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
-	 * 1. **NOL poin, tier, dan peringkat — secara struktural.** Komponen ini tidak
+	 * 1. **NOL poin, tier, dan peringkat: secara struktural.** Komponen ini tidak
 	 *    mengimpor `PointsChip`, `TierBadge`, maupun `scoring-table.js`, sehingga
 	 *    angka yang dilarang US-R14 AC-4 tidak pernah sampai kepadanya. Larangan
 	 *    ditegakkan pada bentuk impor, bukan pada disiplin pemanggil.
@@ -16,18 +16,18 @@
 	 *    Larangan itu juga berlaku pada PALET. Simpul alur yang sedang berjalan
 	 *    diwarnai `pertamina-navy`, bukan `tier-champion`: token tier di kartu naskah
 	 *    membuat pemindai kepatuhan menandai kartu ini sebagai pembawa tier, dan lebih
-	 *    buruk lagi menyiratkan hubungan antara kemajuan naskah dan tier penulisnya —
+	 *    buruk lagi menyiratkan hubungan antara kemajuan naskah dan tier penulisnya :
 	 *    hubungan yang justru sedang dilarang.
 	 * 2. **Status dibaca dari `statusMeta` dan getter entity, tidak pernah
 	 *    dibandingkan ulang di sini.** Satu-satunya perbandingan status yang
-	 *    tersisa adalah pemetaan posisi pada alur kurasi — informasi tata letak,
+	 *    tersisa adalah pemetaan posisi pada alur kurasi: informasi tata letak,
 	 *    bukan aturan bisnis.
 	 * 3. **Catatan verifikator TERAKHIR yang ditonjolkan, bukan yang pertama.**
 	 *    Penulis perlu tahu apa yang harus diperbaiki sekarang; riwayat lengkapnya
 	 *    tetap tersedia di bawahnya, tetapi tidak mendahului tindakan.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-05 kriteria selesai butir 4
-	 * @see docs/10-REVISION-SPEC.md — §5.2 state machine cerita
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-05 kriteria selesai butir 4
+	 * @see docs/10-REVISION-SPEC.md: §5.2 state machine cerita
 	 */
 	import { Button, Card, Icon, ICONS, StatusBadge } from '$lib/components';
 	import { STORY_STATUS } from '$lib/domain/constants/community.js';
@@ -94,7 +94,7 @@
 		{/if}
 	</div>
 
-	<h3 class="mt-2 text-base leading-snug font-semibold break-words text-ink-800">{story.title}</h3>
+	<h3 class="mt-2 text-base leading-snug font-semibold break-words text-ink-800">{story.title || 'Draf tanpa judul'}</h3>
 	{#if story.summary}
 		<p class="mt-1 text-[13px] leading-relaxed text-ink-600">{story.summary}</p>
 	{/if}
@@ -177,7 +177,7 @@
 			<ul class="mt-2 space-y-1.5">
 				{#each story.reviewNotes as catatan (catatan.at)}
 					<li class="text-[13px] leading-relaxed text-ink-700">
-						<span class="text-ink-600">{formatTanggal(catatan.at, 'pendek')} —</span>
+						<span class="text-ink-600">{formatTanggal(catatan.at, 'pendek')} :</span>
 						{catatan.note}
 					</li>
 				{/each}
@@ -185,9 +185,9 @@
 		</details>
 	{/if}
 
-	{#if story.needsRevision && reviseHref}
+	{#if (story.needsRevision || story.status === STORY_STATUS.DRAFT) && reviseHref}
 		<div class="mt-4 border-t border-ink-100 pt-3">
-			<Button size="sm" href={reviseHref} iconPath={ICONS.edit}>Perbaiki lalu kirim ulang</Button>
+			<Button size="sm" href={reviseHref} iconPath={ICONS.edit}>{story.needsRevision ? 'Perbaiki lalu kirim ulang' : 'Lanjutkan menulis'}</Button>
 		</div>
 	{/if}
 </Card>

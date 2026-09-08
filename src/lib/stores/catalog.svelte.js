@@ -1,8 +1,8 @@
 /**
- * STORE — Katalog Isi Komunitas.
+ * STORE: Katalog Isi Komunitas.
  *
- * Tanggung jawab: memuat seluruh koleksi yang dibaca banyak halaman sekaligus —
- * kabar, kegiatan, gerakan, cerita, penghargaan, anggota — dan menyediakannya
+ * Tanggung jawab: memuat seluruh koleksi yang dibaca banyak halaman sekaligus :
+ * kabar, kegiatan, gerakan, cerita, penghargaan, anggota: dan menyediakannya
  * sebagai satu sumber bersama.
  *
  * Satu store untuk enam koleksi, bukan enam store, karena hampir setiap halaman
@@ -15,7 +15,7 @@
  * bersamaan saat hidrasi, dan tanpa penahan itu seluruh tabel akan dibaca berkali-
  * kali untuk hasil yang identik.
  *
- * @see docs/09-BUILD-CONTRACT.md — §5 catalog.load / storyBySlug / byId
+ * @see docs/09-BUILD-CONTRACT.md: §5 catalog.load / storyBySlug / byId
  */
 
 import { browser } from '$app/environment';
@@ -76,7 +76,7 @@ class CatalogStore {
 
 	/**
 	 * Cerita yang boleh tampil di zona publik, terbaru lebih dulu.
-	 * Penyaringnya `isPublic` milik entity, bukan perbandingan status di sini —
+	 * Penyaringnya `isPublic` milik entity, bukan perbandingan status di sini :
 	 * aturan "status mana yang terlihat publik" hanya boleh hidup di satu tempat.
 	 */
 	publishedStories = $derived(
@@ -116,14 +116,14 @@ class CatalogStore {
 	/** Anggota berstatus aktif. */
 	activeAwardees = $derived(this.awardees.filter((awardee) => awardee.isActive));
 
-	/** Katalog kosong sama sekali — dipakai halaman untuk memilih empty state. */
+	/** Katalog kosong sama sekali: dipakai halaman untuk memilih empty state. */
 	isEmpty = $derived(this.awardees.length === 0 && this.stories.length === 0);
 
 	/**
 	 * Memasang data demo bila perlu, lalu memuat seluruh koleksi ke state.
 	 *
 	 * @param {{force?: boolean}} [opsi] `force: true` memuat ulang meski katalog
-	 *   sudah terisi — dipakai setelah data berubah, mis. cerita disetujui admin.
+	 *   sudah terisi: dipakai setelah data berubah, mis. cerita disetujui admin.
 	 * @returns {Promise<void>}
 	 */
 	async load({ force = false } = {}) {
@@ -148,7 +148,7 @@ class CatalogStore {
 	}
 
 	/**
-	 * Cerita berdasarkan slug — jalur baca halaman `/cerita/[slug]`.
+	 * Cerita berdasarkan slug: jalur baca halaman `/cerita/[slug]`.
 	 * @param {string} slug
 	 * @returns {import('$lib/domain/entities/Story.js').Story|null}
 	 */
@@ -190,7 +190,7 @@ class CatalogStore {
 	/**
 	 * Kegiatan yang akan datang dan boleh dilihat publik, paling dekat lebih dulu.
 	 *
-	 * Waktu acuan menjadi parameter — bukan `new Date()` yang tersembunyi di dalam —
+	 * Waktu acuan menjadi parameter: bukan `new Date()` yang tersembunyi di dalam :
 	 * supaya halaman dapat memakai tanggal acuan yang sama dengan data demo.
 	 *
 	 * Sumbernya WAJIB `publishedEvents`, bukan daftar mentah `events`. `isUpcoming()`

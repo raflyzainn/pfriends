@@ -1,8 +1,8 @@
 /**
- * PENGUNDUH ASET FOTO — mengubah manifest §5 `docs/11-VISUAL-DIRECTION.md` menjadi berkas nyata
+ * PENGUNDUH ASET FOTO: mengubah manifest §5 `docs/11-VISUAL-DIRECTION.md` menjadi berkas nyata
  * di `static/img/`, lalu menulis ulang `src/lib/data/photo-credits.json`.
  *
- * KEPUTUSAN YANG TIDAK TERBACA DARI KODE — kenapa skrip ini tidak memakai API Unsplash:
+ * KEPUTUSAN YANG TIDAK TERBACA DARI KODE: kenapa skrip ini tidak memakai API Unsplash:
  * `docs/11` §5.6 mengandaikan `UNSPLASH_ACCESS_KEY` tersedia dan foto dicari ulang setiap kali
  * skrip berjalan. Kunci itu tidak ada di lingkungan proyek ini, dan pencarian ulang punya cacat
  * yang lebih dalam daripada sekadar butuh kunci: `search/photos` mengembalikan urutan yang
@@ -10,7 +10,7 @@
  * disetujui redaksi tanpa ada yang meminta. Karena itu skrip ini menempuh jalur manual §5.7
  * dalam bentuk yang dapat diulang: identitas foto DIPAKU di `MANIFEST` (id Unsplash + jalur CDN),
  * dan yang dikerjakan skrip hanya mengunduh, memotong, serta memvalidasi. Mengganti foto berarti
- * menyunting satu baris di sini — tindakan sadar, bukan efek samping.
+ * menyunting satu baris di sini: tindakan sadar, bukan efek samping.
  *
  * CDN `images.unsplash.com` melayani permintaan tanpa kunci API, jadi seluruh alur ini bekerja
  * pada mesin mana pun yang punya jaringan. Hasil unduhan IKUT DI-COMMIT; peragaan luring
@@ -20,8 +20,8 @@
  *   node scripts/assets/fetch-photos.mjs hero-komunitas.jpg # satu berkas
  *   node scripts/assets/fetch-photos.mjs --force            # unduh ulang semuanya
  *
- * @see docs/11-VISUAL-DIRECTION.md — §4 perlakuan foto, §5 manifest, §5.7 jalur manual
- * @see docs/12-BUILD-CONTRACT-V2.md — §3.3(d) kriteria selesai WP-03
+ * @see docs/11-VISUAL-DIRECTION.md: §4 perlakuan foto, §5 manifest, §5.7 jalur manual
+ * @see docs/12-BUILD-CONTRACT-V2.md: §3.3(d) kriteria selesai WP-03
  */
 import { mkdir, writeFile, readFile, stat, readdir, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -42,7 +42,7 @@ import { readFileSync } from 'node:fs';
  * @property {boolean} [hero]         `true` -> anggaran 400 KB; `false` -> 250 KB.
  * @property {string} [sameAs]        Nama berkas slot rujukan. Bila diisi, memakai foto YANG SAMA
  *                                    dengan crop berbeda. Tanpa ini `hero-komunitas-mobile.jpg` dan
- *                                    `og-pfriends.jpg` menjadi adegan yang berbeda dari hero desktop —
+ *                                    `og-pfriends.jpg` menjadi adegan yang berbeda dari hero desktop :
  *                                    halaman berganti foto saat perangkat diputar, dan kartu berbagi
  *                                    WhatsApp menampilkan foto yang tidak pernah ada di situs.
  */
@@ -99,7 +99,7 @@ const MANIFEST = [
 	// T-5: foto sebelumnya (`_1j7_atc0z8`) menampilkan tujuh relawan berkaus seragam
 	// "OCEAN CLEANUP GROUP". Logo organisasi lain yang terbaca jelas pada foto unggulan
 	// /gerakan membuat gerakan Pfriends tampak diselenggarakan pihak ketiga. Penggantinya
-	// adalah petak mangrove hasil penanaman — subjek yang sama, tanpa merek siapa pun.
+	// adalah petak mangrove hasil penanaman: subjek yang sama, tanpa merek siapa pun.
 	{
 		berkas: 'gerakan-mangrove.jpg',
 		unsplashId: 'L-9WhJITub8',
@@ -126,7 +126,7 @@ const MANIFEST = [
 		berkas: 'tentang-hero.jpg',
 		unsplashId: 'sPo5tHN64Q4',
 		cdnPath: 'photo-1616992954106-9c97fdc71f0c',
-		photographer: 'Akeyodia - Business Coaching Firm',
+		photographer: 'Akeyodia, Business Coaching Firm',
 		profile: 'https://unsplash.com/@akeyodia',
 		w: 1700,
 		h: 729,
@@ -166,7 +166,7 @@ const MANIFEST = [
 		berkas: 'sobi-mentoring.jpg',
 		unsplashId: 'wK7ODR2MjEY',
 		cdnPath: 'photo-1616992510024-f1293eb00e41',
-		photographer: 'Akeyodia - Business Coaching Firm',
+		photographer: 'Akeyodia, Business Coaching Firm',
 		profile: 'https://unsplash.com/@akeyodia',
 		w: 1400,
 		h: 933
@@ -190,11 +190,11 @@ const MANIFEST = [
 		h: 933
 	},
 
-	// ── §5.4 Sampul cerita — HANYA slug yang fotonya benar-benar cocok ─────────
+	// ── §5.4 Sampul cerita: HANYA slug yang fotonya benar-benar cocok ─────────
 	// Lebar 1200×675 (bukan 1600×900) mengikuti catatan §5.6: rasio 16:9 dipertahankan,
 	// tetapi 1200 px cukup untuk kartu terlebar sekalipun dan muat anggaran 250 KB.
 	//
-	// GELOMBANG REVISI — kenapa daftar ini menyusut dari 12 menjadi 7:
+	// GELOMBANG REVISI: kenapa daftar ini menyusut dari 12 menjadi 7:
 	//
 	// Peninjau membuka berkasnya satu per satu dan menemukan enam sampul yang
 	// BERTENTANGAN dengan ceritanya: alat tenun gendong Andes untuk cerita tenun Sumba,
@@ -205,11 +205,11 @@ const MANIFEST = [
 	//
 	// Slot yang kosong MEMAKSA kebohongan: selama barisnya ada, seseorang akan
 	// mengisinya dengan foto yang "kira-kira mirip". Karena itu slot yang tidak dapat
-	// dicocokkan DIHAPUS, bukan diisi ulang — `fotoCerita()` mengembalikan `null` dan
+	// dicocokkan DIHAPUS, bukan diisi ulang: `fotoCerita()` mengembalikan `null` dan
 	// kartunya jatuh ke blok tipografis yang memang dinilai baik. Tidak ada foto lebih
 	// baik daripada foto yang bohong.
 	{
-		// Diganti (dulu `ZkwGGu8T1qs`: jalan batu cobble Eropa lama — bukan paving blok,
+		// Diganti (dulu `ZkwGGu8T1qs`: jalan batu cobble Eropa lama: bukan paving blok,
 		// bukan Indonesia). Pengganti memperlihatkan pekerjaan yang sesungguhnya
 		// diceritakan: paving blok sedang dipasang, di Yogyakarta.
 		berkas: 'cerita-paving-plastik.jpg',
@@ -230,7 +230,7 @@ const MANIFEST = [
 		h: 619
 	},
 	{
-		// Diganti (dulu `78r9uA4dmrI`: alat tenun gendong Andes, palet Amerika Latin —
+		// Diganti (dulu `78r9uA4dmrI`: alat tenun gendong Andes, palet Amerika Latin :
 		// temuan utama peninjau). Pengganti berjudul "Sumba Pattern 4" dan dipotret DI
 		// Sumba Barat, NTT: motif kuda dan ayam jantan pada hinggi Sumba Timur. Satu-
 		// satunya slot pada gelombang ini yang fotonya benar-benar dari tempat ceritanya.
@@ -294,7 +294,7 @@ const MANIFEST = [
 const OUT = 'static/img';
 const KREDIT = 'src/lib/data/photo-credits.json';
 
-/** Dua ambang, bukan satu — anggaran §5 membedakan hero dari foto konten. */
+/** Dua ambang, bukan satu: anggaran §5 membedakan hero dari foto konten. */
 const BATAS_HERO = 400 * 1024;
 const BATAS_KONTEN = 250 * 1024;
 /** Berkas di bawah ambang ini pasti bukan JPEG utuh (biasanya badan galat HTML). */
@@ -349,7 +349,7 @@ async function sudahValid(jalur) {
 /**
  * Mengunduh satu slot dengan penurunan kualitas bertahap sampai muat anggaran.
  * Memperingatkan lalu tetap menulis berkas kegemukan membuat gerbang `du -sh static/img`
- * mustahil hijau — dan gerbang yang mustahil hijau akan dilewati diam-diam.
+ * mustahil hijau: dan gerbang yang mustahil hijau akan dilewati diam-diam.
  *
  * @param {string} cdnPath
  * @param {PhotoSlot} slot
@@ -383,15 +383,15 @@ async function unduhSampaiMuat(cdnPath, slot) {
 async function tulisCredits() {
 	const baris = MANIFEST.map((slot) => {
 		const k = kredit[slot.berkas];
-		if (!k) return `| \`${slot.berkas}\` | — | — | — | — | — | ${slot.w}×${slot.h} | belum diunduh |`;
+		if (!k) return `| \`${slot.berkas}\` |: |: |: |: |: | ${slot.w}×${slot.h} | belum diunduh |`;
 		const halaman = `https://unsplash.com/photos/${k.unsplashId}`;
 		return `| \`${slot.berkas}\` | ${k.fotografer} | [profil](${k.profil}) | ${k.sumber} | ${k.lisensi} | [\`${k.unsplashId}\`](${halaman}) | ${slot.w}×${slot.h} | ${k.isStock ? 'stok' : 'dokumentasi'} |`;
 	});
 
 	const isi = [
-		'# Kredit foto — `static/img/`',
+		'# Kredit foto: `static/img/`',
 		'',
-		'> Dibangkitkan oleh `node scripts/assets/fetch-photos.mjs`. **Jangan disunting tangan** —',
+		'> Dibangkitkan oleh `node scripts/assets/fetch-photos.mjs`. **Jangan disunting tangan** :',
 		'> jalankan ulang skripnya. Sumber kebenaran identitas foto ada di `MANIFEST` skrip tersebut.',
 		'',
 		'Seluruh berkas diunduh ke repositori; **tidak ada hotlink** ke domain luar',
@@ -406,7 +406,7 @@ async function tulisCredits() {
 		'(`docs/11` §4.4, "Kejujuran wajib"). Kapsi bertempat-berbulan baru sah setelah foto diganti',
 		'dokumentasi asli Corporate Secretary.',
 		'',
-		'## Uji kelayakan sampul — tiga pertanyaan sebelum satu baris MANIFEST ditambahkan',
+		'## Uji kelayakan sampul: tiga pertanyaan sebelum satu baris MANIFEST ditambahkan',
 		'',
 		'Aturan kapsi di atas ternyata tidak cukup. Aturan itu menjaga TEKS, sementara yang berbohong',
 		'adalah GAMBARNYA: enam sampul cerita pernah lolos seluruh gerbang sambil menampilkan alat tenun',
@@ -414,18 +414,18 @@ async function tulisCredits() {
 		'generik dan patuh; fotonya tetap salah fakta. Karena itu setiap slot kini harus lulus tiga hal:',
 		'',
 		'1. **Tidak membantah ceritanya.** Foto yang isinya bertentangan dengan judul di sebelahnya lebih',
-		'   buruk daripada tidak ada foto — pembaca Indonesia mengenali tenun Sumba, dan yang tertangkap',
+		'   buruk daripada tidak ada foto: pembaca Indonesia mengenali tenun Sumba, dan yang tertangkap',
 		'   bukan cuma satu gambar yang keliru melainkan bahwa tidak ada manusia yang pernah melihatnya.',
 		'2. **Tidak memuat merek, teks asing, atau tanggal yang terbaca.** Logo organisasi pihak ketiga',
 		'   pada foto unggulan membuat kegiatan Pfriends tampak milik orang lain, dan tanggal yang terbaca',
 		'   adalah klaim dokumentasi yang tidak dapat kita dukung.',
 		'3. **Benar sebagai gambar UMUM, bukan sebagai bukti.** Sampul melekat pada cerita bernama tempat,',
 		'   sedangkan foto stok tidak pernah diambil di tempat itu. Yang boleh ditampilkan hanyalah',
-		'   subjeknya — kain tenun, paving blok yang dipasang — bukan kejadian yang diceritakan.',
+		'   subjeknya: kain tenun, paving blok yang dipasang: bukan kejadian yang diceritakan.',
 		'',
 		'Slot yang tidak lulus **dihapus dari MANIFEST**, tidak diisi foto yang "kira-kira mirip".',
 		'`fotoCerita()` lalu mengembalikan `null` dan kartunya jatuh ke blok tipografis. Slot kosong yang',
-		'dibiarkan menganga selalu berakhir diisi paksa — itulah yang terjadi pada gelombang sebelumnya.',
+		'dibiarkan menganga selalu berakhir diisi paksa: itulah yang terjadi pada gelombang sebelumnya.',
 		'',
 		'| Berkas | Fotografer | Profil | Sumber | Lisensi | Id foto | Ukuran | Status |',
 		'|---|---|---|---|---|---|---|---|',
@@ -447,7 +447,7 @@ await mkdir(OUT, { recursive: true });
 
 /** Kredit lama dipertahankan supaya menjalankan ulang satu slot tidak menghapus sisanya. */
 const kredit = existsSync(KREDIT) ? JSON.parse(await readFile(KREDIT, 'utf8')) : {};
-/** Foto yang sudah dipilih per berkas — dipakai `sameAs` agar tidak mencari ulang. @type {Map<string, PhotoSlot>} */
+/** Foto yang sudah dipilih per berkas: dipakai `sameAs` agar tidak mencari ulang. @type {Map<string, PhotoSlot>} */
 const terpilih = new Map();
 
 let gagal = 0;
@@ -457,7 +457,7 @@ let diunduh = 0;
 for (const slot of antrean) {
 	const rujukan = slot.sameAs ? MANIFEST.find((s) => s.berkas === slot.sameAs) : slot;
 	if (!rujukan?.cdnPath) {
-		console.error(`GAGAL ${slot.berkas} — slot rujukan "${slot.sameAs}" tidak ada di MANIFEST`);
+		console.error(`GAGAL ${slot.berkas}: slot rujukan "${slot.sameAs}" tidak ada di MANIFEST`);
 		gagal += 1;
 		continue;
 	}
@@ -483,7 +483,7 @@ for (const slot of antrean) {
 			`OK     ${slot.berkas.padEnd(34)} ${slot.w}×${slot.h}  q=${q}  ${(biner.byteLength / 1024).toFixed(0)} KB  © ${rujukan.photographer}${tanda}`
 		);
 	} catch (galat) {
-		console.error(`GAGAL  ${slot.berkas} — ${galat instanceof Error ? galat.message : galat}`);
+		console.error(`GAGAL  ${slot.berkas}: ${galat instanceof Error ? galat.message : galat}`);
 		gagal += 1;
 		continue;
 	}
@@ -494,7 +494,7 @@ for (const slot of antrean) {
 		sumber: 'Unsplash',
 		lisensi: 'Unsplash License',
 		unsplashId: rujukan.unsplashId,
-		// Kapsi WAJIB generik selama nilai ini true — lihat docs/11 §4.4.
+		// Kapsi WAJIB generik selama nilai ini true: lihat docs/11 §4.4.
 		isStock: true
 	};
 }
@@ -504,7 +504,7 @@ for (const slot of antrean) {
 // tetap di `static/img/`, kreditnya tetap di JSON, dan `photos.js` masih bisa
 // menyajikannya. Begitulah sampul yang sudah dipensiunkan bisa hidup terus tanpa satu
 // pun gerbang berubah merah. Sekarang MANIFEST benar-benar menjadi satu-satunya sumber
-// kebenaran: apa pun di luarnya dibuang. Pemangkasan hanya berjalan pada proses penuh —
+// kebenaran: apa pun di luarnya dibuang. Pemangkasan hanya berjalan pada proses penuh :
 // menjalankan satu berkas (`node ... hero-komunitas.jpg`) tidak boleh menyapu sisanya.
 if (!hanya.length) {
 	const sah = new Set(MANIFEST.map((slot) => slot.berkas));
@@ -528,7 +528,7 @@ await tulisCredits();
 // Laporan anggaran. Angka ini adalah gerbang `docs/12` §3.3(d) butir 6, jadi skrip
 // yang mengunduh tetapi tidak melaporkannya hanya memindahkan pekerjaan ke manusia.
 let total = 0;
-let terbesar = { berkas: '—', ukuran: 0 };
+let terbesar = { berkas: ':', ukuran: 0 };
 for (const slot of MANIFEST) {
 	const jalur = `${OUT}/${slot.berkas}`;
 	if (!existsSync(jalur)) continue;
@@ -542,7 +542,7 @@ console.log(`Slot: ${MANIFEST.length} · diunduh ${diunduh} · dilewati ${dilewa
 console.log(
 	`Anggaran ${OUT}: ${(total / 1024 / 1024).toFixed(2)} MB dari ${(BATAS_TOTAL / 1024 / 1024).toFixed(0)} MB · terbesar ${terbesar.berkas} ${(terbesar.ukuran / 1024).toFixed(0)} KB`
 );
-if (total > BATAS_TOTAL) console.error('⚠ Anggaran total terlampaui — kurangi jumlah sampul cerita, jangan naikkan kompresi.');
+if (total > BATAS_TOTAL) console.error('⚠ Anggaran total terlampaui: kurangi jumlah sampul cerita, jangan naikkan kompresi.');
 console.log('Periksa hasil crop secara manual sebelum commit: subjek hero harus jatuh di paruh kanan bingkai.');
 
 process.exit(gagal > 0 ? 1 : 0);

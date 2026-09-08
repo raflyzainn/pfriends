@@ -1,5 +1,5 @@
 /**
- * TEMA CHART — konstanta gaya yang di-*spread* ke setiap option ECharts.
+ * TEMA CHART: konstanta gaya yang di-*spread* ke setiap option ECharts.
  *
  * ECharts tidak melihat CSS, sehingga warna dan font harus dituliskan sebagai
  * nilai literal di sini. Inilah SATU-SATUNYA tempat itu boleh terjadi: setiap
@@ -8,10 +8,10 @@
  * warna tier di badge, dan pembaca dasbor akan mengira keduanya hal berbeda.
  *
  * Palet beridentitas (`tierPalette`, `esgPalette`, `rarityPalette`) diturunkan
- * langsung dari konstanta domain, bukan disalin — sehingga warna seri chart tier
+ * langsung dari konstanta domain, bukan disalin: sehingga warna seri chart tier
  * dijamin identik dengan warna chip tier.
  *
- * @see docs/08-DESIGN-SYSTEM.md — §7 Aturan chart ECharts
+ * @see docs/08-DESIGN-SYSTEM.md: §7 Aturan chart ECharts
  */
 
 import { SCORING_TABLE } from '$lib/domain/constants/scoring-table.js';
@@ -20,7 +20,7 @@ import { TIER_TABLE, TierLevel } from '$lib/domain/constants/tier-table.js';
 /** Keluarga font aplikasi, dalam bentuk yang dimengerti ECharts. */
 export const font = { fontFamily: 'Plus Jakarta Sans, Inter, system-ui, sans-serif' };
 
-/** Gaya tooltip standar — kartu putih bertepi halus, sama dengan `shadow-panel`. */
+/** Gaya tooltip standar: kartu putih bertepi halus, sama dengan `shadow-panel`. */
 export const tip = {
 	backgroundColor: '#ffffff',
 	borderColor: '#e2e8f0',
@@ -30,7 +30,7 @@ export const tip = {
 	extraCssText: 'box-shadow: 0 8px 24px -6px rgba(15,23,42,0.10); border-radius: 12px;'
 };
 
-/** Label sumbu — `ink-500`, cukup redup untuk menjadi latar, cukup gelap untuk terbaca. */
+/** Label sumbu: `ink-500`, cukup redup untuk menjadi latar, cukup gelap untuk terbaca. */
 export const axisLabel = { color: '#64748b', fontSize: 10, ...font };
 
 /** Garis sumbu kategori. Sumbu nilai selalu menyembunyikan garisnya. */
@@ -50,14 +50,14 @@ export const legend = {
 	textStyle: { color: '#475569', fontSize: 11, ...font }
 };
 
-/** Grid standar. `containLabel` mengurus ruang label — jangan atur left/right sendiri. */
+/** Grid standar. `containLabel` mengurus ruang label: jangan atur left/right sendiri. */
 export const grid = { left: 8, right: 24, top: 36, bottom: 8, containLabel: true };
 
 /** Animasi masuk yang tenang. Chart bukan tempat pamer gerak. */
 export const animasi = { animationDuration: 600, animationEasing: 'cubicOut' };
 
 /**
- * Palet seri kategorikal — delapan warna yang saling terbedakan, urutan tetap.
+ * Palet seri kategorikal: delapan warna yang saling terbedakan, urutan tetap.
  * Dipakai bila kategorinya BUKAN tier, pilar, atau rarity.
  */
 export const series = [
@@ -72,7 +72,7 @@ export const series = [
 ];
 
 /**
- * Palet tier, diturunkan dari TIER_TABLE tanpa NEWCOMER — urut menaik sesuai
+ * Palet tier, diturunkan dari TIER_TABLE tanpa NEWCOMER: urut menaik sesuai
  * ambang, sehingga indeks palet selalu sejajar dengan urutan tier di UI.
  * @type {string[]}
  */
@@ -85,7 +85,7 @@ export const tierColorByLevel = Object.freeze(
 	Object.fromEntries(TIER_TABLE.map((t) => [t.level, t.color]))
 );
 
-/** Palet pilar ESG — sama dengan token `esg-e/s/g` di app.css. */
+/** Palet pilar ESG: sama dengan token `esg-e/s/g` di app.css. */
 export const esgPalette = Object.freeze({ E: '#6FBEB2', S: '#34908B', G: '#D9B81F' });
 
 /** Palet kelangkaan badge: perunggu, perak, emas, platina. */
@@ -112,7 +112,7 @@ export const palette = Object.freeze({
 	track: '#E2E8F0'
 });
 
-/** Warna status KPI — hijau tercapai, kuning mendekati, merah tertinggal. */
+/** Warna status KPI: hijau tercapai, kuning mendekati, merah tertinggal. */
 export const statusPalette = Object.freeze({
 	HIJAU: palette.green,
 	KUNING: palette.amber,
@@ -134,7 +134,7 @@ export function angka(n) {
 
 /**
  * Gradien vertikal lembut untuk area di bawah garis. Hanya dipakai bila chart
- * memuat maksimal dua seri — lebih dari itu, area saling menutupi dan justru
+ * memuat maksimal dua seri: lebih dari itu, area saling menutupi dan justru
  * menyembunyikan data.
  *
  * @param {string} warna Heksadesimal enam digit.
@@ -172,13 +172,13 @@ export const categoryAxis = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Tambahan G3-B (WP-07) — palet corong, meteran, sumber poin, dan pita estimasi.
+// Tambahan G3-B (WP-07): palet corong, meteran, sumber poin, dan pita estimasi.
 // Seluruhnya ADITIF: tidak satu pun nilai di atas diubah, sehingga enam chart
 // yang sudah ada tetap tampil persis seperti sebelumnya.
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Palet corong editorial — satu gradasi biru yang MENUA ke arah terbit.
+ * Palet corong editorial: satu gradasi biru yang MENUA ke arah terbit.
  *
  * Sengaja bukan lima warna kategorikal: tahap corong adalah satu perjalanan,
  * bukan lima hal berbeda. Warna kategorikal pada corong membuat pembaca mencari
@@ -194,14 +194,14 @@ export const funnelPalette = Object.freeze([
 ]);
 
 /**
- * Palet biner kepatuhan SLA — hijau untuk yang selesai dalam batas, merah untuk
+ * Palet biner kepatuhan SLA: hijau untuk yang selesai dalam batas, merah untuk
  * yang lewat. Dua warna saja, karena pertanyaannya memang biner.
  */
 export const slaPalette = Object.freeze({ dalam: '#009B4C', lewat: '#ED1C24' });
 
 /**
  * Palet sembilan jenis aksi berpoin, diturunkan dari urutan `SCORING_TABLE`
- * (poin menaik) — bukan disalin sebagai daftar lepas.
+ * (poin menaik): bukan disalin sebagai daftar lepas.
  *
  * Turunan, bukan salinan, supaya jumlah warna dijamin sama dengan jumlah jenis
  * aksi: bila Hal 11 kelak menambah satu jenis aksi, chart tidak diam-diam
@@ -228,7 +228,7 @@ export const activityPalette = Object.freeze(
  * Angka batasnya tidak pernah ditulis literal: zona merah berakhir di
  * `target x ambangKuning`, zona kuning berakhir di `target`, sisanya hijau.
  * Untuk M-01 (target 75, ambang 0,80) ini menghasilkan tepat 0,60 / 0,75 / 1,00
- * seperti diminta katalog chart — dan ikut berubah dengan sendirinya bila
+ * seperti diminta katalog chart: dan ikut berubah dengan sendirinya bila
  * targetnya direvisi.
  *
  * @param {number} target Nilai target KPI dalam satuan yang sama dengan sumbu.
@@ -251,7 +251,7 @@ export function zonaMeteran(target, maks, ambangKuning) {
  * Gaya garis untuk seri yang berisi ESTIMASI, bukan pengukuran.
  *
  * Putus-putus adalah satu-satunya penanda visual yang terbaca tanpa legenda dan
- * tanpa warna — syarat CH-3 dan CH-6 sekaligus. Komponen yang memakainya WAJIB
+ * tanpa warna: syarat CH-3 dan CH-6 sekaligus. Komponen yang memakainya WAJIB
  * juga memasang lencana "Estimasi" di sisi judulnya; garis saja tidak cukup bagi
  * pembaca yang mencetak dasbornya.
  * @type {Readonly<Record<string, any>>}
@@ -263,7 +263,7 @@ export const garisEstimasi = Object.freeze({ type: 'dashed', width: 2, cap: 'rou
  *
  * Label ditempatkan DI DALAM grid (`insideEndTop`), bukan pada posisi baku
  * ECharts yang menggantung di luar tepi. Label di luar grid terpotong tepat pada
- * lebar wadah yang sempit — dan yang terpotong justru angka targetnya, sehingga
+ * lebar wadah yang sempit: dan yang terpotong justru angka targetnya, sehingga
  * garis yang tersisa tidak lagi mengatakan sedang membandingkan dengan apa.
  *
  * @param {number} nilai Nilai target pada sumbu.
@@ -283,7 +283,7 @@ export function garisTarget(nilai, sumbu = 'y', teks = '', posisi = 'insideEndTo
 				position: posisi,
 				// `rotate: 0` WAJIB eksplisit: ECharts memutar label markLine mengikuti
 				// arah garisnya, sehingga garis target vertikal menghasilkan tulisan
-				// yang berdiri — terbaca hanya bila kepala pembaca dimiringkan.
+				// yang berdiri: terbaca hanya bila kepala pembaca dimiringkan.
 				rotate: 0,
 				color: '#475569',
 				fontSize: 10,

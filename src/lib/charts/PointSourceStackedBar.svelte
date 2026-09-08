@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * PointSourceStackedBar (C-13) — poin datang dari jenis kontribusi apa.
+	 * PointSourceStackedBar (C-13): poin datang dari jenis kontribusi apa.
 	 *
 	 * Props:
 	 * @prop {{monthKey:string,label:string}[]} months
@@ -11,7 +11,7 @@
 	 * Sembilan seri adalah batas atas yang masih terbaca, dan hanya karena
 	 * paletnya satu gradasi terurut: warna termuda untuk aksi paling ringan,
 	 * tergelap untuk kontribusi paling bermakna. Pembaca tidak perlu menghafal
-	 * sembilan warna — ia cukup membaca arah gradasinya, dan pertanyaannya
+	 * sembilan warna: ia cukup membaca arah gradasinya, dan pertanyaannya
 	 * ("aksi ringan atau kontribusi bermakna?") terjawab dari situ.
 	 *
 	 * Pada layar sempit chart MENGGULIR di dalam wadahnya sendiri. Sembilan seri
@@ -19,7 +19,7 @@
 	 * membiarkan halaman ikut menggulir mendatar merusak seluruh tata letak
 	 * dasbor, bukan hanya chart ini.
 	 *
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-13, §7.4 perilaku responsif
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-13, §7.4 perilaku responsif
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import { activityPalette, tip, legend, grid, valueAxis, categoryAxis, animasi, angka } from './_chartTheme.js';

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * HALAMAN — Kalender Komunitas (`/awardee/kalender`).
+	 * HALAMAN: Kalender Komunitas (`/awardee/kalender`).
 	 *
 	 * Pilar 02 Hal 5: kalender kegiatan upskilling, pertemuan komunitas, dan sharing
 	 * session, dibagi per chapter.
@@ -9,29 +9,29 @@
 	 * **hadir**. Mendaftar adalah niat, dan niat tidak berpoin. Hadir adalah
 	 * kontribusi yang benar-benar terjadi, dan itulah yang dihargai Hal 11 dengan 15
 	 * poin. Karena itu tab "Mendatang" hanya menawarkan pendaftaran, sedangkan tombol
-	 * "Hadiri" baru muncul pada kegiatan yang waktunya sudah berjalan — sesuatu yang
+	 * "Hadiri" baru muncul pada kegiatan yang waktunya sudah berjalan: sesuatu yang
 	 * belum terjadi tidak dapat dihadiri.
 	 *
 	 * Bukti kehadiran diambil dari dokumentasi kegiatan itu sendiri (daftar hadir dan
 	 * foto pelaksanaan yang dilampirkan panitia), bukan dikarang di sisi awardee.
 	 * Kegiatan yang belum berdokumentasi tetap menerima klaim, tetapi poinnya
-	 * menunggu — persis perilaku `GamificationEngine` untuk aksi berbukti, dan
+	 * menunggu: persis perilaku `GamificationEngine` untuk aksi berbukti, dan
 	 * halaman ini menjelaskannya alih-alih menyembunyikannya.
 	 *
 	 * Sejak V2 halaman ini punya tab ketiga, **"Usulan saya"**. Awardee bukan lagi
 	 * sekadar peserta agenda yang disusun orang lain: ia boleh mengusulkan kegiatan
 	 * lewat `ContentReviewService.proposeEvent`, dan berhak melihat status usulannya
-	 * beserta catatan verifikator — termasuk ketika usulannya ditolak. Usulan yang
+	 * beserta catatan verifikator: termasuk ketika usulannya ditolak. Usulan yang
 	 * hilang tanpa kabar adalah cara tercepat menghentikan orang mengusulkan lagi.
 	 *
 	 * Perhatikan pemisahan sumber data: tab agenda membaca `catalog.publishedEvents`
 	 * (sudah lewat gerbang `isPubliclyVisible`), tab usulan membaca
-	 * `editorial.myEvents`. Keduanya sengaja tidak digabung — usulan mentah tidak
+	 * `editorial.myEvents`. Keduanya sengaja tidak digabung: usulan mentah tidak
 	 * boleh pernah ikut tampil sebagai agenda resmi (risiko R-09).
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 02, Hal 11 Attend online session 15 pts
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.14 route /awardee/kalender, §3.5 WP-05 butir 3
-	 * @see docs/10-REVISION-SPEC.md — §5.4 alur usulan kegiatan
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 02, Hal 11 Attend online session 15 pts
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.14 route /awardee/kalender, §3.5 WP-05 butir 3
+	 * @see docs/10-REVISION-SPEC.md: §5.4 alur usulan kegiatan
 	 */
 
 	import { onMount } from 'svelte';
@@ -53,6 +53,7 @@
 	import { ActivityType, poinUntuk } from '$lib/domain/constants/scoring-table.js';
 	import { EVENT_TYPE_META } from '$lib/domain/entities/CommunityEvent.js';
 	import { eventRepository } from '$lib/infrastructure/repositories/index.js';
+	import { activitySubmissions } from '$lib/stores/activity-submissions.svelte.js';
 	import { catalog, CatalogKind } from '$lib/stores/catalog.svelte.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
@@ -63,7 +64,7 @@
 	import EventProposalForm from '../_components/EventProposalForm.svelte';
 	import ProposalStatusCard from '../_components/ProposalStatusCard.svelte';
 
-	/** Nilai poin kehadiran — dibaca dari tabel kanonik, tidak pernah ditulis literal. */
+	/** Nilai poin kehadiran: dibaca dari tabel kanonik, tidak pernah ditulis literal. */
 	const POIN_HADIR = poinUntuk(ActivityType.SESSION_ATTEND);
 
 	/**
@@ -88,10 +89,11 @@
 
 	/** @type {string|null} Identitas kegiatan yang tombolnya sedang bekerja. */
 	let idSedangDiproses = $state(null);
+	let fileBukti = $state({});
 
 	const awardee = $derived(session.awardee);
 
-	/** Sisa kuota klaim kehadiran hari ini — rancangan anti-spam, bukan hukuman. */
+	/** Sisa kuota klaim kehadiran hari ini: rancangan anti-spam, bukan hukuman. */
 	const kuotaHadir = $derived(gamification.usageFor(ActivityType.SESSION_ATTEND));
 
 	const opsiJenis = [
@@ -102,7 +104,7 @@
 	/**
 	 * Agenda resmi, sudah tersaring gerbang publik.
 	 *
-	 * Sumbernya `catalog.publishedEvents` — yang menerapkan `isPubliclyVisible` —
+	 * Sumbernya `catalog.publishedEvents`: yang menerapkan `isPubliclyVisible` :
 	 * BUKAN `catalog.events` mentah. Sejak kegiatan punya status `DIUSULKAN`, daftar
 	 * mentah memuat usulan yang belum diputuskan siapa pun, dan menampilkannya di
 	 * tab "Mendatang" berarti mengumumkan agenda yang belum tentu terjadi. Usulan
@@ -132,7 +134,7 @@
 	 * Usulan kegiatan milik akun yang sedang masuk, terbaru lebih dulu.
 	 *
 	 * Dibaca dari `editorial.myEvents`, yang menyaring lewat `proposedBy` pada
-	 * repository — bukan dengan menyaring daftar katalog di sini. Usulan orang lain
+	 * repository: bukan dengan menyaring daftar katalog di sini. Usulan orang lain
 	 * bukan urusan halaman ini, dan penyaring yang ditulis di antarmuka akan
 	 * membocorkannya pada hari pertama seseorang mengubah urutan `{#each}`.
 	 */
@@ -160,20 +162,33 @@
 			: 0
 	);
 
+	function pengajuanKehadiran(kegiatan) {
+		return activitySubmissions.items.find((row) => row.event === kegiatan.id);
+	}
+
+	function perluUnggahBukti(kegiatan) {
+		if (!awardee || kegiatan.isCancelled || kegiatan.hasAttended(awardee.id)) return false;
+		if (!kegiatan.isRegistered(awardee.id)) return false;
+		const pengajuan = pengajuanKehadiran(kegiatan);
+		return !pengajuan || pengajuan.status === 'NEEDS_REVISION';
+	}
+
 	const belumDiklaim = $derived(
-		awardee
-			? lampau.filter(
-					(kegiatan) =>
-						!kegiatan.isCancelled &&
-						!kegiatan.hasAttended(awardee.id) &&
-						kegiatan.isRegistered(awardee.id)
-				).length
-			: 0
+		awardee ? lampau.filter((kegiatan) => perluUnggahBukti(kegiatan)).length : 0
+	);
+
+	const lampauTerurut = $derived(
+		[...lampau].sort((a, b) => {
+			const prioritasA = perluUnggahBukti(a) ? 1 : 0;
+			const prioritasB = perluUnggahBukti(b) ? 1 : 0;
+			if (prioritasA !== prioritasB) return prioritasB - prioritasA;
+			return b.startsAt.getTime() - a.startsAt.getTime();
+		})
 	);
 
 	onMount(async () => {
 		if (!session.ready) await session.hydrate();
-		await Promise.all([catalog.load(), editorial.load(), gamification.refresh()]);
+		await Promise.all([catalog.load(), editorial.load(), gamification.refresh(), activitySubmissions.load({ mine: true })]);
 	});
 
 	/**
@@ -205,7 +220,7 @@
 
 	/**
 	 * Nama chapter penyelenggara. Kegiatan tanpa chapter terbuka untuk semua batch,
-	 * dan itu perlu dikatakan — bukan dibiarkan kosong.
+	 * dan itu perlu dikatakan: bukan dibiarkan kosong.
 	 * @param {import('$lib/domain/entities/CommunityEvent.js').CommunityEvent} kegiatan
 	 * @returns {string}
 	 */
@@ -245,7 +260,7 @@
 		toast.push({
 			type: ToastType.INFO,
 			title: 'Belum ada sesi awardee',
-			message: 'Masuk sebagai awardee PFfriends untuk mendaftar dan mencatat kehadiran.'
+			message: 'Masuk sebagai awardee PFriends untuk mendaftar dan mencatat kehadiran.'
 		});
 		return false;
 	}
@@ -277,9 +292,7 @@
 
 		idSedangDiproses = kegiatan.id;
 		try {
-			await eventRepository.update(kegiatan.id, {
-				registeredAwardeeIds: [...kegiatan.registeredAwardeeIds, awardee.id]
-			});
+			await eventRepository.register(kegiatan.id);
 			await catalog.refresh();
 			toast.push({
 				type: ToastType.SUCCESS,
@@ -297,33 +310,27 @@
 	 * Urutannya disengaja: mesin gamifikasi memutuskan lebih dulu, dan daftar hadir
 	 * kegiatan baru diperbarui bila aksinya benar-benar diterima. Membalik urutan itu
 	 * akan menghasilkan awardee yang tercatat hadir pada kegiatan yang klaimnya
-	 * ditolak kuota harian — dua halaman yang saling membantah.
+	 * ditolak kuota harian: dua halaman yang saling membantah.
 	 *
 	 * @param {import('$lib/domain/entities/CommunityEvent.js').CommunityEvent} kegiatan
 	 * @returns {Promise<void>}
 	 */
 	async function hadiri(kegiatan) {
 		if (!pastikanSesi() || !awardee) return;
-		if (kegiatan.hasAttended(awardee.id)) return;
+		const participant = eventRepository.participantFor(kegiatan.id);
+		if (!participant) { toast.push({ type: ToastType.WARNING, title: 'Belum terdaftar', message: 'Hanya peserta yang sudah mendaftar yang dapat mengirim bukti hadir.' }); return; }
+		const files = fileBukti[kegiatan.id] ?? [];
+		if (files.length === 0) { toast.push({ type: ToastType.WARNING, title: 'Bukti belum dipilih', message: 'Pilih minimal satu foto atau PDF bukti kehadiran.' }); return; }
 
 		idSedangDiproses = kegiatan.id;
 		try {
-			const hasil = await gamification.perform(ActivityType.SESSION_ATTEND, {
-				refId: kegiatan.id,
-				evidence: [...kegiatan.evidenceRefs],
-				note: `Kehadiran pada ${kegiatan.title}`
-			});
-			if (!hasil.accepted) return;
-
-			const terdaftar = kegiatan.isRegistered(awardee.id)
-				? [...kegiatan.registeredAwardeeIds]
-				: [...kegiatan.registeredAwardeeIds, awardee.id];
-
-			await eventRepository.update(kegiatan.id, {
-				attendeeAwardeeIds: [...kegiatan.attendeeAwardeeIds, awardee.id],
-				registeredAwardeeIds: terdaftar
-			});
+			const existing = activitySubmissions.items.find((row) => row.event === kegiatan.id);
+			await activitySubmissions.submitAttendance(kegiatan, files, existing?.status === 'NEEDS_REVISION' ? existing.id : '');
+			fileBukti[kegiatan.id] = [];
 			await catalog.refresh();
+			toast.push({ type: ToastType.SUCCESS, title: 'Bukti hadir terkirim', message: `${POIN_HADIR} poin diberikan setelah bukti disetujui Verifikator.` });
+		} catch (error) {
+			toast.push({ type: ToastType.ERROR, title: 'Bukti gagal dikirim', message: error?.response?.message || error?.message || 'PocketBase tidak dapat memproses bukti hadir.' });
 		} finally {
 			idSedangDiproses = null;
 		}
@@ -331,13 +338,13 @@
 </script>
 
 <svelte:head>
-	<title>Calendar of Event — PFfriends</title>
+	<title>Calendar of Event: PFriends</title>
 </svelte:head>
 
 <PageHeader
 	eyebrow="Pilar 02 · Kalender Komunitas"
 	title="Calendar of Event"
-	subtitle="Upskilling, pertemuan chapter, dan sharing session PFfriends. Daftar untuk mengamankan kursi, catat kehadiranmu setelah sesi berjalan — dan usulkan sendiri kegiatan yang belum ada."
+	subtitle="Upskilling, pertemuan chapter, dan sharing session PFriends. Daftar untuk mengamankan kursi, catat kehadiranmu setelah sesi berjalan: dan usulkan sendiri kegiatan yang belum ada."
 />
 
 <div class="mt-5 flex flex-wrap items-center gap-3">
@@ -401,8 +408,7 @@
 					{formatAngka(belumDiklaim)} kegiatan menunggu konfirmasi kehadiranmu
 				</p>
 				<p class="mt-0.5 text-[13px] text-ink-600">
-					Kamu terdaftar tetapi kehadiranmu belum tercatat. Buka tab “Sudah berlangsung” dan tekan
-					Hadiri untuk mengklaim {POIN_HADIR} poin per sesi.
+					Kegiatan yang perlu tindakan sudah ditandai dan ditempatkan paling atas pada tab Sudah berlangsung.
 				</p>
 			</div>
 			<Button variant="outline" size="sm" onclick={() => (tabAktif = TAB_LAMPAU)}>
@@ -439,13 +445,13 @@
 			<EmptyState
 				icon={ICONS.calendar}
 				title="Belum ada kegiatan terjadwal"
-				message="Agenda baru biasanya diumumkan awal bulan lewat Kabar PFfriends. Sementara menunggu, kamu bisa menelusuri kegiatan yang sudah berlangsung."
+				message="Agenda baru biasanya diumumkan awal bulan lewat Kabar PFriends. Sementara menunggu, kamu bisa menelusuri kegiatan yang sudah berlangsung."
 				actionLabel="Lihat kegiatan lampau"
 				onAction={() => (tabAktif = TAB_LAMPAU)}
 			/>
 		</div>
 	{:else}
-		<!-- Dua penjaga lebar, keduanya pada butir grid — bukan di dalam `EventCard`,
+		<!-- Dua penjaga lebar, keduanya pada butir grid: bukan di dalam `EventCard`,
 		     yang komponen bersama dan bukan milik paket ini.
 
 		     `min-w-0`: butir grid berbaku `min-width: auto`, sehingga kartu tidak pernah
@@ -456,7 +462,7 @@
 		     yang induk `inline-flex`-nya tidak ber-`min-w-0`, jadi pemotongannya tidak
 		     pernah aktif dan nama tempat yang panjang tetap menjulur ~78 px. Menahannya di
 		     tepi kartu membuat luberan itu tidak lagi merambat ke dokumen. Bayangan kartu
-		     tidak terpotong — `overflow` hanya mengurung keturunan, bukan kotak elemennya
+		     tidak terpotong: `overflow` hanya mengurung keturunan, bukan kotak elemennya
 		     sendiri. Akar masalahnya dilaporkan ke pemilik `EventCard`. -->
 		<div class="mt-6 grid gap-4 md:grid-cols-2 [&>*]:min-w-0 [&>*]:overflow-hidden">
 			{#each mendatang as kegiatan (kegiatan.id)}
@@ -493,7 +499,7 @@
 					<EmptyState
 						icon={ICONS.user}
 						title="Sesi awardee belum termuat"
-						message="Masuk sebagai awardee PFfriends untuk mengusulkan kegiatan dan melihat status usulanmu."
+						message="Masuk sebagai awardee PFriends untuk mengusulkan kegiatan dan melihat status usulanmu."
 						actionLabel="Ke halaman Masuk"
 						actionHref="/masuk"
 					/>
@@ -505,7 +511,7 @@
 					<EmptyState
 						icon={ICONS.calendar}
 						title="Kamu belum pernah mengusulkan kegiatan"
-						message="Kegiatan komunitas tidak harus datang dari Pertamina Foundation. Usulkan kelas, pertemuan, atau sharing session yang kamu butuhkan lewat formulir di samping — verifikator akan memutuskannya beserta alasannya."
+						message="Kegiatan komunitas tidak harus datang dari Pertamina Foundation. Usulkan kelas, pertemuan, atau sharing session yang kamu butuhkan lewat formulir di samping: verifikator akan memutuskannya beserta alasannya."
 						size="sm"
 					/>
 				</div>
@@ -534,10 +540,22 @@
 	</div>
 {:else}
 	<div class="mt-6 space-y-3">
-		{#each lampau as kegiatan (kegiatan.id)}
+		{#each lampauTerurut as kegiatan (kegiatan.id)}
 			{@const sudahHadir = awardee ? kegiatan.hasAttended(awardee.id) : false}
 			{@const tanggal = bagianTanggal(kegiatan.startsAt)}
-			<Card padding="md">
+			{@const participant = eventRepository.participantFor(kegiatan.id)}
+			{@const attendanceSubmission = pengajuanKehadiran(kegiatan)}
+			{@const butuhBukti = perluUnggahBukti(kegiatan)}
+			<Card padding="md" variant={butuhBukti ? 'highlight' : 'default'}>
+				{#if butuhBukti}
+					<div class="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white/80 px-3 py-2.5">
+						<div class="flex min-w-0 items-center gap-2 text-sm font-semibold text-pertamina-red">
+							<Icon path={ICONS.upload} size={17} class="shrink-0" />
+							<span>{attendanceSubmission ? 'Bukti kehadiran perlu diperbaiki' : 'Perlu upload bukti kehadiran'}</span>
+						</div>
+						<StatusBadge label="Perlu tindakan" color="red" withDot size="sm" />
+					</div>
+				{/if}
 				<div class="flex items-start gap-4">
 					{#if tanggal}
 						<div
@@ -616,15 +634,20 @@
 						<StatusBadge label="Kegiatan dibatalkan" color="slate" />
 					{:else if sudahHadir}
 						<StatusBadge label="Kehadiran tercatat" color="green" withDot iconPath={ICONS.check} />
+					{:else if !participant}
+						<StatusBadge label="Tidak terdaftar" color="slate" />
 					{:else}
-						<Button
-							size="sm"
-							loading={idSedangDiproses === kegiatan.id}
-							disabled={idSedangDiproses !== null || (kuotaHadir?.exhausted ?? false)}
-							onclick={() => hadiri(kegiatan)}
-						>
-							Hadiri
-						</Button>
+						<div class="flex min-w-0 flex-col items-end gap-2">
+							{#if attendanceSubmission && attendanceSubmission.status !== 'NEEDS_REVISION'}
+								<StatusBadge label={attendanceSubmission.status === 'APPROVED' ? 'Bukti disetujui' : 'Bukti sedang diperiksa'} color={attendanceSubmission.status === 'APPROVED' ? 'green' : 'blue'} withDot />
+							{:else}
+								{#if attendanceSubmission?.reviewNote}
+									<p class="max-w-md text-right text-xs leading-relaxed text-red-700">Catatan Verifikator: {attendanceSubmission.reviewNote}</p>
+								{/if}
+								<input type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" class="max-w-64 text-xs" onchange={(e) => (fileBukti[kegiatan.id] = [...e.currentTarget.files])} />
+								<Button size="sm" loading={idSedangDiproses === kegiatan.id} disabled={idSedangDiproses !== null || (fileBukti[kegiatan.id]?.length ?? 0) === 0} onclick={() => hadiri(kegiatan)}>{attendanceSubmission ? 'Kirim ulang bukti' : 'Upload bukti hadir'}</Button>
+							{/if}
+						</div>
 					{/if}
 				</div>
 			</Card>
@@ -634,7 +657,7 @@
 	{#if kuotaHadir?.exhausted}
 		<p class="mt-4 text-[13px] leading-relaxed text-ink-600">
 			Kuota klaim kehadiran hari ini sudah penuh ({kuotaHadir.cap} sesi). Batas ini menjaga agar poin
-			tetap menandai kontribusi yang sungguh terjadi — kegiatan lain dapat diklaim besok.
+			tetap menandai kontribusi yang sungguh terjadi: kegiatan lain dapat diklaim besok.
 		</p>
 	{/if}
 {/if}

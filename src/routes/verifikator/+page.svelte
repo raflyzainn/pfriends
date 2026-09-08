@@ -1,464 +1,98 @@
 <script>
-	/**
-	 * HALAMAN `/verifikator` — dasbor performa awardee dan dampaknya.
-	 *
-	 * Tanggung jawab: menjawab satu pertanyaan dalam satu layar — seberapa hidup
-	 * para awardee bulan ini, dan apa yang masih menunggu keputusan saya.
-	 *
-	 * Lima keputusan yang tidak terbaca dari kode:
-	 *
-	 * 1. **Dasbor ini SENGAJA berbeda fokus dari dasbor Admin.** Admin membaca
-	 *    performa sistem dan aplikasi; verifikator membaca performa ORANG —
-	 *    postingan, poin, KPI, dan capaian awardee. Dua dasbor yang menampilkan
-	 *    deret yang sama hanya membuat satu di antaranya tidak pernah dibuka.
-	 * 2. **Papan peringkat "Peserta Paling Aktif" hadir atas permintaan pemilik
-	 *    produk,** dan itu mencabut larangan lama yang menjauhkan mekanik skor dari
-	 *    zona ini. Yang ditampilkan tetap terbatas: poin dan peringkat awardee —
-	 *    bukan poin verifikator, yang memang tidak dinilai dengan angka.
-	 * 3. **Angka performa datang dari `dasbor-data.js`, angka antrean dari store.**
-	 *    Pemisahan itu disengaja: deret performa adalah data contoh untuk mockup,
-	 *    sedangkan cacah antrean adalah pekerjaan sungguhan yang tautannya harus
-	 *    membawa ke daftar yang isinya persis sama. Mencampur keduanya membuat
-	 *    lencana antrean berbohong pada halaman yang ditunjuknya.
-	 * 4. **Papan peringkat memakai nama sungguhan bila katalog sudah termuat.**
-	 *    `PESERTA_TERAKTIF` hanyalah cadangan agar papan tidak pernah kosong saat
-	 *    demo — dan cadangan itu ditandai terbuka di kaki panel, bukan disamarkan.
-	 * 5. **Profil ditaruh sebagai panel di dasbor, bukan sebagai butir navigasi.**
-	 *    Profil melekat pada akun dan perannya; satu tujuan navigasi tersendiri
-	 *    untuk membaca lima baris identitas menambah satu ketukan tanpa menambah
-	 *    satu pun informasi.
-	 *
-	 * @see docs/10-REVISION-SPEC.md — §6.4 route zona verifikator
-	 */
 	import { EmptyState, Icon, LeaderboardRow, PageHeader, StatTile, ICONS } from '$lib/components';
 	import VerifAwardeePerforma from '$lib/charts/VerifAwardeePerforma.svelte';
 	import VerifKpiAwardeeBar from '$lib/charts/VerifKpiAwardeeBar.svelte';
 	import VerifSebaranChapter from '$lib/charts/VerifSebaranChapter.svelte';
-	import { CHAPTERS } from '$lib/domain/constants/community.js';
-	import { AccessPolicy } from '$lib/domain/policies/AccessPolicy.js';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
+	import { KPI_TARGETS, rasioPencapaian } from '$lib/domain/constants/kpi-targets.js';
 	import { editorial } from '$lib/stores/editorial.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
+	import { verifierDashboardStore } from '$lib/stores/verifier-dashboard.svelte.js';
 	import { formatAngka } from '$lib/utils/format.js';
 	import { SlaBadge, slaAntrean } from './_components/index.js';
-	import {
-		AMBANG_KPI,
-		AWARDEE_AKTIF,
-		AWARDEE_TERDAFTAR,
-		BARIS_PAPAN,
-		BULAN,
-		KPI_AWARDEE,
-		LAJU_PENINJAUAN,
-		PESERTA_TERAKTIF,
-		POIN_BULANAN,
-		POSTINGAN_TERBIT,
-		SEBARAN_CHAPTER,
-		jumlah,
-		kpiTercapai,
-		trenTerakhir
-	} from './_components/dasbor-data.js';
 
-	/** Banyaknya butir tertua yang ditampilkan sebagai pratinjau tiap antrean. */
-	const PRATINJAU = 3;
+	const PREVIEW_LIMIT = 3;
+	const now = new Date();
+	let dashboardLoaded = false;
+	$effect(() => { if (!dashboardLoaded) { dashboardLoaded = true; void verifierDashboardStore.load(); } });
 
-	/**
-	 * Waktu acuan seluruh perhitungan usia di halaman ini.
-	 *
-	 * Satu nilai untuk seluruh baris, dan sengaja tidak reaktif: dua kartu yang
-	 * menghitung "sudah berapa hari" dari dua `new Date()` berbeda akan sesekali
-	 * menampilkan angka berbeda untuk baris yang sama.
-	 * @type {Date}
-	 */
-	const sekarang = new Date();
+	const dashboard = $derived(verifierDashboardStore.data);
+	const monthly = $derived(dashboard?.monthly ?? []);
+	const totalPublished = $derived(monthly.reduce((sum, item) => sum + (item.publishedStories ?? 0), 0));
+	const totalPoints = $derived(dashboard?.totalPoints ?? 0);
+	const registered = $derived(dashboard?.registeredAwardees ?? 0);
+	const active = $derived(dashboard?.activeAwardees ?? 0);
+	const activeRate = $derived(registered > 0 ? Math.round(active / registered * 100) : 0);
+	const trend = (values) => values.length > 1 && values.at(-2) > 0 ? Math.round((values.at(-1) - values.at(-2)) / values.at(-2) * 100) : 0;
 
-	/**
-	 * Peta id chapter ke sebutan pendeknya.
-	 *
-	 * Awalan "Chapter " dipangkas karena baris papan peringkat sudah berada di
-	 * bawah judul yang menyebut konteksnya; mengulanginya delapan kali hanya
-	 * memakan lebar yang seharusnya menjadi milik nama orangnya.
-	 * @type {Map<string, string>}
-	 */
-	const LABEL_CHAPTER = new Map(CHAPTERS.map((c) => [c.id, c.label.replace(/^Chapter\s+/i, '')]));
-
-	const totalPostingan = jumlah(POSTINGAN_TERBIT);
-	const totalPoin = jumlah(POIN_BULANAN);
-	const persenAktif = Math.round((AWARDEE_AKTIF / AWARDEE_TERDAFTAR) * 100);
-
-	/** Empat angka kunci performa awardee — bukan performa sistem. */
-	const angkaKunci = [
-		{
-			id: 'postingan',
-			label: 'Postingan blog terbit',
-			value: totalPostingan,
-			hint: `${POSTINGAN_TERBIT[POSTINGAN_TERBIT.length - 1]} terbit bulan berjalan`,
-			trend: trenTerakhir(POSTINGAN_TERBIT),
-			iconPath: ICONS.book,
-			color: 'var(--color-brand-600)'
-		},
-		{
-			id: 'poin',
-			label: 'Poin kontribusi awardee',
-			value: totalPoin,
-			hint: 'Terkumpul sepanjang delapan bulan program',
-			trend: trenTerakhir(POIN_BULANAN),
-			iconPath: ICONS.coin,
-			color: 'var(--color-accent-700)'
-		},
-		{
-			id: 'aktif',
-			label: 'Awardee aktif',
-			value: AWARDEE_AKTIF,
-			hint: `${persenAktif}% dari ${formatAngka(AWARDEE_TERDAFTAR)} awardee terdaftar`,
-			trend: null,
-			iconPath: ICONS.users,
-			color: 'var(--color-brand-700)'
-		},
-		{
-			id: 'kpi',
-			label: 'KPI awardee tercapai',
-			value: `${kpiTercapai()} dari ${KPI_AWARDEE.length}`,
-			hint: `Ambang capaian ${AMBANG_KPI}% per indikator`,
-			trend: null,
-			iconPath: ICONS.trophy,
-			color: 'var(--color-brand-600)'
-		}
-	];
-
-	/**
-	 * Papan peringkat peserta paling aktif.
-	 *
-	 * Awardee yang memilih anonim tetap dihitung poinnya tetapi tidak dinamai —
-	 * pilihan itu dibuat di zona awardee dan tidak boleh terbatalkan oleh dasbor
-	 * yang kebetulan berada di zona lain.
-	 */
-	const papanPeringkat = $derived.by(() => {
-		const dariKatalog = catalog.awardees
-			.filter((awardee) => (awardee.points ?? 0) > 0)
-			.sort((a, b) => (b.points ?? 0) - (a.points ?? 0))
-			.slice(0, BARIS_PAPAN)
-			.map((awardee, indeks) => ({
-				rank: indeks + 1,
-				id: awardee.id,
-				name: awardee.anonymousOnLeaderboard ? 'Peserta anonim' : awardee.fullName,
-				community: awardee.community,
-				chapter: LABEL_CHAPTER.get(awardee.chapterId) ?? awardee.chapterId,
-				points: awardee.points ?? 0,
-				delta: null
-			}));
-
-		if (dariKatalog.length > 0) return { baris: dariKatalog, contoh: false };
-
-		return {
-			baris: PESERTA_TERAKTIF.map((peserta, indeks) => ({ ...peserta, rank: indeks + 1 })),
-			contoh: true
-		};
+	const kpiRows = $derived.by(() => {
+		const actuals = new Map((dashboard?.kpis ?? []).map((item) => [item.id, item]));
+		return KPI_TARGETS.map((target) => ({
+			label: target.shortLabel,
+			capaian: Math.min(100, Math.round(rasioPencapaian(actuals.get(target.id)?.actual ?? 0, target) * 100))
+		}));
 	});
-
-	/** Tiga naskah paling lama menunggu keputusan. */
-	const naskahTertua = $derived(editorial.storyQueue.slice(0, PRATINJAU));
-
-	/** Tiga usulan kegiatan paling lama menunggu keputusan. */
-	const usulanTertua = $derived(editorial.eventQueue.slice(0, PRATINJAU));
-
-	/** Dua antrean kerja verifikator, beserta tautan ke halaman yang mengerjakannya. */
-	const antrean = $derived([
-		{
-			id: 'cerita',
-			label: 'Submission Blog',
-			deskripsi: 'Naskah awardee yang menunggu ditinjau, disetujui, atau dikembalikan.',
-			jumlah: editorial.storyQueue.length,
-			lewat: editorial.storyOverdueCount,
-			href: '/verifikator/cerita',
-			iconPath: ICONS.book,
-			butir: naskahTertua.map((naskah) => ({
-				id: naskah.id,
-				title: naskah.title,
-				meta: naskah.authorName,
-				href: `/verifikator/cerita/${naskah.id}`,
-				sla: slaAntrean(naskah, sekarang)
-			})),
-			kosong: 'Tidak ada naskah yang menunggu keputusan.'
-		},
-		{
-			id: 'kegiatan',
-			label: 'Konfigurasi Calendar of Event',
-			deskripsi: 'Usulan kegiatan yang menunggu disetujui sebelum tayang di kalender.',
-			jumlah: editorial.eventQueue.length,
-			lewat: editorial.eventOverdueCount,
-			href: '/verifikator/kegiatan',
-			iconPath: ICONS.calendar,
-			butir: usulanTertua.map((usulan) => ({
-				id: usulan.id,
-				title: usulan.title,
-				meta: usulan.typeMeta.label,
-				href: '/verifikator/kegiatan',
-				sla: slaAntrean(usulan, sekarang)
-			})),
-			kosong: 'Tidak ada usulan kegiatan yang menunggu.'
-		}
+	const achievedKpis = $derived(kpiRows.filter((item) => item.capaian >= 100).length);
+	const keyFigures = $derived([
+		{ id:'stories',label:'Cerita dampak terbit',value:totalPublished,hint:`${monthly.at(-1)?.publishedStories ?? 0} terbit pada ${monthly.at(-1)?.label ?? 'periode terakhir'}`,trend:trend(monthly.map(item=>item.publishedStories??0)),iconPath:ICONS.book,color:'var(--color-brand-600)' },
+		{ id:'points',label:'Poin kontribusi Awardee',value:totalPoints,hint:'Terkumpul sepanjang periode program',trend:trend(monthly.map(item=>item.points??0)),iconPath:ICONS.coin,color:'var(--color-accent-700)' },
+		{ id:'active',label:'Awardee aktif',value:active,hint:`${activeRate}% dari ${formatAngka(registered)} Awardee terdaftar`,trend:null,iconPath:ICONS.users,color:'var(--color-brand-700)' },
+		{ id:'kpi',label:'KPI resmi tercapai',value:`${achievedKpis} dari ${KPI_TARGETS.length}`,hint:'Mengikuti target M-01 sampai M-05',trend:null,iconPath:ICONS.trophy,color:'var(--color-brand-600)' }
 	]);
 
-	const akun = $derived(session.account);
+	const leaderboard = $derived((dashboard?.leaderboard ?? []).map((item) => ({ ...item, delta:null })));
+	const oldestStories = $derived(editorial.storyQueue.slice(0,PREVIEW_LIMIT));
+	const oldestEvents = $derived(editorial.eventQueue.slice(0,PREVIEW_LIMIT));
+	const queues = $derived([
+		{ id:'stories',label:'Submission Blog',description:'Naskah Awardee yang menunggu keputusan.',count:editorial.storyQueue.length,overdue:editorial.storyOverdueCount,href:'/verifikator/cerita',iconPath:ICONS.book,items:oldestStories.map(item=>({id:item.id,title:item.title,meta:item.authorName,href:`/verifikator/cerita/${item.id}`,sla:slaAntrean(item,now)})),empty:'Tidak ada naskah yang menunggu keputusan.' },
+		{ id:'events',label:'Konfigurasi Calendar of Event',description:'Usulan kegiatan yang menunggu persetujuan.',count:editorial.eventQueue.length,overdue:editorial.eventOverdueCount,href:'/verifikator/kegiatan',iconPath:ICONS.calendar,items:oldestEvents.map(item=>({id:item.id,title:item.title,meta:item.typeMeta.label,href:'/verifikator/kegiatan',sla:slaAntrean(item,now)})),empty:'Tidak ada usulan kegiatan yang menunggu.' }
+	]);
 
-	/** Rekam kerja akun ini, dibaca dari jejak keputusan pada entity. */
-	const rekamKerja = $derived.by(() => {
-		const idAkun = session.accountId;
-		if (!idAkun) return { naskah: 0, kegiatan: 0, usulan: 0 };
-		return {
-			naskah: catalog.stories.filter(
-				(story) => story.reviewerId === idAkun || story.publishedById === idAkun
-			).length,
-			kegiatan: catalog.events.filter((event) => event.reviewedBy === idAkun).length,
-			usulan: editorial.myEvents.length
-		};
-	});
+	const performance = $derived(dashboard?.reviewPerformance ?? { decisionsThisWeek:0,averageResponseDays:0,approvalRate:0,decisionCount:0 });
+	const record = $derived(dashboard?.workRecord ?? {});
+	const workCards = $derived([
+		{label:'Cerita',value:record.stories??0,icon:ICONS.book},{label:'Kegiatan',value:record.events??0,icon:ICONS.calendar},{label:'Bukti keaktifan',value:record.evidence??0,icon:ICONS.checkCircle},{label:'Pendaftaran',value:record.registrations??0,icon:ICONS.users},{label:'Gerakan',value:record.movements??0,icon:ICONS.globe},{label:'Pesanan reward',value:record.redemptions??0,icon:ICONS.gift},{label:'Usulan Anda',value:record.proposals??0,icon:ICONS.plus}
+	]);
+	const account = $derived(session.account);
 </script>
 
-<PageHeader
-	eyebrow="Ruang kerja verifikator"
-	title="Performa awardee & dampaknya"
-	subtitle="Selamat datang, {session.displayName}. Layar ini membaca capaian para awardee — bukan performa aplikasi — lalu menutupnya dengan pekerjaan yang masih menunggu keputusan Anda."
-/>
+<PageHeader eyebrow="Ruang kerja verifikator" title="Performa Awardee & dampaknya" subtitle="Selamat datang, {session.displayName}. Seluruh angka performa dan rekam kerja pada layar ini dihitung dari PocketBase." />
 
-{#if editorial.error}
-	<p class="card mt-5 p-4 text-sm leading-relaxed text-danger" role="alert">
-		{editorial.error}
-	</p>
-{/if}
+{#if verifierDashboardStore.error || editorial.error}<p class="card mt-5 p-4 text-sm text-danger" role="alert">{verifierDashboardStore.error || editorial.error}</p>{/if}
 
-<!-- BLOK 1 — angka kunci performa awardee. -->
-<section class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Angka kunci performa awardee">
-	{#each angkaKunci as kartu (kartu.id)}
-		<StatTile
-			label={kartu.label}
-			value={kartu.value}
-			hint={kartu.hint}
-			trend={kartu.trend}
-			iconPath={kartu.iconPath}
-			color={kartu.color}
-		/>
-	{/each}
+<section class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Angka kunci performa Awardee">
+	{#each keyFigures as item (item.id)}<StatTile label={item.label} value={item.value} hint={item.hint} trend={item.trend} iconPath={item.iconPath} color={item.color} />{/each}
 </section>
 
-<!--
-	BLOK 2 — dua chart yang menjawab dua pertanyaan berbeda.
-	`min-w-0` pada butir grid wajib: canvas ECharts tidak menyusut sendiri, dan
-	tanpanya halaman menggulir mendatar di lebar 375 px.
--->
 <div class="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
-	<section class="card min-w-0 p-5" aria-labelledby="judul-produktivitas">
-		<h2 id="judul-produktivitas" class="text-base font-bold text-heading">
-			Produktivitas dan poin awardee
-		</h2>
-		<p class="mt-1 mb-3 text-sm leading-relaxed text-ink-600">
-			Apakah jumlah cerita yang benar-benar terbit tumbuh bersama poin yang diperoleh awardee?
-		</p>
-		<VerifAwardeePerforma
-			labels={[...BULAN]}
-			postingan={[...POSTINGAN_TERBIT]}
-			poin={[...POIN_BULANAN]}
-			height="300px"
-		/>
+	<section class="card min-w-0 p-5" aria-labelledby="productivity-title">
+		<h2 id="productivity-title" class="text-base font-bold text-heading">Produktivitas dan poin Awardee</h2>
+		<p class="mt-1 mb-3 text-sm text-ink-600">Perbandingan Cerita yang benar-benar terbit dan poin terverifikasi sepanjang periode program.</p>
+		<VerifAwardeePerforma labels={monthly.map(item=>item.label)} postingan={monthly.map(item=>item.publishedStories??0)} poin={monthly.map(item=>item.points??0)} height="300px" loading={verifierDashboardStore.loading} />
 	</section>
-
-	<section class="card min-w-0 p-5" aria-labelledby="judul-kpi">
-		<h2 id="judul-kpi" class="text-base font-bold text-heading">Capaian KPI awardee</h2>
-		<p class="mt-1 mb-3 text-sm leading-relaxed text-ink-600">
-			Indikator mana yang sudah melewati ambang {AMBANG_KPI}%, dan mana yang masih tertinggal?
-		</p>
-		<VerifKpiAwardeeBar data={[...KPI_AWARDEE]} target={AMBANG_KPI} height="300px" />
+	<section class="card min-w-0 p-5" aria-labelledby="kpi-title">
+		<h2 id="kpi-title" class="text-base font-bold text-heading">Capaian KPI resmi</h2>
+		<p class="mt-1 mb-3 text-sm text-ink-600">Capaian M-01 sampai M-05 dinormalisasi terhadap target resminya.</p>
+		<VerifKpiAwardeeBar data={kpiRows} target={100} height="300px" loading={verifierDashboardStore.loading} />
 	</section>
 </div>
 
-<!-- BLOK 3 — papan peringkat peserta paling aktif, berdampingan dengan asal kontribusinya. -->
 <div class="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
-	<section class="card min-w-0 p-5" aria-labelledby="judul-papan">
-		<div class="flex flex-wrap items-baseline justify-between gap-2">
-			<h2 id="judul-papan" class="text-base font-bold text-heading">Peserta paling aktif</h2>
-			<span class="label-micro">Diurut poin kontribusi</span>
-		</div>
-		<p class="mt-1 text-sm leading-relaxed text-ink-600">
-			Delapan awardee dengan perolehan poin tertinggi. Mereka layak diprioritaskan sebagai narasumber
-			dan mentor bagi chapter yang lebih sepi.
-		</p>
-
-		{#if papanPeringkat.baris.length === 0}
-			<div class="mt-4">
-				<EmptyState
-					title="Papan peringkat belum terisi"
-					message="Peringkat muncul setelah awardee pertama mengumpulkan poin kontribusi."
-					iconPath={ICONS.trophy}
-					size="sm"
-				/>
-			</div>
-		{:else}
-			<ul class="mt-4 border-t border-ink-100">
-				{#each papanPeringkat.baris as peserta (peserta.id)}
-					<li>
-						<LeaderboardRow
-							rank={peserta.rank}
-							awardee={{
-								id: peserta.id,
-								name: peserta.name,
-								community: peserta.community,
-								chapter: peserta.chapter
-							}}
-							points={peserta.points}
-							delta={peserta.delta}
-							variant="full"
-						/>
-					</li>
-				{/each}
-			</ul>
-
-			{#if papanPeringkat.contoh}
-				<p class="mt-3 text-xs leading-relaxed text-ink-600">
-					Delapan baris di atas adalah data contoh; papan akan memakai nama sungguhan begitu katalog
-					awardee termuat di peramban ini.
-				</p>
-			{/if}
-		{/if}
+	<section class="card min-w-0 p-5" aria-labelledby="leaderboard-title">
+		<div class="flex flex-wrap items-baseline justify-between gap-2"><h2 id="leaderboard-title" class="text-base font-bold text-heading">Peserta paling aktif</h2><span class="label-micro">Diurut poin kontribusi</span></div>
+		<p class="mt-1 text-sm text-ink-600">Delapan Awardee dengan perolehan poin tertinggi.</p>
+		{#if leaderboard.length===0}<div class="mt-4"><EmptyState title="Papan peringkat belum terisi" message="Peringkat muncul setelah Awardee mengumpulkan poin." iconPath={ICONS.trophy} size="sm" /></div>{:else}<ul class="mt-4 border-t border-ink-100">{#each leaderboard as item (item.id)}<li><LeaderboardRow rank={item.rank} awardee={{id:item.id,name:item.name,community:item.community,chapter:item.chapter}} points={item.points} delta={item.delta} variant="full" /></li>{/each}</ul>{/if}
 	</section>
-
-	<section class="card min-w-0 p-5" aria-labelledby="judul-sebaran">
-		<h2 id="judul-sebaran" class="text-base font-bold text-heading">Asal kontribusi</h2>
-		<p class="mt-1 mb-3 text-sm leading-relaxed text-ink-600">
-			Chapter dan komunitas mana yang paling hidup — dan mana yang perlu didekati.
-		</p>
-		<VerifSebaranChapter data={[...SEBARAN_CHAPTER]} height="230px" />
-	</section>
+	<section class="card min-w-0 p-5" aria-labelledby="chapter-title"><h2 id="chapter-title" class="text-base font-bold text-heading">Asal kontribusi</h2><p class="mt-1 mb-3 text-sm text-ink-600">Chapter dan komunitas yang menyumbang poin terverifikasi.</p><VerifSebaranChapter data={dashboard?.chapter??[]} height="230px" /></section>
 </div>
 
-<!-- BLOK 4 — pekerjaan yang menunggu keputusan, dengan tautan ke halaman yang mengerjakannya. -->
-<section class="mt-8" aria-labelledby="judul-antrean">
-	<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-		<h2 id="judul-antrean" class="text-lg font-bold text-heading">Menunggu keputusan Anda</h2>
-		<p class="text-xs text-ink-600">
-			Laju peninjauan
-			<span class="numeric font-semibold text-ink-800">
-				{LAJU_PENINJAUAN.keputusanPekanIni} keputusan
-			</span>
-			pekan ini · waktu tanggap rata-rata
-			<span class="numeric font-semibold text-ink-800">
-				{LAJU_PENINJAUAN.waktuTanggapHari} hari kerja
-			</span>
-			· {LAJU_PENINJAUAN.submissionLangsungSetuju}% submission lolos tanpa revisi
-		</p>
-	</div>
-
-	<div class="mt-4 grid gap-5 sm:grid-cols-2">
-		{#each antrean as kotak (kotak.id)}
-			<div class="card min-w-0 p-5">
-				<div class="flex items-start gap-3">
-					<span
-						class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pertamina-navy-tint text-pertamina-navy"
-						aria-hidden="true"
-					>
-						<Icon path={kotak.iconPath} size={18} />
-					</span>
-					<div class="min-w-0 flex-1">
-						<h3 class="text-base font-bold text-heading">{kotak.label}</h3>
-						<p class="mt-0.5 text-xs leading-relaxed text-ink-600">{kotak.deskripsi}</p>
-					</div>
-					<span class="numeric shrink-0 text-2xl leading-none font-bold text-ink-900">
-						{kotak.jumlah}
-					</span>
-				</div>
-
-				<p
-					class="mt-3 text-xs leading-relaxed {kotak.lewat > 0
-						? 'font-semibold text-pertamina-red-ink'
-						: 'text-ink-600'}"
-				>
-					{kotak.lewat > 0
-						? `${kotak.lewat} di antaranya sudah lewat tenggat`
-						: 'Seluruhnya masih dalam tenggat'}
-				</p>
-
-				{#if kotak.butir.length === 0}
-					<p class="mt-3 border-t border-ink-100 pt-3 text-sm leading-relaxed text-ink-600">
-						{kotak.kosong}
-					</p>
-				{:else}
-					<ul class="mt-3 border-t border-ink-100">
-						{#each kotak.butir as butir (butir.id)}
-							<li class="border-b border-ink-100 py-2.5 last:border-0">
-								<a class="group block min-w-0" href={butir.href}>
-									<span
-										class="block truncate text-sm font-semibold text-ink-800 group-hover:text-pertamina-navy group-hover:underline"
-									>
-										{butir.title}
-									</span>
-									<span class="mt-1 flex flex-wrap items-center gap-2">
-										<span class="text-xs text-ink-600">{butir.meta}</span>
-										<SlaBadge sla={butir.sla} size="sm" />
-									</span>
-								</a>
-							</li>
-						{/each}
-					</ul>
-				{/if}
-
-				<a
-					class="mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-pertamina-navy hover:underline"
-					href={kotak.href}
-				>
-					Buka {kotak.label}
-					<Icon path={ICONS.arrowRight} size={16} />
-				</a>
-			</div>
-		{/each}
-	</div>
+<section class="mt-8" aria-labelledby="queue-title">
+	<div class="flex flex-wrap items-baseline justify-between gap-3"><h2 id="queue-title" class="text-lg font-bold text-heading">Menunggu keputusan Anda</h2><p class="text-xs text-ink-600">Pekan ini <strong>{performance.decisionsThisWeek} keputusan</strong>, rata-rata tanggap <strong>{String(performance.averageResponseDays).replace('.',',')} hari kerja</strong>, tingkat persetujuan <strong>{performance.approvalRate}%</strong>.</p></div>
+	<div class="mt-4 grid gap-5 sm:grid-cols-2">{#each queues as queue (queue.id)}<div class="card min-w-0 p-5"><div class="flex items-start gap-3"><span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pertamina-navy-tint text-pertamina-navy"><Icon path={queue.iconPath} size={18}/></span><div class="min-w-0 flex-1"><h3 class="font-bold text-heading">{queue.label}</h3><p class="mt-0.5 text-xs text-ink-600">{queue.description}</p></div><span class="numeric text-2xl font-bold">{queue.count}</span></div><p class="mt-3 text-xs {queue.overdue>0?'font-semibold text-pertamina-red-ink':'text-ink-600'}">{queue.overdue>0?`${queue.overdue} sudah lewat tenggat`:'Seluruhnya masih dalam tenggat'}</p>{#if queue.items.length===0}<p class="mt-3 border-t border-ink-100 pt-3 text-sm text-ink-600">{queue.empty}</p>{:else}<ul class="mt-3 border-t border-ink-100">{#each queue.items as item (item.id)}<li class="border-b border-ink-100 py-2.5 last:border-0"><a class="group block" href={item.href}><span class="block truncate text-sm font-semibold group-hover:underline">{item.title}</span><span class="mt-1 flex flex-wrap items-center gap-2"><span class="text-xs text-ink-600">{item.meta}</span><SlaBadge sla={item.sla} size="sm" /></span></a></li>{/each}</ul>{/if}<a class="mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-pertamina-navy hover:underline" href={queue.href}>Buka {queue.label}<Icon path={ICONS.arrowRight} size={16}/></a></div>{/each}</div>
 </section>
 
-<!-- BLOK 5 — profil ringkas; menggantikan halaman profil yang dicabut dari navigasi. -->
-<section class="card mt-8 p-5" aria-labelledby="judul-profil">
-	<h2 id="judul-profil" class="text-base font-bold text-heading">Profil & rekam kerja Anda</h2>
-	<p class="mt-1 text-sm leading-relaxed text-ink-600">
-		Profil melekat pada akun dan perannya, sehingga tidak lagi menjadi tujuan navigasi tersendiri.
-	</p>
-
-	<div class="mt-4 grid gap-5 border-t border-ink-100 pt-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-		<div class="flex min-w-0 items-center gap-3">
-			<span
-				class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-chip bg-pertamina-navy-tint text-sm font-bold text-pertamina-navy"
-				aria-hidden="true"
-			>
-				{akun?.initials ?? 'PF'}
-			</span>
-			<div class="min-w-0">
-				<p class="truncate text-base font-bold text-heading">{session.displayName}</p>
-				<p class="truncate text-sm text-ink-600">{akun?.email ?? '—'}</p>
-				<p class="label-micro mt-0.5">
-					{session.roleLabel}{akun?.unit ? ` · ${akun.unit}` : ''}
-				</p>
-			</div>
-		</div>
-
-		<dl class="grid min-w-0 grid-cols-3 gap-3">
-			<div class="rounded-control bg-canvas p-3">
-				<dt class="label-micro">Naskah diputuskan</dt>
-				<dd class="numeric mt-1 text-xl leading-none font-bold text-ink-900">{rekamKerja.naskah}</dd>
-			</div>
-			<div class="rounded-control bg-canvas p-3">
-				<dt class="label-micro">Kegiatan diputuskan</dt>
-				<dd class="numeric mt-1 text-xl leading-none font-bold text-ink-900">
-					{rekamKerja.kegiatan}
-				</dd>
-			</div>
-			<div class="rounded-control bg-canvas p-3">
-				<dt class="label-micro">Usulan Anda</dt>
-				<dd class="numeric mt-1 text-xl leading-none font-bold text-ink-900">{rekamKerja.usulan}</dd>
-			</div>
-		</dl>
-	</div>
-
-	<p class="mt-4 text-xs leading-relaxed text-ink-600">
-		Verifikator dinilai pada mutu keputusan, bukan pada perolehan angka — karena itu tidak ada poin,
-		tier, maupun peringkat untuk akun Anda sendiri. Poin pada papan di atas adalah milik awardee.
-		{#if !AccessPolicy.canProposeEvent(session.role)}
-			Peran Anda tidak berwenang mengusulkan kegiatan.
-		{/if}
-	</p>
+<section class="card mt-8 p-5" aria-labelledby="work-title">
+	<h2 id="work-title" class="text-base font-bold text-heading">Profil & rekam kerja Anda</h2><p class="mt-1 text-sm text-ink-600">Tindakan yang tersimpan atas nama akun Verifikator aktif.</p>
+	<div class="mt-4 flex min-w-0 items-center gap-3 border-t border-ink-100 pt-4"><span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-chip bg-pertamina-navy-tint text-sm font-bold text-pertamina-navy">{account?.initials??'PF'}</span><div class="min-w-0"><p class="truncate font-bold text-heading">{session.displayName}</p><p class="truncate text-sm text-ink-600">{account?.email??''}</p><p class="label-micro mt-0.5">{session.roleLabel}{account?.unit?` · ${account.unit}`:''}</p></div></div>
+	<dl class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{#each workCards as item (item.label)}<div class="rounded-control bg-canvas p-3"><dt class="flex items-center gap-2 text-xs font-semibold text-ink-600"><Icon path={item.icon} size={15}/>{item.label}</dt><dd class="numeric mt-2 text-xl font-bold text-ink-900">{item.value}</dd></div>{/each}</dl>
+	<p class="mt-4 text-xs text-ink-600">Total {performance.decisionCount} tindakan peninjauan tersimpan. Verifikator dinilai dari mutu keputusan, bukan poin atau tier pribadi.</p>
 </section>

@@ -1,7 +1,7 @@
 /**
- * ENTITY — Kabar Pfriends (Broadcast).
+ * ENTITY: Kabar Pfriends (Broadcast).
  *
- * Tanggung jawab: merekam satu peristiwa penyebaran informasi ke komunitas —
+ * Tanggung jawab: merekam satu peristiwa penyebaran informasi ke komunitas :
  * pilar 04 Hal 5 (Diseminasi dan amplifikasi informasi).
  *
  * Broadcast sengaja dipisahkan dari materi kontennya. Satu konten dapat
@@ -12,11 +12,11 @@
  * dan salah satunya pasti dilaporkan keliru.
  *
  * `openedBy` menyimpan siapa saja yang sudah membuka, bukan sekadar cacahnya.
- * Itulah yang menegakkan idempotensi aksi `BROADCAST_VIEW` — satu poin per kabar
+ * Itulah yang menegakkan idempotensi aksi `BROADCAST_VIEW`: satu poin per kabar
  * seumur hidup, sehingga membuka ulang kabar lama tidak menjadi lumbung poin.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 04, Hal 6 KPI diseminasi
- * @see docs/02-KPI-MODEL.md — M-02 volume konten, M-03 frekuensi diseminasi
+ * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 04, Hal 6 KPI diseminasi
+ * @see docs/02-KPI-MODEL.md: M-02 volume konten, M-03 frekuensi diseminasi
  */
 
 /**
@@ -159,7 +159,7 @@ export class Broadcast {
 		const terkirim = keTanggalOpsional(sentAt, 'sentAt');
 		if (status === BroadcastStatus.TERKIRIM && terkirim === null) {
 			throw new RangeError(
-				`Kabar "${id}" berstatus terkirim tetapi tidak punya waktu kirim — KPI frekuensi diseminasi menghitung hari kirim.`
+				`Kabar "${id}" berstatus terkirim tetapi tidak punya waktu kirim: KPI frekuensi diseminasi menghitung hari kirim.`
 			);
 		}
 
@@ -333,7 +333,7 @@ export class Broadcast {
 
 	/**
 	 * Apakah seorang anggota sudah membuka kabar ini. Menjadi penjaga idempotensi
-	 * aksi `BROADCAST_VIEW` — satu poin per kabar seumur hidup (docs/03 §5.2).
+	 * aksi `BROADCAST_VIEW`: satu poin per kabar seumur hidup (docs/03 §5.2).
 	 * @param {string} awardeeId
 	 * @returns {boolean}
 	 */

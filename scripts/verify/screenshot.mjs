@@ -2,7 +2,7 @@
  * Menangkap tangkapan layar halaman-halaman kunci V2 untuk keperluan tinjauan
  * dan bahan presentasi ke Divisi Corporate Secretary.
  *
- * Daftarnya mencakup keempat zona — publik, awardee, verifikator, admin — karena
+ * Daftarnya mencakup keempat zona: publik, awardee, verifikator, admin: karena
  * bukti visual yang hanya memotret dua zona tidak dapat menunjukkan PO-3 maupun
  * PO-4 kepada siapa pun yang tidak membuka aplikasinya sendiri.
  *
@@ -13,7 +13,7 @@
  * Prasyarat: server dev berjalan (`npm run dev -- --port 5177`).
  * Jalankan: node scripts/verify/screenshot.mjs [baseUrl] [outDir]
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.14 daftar route, §6.2 baris `screenshot.mjs`
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.14 daftar route, §6.2 baris `screenshot.mjs`
  */
 
 import { spawn } from 'node:child_process';
@@ -177,8 +177,8 @@ await cdp.kirim('Emulation.setDeviceMetricsOverride', {
  * yang tidak menjalankan aplikasi), bukan lewat `Storage.clearDataForOrigin` dari
  * `about:blank`: parameter `origin` perintah itu sudah usang dan pada Chromium
  * mutakhir tidak menyapu localStorage. Akibatnya sesi jalannya skrip sebelumnya
- * bertahan di profil `/tmp/pfriends-shot`, dan potret zona publik — `09-publik-masuk`
- * yang paling kentara — terekam dengan kerangka konsol admin di dalamnya.
+ * bertahan di profil `/tmp/pfriends-shot`, dan potret zona publik: `09-publik-masuk`
+ * yang paling kentara: terekam dengan kerangka konsol admin di dalamnya.
  */
 async function bersihkanOrigin() {
 	await cdp.kirim('Page.navigate', { url: BASE + '/favicon.svg' });
@@ -254,16 +254,16 @@ async function login(email) {
  * Memicu pemuatan gambar `loading="lazy"` sebelum halaman dipotret.
  *
  * `captureBeyondViewport` memperbesar kanvas potret sampai seluruh tinggi
- * dokumen, tetapi TIDAK menggulir halaman — sehingga `IntersectionObserver`
+ * dokumen, tetapi TIDAK menggulir halaman: sehingga `IntersectionObserver`
  * bawaan peramban tidak pernah menganggap gambar di bawah lipatan terlihat, dan
  * gambar itu tidak pernah diminta. Hasilnya potret penuh dengan lubang putih
  * besar tepat di tempat foto seharusnya berada: bukan cacat halaman, tetapi
- * cacat potretnya — dan potret inilah yang dibaca orang di `docs/screenshots/`.
+ * cacat potretnya: dan potret inilah yang dibaca orang di `docs/screenshots/`.
  *
  * Karena itu halaman digulir dengan laju pembaca sungguhan lebih dulu, lalu
  * dikembalikan ke puncak, lalu ditunggu sampai setiap gambar benar-benar
  * terdekode. Batas waktu menjaga skrip tetap selesai walau ada satu berkas yang
- * tidak dapat dimuat — potret yang kurang satu foto lebih berguna daripada
+ * tidak dapat dimuat: potret yang kurang satu foto lebih berguna daripada
  * skrip yang menggantung.
  *
  * @param {number} [batasMs] Tenggat menunggu seluruh gambar terdekode.
@@ -298,7 +298,7 @@ const LEBAR_POTRET = 1440;
  * Memotret seluruh tinggi halaman TANPA merusak elemen `position: sticky`.
  *
  * `captureScreenshot({ captureBeyondViewport: true })` terlihat seperti jalan
- * pintas yang benar, tetapi ia memperbesar kanvas tanpa memperbesar viewport —
+ * pintas yang benar, tetapi ia memperbesar kanvas tanpa memperbesar viewport :
  * sehingga header `sticky top-0` dan sidebar `fixed` dihitung terhadap viewport
  * lama dan mendarat di tengah halaman, menimpa isi. Pada zona ter-login efeknya
  * paling parah: bilah header menutupi judul halaman, dan potret terbaca seolah
@@ -307,7 +307,7 @@ const LEBAR_POTRET = 1440;
  *
  * Yang dilakukan di sini adalah memperbesar VIEWPORT-nya sampai setinggi
  * dokumen, memotret, lalu mengembalikannya. Dengan begitu posisi elemen sticky
- * dihitung pada gulir nol — persis seperti yang dilihat pembaca.
+ * dihitung pada gulir nol: persis seperti yang dilihat pembaca.
  *
  * @returns {Promise<string>} Data PNG terkode base64.
  */

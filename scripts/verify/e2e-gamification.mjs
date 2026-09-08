@@ -9,7 +9,7 @@
  * `session.restore()` mengembalikan `awardeeId` dari localStorage SEKETIKA,
  * sedangkan entity `session.awardee` baru terisi oleh `hydrate()` yang asinkron.
  * `gamification.refresh()` yang tiba di antara dua saat itu melihat
- * `awardee === null` padahal orangnya jelas masih masuk — dan versi lama menyamakan
+ * `awardee === null` padahal orangnya jelas masih masuk: dan versi lama menyamakan
  * keadaan itu dengan "tidak ada sesi", lalu memanggil `reset()`. Akibatnya poin,
  * jenjang, dan lencana terkunci pada NOL sampai ada yang memicu penyegaran ulang.
  *
@@ -17,12 +17,12 @@
  * menunggu `hydrate()` selesai lebih dulu). Regresi seperti ini kembali diam-diam:
  * halaman tetap merender, tidak ada galat konsol, hanya angkanya yang salah.
  * Karena itu uji ini memakai anggota yang saldo seed-nya BUKAN nol, dan mengulang
- * muat ulang keras beberapa kali — satu kali muat ulang bisa saja menang balapan.
+ * muat ulang keras beberapa kali: satu kali muat ulang bisa saja menang balapan.
  *
  * Prasyarat: server dev berjalan (`npm run dev -- --port 5177`).
  * Jalankan: node scripts/verify/e2e-gamification.mjs [baseUrl]
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §6.2 baris `e2e-gamification.mjs`
+ * @see docs/12-BUILD-CONTRACT-V2.md: §6.2 baris `e2e-gamification.mjs`
  */
 
 import { spawn } from 'node:child_process';
@@ -40,7 +40,7 @@ const PORT = 9334;
 /** Berapa kali muat ulang keras diulang untuk memancing balapan hidrasi. */
 const ULANGAN_MUAT_ULANG = 3;
 
-/** Nilai poin kanonik — dibaca dari tabel skor, bukan ditulis ulang sebagai literal. */
+/** Nilai poin kanonik: dibaca dari tabel skor, bukan ditulis ulang sebagai literal. */
 const NILAI_POIN_SAH = SCORING_TABLE.map((aturan) => aturan.points);
 
 const tidur = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -153,7 +153,7 @@ function cek(nama, kondisi, detail = '') {
 		console.log(`  ✓ ${nama}`);
 	} else {
 		gagal++;
-		console.log(`  ✗ ${nama}${detail ? ` — ${detail}` : ''}`);
+		console.log(`  ✗ ${nama}${detail ? `: ${detail}` : ''}`);
 		catatan.push(nama);
 	}
 }
@@ -199,10 +199,10 @@ async function poinDiLayar() {
 	// Bendera `i` wajib: label kartu ditulis "Poin Kontribusi" di sumber, tetapi
 	// `text-transform: uppercase` membuat `innerText` mengembalikannya kapital.
 	//
-	// `[^0-9]*` — bukan `\s*` — karena dasbor awardee yang dirombak 4 Agustus 2026
+	// `[^0-9]*`: bukan `\s*`: karena dasbor awardee yang dirombak 4 Agustus 2026
 	// menulis "Poin Kontribusi terkumpul" lalu angkanya di baris berikutnya. Pola
 	// lama menuntut angka menempel langsung sesudah label, sehingga cocoknya gagal
-	// dan seluruh asersi saldo membaca `null` — bukan karena poinnya salah,
+	// dan seluruh asersi saldo membaca `null`: bukan karena poinnya salah,
 	// melainkan karena satu kata sisipan.
 	return cdp.evaluate(`(() => {
 		const teks = document.body.innerText || '';
@@ -221,7 +221,7 @@ console.log(
 // (b) IndexedDB berisi aksi dari jalannya skrip sebelumnya, sehingga saldo awal
 // tidak lagi sama dengan seed dan kuota harian aksi cepat sudah terpakai.
 // `Storage.clearDataForOrigin` menghapus keduanya sekaligus, termasuk koneksi
-// Dexie yang masih terbuka — `indexedDB.deleteDatabase()` dari dalam halaman akan
+// Dexie yang masih terbuka: `indexedDB.deleteDatabase()` dari dalam halaman akan
 // tersangkut `blocked`.
 await cdp.kirim('Page.navigate', { url: 'about:blank' });
 await tidur(400);
@@ -307,7 +307,7 @@ cek(
 //
 // Sasarannya adalah klaim baca di detail kabar, BUKAN tombol di /awardee/aksi.
 // Seluruh tombol di halaman itu berlabel sama ("Ajukan untuk verifikasi") padahal
-// akibatnya berbeda — aksi yang menuntut bukti dibukukan PENDING dengan 0 poin —
+// akibatnya berbeda: aksi yang menuntut bukti dibukukan PENDING dengan 0 poin :
 // dan tiga aksi yang `needsEvidence: false` justru tampil sebagai tautan ke
 // halaman lain, tanpa tombol yang dapat ditekan. Yang tersisa di sana karena itu
 // hanya aksi bernilai 0 poin saat ditekan: benar menurut domain, tetapi tidak
@@ -328,7 +328,7 @@ await tidur(2200);
 // Sasaran dipilih dari LABELNYA yang mencantumkan nilai poin ("· +5"), bukan dari
 // satu kalimat tetap. Klaim baca hanya berlaku sekali per kabar sepanjang
 // keanggotaan, jadi pada kabar yang poinnya sudah pernah diklaim tombol itu
-// nonaktif — sementara tombol berbagi di halaman yang sama tetap membukukan poin.
+// nonaktif: sementara tombol berbagi di halaman yang sama tetap membukukan poin.
 // Mengikat uji ke satu kalimat membuatnya bergantung pada kabar mana yang kebetulan
 // berada di urutan teratas.
 const ditekan = await cdp.evaluate(`(() => {
@@ -348,7 +348,7 @@ await tidur(2500);
 
 // Kembali ke dasbor sebelum fase muat ulang: hanya di sanalah saldo poin tercetak
 // sebagai TEKS. Di halaman lain saldo hidup di `PointsChip`, yang menaruh kata
-// "Poin Kontribusi" pada atribut `title` — tidak terjangkau `innerText`, sehingga
+// "Poin Kontribusi" pada atribut `title`: tidak terjangkau `innerText`, sehingga
 // `poinDiLayar()` akan mengembalikan `null` dan setiap putaran gagal tanpa sebab
 // yang ada hubungannya dengan hidrasi.
 await cdp.kirim('Page.navigate', { url: BASE + '/awardee' });
@@ -370,10 +370,10 @@ cek(
 	`selisih=${selisih}`
 );
 
-console.log(`\n── 3. Muat ulang KERAS × ${ULANGAN_MUAT_ULANG} — regresi balapan hidrasi ──`);
+console.log(`\n── 3. Muat ulang KERAS × ${ULANGAN_MUAT_ULANG}: regresi balapan hidrasi ──`);
 for (let putaran = 1; putaran <= ULANGAN_MUAT_ULANG; putaran++) {
 	// `Page.reload` memuat ulang dokumen sepenuhnya: konteks JS baru, store kosong,
-	// sesi dipulihkan dari localStorage. Inilah jalur tempat balapan itu terjadi —
+	// sesi dipulihkan dari localStorage. Inilah jalur tempat balapan itu terjadi :
 	// navigasi SPA tidak pernah memicunya.
 	await cdp.kirim('Page.reload', { ignoreCache: true });
 	await tidur(2800);
@@ -389,7 +389,7 @@ for (let putaran = 1; putaran <= ULANGAN_MUAT_ULANG; putaran++) {
 	cek(
 		`putaran ${putaran}: poin di layar BUKAN nol`,
 		layarSetelah !== 0 && layarSetelah !== null,
-		`layar=${layarSetelah} — gejala klasik reset() akibat balapan hidrasi`
+		`layar=${layarSetelah}: gejala klasik reset() akibat balapan hidrasi`
 	);
 	cek(
 		`putaran ${putaran}: poin di layar sama dengan buku besar`,

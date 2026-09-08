@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Tabs — pemilih tampilan dalam satu halaman.
+	 * Tabs: pemilih tampilan dalam satu halaman.
 	 *
 	 * Props:
 	 * @prop {{id:string,label:string,count?:number}[]} tabs

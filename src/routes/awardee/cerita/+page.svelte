@@ -1,18 +1,18 @@
 <script>
 	/**
-	 * HALAMAN — Blog Saya (`/awardee/cerita`).
+	 * HALAMAN: Blog Saya (`/awardee/cerita`).
 	 *
 	 * Pilar 06 Hal 5 (Community Journalism) dan "story bank" Hal 9.
 	 *
 	 * Route-nya tetap `/awardee/cerita`; yang berganti hanya KATA yang dilihat
 	 * pengguna. Slug naskah, data seed, halaman publik `[slug]`, dan tautan
-	 * verifikator seluruhnya menunjuk `/cerita` — mengganti route hanya demi
+	 * verifikator seluruhnya menunjuk `/cerita`: mengganti route hanya demi
 	 * kecocokan label akan menyentuh berkas jauh lebih banyak daripada nilainya
 	 * pada tahap mockup.
 	 *
 	 * Tanggung jawab halaman ini menyempit sejak V2: ia MENDAFTAR tulisan dan
 	 * statusnya, tidak lagi memuat formulir pengiriman. Komposer pindah ke
-	 * `/awardee/cerita/tulis` karena dua pekerjaan itu punya ritme yang berbeda —
+	 * `/awardee/cerita/tulis` karena dua pekerjaan itu punya ritme yang berbeda :
 	 * memeriksa status adalah kunjungan tiga puluh detik yang diulang tiap minggu,
 	 * menulis adalah pekerjaan setengah jam. Menumpuk keduanya di satu halaman
 	 * memaksa yang pertama menunggu render yang kedua.
@@ -35,8 +35,8 @@
 	 *    Hanya di kelompok itulah bola ada di tangan penulis; menyusunnya menurut
 	 *    tanggal saja akan menyembunyikan satu-satunya baris yang menuntut tindakan.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 06, Hal 9 story bank
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-05 kriteria selesai butir 4 & 5
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 06, Hal 9 story bank
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-05 kriteria selesai butir 4 & 5
 	 */
 
 	import { onMount } from 'svelte';
@@ -69,10 +69,7 @@
 	 * mengisi jeda antara halaman terbuka dan antrean selesai dimuat.
 	 * @type {import('$lib/domain/entities/Story.js').Story[]}
 	 */
-	const blogSaya = $derived.by(() => {
-		if (editorial.myStories.length > 0) return editorial.myStories;
-		return awardee ? catalog.storiesByAwardee(awardee.id) : [];
-	});
+	const blogSaya = $derived(editorial.myStories);
 
 	const perluRevisi = $derived(blogSaya.filter((tulisan) => tulisan.needsRevision));
 	const dalamTinjauan = $derived(blogSaya.filter((tulisan) => tulisan.isInModeration));
@@ -150,12 +147,12 @@
 
 	onMount(async () => {
 		if (!session.ready) await session.hydrate();
-		await Promise.all([catalog.load(), editorial.load()]);
+		await editorial.load();
 	});
 </script>
 
 <svelte:head>
-	<title>Blog Saya — PFfriends</title>
+	<title>Blog Saya: PFriends</title>
 </svelte:head>
 
 <div class="mb-5">
@@ -165,7 +162,7 @@
 	</h1>
 	<p class="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-600">
 		Tempat kontribusimu berubah menjadi bukti. Tulisan yang lolos tinjauan tayang di ruang publik
-		PFfriends dan menjadi bahan laporan ESG Pertamina Foundation.
+		PFriends dan menjadi bahan laporan ESG Pertamina Foundation.
 	</p>
 </div>
 
@@ -188,7 +185,7 @@
 			<p class="mt-1.5 max-w-xl text-[13px] leading-relaxed text-ink-700">
 				{#if perluRevisi.length > 0}
 					Verifikator sudah menuliskan apa yang perlu diubah pada tiap tulisan di bawah. Perbaiki,
-					lalu kirim ulang — revisi tidak menghapus poin yang sudah tercatat.
+					lalu kirim ulang: revisi tidak menghapus poin yang sudah tercatat.
 				{:else}
 					Tidak perlu panjang. Satu paragraf tentang apa yang kamu kerjakan bulan ini, ditambah satu
 					foto sebagai bukti, sudah cukup untuk masuk antrean tinjauan.
@@ -230,7 +227,7 @@
 	<StatTile
 		label="Sudah terbit"
 		value={terbit.length}
-		hint="Tayang di ruang publik PFfriends"
+		hint="Tayang di ruang publik PFriends"
 		iconPath={ICONS.checkCircle}
 		color="var(--color-success)"
 	/>
@@ -252,7 +249,7 @@
 		<EmptyState
 			iconPath={ICONS.user}
 			title="Sesi anggota belum termuat"
-			message="Masuk sebagai anggota PFfriends untuk melihat tulisan yang pernah kamu kirim beserta status tinjauannya."
+			message="Masuk sebagai anggota PFriends untuk melihat tulisan yang pernah kamu kirim beserta status tinjauannya."
 			actionLabel="Ke halaman Masuk"
 			actionHref="/masuk"
 		/>
@@ -285,7 +282,7 @@
 	</p>
 	<p class="mt-1.5 text-[13px] leading-relaxed text-ink-600">
 		Verifikator memeriksa kelengkapan bukti, kejelasan hasil, dan ketiadaan data pribadi orang lain.
-		Tulisan tidak pernah dinilai dari poin maupun jenjang penulisnya — kartu di halaman ini sengaja
+		Tulisan tidak pernah dinilai dari poin maupun jenjang penulisnya: kartu di halaman ini sengaja
 		tidak menampilkan keduanya.
 	</p>
 </Card>

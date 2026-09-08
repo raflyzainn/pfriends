@@ -1,15 +1,15 @@
 /**
- * ENTITY — Awardee Pfriends (penerima manfaat).
+ * ENTITY: Awardee Pfriends (penerima manfaat).
  *
  * Tanggung jawab: menyimpan identitas seorang penerima manfaat komunitas beserta
  * saldo kontribusinya, dan menjawab pertanyaan "awardee ini boleh apa" di satu
  * tempat.
  *
  * **Awardee adalah penerima manfaat, BUKAN akun.** Entitas ini tidak memegang satu
- * pun field autentikasi — tidak ada peran, tidak ada surel login, tidak ada hash
+ * pun field autentikasi: tidak ada peran, tidak ada surel login, tidak ada hash
  * kata sandi. Identitas login seluruhnya pindah ke `UserAccount`, dan alasannya
  * korektness, bukan kerapian: menaruh staf (verifikator, admin) sebagai baris
- * `Awardee` merusak tiga perhitungan sekaligus —
+ * `Awardee` merusak tiga perhitungan sekaligus :
  * 1. `KpiCalculator.#coverage` memakai cacah awardee sebagai penyebut cakupan,
  *    sehingga akun staf akan mengembungkan capaian KPI M-01;
  * 2. `LeaderboardService.#visibleAwardees` menyaring hanya lewat
@@ -24,14 +24,14 @@
  * menaruhnya di sini berarti entitas menghitung sesuatu yang datanya bukan
  * miliknya. Itu tugas TierResolver, FeatureEligibilityPolicy, dan EsgEvidenceService.
  *
- * `tier` tetap ada sebagai getter karena — sesuai keputusan K-3 — tier murni
+ * `tier` tetap ada sebagai getter karena: sesuai keputusan K-3: tier murni
  * turunan dari satu angka yang memang dimiliki entitas ini: `points`.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 2 Background, Hal 4 dua komunitas, Hal 12 tier
- * @see docs/05-ARCHITECTURE.md — §4.2 entitas penerima manfaat
- * @see docs/09-BUILD-CONTRACT.md — K-3 tier murni ambang poin
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.5 rename dan pencabutan field peran
- * @see docs/10-REVISION-SPEC.md — §2.4 mengapa UserAccount terpisah dari Awardee
+ * @see docs/00-SOURCE-BRIEF.md: Hal 2 Background, Hal 4 dua komunitas, Hal 12 tier
+ * @see docs/05-ARCHITECTURE.md: §4.2 entitas penerima manfaat
+ * @see docs/09-BUILD-CONTRACT.md: K-3 tier murni ambang poin
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.5 rename dan pencabutan field peran
+ * @see docs/10-REVISION-SPEC.md: §2.4 mengapa UserAccount terpisah dari Awardee
  */
 
 import { chapter, komunitas, bolehMemperolehPoin, tampilDiPapanPeringkat, CommunityType, AWARDEE_STATUS, AWARDEE_STATUS_META } from '../constants/community.js';
@@ -56,6 +56,7 @@ export const MAKS_TOKEN_JEDA_AMAN = 2;
  * @property {string} fullName
  * @property {string} email
  * @property {string} [whatsapp]
+ * @property {string} [avatar]
  * @property {string} community        Salah satu CommunityType.
  * @property {string} chapterId        Identitas chapter, mis. 'PF11'.
  * @property {string} [status]         Salah satu AWARDEE_STATUS; default AKTIF.
@@ -63,6 +64,7 @@ export const MAKS_TOKEN_JEDA_AMAN = 2;
  * @property {number} [coins]          Saldo Koin Tukar; default mengikuti points.
  * @property {number} [seasonPoints]   Poin musim berjalan; default mengikuti points.
  * @property {number} [streakWeeks]    Panjang streak mingguan berjalan.
+ * @property {number} [streakDays]     Panjang streak harian berdasarkan tanggal poin masuk.
  * @property {number} [freezeTokens]   Token Jeda Aman tersimpan.
  * @property {string} [university]     Kampus asal (relevan untuk SOBI).
  * @property {string} [city]           Kota domisili.
@@ -113,6 +115,7 @@ export class Awardee {
 			fullName,
 			email,
 			whatsapp = '',
+			avatar = '',
 			community,
 			chapterId,
 			status = AWARDEE_STATUS.AKTIF,
@@ -120,6 +123,7 @@ export class Awardee {
 			coins,
 			seasonPoints,
 			streakWeeks = 0,
+			streakDays = 0,
 			freezeTokens = 0,
 			university = '',
 			city = '',
@@ -172,6 +176,7 @@ export class Awardee {
 			fullName,
 			email,
 			whatsapp,
+			avatar,
 			community,
 			chapterId,
 			status,
@@ -179,6 +184,7 @@ export class Awardee {
 			coins: new Points(coins === undefined ? points : coins),
 			seasonPoints: musim,
 			streakWeeks,
+			streakDays,
 			freezeTokens,
 			university,
 			city,
@@ -217,6 +223,11 @@ export class Awardee {
 		return this.#data.whatsapp;
 	}
 
+	/** @returns {string} */
+	get avatar() {
+		return this.#data.avatar;
+	}
+
 	/** @returns {string} Salah satu CommunityType. */
 	get community() {
 		return this.#data.community;
@@ -232,7 +243,7 @@ export class Awardee {
 		return this.#data.status;
 	}
 
-	/** @returns {number} Total Poin Kontribusi — penentu tier. */
+	/** @returns {number} Total Poin Kontribusi: penentu tier. */
 	get points() {
 		return this.#data.points.value;
 	}
@@ -250,6 +261,11 @@ export class Awardee {
 	/** @returns {number} */
 	get streakWeeks() {
 		return this.#data.streakWeeks;
+	}
+
+	/** @returns {number} */
+	get streakDays() {
+		return this.#data.streakDays;
 	}
 
 	/** @returns {number} */
@@ -297,7 +313,7 @@ export class Awardee {
 		return this.#data.openToMentoring;
 	}
 
-	/** @returns {boolean} Punya consent aktif — gerbang ketiga fitur publik Hal 12. */
+	/** @returns {boolean} Punya consent aktif: gerbang ketiga fitur publik Hal 12. */
 	get consentActive() {
 		return this.#data.consentActive;
 	}
@@ -323,7 +339,7 @@ export class Awardee {
 	}
 
 	/**
-	 * Tier aktif awardee — murni turunan ambang poin (K-3).
+	 * Tier aktif awardee: murni turunan ambang poin (K-3).
 	 * @returns {Tier}
 	 */
 	get tier() {
@@ -388,14 +404,14 @@ export class Awardee {
 
 	/**
 	 * Nama yang layak ditampilkan di papan peringkat publik. Awardee yang memilih
-	 * anonim tampil sebagai inisial dan chapter — mekanisme anti-demotivasi ke-7
+	 * anonim tampil sebagai inisial dan chapter: mekanisme anti-demotivasi ke-7
 	 * docs/03 §9.2 sekaligus penghormatan pilihan privasi Hal 10.
-	 * @returns {string} mis. 'R.P. — Chapter PF 11'.
+	 * @returns {string} mis. 'R.P.: Chapter PF 11'.
 	 */
 	get displayName() {
 		if (!this.#data.anonymousOnLeaderboard) return this.#data.fullName;
 		const inisial = this.initials.split('').join('.');
-		return `${inisial}. — ${this.chapterDef.label}`;
+		return `${inisial}.: ${this.chapterDef.label}`;
 	}
 
 	/**
@@ -419,11 +435,11 @@ export class Awardee {
 
 	/**
 	 * Salinan dengan sebagian field diganti. Entitas ini immutable, sehingga
-	 * perubahan selalu menghasilkan instans baru — repository menyimpan hasilnya.
+	 * perubahan selalu menghasilkan instans baru: repository menyimpan hasilnya.
 	 *
 	 * `seasonPoints` ikut disesuaikan ketika `points` diturunkan tanpa poin musim
 	 * dinyatakan eksplisit. Tanpa penyesuaian ini, invarian "poin musim tidak
-	 * melebihi total poin" akan dilanggar oleh perubahan yang tampak polos —
+	 * melebihi total poin" akan dilanggar oleh perubahan yang tampak polos :
 	 * pemanggil tidak seharusnya perlu mengingat keterkaitan dua field ini.
 	 *
 	 * @param {Partial<AwardeeInput>} changes
@@ -448,6 +464,7 @@ export class Awardee {
 			fullName: this.fullName,
 			email: this.email,
 			whatsapp: this.whatsapp,
+			avatar: this.avatar,
 			community: this.community,
 			chapterId: this.chapterId,
 			status: this.status,
@@ -455,6 +472,7 @@ export class Awardee {
 			coins: this.coins,
 			seasonPoints: this.seasonPoints,
 			streakWeeks: this.streakWeeks,
+			streakDays: this.streakDays,
 			freezeTokens: this.freezeTokens,
 			university: this.university,
 			city: this.city,

@@ -1,7 +1,7 @@
 /**
- * VALUE OBJECT — Poin Kontribusi.
+ * VALUE OBJECT: Poin Kontribusi.
  *
- * Tanggung jawab: menjaga satu invarian yang tidak boleh dilanggar di mana pun —
+ * Tanggung jawab: menjaga satu invarian yang tidak boleh dilanggar di mana pun :
  * poin selalu bilangan bulat tak negatif.
  *
  * Alasan keberadaan kelas ini alih-alih `number` biasa: perhitungan poin tersebar
@@ -13,8 +13,8 @@
  * Immutable: setiap operasi mengembalikan instans baru, instans lama tidak pernah
  * berubah. Ini membuat objek Points aman dibagi ke banyak komponen sekaligus.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 11 Gamification Scoring Model
- * @see docs/03-GAMIFICATION-SPEC.md — §13.2 Value Objects
+ * @see docs/00-SOURCE-BRIEF.md: Hal 11 Gamification Scoring Model
+ * @see docs/03-GAMIFICATION-SPEC.md: §13.2 Value Objects
  */
 
 export class Points {
@@ -22,7 +22,7 @@ export class Points {
 	#value;
 
 	/**
-	 * @param {number} value Nilai poin — wajib bilangan bulat >= 0.
+	 * @param {number} value Nilai poin: wajib bilangan bulat >= 0.
 	 * @throws {TypeError} bila bukan angka berhingga (termasuk NaN, string, null).
 	 * @throws {RangeError} bila pecahan atau negatif.
 	 */
@@ -55,7 +55,7 @@ export class Points {
 	}
 
 	/**
-	 * Pengurangan poin, ditahan di nol. Poin tidak pernah negatif — pembatalan
+	 * Pengurangan poin, ditahan di nol. Poin tidak pernah negatif: pembatalan
 	 * entri yang melebihi saldo menghasilkan nol, bukan utang poin.
 	 * @param {Points|number} other
 	 * @returns {Points} Instans baru.
@@ -67,7 +67,7 @@ export class Points {
 	/**
 	 * Penskalaan untuk pengali streak dan diminishing returns. Hasil dibulatkan ke
 	 * bawah namun ditahan minimal satu selama pengali positif dan poin awal bukan
-	 * nol — aksi yang benar-benar dilakukan tidak boleh berbuah nol poin, karena
+	 * nol: aksi yang benar-benar dilakukan tidak boleh berbuah nol poin, karena
 	 * itu terbaca sebagai kegagalan sistem, bukan sebagai pengurangan insentif.
 	 * @param {number} multiplier Pengali, mis. 0.5 atau 1.25.
 	 * @returns {Points} Instans baru.
@@ -99,7 +99,7 @@ export class Points {
 	}
 
 	/**
-	 * Perbandingan berbasis nilai — dua Points dengan nilai sama dianggap sama,
+	 * Perbandingan berbasis nilai: dua Points dengan nilai sama dianggap sama,
 	 * tanpa memandang identitas objeknya.
 	 * @param {unknown} other
 	 * @returns {boolean}

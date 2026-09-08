@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * AmplificationBarChart — peringkat amplifikasi per kanal, chapter, atau komunitas.
+	 * AmplificationBarChart: peringkat amplifikasi per kanal, chapter, atau komunitas.
 	 *
 	 * Props:
 	 * @prop {{label:string,value:number,color?:string}[]} data
@@ -16,7 +16,7 @@
 	 *
 	 * Garis target memakai pembantu bersama `garisTarget` dari tema, bukan salinan
 	 * lokal: bila gaya garis target diubah, seluruh chart berubah bersamaan.
-	 * Tanpa data, `option` bernilai `null` — bukan batang bernilai nol (CH-4).
+	 * Tanpa data, `option` bernilai `null`: bukan batang bernilai nol (CH-4).
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
@@ -50,7 +50,7 @@
 	 * Pemanggil lazim menurunkan `data` dari daftar KATEGORI (chapter, komunitas,
 	 * kanal) yang selalu lengkap, lalu mengisi nilainya dari aktivitas. Panjang
 	 * lariknya karena itu tidak pernah nol, bahkan pada basis data tanpa satu pun
-	 * aktivitas — dan penjagaan berbasis panjang menggambar deret batang bernilai
+	 * aktivitas: dan penjagaan berbasis panjang menggambar deret batang bernilai
 	 * nol yang dilarang CH-4. Yang menentukan adalah adanya nilai terukur.
 	 */
 	const adaData = $derived(data.length > 0 && data.some((d) => Number(d.value) > 0));

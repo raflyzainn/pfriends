@@ -1,15 +1,15 @@
 /**
- * VALUE OBJECT — Rekaman Persetujuan Data (Consent).
+ * VALUE OBJECT: Rekaman Persetujuan Data (Consent).
  *
  * Tanggung jawab: menyimpan satu persetujuan anggota secara utuh dan tak dapat
- * diubah — termasuk teks persis yang disetujui, versi kebijakan yang berlaku saat
+ * diubah: termasuk teks persis yang disetujui, versi kebijakan yang berlaku saat
  * itu, kanal yang dicakup, dan masa berlakunya.
  *
  * Consent adalah bukti pilar Governance (Hal 10: "consent records") dan satu dari
  * lima gerbang fitur publik (Hal 12). Karena fungsinya sebagai bukti, rekaman ini
  * dibuat IMMUTABLE tanpa kecuali: `revoke()` mengembalikan instans baru dan tidak
  * pernah mengubah yang lama. Rekaman consent yang dapat disunting di tempat sama
- * saja dengan tidak punya bukti — riwayat persetujuan justru yang perlu dibuktikan
+ * saja dengan tidak punya bukti: riwayat persetujuan justru yang perlu dibuktikan
  * bila kelak dipersoalkan.
  *
  * Konsekuensi pencabutan terhadap poin dan bukti ESG diputuskan di docs/04 §4.5 dan
@@ -17,8 +17,8 @@
  * dianonimkan bukan dihapus. Value object ini hanya merekam faktanya; eksekusi
  * dampaknya milik lapisan service.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 10 Governance, Hal 12 Minimum for public feature
- * @see docs/04-ESG-GOVERNANCE.md — §4 Rancangan Consent Record
+ * @see docs/00-SOURCE-BRIEF.md: Hal 10 Governance, Hal 12 Minimum for public feature
+ * @see docs/04-ESG-GOVERNANCE.md: §4 Rancangan Consent Record
  */
 
 /**
@@ -212,7 +212,7 @@ function keDaftarBeku(nilai, namaField) {
  * @property {string} awardeeId       Awardee pemilik persetujuan.
  * @property {string} consentType    Salah satu ConsentType.
  * @property {readonly string[]} scope    Objek yang dicakup, atau [SCOPE_SEMUA_KONTEN].
- * @property {readonly string[]} channels Kanal yang dicakup — salah satu ConsentChannel.
+ * @property {readonly string[]} channels Kanal yang dicakup: salah satu ConsentChannel.
  * @property {string} purpose        Tujuan spesifik; tujuan generik ditolak saat penyusunan formulir.
  * @property {string} policyVersion  Versi teks kebijakan, mis. 'PF-CONSENT-v1.2'.
  * @property {string} statementText  Teks persis yang disetujui, disimpan bukan dirujuk.
@@ -222,7 +222,7 @@ function keDaftarBeku(nilai, namaField) {
  * @property {string} [status]       Salah satu ConsentStatus; default AKTIF.
  * @property {Date|string|null} [revokedAt] Waktu pencabutan bila sudah dicabut.
  * @property {string|null} [revokedVia]     Salah satu RevokedVia.
- * @property {string|null} [revokedReason]  Alasan pencabutan — anggota tidak wajib mengisinya.
+ * @property {string|null} [revokedReason]  Alasan pencabutan: anggota tidak wajib mengisinya.
  */
 
 export class ConsentRecord {
@@ -429,7 +429,7 @@ export class ConsentRecord {
 
 	/**
 	 * Apakah persetujuan masih dapat diandalkan sebagai dasar publikasi.
-	 * Ini pemeriksaan yang dipanggil ulang tepat sebelum penerbitan konten —
+	 * Ini pemeriksaan yang dipanggil ulang tepat sebelum penerbitan konten :
 	 * consent yang sah saat cerita disetujui bisa saja sudah dicabut saat cerita
 	 * hendak tayang.
 	 * @param {Date} [pada] Waktu acuan; default waktu sekarang.
@@ -458,7 +458,7 @@ export class ConsentRecord {
 	}
 
 	/**
-	 * Mencabut persetujuan. Mengembalikan INSTANS BARU — rekaman lama tetap utuh
+	 * Mencabut persetujuan. Mengembalikan INSTANS BARU: rekaman lama tetap utuh
 	 * sebagai bukti bahwa persetujuan itu pernah diberikan, dan pasangan keduanya
 	 * itulah yang membentuk jejak audit.
 	 *
@@ -497,7 +497,7 @@ export class ConsentRecord {
 	/**
 	 * Menandai persetujuan sebagai kedaluwarsa. Mengembalikan INSTANS BARU.
 	 * Waktu kedaluwarsanya sudah tertulis pada `expiresAt` sejak persetujuan
-	 * diberikan, jadi metode ini hanya memindahkan status — tidak menggeser tanggal.
+	 * diberikan, jadi metode ini hanya memindahkan status: tidak menggeser tanggal.
 	 * @returns {ConsentRecord}
 	 * @throws {RangeError} bila rekaman sudah dicabut; pencabutan mendahului kedaluwarsa.
 	 */
@@ -516,7 +516,7 @@ export class ConsentRecord {
 	/**
 	 * Perbandingan berbasis nilai atas seluruh field yang menentukan makna rekaman.
 	 * Rekaman hasil `revoke()` karenanya TIDAK sama dengan rekaman asalnya meski
-	 * ber-id sama — itu memang dua keadaan berbeda dari satu persetujuan.
+	 * ber-id sama: itu memang dua keadaan berbeda dari satu persetujuan.
 	 * @param {unknown} other
 	 * @returns {boolean}
 	 */

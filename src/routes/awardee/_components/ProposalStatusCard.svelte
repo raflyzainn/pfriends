@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * ProposalStatusCard — satu usulan kegiatan dari sisi pengusulnya.
+	 * ProposalStatusCard: satu usulan kegiatan dari sisi pengusulnya.
 	 *
 	 * Komponen lokal zona Awardee (KP-5). Menjawab dua pertanyaan yang selalu
 	 * diajukan pengusul: *"sudah diputuskan belum?"* dan, bila sudah, *"apa kata
@@ -8,7 +8,7 @@
 	 *
 	 * TIGA KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
-	 * 1. **Catatan verifikator selalu ditampilkan bila ada — termasuk pada usulan
+	 * 1. **Catatan verifikator selalu ditampilkan bila ada: termasuk pada usulan
 	 *    yang DISETUJUI.** Menyembunyikannya kecuali saat ditolak membuat pengusul
 	 *    hanya menerima kabar buruk yang beralasan, sementara kabar baik datang
 	 *    tanpa penjelasan. Keduanya adalah keputusan; keduanya layak dibaca.
@@ -18,7 +18,7 @@
 	 * 3. **NOL poin, kuota, dan daftar peserta.** Usulan bukan mekanik gamifikasi,
 	 *    dan daftar pendaftar adalah data pribadi orang lain.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-05 kriteria selesai butir 3
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-05 kriteria selesai butir 3
 	 */
 	import { Card, Icon, ICONS, StatusBadge } from '$lib/components';
 	import { EventStatus } from '$lib/domain/entities/CommunityEvent.js';

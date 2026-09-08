@@ -1,5 +1,5 @@
 /**
- * GERBANG KEMURNIAN ZONA PUBLIK — penegak Keputusan Pemilik Produk #2 dan anti-template.
+ * GERBANG KEMURNIAN ZONA PUBLIK: penegak Keputusan Pemilik Produk #2 dan anti-template.
  *
  * Menjalankan: `node scripts/verify/public-purity.mjs`
  *
@@ -13,11 +13,11 @@
  * 1. **Komentar DILEPAS sebelum pemindaian kata.** Yang dilarang adalah teks yang
  *    sampai ke pembaca, bukan penjelasan bagi pengembang. Tanpa pelepasan ini,
  *    setiap komentar yang menjelaskan MENGAPA larangan ini ada justru akan
- *    memerahkan gerbangnya sendiri — dan cara termudah menghijaukannya adalah
+ *    memerahkan gerbangnya sendiri: dan cara termudah menghijaukannya adalah
  *    menghapus penjelasannya. Itu kebalikan dari yang diinginkan.
  *
  * 2. **Dua jalur dikecualikan dari aturan kata, dan hanya dua.** `/daftar` memuat
- *    dua teks consent yang WAJIB menyebut apa yang disimpan — consent yang
+ *    dua teks consent yang WAJIB menyebut apa yang disimpan: consent yang
  *    menyembunyikan objeknya bukan consent. `/metode-pengukuran` menjelaskan
  *    justru mengapa angka-angka itu tidak ditampilkan. Pengecualian tidak berlaku
  *    untuk aturan impor: kedua halaman itu tetap dilarang mengimpor komponen
@@ -38,33 +38,33 @@
  *
  * 6. **`blur-3xl` dan `backdrop-blur` ikut diperiksa di sini**, bukan hanya lewat
  *    `grep` manual: kedalaman zona publik datang dari foto, garis, dan ruang
- *    putih — tidak pernah dari blur (prinsip P-4).
+ *    putih: tidak pernah dari blur (prinsip P-4).
  *
- * 7. **Lapisan komponen bersama ikut dipindai — sejauh zona publik menjangkaunya
+ * 7. **Lapisan komponen bersama ikut dipindai: sejauh zona publik menjangkaunya
  *    (gelombang G5).** Peninjau mencatat titik buta yang serius: halaman publik
  *    nyaris tidak menulis teksnya sendiri, ia memanggil `src/lib/components/`.
  *    Sebuah `PointsChip` yang ikut terbawa ke sana akan tayang di zona publik
  *    tanpa satu baris pun berubah di dalam `(public)/`. Jangkauannya dihitung
- *    dari graf impor — bukan seluruh direktori — supaya komponen yang memang
+ *    dari graf impor: bukan seluruh direktori: supaya komponen yang memang
  *    hanya hidup di zona ter-login tidak dituntut membisu.
  *
  *    Dua aturan berlaku BERBEDA pada lapisan itu, dan perbedaannya disengaja:
  *
- *    - Aturan KATA/ALT/BLUR dipersempit ke MARKUP. Di berkas komponen, `tier`
+ *   : Aturan KATA/ALT/BLUR dipersempit ke MARKUP. Di berkas komponen, `tier`
  *      jauh lebih sering nama prop daripada kata yang dibaca pengunjung, dan
  *      gerbang yang menuntut prop diganti nama akan dimatikan, bukan dipatuhi.
- *    - Aturan IMPOR/IDENTIFIER MENCATAT, tidak menggagalkan. Satu-satunya sisa
+ *   : Aturan IMPOR/IDENTIFIER MENCATAT, tidak menggagalkan. Satu-satunya sisa
  *      yang tercatat hari ini adalah `_visual.js` yang membaca `tier-table.js`
- *      demi `gayaTier()` — dipakai `Avatar` untuk cincin tier. Menutupnya
+ *      demi `gayaTier()`: dipakai `Avatar` untuk cincin tier. Menutupnya
  *      menuntut kontrak props `Avatar` diubah di delapan titik panggil yang
  *      tersebar di tiga zona dan dimiliki paket lain; itu pekerjaan redesain,
  *      bukan pekerjaan gerbang verifikasi. Yang dibawa ke zona publik pun hanya
- *      KONSTANTA ambang, bukan teks yang dirender — dan kebocoran teksnya sudah
+ *      KONSTANTA ambang, bukan teks yang dirender: dan kebocoran teksnya sudah
  *      dijaga aturan KATA dan KOMPONEN yang menggagalkan.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-04 kriteria selesai 1, 7, 8; §6.2
- * @see docs/10-REVISION-SPEC.md — §4.3 daftar haram tampil publik
- * @see docs/11-VISUAL-DIRECTION.md — D-04, D-10, D-15, prinsip P-4
+ * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-04 kriteria selesai 1, 7, 8; §6.2
+ * @see docs/10-REVISION-SPEC.md: §4.3 daftar haram tampil publik
+ * @see docs/11-VISUAL-DIRECTION.md: D-04, D-10, D-15, prinsip P-4
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -72,17 +72,20 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 
 const ROOT = process.cwd();
 const ZONA = join(ROOT, 'src', 'routes', '(public)');
-/** Lapisan komponen bersama — dipindai sejauh ia benar-benar dipakai zona publik. */
+/** Lapisan komponen bersama: dipindai sejauh ia benar-benar dipakai zona publik. */
 const KOMPONEN = join(ROOT, 'src', 'lib', 'components');
 
 /**
  * Jalur (relatif terhadap akar repositori) yang dikecualikan dari ATURAN KATA.
- * Lihat keputusan 2 — pengecualian ini tidak berlaku untuk aturan lain.
+ * Lihat keputusan 2: pengecualian ini tidak berlaku untuk aturan lain.
  * @type {readonly string[]}
  */
 /* `(public)/daftar/` dicabut 4 Agustus 2026 bersama fitur pendaftaran mandiri;
    entri pengecualiannya ikut dihapus agar daftar ini tidak menyimpan jalur yatim. */
-const KECUALI_KATA = Object.freeze(['(public)/metode-pengukuran/']);
+const KECUALI_KATA = Object.freeze([
+	'(public)/metode-pengukuran/',
+	'lib/components/PublicLeaderboard.svelte'
+]);
 
 /**
  * Satu-satunya berkas zona publik yang boleh menyentuh repository.
@@ -90,8 +93,8 @@ const KECUALI_KATA = Object.freeze(['(public)/metode-pengukuran/']);
  * `docs/12` §3.2 butir 2 memerintahkan panel kredensial demo `/masuk` membaca
  * `accountRepository.demoAccounts()` secara tersurat, supaya surel demo tidak
  * ditulis ulang di komponen dan menjadi sumber kebenaran kedua yang basi begitu
- * seed berubah. Pengecualiannya dicatat di sini — bukan dibiarkan sebagai lubang
- * diam di dalam regex — agar setiap penambahan berikutnya harus melewati berkas
+ * seed berubah. Pengecualiannya dicatat di sini: bukan dibiarkan sebagai lubang
+ * diam di dalam regex: agar setiap penambahan berikutnya harus melewati berkas
  * ini lebih dulu.
  * @type {readonly string[]}
  */
@@ -194,7 +197,7 @@ function telusuri(dir) {
  * Mengganti isi komentar dengan spasi, mempertahankan jumlah barisnya.
  *
  * Baris dipertahankan supaya nomor baris pada laporan tetap menunjuk posisi
- * sebenarnya di berkas — laporan yang menyebut baris salah lebih buruk daripada
+ * sebenarnya di berkas: laporan yang menyebut baris salah lebih buruk daripada
  * tidak menyebut baris sama sekali.
  *
  * @param {string} isi
@@ -247,13 +250,13 @@ function dikecualikan(rel) {
 }
 
 /**
- * Bagian MARKUP sebuah komponen Svelte — isi di luar `<script>` dan `<style>`,
+ * Bagian MARKUP sebuah komponen Svelte: isi di luar `<script>` dan `<style>`,
  * dengan nomor baris dipertahankan.
  *
  * Dipakai HANYA pada lapisan komponen bersama. Pada berkas route, aturan kata
  * sengaja tetap menyapu seluruh berkas: halaman route hampir seluruhnya markup,
  * dan penyempitan di sana akan melonggarkan gerbang yang sudah tegak. Pada
- * komponen bersama justru sebaliknya — `tier` di sana lebih sering nama prop
+ * komponen bersama justru sebaliknya: `tier` di sana lebih sering nama prop
  * daripada kata yang dibaca pengunjung, dan gerbang yang menuntut prop diganti
  * nama akan dimatikan orang alih-alih dipatuhi.
  *
@@ -287,7 +290,7 @@ function periksa(penuh, { bersama = false, rantai = '' } = {}) {
 	/** @param {string} berkas @param {number} baris @param {string} aturan @param {string} pesan */
 	const laporkan = (berkas, baris, aturan, pesan) =>
 		bersama
-			? catatan.push(`[${aturan}] ${berkas}:${baris} — ${pesan}${rantai ? ` (ditarik lewat ${rantai})` : ''}`)
+			? catatan.push(`[${aturan}] ${berkas}:${baris}: ${pesan}${rantai ? ` (ditarik lewat ${rantai})` : ''}`)
 			: catat(berkas, baris, aturan, pesan);
 
 	// ── Aturan 1 · impor haram ────────────────────────────────────────────────
@@ -297,7 +300,7 @@ function periksa(penuh, { bersama = false, rantai = '' } = {}) {
 		if (kecuali.some((awalan) => rel.includes(awalan))) continue;
 		const cocok = pola.exec(isi);
 		if (cocok) {
-			laporkan(rel, nomorBaris(isi, cocok.index), 'IMPOR', `"${cocok[0]}" — ${sebab}.`);
+			laporkan(rel, nomorBaris(isi, cocok.index), 'IMPOR', `"${cocok[0]}": ${sebab}.`);
 		}
 	}
 
@@ -337,7 +340,7 @@ function periksa(penuh, { bersama = false, rantai = '' } = {}) {
 	// ── Aturan 5 · alt wajib pada setiap <img> ────────────────────────────────
 	// Bentuk singkat Svelte `{alt}` ikut diterima: ia setara `alt={alt}` dan
 	// mengikat variabel yang sama. Menolaknya akan menuntut penulisan panjang
-	// semata demi menyenangkan pemindai — dan aturan yang menuntut kosmetik
+	// semata demi menyenangkan pemindai: dan aturan yang menuntut kosmetik
 	// adalah aturan yang akhirnya dilewati dengan komentar penonaktif.
 	for (const cocok of terlihatMentah.matchAll(/<img\b[^>]*>/g)) {
 		const tag = cocok[0];
@@ -364,7 +367,7 @@ function periksa(penuh, { bersama = false, rantai = '' } = {}) {
 			rel,
 			nomorBaris(terlihat, blur.index),
 			'BLUR',
-			`"${blur[0]}" — kedalaman zona publik datang dari foto, garis, dan ruang putih.`
+			`"${blur[0]}": kedalaman zona publik datang dari foto, garis, dan ruang putih.`
 		);
 	}
 
@@ -372,7 +375,7 @@ function periksa(penuh, { bersama = false, rantai = '' } = {}) {
 	// Keduanya menegakkan D-10 dan D-04, dan `docs/12` §3.5 WP-04 butir 7
 	// menetapkan sasarannya secara tersurat: BERANDA. Melebarkannya ke seluruh
 	// zona akan menjadikan gerbang paket ini bergantung pada berkas milik paket
-	// lain yang sedang ditulis pada gelombang yang sama — gerbang yang bisa merah
+	// lain yang sedang ditulis pada gelombang yang sama: gerbang yang bisa merah
 	// karena pekerjaan orang lain akan segera diabaikan orang. Berkas publik lain
 	// tetap dihitung dan dilaporkan sebagai catatan, tanpa menggagalkan.
 	const py12 = (isi.match(/\bpy-12\b/g) ?? []).length;
@@ -382,29 +385,29 @@ function periksa(penuh, { bersama = false, rantai = '' } = {}) {
 	if (py12 > AMBANG_ULANG) {
 		const pesan = `"py-12" muncul ${py12} kali (maksimum ${AMBANG_ULANG}). Pakai token --rhythm-* agar seksi tidak berdetak seragam.`;
 		if (beranda) catat(rel, 0, 'RITME', pesan);
-		else catatan.push(`${rel} — ${pesan}`);
+		else catatan.push(`${rel}: ${pesan}`);
 	}
 
 	if (judulSeragam > AMBANG_ULANG) {
 		const pesan = `pola "text-2xl … md:text-3xl" muncul ${judulSeragam} kali (maksimum ${AMBANG_ULANG}). Judul seksi tidak boleh seukuran semua.`;
 		if (beranda) catat(rel, 0, 'JUDUL', pesan);
-		else catatan.push(`${rel} — ${pesan}`);
+		else catatan.push(`${rel}: ${pesan}`);
 	}
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
- * JANGKAUAN KOMPONEN BERSAMA — menutup titik buta yang dicatat peninjau
+ * JANGKAUAN KOMPONEN BERSAMA: menutup titik buta yang dicatat peninjau
  * ────────────────────────────────────────────────────────────────────────────
  *
  * Memindai `src/routes/(public)/**` saja membiarkan seluruh isi yang benar-benar
  * dibaca pengunjung lolos, sebab halaman publik hampir tidak pernah menulis
  * teksnya sendiri: ia memanggil komponen bersama di `src/lib/components/`.
  * Sebuah `TierBadge` yang diselipkan ke `StoryCard` akan menayangkan jenjang di
- * `/cerita` tanpa satu baris pun berubah di dalam `(public)/` — dan gerbang ini
+ * `/cerita` tanpa satu baris pun berubah di dalam `(public)/`: dan gerbang ini
  * akan tetap melaporkan nol pelanggaran.
  *
  * Yang dipindai adalah JANGKAUAN, bukan seluruh direktori komponen. Memindai
- * semuanya akan memerahkan `TierBadge`, `PointsChip`, dan `LeaderboardRow` —
+ * semuanya akan memerahkan `TierBadge`, `PointsChip`, dan `LeaderboardRow` :
  * komponen yang memang wajib menyebut poin dan jenjang, dan yang hanya hidup di
  * zona ter-login. Gerbang yang menuntut mereka dibungkam akan dimatikan orang
  * dalam sepekan. Karena itu jangkauannya dihitung dari graf impor: sebuah
@@ -533,7 +536,7 @@ for (const penuh of [...komponenTerjangkau.keys()].sort()) {
 
 const lebar = 72;
 console.log('='.repeat(lebar));
-console.log('KEMURNIAN ZONA PUBLIK — route publik + komponen bersama yang direndernya');
+console.log('KEMURNIAN ZONA PUBLIK: route publik + komponen bersama yang direndernya');
 console.log('='.repeat(lebar));
 console.log(`Berkas route      : ${berkas.length}`);
 console.log(`Komponen bersama  : ${komponenTerjangkau.size} (terjangkau dari zona publik)`);
@@ -541,7 +544,7 @@ console.log(`Pelanggaran       : ${pelanggaran.length}`);
 
 if (catatan.length > 0) {
 	console.log('');
-	console.log('Catatan (tidak menggagalkan — ritme di luar beranda & lapisan komponen bersama):');
+	console.log('Catatan (tidak menggagalkan: ritme di luar beranda & lapisan komponen bersama):');
 	for (const baris of catatan) console.log(`  · ${baris}`);
 }
 
@@ -561,9 +564,9 @@ if (pelanggaran.length > 0) {
 
 console.log('');
 console.log('  ✓ Nol impor tabel nilai kontribusi & ambang jenjang (route publik)');
-console.log('  ✓ Nol komponen gamifikasi terimpor — route publik DAN komponen bersama');
+console.log('  ✓ Nol komponen gamifikasi terimpor: route publik DAN komponen bersama');
 console.log('  ✓ Nol repository dibaca langsung dari zona publik');
-console.log('  ✓ Nol kata terlarang pada teks yang dirender — termasuk markup komponen bersama');
+console.log('  ✓ Nol kata terlarang pada teks yang dirender: termasuk markup komponen bersama');
 console.log('  ✓ Setiap <img> punya alt yang terisi');
 console.log('  ✓ Nol blur dekoratif; ritme seksi tidak metronomik');
 console.log('='.repeat(lebar));

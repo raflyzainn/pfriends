@@ -1,5 +1,5 @@
 /**
- * BARREL KOMPONEN EDITORIAL — satu titik impor untuk sistem visual zona publik.
+ * BARREL KOMPONEN EDITORIAL: satu titik impor untuk sistem visual zona publik.
  *
  * Halaman cukup menulis:
  *   import { EditorialHero, SectionRule, StorySpread } from '$lib/components/editorial';
@@ -9,11 +9,11 @@
  * `/cerita`), sehingga menaruhnya di subdirektori "editorial" akan salah alamat.
  *
  * Pemeta `view-model.js` ikut di-reexport supaya pemanggil tidak perlu dua jalur
- * impor untuk satu daftar cerita — dan supaya hanya ada SATU implementasi
+ * impor untuk satu daftar cerita: dan supaya hanya ada SATU implementasi
  * `eventCardVM`/`storyVM` di seluruh proyek.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak export komponen FINAL
- * @see docs/11-VISUAL-DIRECTION.md — §8 komponen visual baru
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak export komponen FINAL
+ * @see docs/11-VISUAL-DIRECTION.md: §8 komponen visual baru
  */
 
 export { default as EditorialHero } from './EditorialHero.svelte';

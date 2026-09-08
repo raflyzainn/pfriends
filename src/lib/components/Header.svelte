@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * Header — bar atas aplikasi.
+	 * Header: bar atas aplikasi.
 	 *
 	 * Props (seluruhnya opsional):
 	 * @prop {() => void} onMenuToggle
@@ -14,7 +14,7 @@
 	 * @prop {string} exitHref          Halaman publik tujuan sesudah keluar.
 	 *
 	 * Saldo PK dan KT selalu terlihat di setiap halaman. Saldo yang terlihat
-	 * adalah pengingat progres paling murah yang bisa dibangun — pengguna tidak
+	 * adalah pengingat progres paling murah yang bisa dibangun: pengguna tidak
 	 * perlu membuka halaman lain untuk tahu posisinya.
 	 *
 	 * TIGA PERUBAHAN V2:
@@ -22,11 +22,11 @@
 	 * 1. **`profileHref` & `notificationHref` menjadi prop.** Sebelumnya keduanya
 	 *    di-hard-code ke `/awardee/*`. Dengan tiga peran hidup, seorang verifikator
 	 *    yang menekan lonceng atau avatarnya akan dilempar ke zona Awardee dan
-	 *    ditolak `ZoneGuard`-nya sendiri — kegagalan yang tidak akan tertangkap
+	 *    ditolak `ZoneGuard`-nya sendiri: kegagalan yang tidak akan tertangkap
 	 *    satu gerbang pun karena tautannya memang sah.
 	 *
 	 * 2. **`backdrop-blur-md` DICABUT.** Kedalaman datang dari foto, garis, dan
-	 *    ruang putih — tidak pernah dari blur (prinsip P-4, cacat D-01).
+	 *    ruang putih: tidak pernah dari blur (prinsip P-4, cacat D-01).
 	 *    Penggantinya latar putih penuh dengan hairline `ink-200`.
 	 *
 	 * 3. **Saldo PK/KT hanya muncul bila datanya dioper.** Zona publik memanggil
@@ -39,21 +39,21 @@
 	 *    gelombang ini, zona Awardee tidak punya jalan keluar sama sekali: tidak
 	 *    di header, tidak di bilah ponsel, tidak di halaman profil. Peraga yang
 	 *    masuk sebagai Awardee terkunci di sana sampai ia menghapus data situs
-	 *    lewat DevTools — dan itu mematikan justru peragaan alur tiga peran
+	 *    lewat DevTools: dan itu mematikan justru peragaan alur tiga peran
 	 *    (PO-4), alur yang paling ingin ditunjukkan di ruang rapat. Tombol
 	 *    "Keluar" karena itu BERLABEL dan BERBINGKAI, bukan ikon telanjang: yang
 	 *    dicari orang pada layar asing adalah kata, bukan glyph.
 	 *
-	 * 5. **Komponen ini kini mengimpor store sesi — pengecualian yang disengaja.**
+	 * 5. **Komponen ini kini mengimpor store sesi: pengecualian yang disengaja.**
 	 *    Aturan D-6 menetapkan `ZoneGuard` sebagai satu-satunya komponen bersama
 	 *    yang boleh menyentuh `session`. Header adalah pengecualian kedua, dengan
 	 *    dua alasan yang keduanya harus benar sebelum aturan itu ditawar:
 	 *    (a) `src/routes/(public)/+layout.svelte` menyatakan tersurat bahwa
-	 *        Header TIDAK dipakai di zona publik — komponen ini hanya hidup di
+	 *        Header TIDAK dipakai di zona publik: komponen ini hanya hidup di
 	 *        zona ter-login, jadi tidak ada pemakai yang "tanpa sesi";
 	 *    (b) keluar adalah aksi sesi. Mengopernya lewat prop berarti tiga layout
 	 *        zona harus mengingat memasangnya, dan zona yang lupa akan kembali
-	 *        menjadi zona tanpa jalan keluar — persis cacat yang sedang ditutup.
+	 *        menjadi zona tanpa jalan keluar: persis cacat yang sedang ditutup.
 	 *    Prop `user` tetap yang menentukan tombolnya dirender atau tidak, jadi
 	 *    pemanggil tanpa sesi tetap mendapat header tanpa kontrol sesi.
 	 *
@@ -61,7 +61,7 @@
 	 *    efek yang melempar tamu ke `/masuk?next=…` begitu sesi berakhir. Bila
 	 *    sesi dibersihkan lebih dulu, kedua pengalihan berlomba dan pengguna
 	 *    mendarat di gerbang login dengan `?next=` milik zona yang baru saja ia
-	 *    tinggalkan — bukan di halaman publik. Karena itu urutannya: pindah ke
+	 *    tinggalkan: bukan di halaman publik. Karena itu urutannya: pindah ke
 	 *    halaman publik sampai selesai, baru bersihkan sesi. `replaceState`
 	 *    dipakai supaya tombol kembali tidak menuntun ke zona yang sudah tertutup.
 	 *
@@ -70,8 +70,8 @@
 	 *    gulir horizontal. Yang menyusut adalah tanda identitas yang sudah
 	 *    ber-`truncate`, bukan kontrol yang harus tetap dapat ditekan.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 Header { …, profileHref, notificationHref, roleLabel }
-	 * @see docs/11-VISUAL-DIRECTION.md — §9 baris Header
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 Header { …, profileHref, notificationHref, roleLabel }
+	 * @see docs/11-VISUAL-DIRECTION.md: §9 baris Header
 	 */
 	import { goto } from '$app/navigation';
 	import Avatar from './Avatar.svelte';
@@ -105,7 +105,7 @@
 	/**
 	 * Mengakhiri sesi dan mengantar pengguna ke halaman publik.
 	 *
-	 * Urutannya disengaja — lihat butir 6 pada catatan berkas. `finally` dipakai
+	 * Urutannya disengaja: lihat butir 6 pada catatan berkas. `finally` dipakai
 	 * agar sesi tetap dibersihkan sekalipun navigasinya gagal: sesi yang tertinggal
 	 * setelah seseorang menekan "Keluar" adalah kegagalan yang jauh lebih buruk
 	 * daripada mendarat di halaman yang keliru.
@@ -150,7 +150,7 @@
 				<span
 					class="block truncate font-sans text-[17px] leading-none font-extrabold tracking-[-0.02em] text-heading"
 				>
-					PFfriends
+					PFriends
 				</span>
 				<span class="label-micro mt-1 hidden leading-tight sm:block">
 					{roleLabel || 'Pertamina Foundation'}
@@ -174,13 +174,13 @@
 				href={notificationHref}
 				class="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-800"
 				aria-label={notificationCount > 0
-					? `Kabar PFfriends, ${teksLencana} belum dibaca`
-					: 'Kabar PFfriends'}
+					? `Kabar PFriends, ${teksLencana} belum dibaca`
+					: 'Kabar PFriends'}
 			>
 				<Icon path={ICONS.bell} size={20} />
 				{#if notificationCount > 0}
 					<!-- Latar #B91820 (pertamina-red-ink), BUKAN #ED1C24. Angka lencana ini
-					     adalah TEKS 10 px, dan putih di atas merah polos hanya 4.38:1 —
+					     adalah TEKS 10 px, dan putih di atas merah polos hanya 4.38:1 :
 					     gagal AA. #ED1C24 tetap sah untuk bar dan isian, tidak untuk glyph
 					     (docs/11 §10.4, aturan emas docs/08 §0.1). -->
 					<span
@@ -196,14 +196,14 @@
 			</a>
 
 			<!-- Kontrak G5: setiap zona ter-login punya jalan keluar yang berlabel dan
-			     berada di tempat yang sama. `data-logout` adalah kaitan bagi skrip e2e —
+			     berada di tempat yang sama. `data-logout` adalah kaitan bagi skrip e2e :
 			     atribut, bukan kalimat, supaya deteksinya tidak basi saat teksnya
 			     diperbaiki (pola yang sama dipakai `ZoneGuard`). -->
 			<button
 				type="button"
 				data-logout
 				class="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-control border border-ink-200 bg-surface px-2.5 text-sm font-semibold text-ink-700 transition-colors hover:border-ink-300 hover:bg-ink-50 hover:text-heading disabled:opacity-60"
-				aria-label="Keluar dari PFfriends"
+				aria-label="Keluar dari PFriends"
 				disabled={sedangKeluar}
 				onclick={keluar}
 			>
@@ -212,7 +212,7 @@
 			</button>
 		{:else}
 			<!-- Latar #B91820 (pertamina-red-ink), BUKAN #ED1C24: putih di atas merah
-			     polos hanya 4.38 pada teks 14px semibold — di bawah ambang AA
+			     polos hanya 4.38 pada teks 14px semibold: di bawah ambang AA
 			     (docs/11 §10.4). #ED1C24 tetap dipakai untuk bar, bukan untuk glyph. -->
 			<a
 				href="/masuk"

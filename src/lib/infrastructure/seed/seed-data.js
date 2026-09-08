@@ -1,10 +1,10 @@
 /**
- * PEMBANGKIT DATA DEMO PFRIENDS — deterministik.
+ * PEMBANGKIT DATA DEMO PFRIENDS: deterministik.
  *
  * Tanggung jawab: membangkitkan seluruh isi basis data demo dari satu benih tetap,
  * sehingga dua kali menjalankan aplikasi menghasilkan angka yang persis sama.
  *
- * ATURAN PALING PENTING DI BERKAS INI — konsistensi poin.
+ * ATURAN PALING PENTING DI BERKAS INI: konsistensi poin.
  * Riwayat `PointActivity` dibangkitkan LEBIH DULU, lalu `points` awardee diisi
  * dengan hasil penjumlahannya. Tidak pernah sebaliknya. Alasannya menentukan
  * kredibilitas seluruh demo: dasbor awardee menampilkan total poin, halaman riwayat
@@ -14,14 +14,14 @@
  *
  * Distribusi tier yang mengerucut diperoleh dengan cara yang sama jujurnya: tiap
  * awardee diberi TARGET tier lebih dulu, lalu aksi ditarik satu per satu sampai
- * totalnya jatuh di rentang tier tersebut — dan angka yang dipakai adalah jumlah
+ * totalnya jatuh di rentang tier tersebut: dan angka yang dipakai adalah jumlah
  * sebenarnya dari aksi-aksi itu.
  *
  * Seluruh rentang tanggal berada di Januari–Juli 2026 mengikuti timeline Hal 7,
  * dengan tanggal acuan tetap 20 Juli 2026.
  *
- * @see docs/09-BUILD-CONTRACT.md — §6 Aturan seed data
- * @see docs/00-SOURCE-BRIEF.md — Hal 7 Timeline, Hal 11 Skor, Hal 12 Tier
+ * @see docs/09-BUILD-CONTRACT.md: §6 Aturan seed data
+ * @see docs/00-SOURCE-BRIEF.md: Hal 7 Timeline, Hal 11 Skor, Hal 12 Tier
  */
 
 import { ActivityType, aturanSkor, poinUntuk } from '../../domain/constants/scoring-table.js';
@@ -91,13 +91,13 @@ const MS_PER_DAY = 86_400_000;
 /** Hari ke-0 kalender seed: 1 Januari 2026. */
 const HARI_NOL = Date.UTC(2026, 0, 1, 0 - WIB_OFFSET);
 
-/** Indeks hari untuk 20 Juli 2026 — batas atas seluruh peristiwa yang sudah lewat. */
+/** Indeks hari untuk 20 Juli 2026: batas atas seluruh peristiwa yang sudah lewat. */
 const HARI_INI = Math.round((TODAY.getTime() - HARI_NOL) / MS_PER_DAY);
 
 /** Indeks hari 1 Mei 2026, awal musim gamifikasi berjalan. */
 const HARI_AWAL_MUSIM = 120;
 
-/** Indeks hari 1 Juli 2026 — bulan berjalan pada dasbor KPI. */
+/** Indeks hari 1 Juli 2026: bulan berjalan pada dasbor KPI. */
 const HARI_AWAL_BULAN_INI = 181;
 
 /** Jam paling pagi sebuah aktivitas dicatat (WIB). */
@@ -112,7 +112,7 @@ const JAM_SELESAI = 20;
  * Jam sengaja dibatasi 08.00–20.00 WIB (01.00–13.00 UTC) supaya komponen tanggal
  * lokal dan UTC selalu jatuh pada hari kalender yang sama. Tanpa batas itu, entri
  * yang dibuat menjelang tengah malam akan berpindah bulan ketika peramban pemirsa
- * memakai zona waktu berbeda — dan chart tren bulanan ikut bergeser.
+ * memakai zona waktu berbeda: dan chart tren bulanan ikut bergeser.
  *
  * @param {number} dayIndex Indeks hari sejak 1 Januari 2026.
  * @param {number} hour Jam WIB, 8..20.
@@ -153,7 +153,7 @@ function jamAcak(rng) {
 /**
  * Indeks hari kalender seed untuk sebuah waktu nyata.
  *
- * Kalender seed berpangkal pada 1 Januari 2026 dan indeksnya boleh melewati 365 —
+ * Kalender seed berpangkal pada 1 Januari 2026 dan indeksnya boleh melewati 365 :
  * `tanggal()` hanya menjumlahkan hari, sehingga 2027 dan seterusnya terbentuk
  * dengan sendirinya. Itulah yang membuat agenda bergulir dapat memakai mesin
  * tanggal yang sama persis dengan seluruh data historis.
@@ -170,7 +170,7 @@ function indeksHari(pada) {
  * ini ke depan, terhitung dari saat data demo dipasang.
  *
  * Angka ini adalah kontrak, bukan preferensi. Kalender publik yang kosong berarti
- * PO-1 berhenti terpenuhi — dan cara ia berhenti adalah yang paling berbahaya:
+ * PO-1 berhenti terpenuhi: dan cara ia berhenti adalah yang paling berbahaya:
  * tanpa satu pun galat, tanpa satu pun gerbang berubah warna, pada hari yang tidak
  * ada dalam kalender siapa pun.
  *
@@ -186,7 +186,7 @@ export const CAKRAWALA_AGENDA_MINIMUM_HARI = 90;
 export const JUMLAH_AWARDEE = 60;
 
 /**
- * Rentang poin tiap tier, DITURUNKAN dari `TIER_TABLE` — bukan ditulis ulang.
+ * Rentang poin tiap tier, DITURUNKAN dari `TIER_TABLE`: bukan ditulis ulang.
  * Batas atas sebuah tier adalah ambang tier berikutnya dikurangi satu; tier
  * tertinggi memakai dua kali ambangnya sendiri sebagai langit-langit yang wajar
  * agar Champion tetap terlihat menonjol tanpa menjadi angka yang mustahil.
@@ -222,8 +222,8 @@ export const RENCANA_TIER = Object.freeze([
  *
  * Awardee bertier tinggi bukan awardee yang menekan tombol lebih banyak, melainkan
  * yang melakukan hal yang lebih berat: memimpin aksi, menjadi mentor, mengisi sesi.
- * Bobot inilah yang mewujudkan pesan Hal 11 — *points should reward meaningful
- * contribution, not spammy activity* — pada data demo. Tanpa pembedaan ini seorang
+ * Bobot inilah yang mewujudkan pesan Hal 11: *points should reward meaningful
+ * contribution, not spammy activity*: pada data demo. Tanpa pembedaan ini seorang
  * Champion akan tampak sebagai orang yang membuka 300 kabar mingguan.
  *
  * @type {Readonly<Record<string, readonly {item: string, weight: number}[]>>}
@@ -290,7 +290,7 @@ const JUMLAH_SOBI = 40;
 
 /**
  * Status keanggotaan selain AKTIF, beserta jumlahnya. Seluruhnya hanya diberikan
- * kepada awardee bertier Newcomer — akun yang belum terverifikasi atau sedang
+ * kepada awardee bertier Newcomer: akun yang belum terverifikasi atau sedang
  * ditangguhkan tidak masuk akal memiliki ratusan poin kontribusi.
  * @type {readonly {status: string, count: number}[]}
  */
@@ -304,7 +304,7 @@ const STATUS_NON_AKTIF = Object.freeze([
 
 /**
  * Menyusun daftar tier target untuk 60 awardee, lalu mengacaknya agar urutan id
- * tidak berkorelasi dengan tier — papan peringkat yang isinya persis berurutan
+ * tidak berkorelasi dengan tier: papan peringkat yang isinya persis berurutan
  * dengan nomor awardee langsung terbaca sebagai data buatan.
  * @param {import('./rng.js').Rng} rng
  * @returns {string[]}
@@ -323,7 +323,7 @@ function daftarTierTarget(rng) {
  *
  * Entity `Awardee` sengaja belum dikonstruksi di sini: poin, koin, badge, dan
  * streak baru diketahui setelah riwayat aktivitas dibangkitkan. Membangun entity
- * dua kali — sekali kosong lalu sekali penuh — hanya menyisakan peluang keduanya
+ * dua kali: sekali kosong lalu sekali penuh: hanya menyisakan peluang keduanya
  * lepas sinkron.
  *
  * @param {import('./rng.js').Rng} rng
@@ -359,7 +359,7 @@ function bangkitkanProfilAwardee(rng) {
 		const kota = pick(rng, KOTA);
 		const bidang = pick(rng, BIDANG_USAHA);
 
-		// Awardee bertier tinggi bergabung lebih awal — tier adalah hasil waktu dan
+		// Awardee bertier tinggi bergabung lebih awal: tier adalah hasil waktu dan
 		// kontribusi, bukan sesuatu yang muncul dalam sepekan.
 		const rankTier = tierUntukLevel(plannedTier).rank;
 		const batasGabung = Math.max(10, 96 - rankTier * 22);
@@ -412,8 +412,8 @@ function bangkitkanProfilAwardee(rng) {
 /**
  * Perkenalan singkat untuk direktori alumni.
  *
- * Disusun dari data yang memang dimiliki awardee — kampus, kota, pekerjaan, usaha,
- * keahlian — supaya tidak ada kalimat yang mengklaim hal yang tidak tercatat di
+ * Disusun dari data yang memang dimiliki awardee: kampus, kota, pekerjaan, usaha,
+ * keahlian: supaya tidak ada kalimat yang mengklaim hal yang tidak tercatat di
  * mana pun. Bio yang mengarang pencapaian akan berbenturan dengan angka pada
  * kartu yang sama.
  *
@@ -446,7 +446,7 @@ function susunBio(profil) {
  * `contentId` dipisahkan dari id kabar dengan sengaja: KPI-02 menghitung ASET
  * KONTEN sedangkan KPI-03 menghitung PERISTIWA PENGIRIMAN. Satu materi yang
  * dikirim ulang ke kanal berbeda menambah frekuensi diseminasi tetapi tidak
- * menambah volume konten — dan itu hanya dapat dibedakan bila keduanya memang
+ * menambah volume konten: dan itu hanya dapat dibedakan bila keduanya memang
  * disimpan sebagai dua hal.
  *
  * @type {readonly Record<string, any>[]}
@@ -464,7 +464,7 @@ const NASKAH_KABAR = Object.freeze([
 		day: 26, contentId: 'KNT-2026-01-B', channel: BroadcastChannel.WA_KOMUNITAS,
 		title: 'Validasi Penerima Manfaat Tahap Pertama Selesai',
 		summary: 'Sebanyak tiga chapter angkatan telah selesai divalidasi dan siap masuk ke tahap pembentukan grup komunitas.',
-		body: 'Proses pencocokan data dengan registry PFprestasi dan PFpreneur untuk chapter PF 10, PF 11, dan PF 12 telah rampung. Data yang divalidasi meliputi nama, angkatan, kampus atau nama usaha, serta kontak yang masih aktif.\n\nAnggota yang datanya belum lengkap akan dihubungi terpisah oleh penanggung jawab chapter masing-masing. Tidak ada data yang dipublikasikan pada tahap ini — seluruh proses masih berada di lingkup internal Pertamina Foundation.',
+		body: 'Proses pencocokan data dengan registry PFprestasi dan PFpreneur untuk chapter PF 10, PF 11, dan PF 12 telah rampung. Data yang divalidasi meliputi nama, angkatan, kampus atau nama usaha, serta kontak yang masih aktif.\n\nAnggota yang datanya belum lengkap akan dihubungi terpisah oleh penanggung jawab chapter masing-masing. Tidak ada data yang dipublikasikan pada tahap ini: seluruh proses masih berada di lingkup internal Pertamina Foundation.',
 		lightCta: 'Konfirmasi chapter Anda kepada penanggung jawab angkatan.',
 		ctaLink: 'https://pertaminafoundation.org/pfriends/validasi'
 	},
@@ -473,7 +473,7 @@ const NASKAH_KABAR = Object.freeze([
 		title: 'Survei Kebutuhan Anggota: Apa yang Paling Anda Butuhkan dari Komunitas?',
 		summary: 'Survei singkat tujuh pertanyaan untuk menentukan prioritas program upskilling dan mentoring sepanjang 2026.',
 		body: 'Kami tidak ingin menyusun kalender kegiatan berdasarkan tebakan. Survei ini menanyakan tiga hal pokok: keterampilan apa yang paling ingin Anda pelajari, kendala terbesar yang sedang Anda hadapi, dan bentuk pertemuan seperti apa yang paling mungkin Anda ikuti.\n\nHasil survei akan dibuka kembali kepada komunitas dalam bentuk ringkasan agregat, tanpa menyebut identitas responden.',
-		lightCta: 'Isi survei — kurang dari empat menit.',
+		lightCta: 'Isi survei: kurang dari empat menit.',
 		ctaLink: 'https://pertaminafoundation.org/pfriends/survei-kebutuhan'
 	},
 	{
@@ -536,7 +536,7 @@ const NASKAH_KABAR = Object.freeze([
 		day: 152, contentId: 'KNT-2026-06-A', channel: BroadcastChannel.SEMUA,
 		title: 'Gamifikasi Pfriends Aktif: Begini Poin Kontribusi Dihitung',
 		summary: 'Sembilan jenis aksi kini bernilai poin, dari membaca kabar mingguan sampai memimpin aksi lapangan.',
-		body: 'Poin Kontribusi bukan alat lomba. Ia dipakai untuk satu hal: mengenali siapa saja yang selama ini menggerakkan komunitas tanpa pernah diminta. Tabel poinnya terbuka dan dapat Anda periksa sendiri di pusat aksi.\n\nAksi yang bernilai besar adalah yang memang berat dan berdampak — memimpin aksi lapangan, menjadi mentor, mengisi sesi. Membaca kabar tetap dihargai, tetapi tidak akan pernah bisa dikumpulkan menjadi tumpukan poin: setiap kabar hanya dihitung satu kali seumur hidup.',
+		body: 'Poin Kontribusi bukan alat lomba. Ia dipakai untuk satu hal: mengenali siapa saja yang selama ini menggerakkan komunitas tanpa pernah diminta. Tabel poinnya terbuka dan dapat Anda periksa sendiri di pusat aksi.\n\nAksi yang bernilai besar adalah yang memang berat dan berdampak: memimpin aksi lapangan, menjadi mentor, mengisi sesi. Membaca kabar tetap dihargai, tetapi tidak akan pernah bisa dikumpulkan menjadi tumpukan poin: setiap kabar hanya dihitung satu kali seumur hidup.',
 		lightCta: 'Buka pusat aksi dan lihat tabel poinnya.',
 		ctaLink: 'https://pertaminafoundation.org/pfriends/aksi'
 	},
@@ -545,7 +545,7 @@ const NASKAH_KABAR = Object.freeze([
 		title: 'Kelas Upskilling Juni: Fotografi Produk dengan Ponsel',
 		summary: 'Kelas praktik dua jam khusus untuk pelaku usaha binaan, dipandu alumni yang bekerja di bidang desain produk.',
 		body: 'Kelas ini tidak membahas kamera mahal. Seluruh materi memakai ponsel yang sudah Anda punya, cahaya matahari, dan kertas putih seharga beberapa ribu rupiah.\n\nPeserta diminta membawa satu produk untuk difoto langsung selama sesi, lalu hasilnya dibahas bersama. Yang dibahas bukan hanya cara memotret, tetapi juga kesalahan yang paling sering membuat calon pembeli mengurungkan niat.',
-		lightCta: 'Daftar kelas — kuota tiga puluh peserta.',
+		lightCta: 'Daftar kelas: kuota tiga puluh peserta.',
 		ctaLink: 'https://pertaminafoundation.org/pfriends/kelas-foto'
 	},
 	{
@@ -567,7 +567,7 @@ const NASKAH_KABAR = Object.freeze([
 	{
 		day: 191, contentId: 'KNT-2026-07-B', channel: BroadcastChannel.WA_KOMUNITAS,
 		title: 'Halaman Pencapaian Musim Pertama dan Cara Membacanya',
-		summary: 'Capaian kini ditampilkan sebagai perjalanan pribadi — jenjang, lencana, dan jarak menuju jenjang berikutnya.',
+		summary: 'Capaian kini ditampilkan sebagai perjalanan pribadi: jenjang, lencana, dan jarak menuju jenjang berikutnya.',
 		body: 'Membandingkan diri dengan daftar panjang berisi nama orang lain membuat anggota baru selalu berada di dasar tanpa harapan mengejar. Karena itu yang Anda lihat bukan peringkat antar-anggota, melainkan perjalanan Anda sendiri: jenjang saat ini, lencana yang sudah diraih, dan berapa lagi yang dibutuhkan untuk naik.\n\nKontribusi anggota yang memilih tampil anonim tetap dihitung penuh; hanya namanya yang diganti inisial pada tampilan agregat. Pilihan itu ada di pengaturan profil dan dapat diubah kapan saja.',
 		lightCta: 'Lihat perjalanan pencapaian Anda.',
 		ctaLink: 'https://pertaminafoundation.org/pffriends/pencapaian'
@@ -607,7 +607,7 @@ const NASKAH_KABAR = Object.freeze([
 /**
  * Dua puluh agenda Kalender Komunitas (Hal 5 pilar 02).
  *
- * Topiknya diambil dari kebutuhan yang paling sering disebut kedua komunitas —
+ * Topiknya diambil dari kebutuhan yang paling sering disebut kedua komunitas :
  * pemasaran, keuangan usaha, dan keahlian digital untuk Womenpreneur; berbagi
  * karier dan literasi energi untuk alumni Sobat Bumi. Kegiatan yang sudah selesai
  * membawa `outcomeNote` dan lampiran bukti karena Hal 6 menghitung yang
@@ -615,11 +615,11 @@ const NASKAH_KABAR = Object.freeze([
  *
  * Tiga kelompok mengisi daftar ini, dan ketiganya perlu ada sekaligus:
  *
- * 1. **Kegiatan lampau** (`day` < 200) — pemasok KPI-05 dan aksi SESSION_ATTEND.
- * 2. **Tujuh kegiatan mendatang** (`day` 205–260, dua di antaranya luring) —
+ * 1. **Kegiatan lampau** (`day` < 200): pemasok KPI-05 dan aksi SESSION_ATTEND.
+ * 2. **Tujuh kegiatan mendatang** (`day` 205–260, dua di antaranya luring) :
  *    tanpa agenda ke depan, kalender publik dan panel kegiatan pada halaman blog
  *    hanya menampilkan masa lalu, dan komunitas terlihat sudah berhenti berjalan.
- * 3. **Dua usulan** berstatus `DIUSULKAN` ber-`proposedBy` akun awardee — tanpa
+ * 3. **Dua usulan** berstatus `DIUSULKAN` ber-`proposedBy` akun awardee: tanpa
  *    keduanya antrean verifikator kosong pada peragaan, dan larangan menyetujui
  *    usulan sendiri tidak dapat ditunjukkan sama sekali.
  *
@@ -791,7 +791,7 @@ const NASKAH_KEGIATAN = Object.freeze([
 		status: EventStatus.TERJADWAL,
 		slug: 'sharing-mentoring-batch-dua-apa-yang-berbeda',
 		title: 'Sharing Session: Mentoring Batch Dua, Apa yang Kami Ubah',
-		description: 'Evaluasi terbuka batch pertama mentoring lintas komunitas — termasuk empat pasangan yang berhenti di tengah jalan dan alasannya — sebelum batch kedua berjalan penuh.',
+		description: 'Evaluasi terbuka batch pertama mentoring lintas komunitas: termasuk empat pasangan yang berhenti di tengah jalan dan alasannya: sebelum batch kedua berjalan penuh.',
 		speakerName: 'Mentor dan mentee batch pertama',
 		chapterId: '', location: 'Zoom Meeting', kuota: 70
 	},
@@ -802,7 +802,7 @@ const NASKAH_KEGIATAN = Object.freeze([
 		status: EventStatus.DIUSULKAN,
 		slug: 'usulan-kelas-perbaikan-alat-produksi-rumahan',
 		title: 'Usulan: Kelas Perbaikan Ringan Alat Produksi Rumahan',
-		description: 'Usulan anggota chapter PF 11: kelas praktik memperbaiki sendiri kerusakan ringan mesin jahit, penggorengan listrik, dan pengemas plastik — tiga alat yang paling sering menghentikan produksi usaha mikro selama berhari-hari.',
+		description: 'Usulan anggota chapter PF 11: kelas praktik memperbaiki sendiri kerusakan ringan mesin jahit, penggorengan listrik, dan pengemas plastik: tiga alat yang paling sering menghentikan produksi usaha mikro selama berhari-hari.',
 		speakerName: 'Teknisi bengkel komunitas Yogyakarta',
 		chapterId: 'PF11', location: 'Zoom Meeting', kuota: 35,
 		usulDay: 193, pengusulSeq: 7
@@ -820,7 +820,7 @@ const NASKAH_KEGIATAN = Object.freeze([
 ]);
 
 /* ────────────────────────────────────────────────────────────────────────────
- * 5b. AGENDA BERGULIR — kalender publik yang tidak pernah kedaluwarsa
+ * 5b. AGENDA BERGULIR: kalender publik yang tidak pernah kedaluwarsa
  * ──────────────────────────────────────────────────────────────────────────── */
 
 /**
@@ -830,24 +830,24 @@ const NASKAH_KEGIATAN = Object.freeze([
  * Seluruh naskah di atas memakai kalender BEKU yang berpangkal pada 20 Juli 2026,
  * dan itu tepat: rekap bulanan Januari–Juli, lima KPI Hal 6, dan timeline Hal 7
  * semuanya bertumpu pada tanggal-tanggal itu. Menggeser data historis mengikuti jam
- * nyata akan menggeser setiap draw bilangan acak yang bergantung padanya —
- * `hariCondongBaru()` menerima `HARI_INI` sebagai batas atas — dan total poin
+ * nyata akan menggeser setiap draw bilangan acak yang bergantung padanya :
+ * `hariCondongBaru()` menerima `HARI_INI` sebagai batas atas: dan total poin
  * komunitas 3.234 beserta distribusi tier 22/16/12/7/3 tidak akan bertahan satu
  * pemanggilan pun. Determinisme itu bukan kemewahan; ia yang membuat dua kali
  * pemasangan data demo menghasilkan layar yang sama saat presentasi.
  *
  * Tetapi MASA DEPAN tidak boleh ikut dibekukan. Kegiatan terjadwal terakhir pada
  * kalender beku jatuh pada 16 September 2026; sesudah tanggal itu beranda menulis
- * "Belum ada kegiatan terjadwal" dan tampilan Bulan pada `/kalender` kosong —
+ * "Belum ada kegiatan terjadwal" dan tampilan Bulan pada `/kalender` kosong :
  * tanpa satu pun gerbang berubah warna, karena gerbangnya membandingkan terhadap
  * tanggal acuan yang beku juga. Maka masa lalu tetap beku, masa depan bergulir.
  *
- * Isinya sengaja berupa format yang memang BERULANG — klinik bulanan, orientasi
- * anggota baru, forum mentor — bukan peristiwa sekali seumur hidup. Agenda bergulir
+ * Isinya sengaja berupa format yang memang BERULANG: klinik bulanan, orientasi
+ * anggota baru, forum mentor: bukan peristiwa sekali seumur hidup. Agenda bergulir
  * yang berisi "Temu Nasional 2026" akan menjadi kebohongan pada pemasangan kedua.
  *
  * Offset dipilih 21 sampai 126 hari sehingga cakrawala agenda selalu setidaknya
- * 126 hari — dengan margin nyaman di atas `CAKRAWALA_AGENDA_MINIMUM_HARI`.
+ * 126 hari: dengan margin nyaman di atas `CAKRAWALA_AGENDA_MINIMUM_HARI`.
  *
  * @type {readonly Record<string, any>[]}
  */
@@ -873,7 +873,7 @@ const NASKAH_AGENDA_BERGULIR = Object.freeze([
 	{
 		offsetHari: 63, durasiJam: 2, type: EventType.UPSKILLING,
 		slug: 'kelas-menulis-cerita-dampak-batch-berjalan',
-		title: 'Kelas Menulis Cerita Dampak — Batch Berjalan',
+		title: 'Kelas Menulis Cerita Dampak: Batch Berjalan',
 		description: 'Kelas berkala menyiapkan naskah untuk ruang cerita Pfriends: menyusun hasil terukur, memilih foto yang layak tayang, dan melengkapi persetujuan narasumber sebelum naskah diajukan.',
 		speakerName: 'Tim komunikasi Pertamina Foundation bersama verifikator konten',
 		chapterId: '', location: 'Zoom Meeting', kuota: 45,
@@ -892,7 +892,7 @@ const NASKAH_AGENDA_BERGULIR = Object.freeze([
 		offsetHari: 105, durasiJam: 2, type: EventType.SHARING,
 		slug: 'forum-mentor-dan-mentee-evaluasi-berkala',
 		title: 'Forum Mentor dan Mentee: Evaluasi Berkala',
-		description: 'Forum terbuka pasangan mentoring yang sedang berjalan. Yang dibahas termasuk pasangan yang berhenti di tengah jalan — evaluasi yang hanya memuat keberhasilan tidak memperbaiki apa pun.',
+		description: 'Forum terbuka pasangan mentoring yang sedang berjalan. Yang dibahas termasuk pasangan yang berhenti di tengah jalan: evaluasi yang hanya memuat keberhasilan tidak memperbaiki apa pun.',
 		speakerName: 'Mentor dan mentee gerakan Satu Alumni, Satu Usaha Binaan',
 		chapterId: '', location: 'Google Meet', kuota: 50,
 		pengusulSeq: 0
@@ -913,7 +913,7 @@ const NASKAH_AGENDA_BERGULIR = Object.freeze([
  *
  * Pendaftar dipilih dengan pencacah tetap, BUKAN dengan `rng()`. Satu draw tambahan
  * yang disisipkan sebelum generator buku besar akan menggeser 60 profil dan seluruh
- * distribusi tier sekaligus — dan agenda bergulir dibangkitkan justru supaya
+ * distribusi tier sekaligus: dan agenda bergulir dibangkitkan justru supaya
  * kalender ikut waktu nyata TANPA menyentuh satu angka pun.
  */
 const LANGKAH_PENDAFTAR_BERGULIR = 4;
@@ -926,7 +926,7 @@ const LANGKAH_PENDAFTAR_BERGULIR = 4;
  * Tujuh gerakan kolektif (Hal 5 pilar 03).
  *
  * `esgKey` merujuk entri `ESG_ACTIVITY_MAP` supaya pasangan pilar dan SDG tidak
- * pernah dikarang di berkas ini — taksonomi ESG punya satu sumber, dan seed hanya
+ * pernah dikarang di berkas ini: taksonomi ESG punya satu sumber, dan seed hanya
  * boleh menunjuk ke sana. Gerakan berstatus berjalan atau selesai wajib bertag ESG;
  * itu invarian yang ditegakkan entity `Movement` sendiri.
  *
@@ -1024,7 +1024,7 @@ const NASKAH_GERAKAN = Object.freeze([
  * ──────────────────────────────────────────────────────────────────────────── */
 
 /**
- * Dua puluh dua naskah cerita komunitas — "story bank" Hal 9.
+ * Dua puluh dua naskah cerita komunitas: "story bank" Hal 9.
  *
  * Naskah ditulis utuh, bukan dibangkitkan dari potongan kalimat. Cerita adalah
  * satu-satunya bagian aplikasi yang benar-benar dibaca kata per kata saat demo,
@@ -1036,7 +1036,7 @@ const NASKAH_GERAKAN = Object.freeze([
  *
  * Naskah dipisah menurut keadaan terbitnya. Cerita yang sudah tayang mengisi zona
  * publik, sedangkan cerita yang masih berjalan di alur moderasi mengisi antrean
- * admin dan ruang cerita awardee — dua layar yang butuh isi berbeda dan sama-sama
+ * admin dan ruang cerita awardee: dua layar yang butuh isi berbeda dan sama-sama
  * tidak boleh kosong saat didemokan.
  *
  * @type {readonly Record<string, any>[]}
@@ -1052,11 +1052,11 @@ const CERITA_TERBIT = Object.freeze([
 		outcome: { note: 'Enam belas rumah memperoleh penerangan malam selama minimal enam jam tanpa bahan bakar, dan pengeluaran bulanan untuk solar turun rata-rata Rp180 ribu per rumah.', metric: 'Rumah teraliri listrik surya', value: 16, unit: 'rumah' },
 		body: `Kampung Enggros terletak di seberang teluk, dan satu-satunya cara membawa jeriken solar ke sana adalah dengan perahu. Setiap liter yang sampai di kampung sudah berlipat harganya dibanding di kota, dan ketika ombak sedang besar, pasokan bisa terhenti berhari-hari. Malam hari di kampung ini berarti gelap yang benar-benar gelap, dan anak-anak yang ingin belajar setelah magrib harus berbagi satu lampu minyak dengan seluruh isi rumah.
 
-Kami datang bukan dengan rencana yang sudah jadi. Dua pekan pertama dihabiskan untuk mendata: berapa rumah, berapa jam listrik dibutuhkan tiap malam, dan siapa yang bersedia belajar memasang serta merawat. Pendataan itu mengubah rencana awal kami. Semula kami membayangkan satu instalasi besar terpusat, tetapi warga lebih menginginkan sistem kecil per rumah — alasannya masuk akal, sistem terpusat menuntut kesepakatan pembagian yang rumit dan seorang penjaga tetap yang tidak ada.
+Kami datang bukan dengan rencana yang sudah jadi. Dua pekan pertama dihabiskan untuk mendata: berapa rumah, berapa jam listrik dibutuhkan tiap malam, dan siapa yang bersedia belajar memasang serta merawat. Pendataan itu mengubah rencana awal kami. Semula kami membayangkan satu instalasi besar terpusat, tetapi warga lebih menginginkan sistem kecil per rumah: alasannya masuk akal, sistem terpusat menuntut kesepakatan pembagian yang rumit dan seorang penjaga tetap yang tidak ada.
 
 Pemasangan dikerjakan bersama tujuh warga yang sebelumnya mengikuti pelatihan dua hari. Mereka yang memanjat atap, kami yang mendampingi. Keputusan itu disengaja: instalasi yang dipasang orang luar akan berhenti berfungsi pada kerusakan pertama, sementara instalasi yang dipasang sendiri oleh pemiliknya punya peluang jauh lebih besar untuk bertahan. Tiga bulan setelah pemasangan, dua panel sempat bermasalah dan keduanya diperbaiki warga tanpa memanggil siapa pun.
 
-Yang paling berkesan bukan saat lampu pertama menyala, melainkan percakapan sebulan kemudian. Seorang ibu bercerita bahwa anaknya kini mengerjakan tugas sekolah di rumah, bukan menumpang di balai kampung yang jaraknya sepuluh menit berjalan kaki. Angka penghematan solar memang bisa kami laporkan dengan rapi, tetapi perubahan yang sebenarnya terjadi pada hal-hal kecil semacam itu — dan itu yang paling sulit dimasukkan ke dalam tabel.`
+Yang paling berkesan bukan saat lampu pertama menyala, melainkan percakapan sebulan kemudian. Seorang ibu bercerita bahwa anaknya kini mengerjakan tugas sekolah di rumah, bukan menumpang di balai kampung yang jaraknya sepuluh menit berjalan kaki. Angka penghematan solar memang bisa kami laporkan dengan rapi, tetapi perubahan yang sebenarnya terjadi pada hal-hal kecil semacam itu: dan itu yang paling sulit dimasukkan ke dalam tabel.`
 	},
 	{
 		slug: 'sampah-plastik-menjadi-paving-blok',
@@ -1097,7 +1097,7 @@ Empat bulan kemudian tujuh dari dua belas guru masih menjalankannya. Lima berhen
 		summary: 'Tiga ribu bibit ditanam di Belawan, dan yang dilaporkan bukan jumlah tanamnya melainkan jumlah yang masih hidup enam bulan kemudian.',
 		esgKey: 'aksi_lingkungan_lokal',
 		location: 'Kelurahan Belawan, Medan', peserta: 64, dayIndex: 118,
-		outcome: { note: 'Dari 3.000 bibit yang ditanam, 2.150 masih hidup pada pemantauan bulan keenam — tingkat hidup 72 persen, dengan kematian terbanyak pada titik yang terlalu dekat alur perahu nelayan.', metric: 'Bibit mangrove hidup', value: 2150, unit: 'batang' },
+		outcome: { note: 'Dari 3.000 bibit yang ditanam, 2.150 masih hidup pada pemantauan bulan keenam: tingkat hidup 72 persen, dengan kematian terbanyak pada titik yang terlalu dekat alur perahu nelayan.', metric: 'Bibit mangrove hidup', value: 2150, unit: 'batang' },
 		body: `Ini bukan penanaman mangrove pertama di Belawan. Warga bercerita sudah ada beberapa kegiatan serupa sebelumnya, lengkap dengan spanduk dan foto bersama, tetapi tidak ada yang tahu berapa yang akhirnya tumbuh. Bibit ditanam, rombongan pulang, dan enam bulan kemudian tidak ada yang datang memeriksa. Kalimat itu yang membuat kami mengubah rencana sebelum mulai.
 
 Kami menyanggupi satu hal yang terdengar sepele tetapi ternyata paling berat: memantau selama enam bulan dan melaporkan angkanya apa adanya, termasuk bila hasilnya buruk. Enam tim dibentuk, masing-masing bertanggung jawab atas satu petak, dengan jadwal pemantauan bulanan yang disepakati sejak hari pertama. Setiap tim mencatat jumlah bibit hidup, kondisi daun, dan hal-hal yang mengganggu pertumbuhan.
@@ -1164,7 +1164,7 @@ Pengiriman pertama sebanyak satu koma dua ton berangkat pada Mei. Harganya tiga 
 		outcome: { note: 'Delapan belas peserta menyelesaikan pencatatan digital satu bulan penuh; dua belas di antaranya masih menjalankannya pada bulan ketiga tanpa pendampingan lanjutan.', metric: 'Peserta menyelesaikan pelatihan', value: 18, unit: 'orang' },
 		body: `Kelas ini gagal dua kali sebelum berhasil. Percobaan pertama digelar pukul sepuluh pagi dan hanya empat orang datang. Percobaan kedua pukul dua siang, hasilnya tidak jauh berbeda. Baru ketika kami bertanya langsung kepada calon peserta, jawabannya jelas: pagi dan siang adalah waktu berjualan, dan tidak ada satu pun dari mereka yang bisa meninggalkan warung pada jam itu.
 
-Kelas ketiga digelar pukul delapan malam, setelah sebagian besar warung tutup. Delapan belas orang datang, dan hampir semuanya membawa anak. Kami tidak menyiapkan itu, tetapi ternyata bukan masalah — anak-anak duduk di belakang, dan beberapa yang lebih besar justru membantu orang tuanya mengoperasikan laptop. Sejak itu kami selalu menyediakan meja tambahan di belakang ruangan.
+Kelas ketiga digelar pukul delapan malam, setelah sebagian besar warung tutup. Delapan belas orang datang, dan hampir semuanya membawa anak. Kami tidak menyiapkan itu, tetapi ternyata bukan masalah: anak-anak duduk di belakang, dan beberapa yang lebih besar justru membantu orang tuanya mengoperasikan laptop. Sejak itu kami selalu menyediakan meja tambahan di belakang ruangan.
 
 Materinya sengaja dibuat sesempit mungkin. Kami tidak mengajarkan lembar kerja secara umum, hanya empat hal: mencatat penjualan harian, menjumlahkan otomatis, memisahkan pemasukan per jenis produk, dan membuat satu grafik sederhana. Empat pertemuan, satu topik per pertemuan. Setiap peserta pulang dengan berkas yang sudah berisi data usahanya sendiri, bukan data contoh, dan itu keputusan yang menurut kami paling menentukan.
 
@@ -1200,7 +1200,7 @@ Kami menghabiskan dua pekan mencari tahu mengapa program sebelumnya berhenti. Ja
 
 Rancangan kali ini menempatkan murid sebagai pengelola. Setiap kelas memilih dua petugas yang bertugas selama satu bulan lalu digantikan, sehingga dalam satu tahun ajaran hampir semua murid pernah menjalankannya. Penimbangan dan pencatatan dilakukan murid, guru hanya memeriksa. Buku catatannya sengaja dibuat sederhana agar bisa diisi anak kelas empat: tanggal, jenis, berat, dan nama penyetor.
 
-Enam bulan berjalan, terkumpul seribu dua ratus delapan kilogram sampah bernilai jual. Hasil penjualannya tiga juta empat ratus ribu rupiah, dan penggunaannya diputuskan lewat musyawarah murid — mereka memilih membeli buku bacaan untuk perpustakaan. Yang membuat kami cukup yakin program ini akan bertahan adalah pergantian petugas yang sudah berlangsung enam kali tanpa satu kali pun terputus.`
+Enam bulan berjalan, terkumpul seribu dua ratus delapan kilogram sampah bernilai jual. Hasil penjualannya tiga juta empat ratus ribu rupiah, dan penggunaannya diputuskan lewat musyawarah murid: mereka memilih membeli buku bacaan untuk perpustakaan. Yang membuat kami cukup yakin program ini akan bertahan adalah pergantian petugas yang sudah berlangsung enam kali tanpa satu kali pun terputus.`
 	},
 	{
 		slug: 'kelas-energi-sma-palu',
@@ -1212,7 +1212,7 @@ Enam bulan berjalan, terkumpul seribu dua ratus delapan kilogram sampah bernilai
 		outcome: { note: 'Tiga kelas dengan total 96 siswa mengikuti materi transisi energi; sekolah kemudian memasukkan kunjungan ke instalasi energi terbarukan setempat ke dalam agenda semester berikutnya.', metric: 'Siswa mengikuti kelas', value: 96, unit: 'orang' },
 		body: `Saya kembali ke sekolah tempat saya dulu belajar, dan berdiri di depan kelas yang sama dengan tempat saya pernah duduk. Guru fisika yang mengajari saya belasan tahun lalu masih mengajar di sana, dan justru beliau yang meminta saya datang. Permintaannya spesifik: jangan bawa presentasi yang penuh grafik, ceritakan saja pekerjaanmu sehari-hari.
 
-Saya menuruti permintaan itu, dan ternyata itu keputusan yang tepat. Saya bercerita tentang bagaimana panas dari dalam bumi diubah menjadi listrik, bukan sebagai konsep, melainkan sebagai pekerjaan yang saya kerjakan setiap hari — termasuk bagian yang membosankan seperti pengukuran berulang dan laporan yang harus diperiksa berkali-kali. Pertanyaan pertama yang muncul dari murid bukan soal teknologi, melainkan berapa gajinya.
+Saya menuruti permintaan itu, dan ternyata itu keputusan yang tepat. Saya bercerita tentang bagaimana panas dari dalam bumi diubah menjadi listrik, bukan sebagai konsep, melainkan sebagai pekerjaan yang saya kerjakan setiap hari: termasuk bagian yang membosankan seperti pengukuran berulang dan laporan yang harus diperiksa berkali-kali. Pertanyaan pertama yang muncul dari murid bukan soal teknologi, melainkan berapa gajinya.
 
 Pertanyaan itu membawa percakapan ke arah yang tidak saya rencanakan tetapi paling berguna. Mereka ingin tahu jalur masuknya, jurusan apa yang harus diambil, apakah harus dari kampus besar, dan apakah nilai matematika yang biasa-biasa saja menutup peluang. Saya menjawab sejujurnya, termasuk bahwa nilai saya dulu tidak istimewa dan bahwa beasiswa Sobat Bumi adalah alasan saya bisa kuliah sama sekali.
 
@@ -1261,7 +1261,7 @@ Saya membicarakannya dengan mentor dari program pendampingan sebelum memberi jaw
 
 Saya menerima pesanan itu dan merekrut dua orang dari lingkungan sekitar. Keduanya ibu rumah tangga yang selama ini tidak punya penghasilan sendiri. Dua pekan pertama berat karena saya harus melatih sambil mengejar tenggat, dan ada satu batch yang harus diulang seluruhnya karena kesalahan takaran perendaman. Batch itu rugi, tetapi kesalahannya tidak pernah terulang lagi setelah kami menempel takaran di dinding ruang kerja.
 
-Pesanan selesai tiga hari sebelum tenggat. Yang tidak saya perhitungkan sebelumnya adalah bahwa setelah pesanan besar itu selesai, kapasitas produksi saya tidak kembali seperti semula — dari enam puluh menjadi seratus delapan puluh lembar per bulan, tanpa menambah satu pun alat. Yang berubah hanya pembagian kerja, dan itu seharusnya bisa saya lakukan bertahun-tahun lebih awal seandainya saya pernah memetakan tahapan pekerjaan saya sendiri.`
+Pesanan selesai tiga hari sebelum tenggat. Yang tidak saya perhitungkan sebelumnya adalah bahwa setelah pesanan besar itu selesai, kapasitas produksi saya tidak kembali seperti semula: dari enam puluh menjadi seratus delapan puluh lembar per bulan, tanpa menambah satu pun alat. Yang berubah hanya pembagian kerja, dan itu seharusnya bisa saya lakukan bertahun-tahun lebih awal seandainya saya pernah memetakan tahapan pekerjaan saya sendiri.`
 	},
 	{
 		slug: 'audit-energi-warung-kopi-yogyakarta',
@@ -1402,7 +1402,7 @@ Tujuh naskah dari kelas ini kemudian diajukan ke ruang cerita Pfriends dan sebag
 		outcome: { note: 'Dari 400 bibit yang ditanam, 371 hidup pada pemantauan bulan kelima; sistem satu keluarga satu pohon membuat penyiraman musim kemarau berjalan tanpa jadwal terpusat.', metric: 'Bibit trembesi hidup', value: 371, unit: 'batang' },
 		body: `Jalan desa sepanjang dua kilometer ini tidak punya satu pun pohon peneduh. Pada musim kemarau, anak-anak yang berjalan kaki ke sekolah menempuhnya di bawah matahari penuh, dan warga yang berdagang di pinggir jalan harus memasang terpal setiap hari. Usulan menanam pohon sudah beberapa kali muncul dalam musyawarah desa dan selalu berhenti pada pertanyaan yang sama: siapa yang akan menyiram.
 
-Pertanyaan itu yang kami jadikan titik awal, bukan penanamannya. Sebelum satu bibit pun dibeli, kami mendata rumah di sepanjang jalan dan menawarkan satu hal: setiap keluarga mengampu pohon yang ditanam di depan rumahnya. Bukan menyumbang, bukan sekadar mengizinkan, tetapi mengampu — menyiram, memasang pelindung, dan melaporkan kondisinya.
+Pertanyaan itu yang kami jadikan titik awal, bukan penanamannya. Sebelum satu bibit pun dibeli, kami mendata rumah di sepanjang jalan dan menawarkan satu hal: setiap keluarga mengampu pohon yang ditanam di depan rumahnya. Bukan menyumbang, bukan sekadar mengizinkan, tetapi mengampu: menyiram, memasang pelindung, dan melaporkan kondisinya.
 
 Delapan puluh delapan keluarga bersedia. Bagi rumah yang berjarak jauh dari jalan, satu keluarga mengampu dua sampai tiga pohon. Nama pengampu ditulis pada papan pemantauan yang dipasang di balai desa, lengkap dengan nomor pohonnya. Papan itu bukan untuk mempermalukan siapa pun, melainkan supaya jelas siapa yang bisa dimintai kabar ketika ada pohon yang terlihat layu.
 
@@ -1419,7 +1419,7 @@ const NASKAH_CERITA = Object.freeze([...CERITA_TERBIT, ...CERITA_DALAM_PROSES]);
 /**
  * Tujuh naskah tambahan yang menyebar merata di seluruh alur editorial.
  *
- * Dipisahkan dari `NASKAH_CERITA` karena diproses oleh generator yang berbeda —
+ * Dipisahkan dari `NASKAH_CERITA` karena diproses oleh generator yang berbeda :
  * `bangkitkanCeritaAlurEditorial()`, yang TIDAK menarik satu pun bilangan acak dan
  * dipanggil setelah buku besar poin selesai dibangkitkan. Menambahkannya ke
  * `NASKAH_CERITA` akan menyisipkan dua draw `rng()` per naskah tepat SEBELUM
@@ -1427,7 +1427,7 @@ const NASKAH_CERITA = Object.freeze([...CERITA_TERBIT, ...CERITA_DALAM_PROSES]);
  * menyentuh perhitungan poin.
  *
  * Sebaran statusnya disengaja: verifikator yang membuka antreannya saat peragaan
- * harus menemukan naskah pada setiap tahap — yang baru masuk, yang sedang
+ * harus menemukan naskah pada setiap tahap: yang baru masuk, yang sedang
  * dipegang, yang dikembalikan, dan yang tinggal menunggu jadwal terbit.
  *
  * `penulisUrut` menunjuk posisi penulis pada daftar kandidat yang diurutkan
@@ -1461,7 +1461,7 @@ Yang paling sering disebut petani setelah tiga bulan berjalan justru bukan pengh
 		esgKey: 'pertumbuhan_womenpreneur',
 		location: 'Kecamatan Praya, Lombok Tengah', peserta: 28, dayIndex: 185, penulisUrut: 8,
 		outcome: { note: 'Terkumpul simpanan Rp41,2 juta dalam lima bulan dengan tingkat pengembalian 100 persen; sembilan belas anggota memakai pinjamannya untuk menambah stok bahan baku, bukan untuk kebutuhan konsumtif.', metric: 'Simpanan terkumpul', value: 41, unit: 'juta rupiah' },
-		body: `Kami memulai bukan karena tidak ada pemberi pinjaman di desa ini. Justru sebaliknya, terlalu banyak — dan hampir semuanya menagih harian dengan bunga yang tidak pernah dijelaskan di muka. Yang tidak ada adalah tempat meminjam yang aturannya kami pahami sepenuhnya sejak awal.
+		body: `Kami memulai bukan karena tidak ada pemberi pinjaman di desa ini. Justru sebaliknya, terlalu banyak: dan hampir semuanya menagih harian dengan bunga yang tidak pernah dijelaskan di muka. Yang tidak ada adalah tempat meminjam yang aturannya kami pahami sepenuhnya sejak awal.
 
 Pendampingan yang kami ikuti tidak datang membawa anggaran dasar yang tinggal ditandatangani. Fasilitatornya justru menolak menuliskan aturan untuk kami, dan meminta kami menyusunnya sendiri lewat empat pertemuan. Melelahkan, dan ada yang sempat mundur karena merasa terlalu berbelit. Tetapi aturan yang kami tulis sendiri ternyata jauh lebih sulit dilanggar daripada aturan yang diberikan orang lain.
 
@@ -1499,7 +1499,7 @@ Sebelum menambah apa pun, kami meminta setiap warung mencatat dua pekan penuh: a
 
 Keputusan memangkas menu tidak diterima dengan mudah. Ada kekhawatiran kehilangan pelanggan yang mencari menu tertentu, dan kekhawatiran itu masuk akal. Kami menyepakati percobaan empat pekan dengan sembilan menu saja, dengan catatan bila penjualan turun, keputusan dibatalkan tanpa perdebatan.
 
-Penjualan tidak turun. Susut bahan baku turun dari delapan belas persen menjadi enam persen, dan waktu penyajian dari empat belas menit menjadi enam menit — yang ternyata paling berpengaruh, karena mahasiswa yang mengantre lama sebelumnya banyak yang pergi. Satu warung memutuskan kembali menambah dua menu setelah percobaan berakhir, dan itu haknya. Yang berubah adalah keputusannya kini diambil dari catatan, bukan dari dugaan.`
+Penjualan tidak turun. Susut bahan baku turun dari delapan belas persen menjadi enam persen, dan waktu penyajian dari empat belas menit menjadi enam menit: yang ternyata paling berpengaruh, karena mahasiswa yang mengantre lama sebelumnya banyak yang pergi. Satu warung memutuskan kembali menambah dua menu setelah percobaan berakhir, dan itu haknya. Yang berubah adalah keputusannya kini diambil dari catatan, bukan dari dugaan.`
 	},
 	{
 		slug: 'jam-belajar-malam-anak-nelayan-tegal',
@@ -1527,7 +1527,7 @@ Empat bulan berjalan, tiga puluh empat anak mengikuti secara rutin tiga kali sep
 		outcome: { note: 'Terkumpul 268 catatan genangan dari 41 pencatat selama satu musim hujan; kelurahan memakai peta hasilnya untuk mengubah urutan prioritas perbaikan saluran pada tiga titik.', metric: 'Catatan genangan terkumpul', value: 268, unit: 'catatan' },
 		body: `Setiap musim hujan lingkungan kami tergenang, dan setiap tahun perbaikan saluran dikerjakan di titik yang sama. Ketika kami menanyakan dasarnya, jawabannya jujur: tidak ada data, yang ada hanya laporan warga yang paling sering datang mengeluh. Titik yang warganya jarang melapor tidak pernah masuk daftar.
 
-Kami memutuskan mengumpulkan datanya sendiri dengan cara yang paling sederhana yang bisa dijalankan siapa pun. Setiap pencatat memasang satu tongkat berskala di depan rumahnya, memotret genangan beserta tongkatnya, dan mengirimkan foto berikut jam kejadian ke satu grup percakapan. Tidak ada aplikasi, tidak ada formulir panjang, dan itu disengaja — pencatatan yang merepotkan akan berhenti pada pekan ketiga.
+Kami memutuskan mengumpulkan datanya sendiri dengan cara yang paling sederhana yang bisa dijalankan siapa pun. Setiap pencatat memasang satu tongkat berskala di depan rumahnya, memotret genangan beserta tongkatnya, dan mengirimkan foto berikut jam kejadian ke satu grup percakapan. Tidak ada aplikasi, tidak ada formulir panjang, dan itu disengaja: pencatatan yang merepotkan akan berhenti pada pekan ketiga.
 
 Empat puluh satu warga ikut mencatat sepanjang musim hujan, terkumpul dua ratus enam puluh delapan catatan. Yang terlihat dari kumpulan itu tidak sepenuhnya kami duga. Titik yang paling sering tergenang ternyata bukan yang paling ramai dikeluhkan, dan satu titik yang selama ini rutin diperbaiki justru genangannya paling cepat surut.
 
@@ -1548,6 +1548,52 @@ Yang saya kerjakan sederhana pada permukaannya: mendatangi dua belas ibu yang ma
 Sampai hari ini dua belas resep sudah terdokumentasi lengkap dari tiga puluh yang saya targetkan. Ada dua resep yang terpaksa saya tinggalkan karena pemiliknya jatuh sakit sebelum sempat kami masak bersama, dan itu bagian yang paling saya sesali dari seluruh proses ini.
 
 Saya akan melengkapi catatan ini setelah tahap kedua selesai, termasuk bagian yang belum saya putuskan: siapa yang berhak atas resep-resep ini setelah dibukukan, dan bagaimana memastikan yang mewariskannya tetap dikenali namanya bila kelak ada yang memakainya untuk usaha.`
+	},
+	{
+		slug: 'bank-sampah-pasar-pagi-banjarmasin',
+		status: STORY_STATUS.REVIEW,
+		title: 'Bank Sampah Pasar Pagi yang Dikelola Pedagang Banjarmasin',
+		summary: 'Pedagang pasar menyusun jadwal pengumpulan dan pencatatan sampah kemasan agar program tetap berjalan tanpa bergantung pada relawan.',
+		esgKey: 'pengurangan_sampah',
+		location: 'Banjarmasin, Kalimantan Selatan', peserta: 37, dayIndex: 199, penulisUrut: 11,
+		outcome: { note: 'Tiga puluh tujuh pedagang mengumpulkan 486 kilogram kemasan dalam delapan pekan dan memakai hasil penjualannya untuk membeli alat kebersihan bersama.', metric: 'Sampah kemasan terkumpul', value: 486, unit: 'kilogram' },
+		body: `Pasar pagi menghasilkan banyak kardus, botol, dan kemasan plastik setiap hari. Selama ini semua bahan itu bercampur dengan sampah basah sehingga nilainya hilang dan petugas kebersihan harus mengangkut volume yang lebih besar. Kami memulai percobaan bersama enam pedagang dengan menempatkan karung terpisah di belakang kios masing masing.
+
+Pekan pertama memperlihatkan masalah yang tidak kami perkirakan. Karung cepat penuh, tetapi tidak ada orang yang bersedia membawanya ke titik timbang. Kami lalu menyusun jadwal bergilir dan mencatat berat dari setiap blok pasar. Pencatatan dibuat terbuka di papan dekat pos keamanan agar semua pedagang dapat melihat hasilnya.
+
+Dalam delapan pekan jumlah peserta bertambah menjadi tiga puluh tujuh pedagang. Sampah kemasan yang terkumpul mencapai empat ratus delapan puluh enam kilogram. Uang hasil penjualan tidak dibagikan, melainkan dipakai membeli sapu, sarung tangan, dan wadah angkut yang dapat digunakan bersama.
+
+Hal penting dari percobaan ini bukan hanya jumlah sampahnya. Pengelolaan sekarang dilakukan oleh pedagang melalui jadwal yang mereka sepakati sendiri. Relawan hanya membantu pada tahap awal dan tidak lagi menjadi penentu apakah kegiatan berjalan pada hari tertentu.`
+	},
+	{
+		slug: 'kelas-keuangan-pedagang-kecil-kendari',
+		status: STORY_STATUS.PERLU_REVISI,
+		title: 'Catatan Harian Keuangan untuk Pedagang Kecil Kendari',
+		summary: 'Delapan belas pedagang mencoba pencatatan sederhana untuk memisahkan uang usaha dan kebutuhan rumah tangga.',
+		esgKey: 'pertumbuhan_womenpreneur',
+		location: 'Kendari, Sulawesi Tenggara', peserta: 18, dayIndex: 200, penulisUrut: 18,
+		outcome: { note: 'Empat belas dari delapan belas peserta mencatat transaksi secara rutin selama enam pekan dan sebelas peserta mulai memisahkan uang usaha dari belanja rumah tangga.', metric: 'Peserta rutin mencatat', value: 14, unit: 'orang' },
+		body: `Pertemuan pertama dimulai dengan pertanyaan sederhana tentang keuntungan harian. Hampir semua peserta dapat menyebutkan jumlah uang yang masuk, tetapi kesulitan menjelaskan berapa yang tersisa setelah bahan baku, ongkos perjalanan, dan kebutuhan rumah tangga dibayar. Uang usaha dan uang keluarga bergerak melalui dompet yang sama.
+
+Kami tidak memperkenalkan aplikasi. Setiap peserta menerima buku kecil dengan tiga kolom untuk uang masuk, uang keluar, dan tujuan pengeluaran. Bentuk ini dipilih setelah mencoba lembar yang lebih rinci dan mendapati peserta berhenti mengisi pada hari ketiga.
+
+Selama enam pekan, empat belas dari delapan belas peserta mencatat secara rutin. Sebelas peserta mulai menyimpan uang usaha dalam tempat yang berbeda. Empat peserta belum konsisten karena anggota keluarga lain juga melayani pembeli dan tidak selalu menulis transaksi.
+
+Catatan Verifikator meminta naskah ini menjelaskan perubahan pendapatan dengan bukti yang lebih terukur. Bagian tersebut masih perlu dilengkapi karena tujuan awal kegiatan adalah membangun kebiasaan pencatatan, bukan menjanjikan kenaikan pendapatan dalam waktu singkat. Data lanjutan sedang dikumpulkan sebelum tulisan dikirim kembali.`
+	},
+	{
+		slug: 'kebun-bibit-warga-bogor',
+		status: STORY_STATUS.DRAFT,
+		title: 'Kebun Bibit Warga di Lahan Kosong Bogor',
+		summary: 'Draf awal tentang pemanfaatan lahan kosong sebagai tempat pembibitan tanaman pangan untuk warga sekitar.',
+		esgKey: 'aksi_lingkungan_lokal',
+		location: 'Bogor, Jawa Barat', peserta: 22, dayIndex: 201, penulisUrut: 25,
+		outcome: { note: 'Sebanyak dua ratus bibit mulai disiapkan oleh dua puluh dua warga untuk dibagikan setelah masa perawatan pertama selesai.', metric: 'Bibit disiapkan', value: 200, unit: 'bibit' },
+		body: `Lahan kosong di belakang balai warga lama dipenuhi rumput dan menjadi tempat pembuangan barang yang tidak terpakai. Bulan ini kami mulai membersihkannya bersama dan menyiapkan rak sederhana untuk pembibitan cabai, tomat, serta tanaman obat.
+
+Dua puluh dua warga sudah mengambil jadwal perawatan. Sekitar dua ratus bibit sedang tumbuh, tetapi belum semuanya cukup kuat untuk dibagikan. Tulisan ini masih berupa draf karena hasil tahap pertama baru dapat dihitung setelah bibit melewati masa perawatan dan diterima oleh keluarga yang akan menanamnya.
+
+Bagian berikutnya akan mencatat jumlah bibit yang bertahan, keluarga penerima, dan cara kelompok menjaga ketersediaan benih untuk putaran berikutnya.`
 	}
 ]);
 
@@ -1558,7 +1604,7 @@ Saya akan melengkapi catatan ini setelah tahap kedua selesai, termasuk bagian ya
 /**
  * Dua belas item katalog penukaran (Hal 5 pilar 05).
  *
- * `priceCoins` adalah harga dalam Koin Tukar, bukan Poin Kontribusi — dua mata
+ * `priceCoins` adalah harga dalam Koin Tukar, bukan Poin Kontribusi: dua mata
  * uang yang sengaja dipisahkan supaya seorang Champion tidak turun tier hanya
  * karena menukarkan hadiah. Harga di sini adalah data katalog, bukan turunan
  * ambang tier, sehingga nilainya memang ditetapkan langsung.
@@ -1750,7 +1796,7 @@ const KATALOG_LENCANA = Object.freeze([
 ]);
 
 /* ────────────────────────────────────────────────────────────────────────────
- * 9. PEMBANGKIT — CONSENT
+ * 9. PEMBANGKIT: CONSENT
  * ──────────────────────────────────────────────────────────────────────────── */
 
 /** Versi teks kebijakan yang berlaku pada data demo. */
@@ -1809,7 +1855,7 @@ const TEKS_CONSENT = Object.freeze({
  *
  * Setiap awardee selalu memiliki minimal satu rekaman: persetujuan pengolahan data
  * internal yang diberikan saat pendaftaran. Persetujuan publikasi bersifat terpisah
- * dan opt-in, persis seperti yang dijanjikan pada kabar onboarding Mei — bila seed
+ * dan opt-in, persis seperti yang dijanjikan pada kabar onboarding Mei: bila seed
  * menyalakan semuanya sekaligus, janji itu langsung terbantah oleh datanya sendiri.
  *
  * Profil ikut ditandai `consentActive` dan `consentCeritaId` supaya cerita dan
@@ -1930,21 +1976,21 @@ function bangkitkanConsent(rng, profiles) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
- * 10. PEMBANGKIT — KEGIATAN, KABAR, GERAKAN, CERITA
+ * 10. PEMBANGKIT: KEGIATAN, KABAR, GERAKAN, CERITA
  * ──────────────────────────────────────────────────────────────────────────── */
 
 /**
- * Menyusun rangka kegiatan dari naskah. Daftar peserta belum diisi di sini —
+ * Menyusun rangka kegiatan dari naskah. Daftar peserta belum diisi di sini :
  * kehadiran baru diketahui setelah riwayat aktivitas dibangkitkan.
  *
  * Jejak alur usulan ikut diisi di sini, dan dua aturannya sengaja ditegakkan pada
  * data demo, bukan hanya pada service:
  *
- * - **Penyetuju tidak pernah sama dengan pengusul.** Kegiatan yang diusulkan
+ *: **Penyetuju tidak pernah sama dengan pengusul.** Kegiatan yang diusulkan
  *   verifikator utama disetujui verifikator kedua. Data demo yang melanggar
  *   larangan konflik kepentingan akan memperagakan keadaan yang justru mustahil
  *   dibentuk lewat aplikasinya sendiri.
- * - **Tanggal pengusulan selalu di masa lalu.** Kegiatan yang dijadwalkan Oktober
+ *: **Tanggal pengusulan selalu di masa lalu.** Kegiatan yang dijadwalkan Oktober
  *   tetap diusulkan sebelum tanggal acuan; usulan yang tercatat diajukan pada masa
  *   depan membuat perhitungan SLA menghasilkan bilangan negatif.
  *
@@ -2005,14 +2051,14 @@ function bangkitkanKegiatan(profiles) {
 }
 
 /**
- * Menyusun agenda bergulir — kegiatan TERJADWAL yang tanggalnya mengikuti waktu
+ * Menyusun agenda bergulir: kegiatan TERJADWAL yang tanggalnya mengikuti waktu
  * nyata saat data demo dipasang.
  *
  * TIGA SYARAT YANG DITEGAKKAN FUNGSI INI, dan alasan masing-masing:
  *
  * 1. **Nol pemanggilan `rng()`.** Seluruh isinya turunan murni dari naskah, daftar
  *    profil, dan satu tanggal acuan. Karena itu fungsi ini boleh dipanggil di mana
- *    saja tanpa memindahkan satu bilangan acak pun — dan memang dipanggil SETELAH
+ *    saja tanpa memindahkan satu bilangan acak pun: dan memang dipanggil SETELAH
  *    seluruh penarikan selesai, sekamar dengan `bangkitkanCeritaAlurEditorial()`.
  * 2. **Pendaftar tetap merujuk awardee yang benar-benar ada.** Dipilih dengan
  *    pencacah dari profil aktif, bukan diacak. Kalender yang menampilkan "18
@@ -2020,7 +2066,7 @@ function bangkitkanKegiatan(profiles) {
  *    halaman detail pertama yang dibuka.
  * 3. **Jejak usulannya utuh dan tidak melanggar konflik kepentingan.** Pengusul
  *    boleh awardee (PO-4: kegiatan boleh datang dari awardee maupun verifikator),
- *    tetapi penyetujunya selalu verifikator kedua — tidak pernah dirinya sendiri.
+ *    tetapi penyetujunya selalu verifikator kedua: tidak pernah dirinya sendiri.
  *    Tanggal usul dan keputusan diletakkan di masa lalu supaya perhitungan SLA
  *    tidak menghasilkan bilangan negatif.
  *
@@ -2037,7 +2083,7 @@ function bangkitkanAgendaBergulir(profiles, pada, nomorAwal) {
 		const hariMulai = hariAcuan + naskah.offsetHari;
 		const jamMulai = naskah.luring ? 9 : 19;
 
-		// Usulan diajukan sebelum tanggal acuan, keputusannya sehari sesudahnya —
+		// Usulan diajukan sebelum tanggal acuan, keputusannya sehari sesudahnya :
 		// keduanya tetap di masa lalu berapa pun jauhnya kegiatan dijadwalkan.
 		const hariUsul = hariAcuan - 12 + index;
 		const hariPutus = hariUsul + 2;
@@ -2090,7 +2136,7 @@ function bangkitkanAgendaBergulir(profiles, pada, nomorAwal) {
  *
  * Diekspor supaya proses bootstrap dan panel data demo admin dapat memeriksanya
  * TANPA menyalin ulang aturannya. Data demo yang dipasang di peramban berbulan-bulan
- * lalu tetap dapat menjadi basi meski pembangkitnya sudah bergulir — pemeriksaan
+ * lalu tetap dapat menjadi basi meski pembangkitnya sudah bergulir: pemeriksaan
  * inilah yang mengubah kebasian itu menjadi sesuatu yang dapat dideteksi, bukan
  * sesuatu yang baru ketahuan saat halaman dibuka di depan orang.
  *
@@ -2109,7 +2155,7 @@ export function cakrawalaAgendaHari(events, pada = new Date()) {
 
 /**
  * Menyusun rangka kabar dari naskah. `openedBy` dan `amplifiedBy` diisi belakangan
- * dari buku besar poin, bukan diacak — kalau keduanya diacak terpisah, jumlah
+ * dari buku besar poin, bukan diacak: kalau keduanya diacak terpisah, jumlah
  * pembaca kabar tidak akan cocok dengan jumlah entri BROADCAST_VIEW dan angka pada
  * dua halaman berbeda akan saling membantah.
  * @param {Record<string, any>[]} profiles
@@ -2185,7 +2231,7 @@ function bangkitkanGerakan(rng, profiles) {
  *
  * Penulis dipilih dari awardee ber-consent publikasi cerita yang aktif. Menautkan
  * cerita ke awardee tanpa consent akan membuat halaman moderasi menampilkan naskah
- * yang tidak mungkin lolos gerbang publikasi mana pun — data demo yang mustahil
+ * yang tidak mungkin lolos gerbang publikasi mana pun: data demo yang mustahil
  * terjadi di sistem sungguhan.
  *
  * Peninjau digilir antara dua akun verifikator berdasarkan urutan naskah. Kolom
@@ -2282,18 +2328,18 @@ function bangkitkanCerita(rng, profiles) {
 }
 
 /**
- * Menyusun tujuh naskah alur editorial — TANPA satu pun pemanggilan `rng()`.
+ * Menyusun tujuh naskah alur editorial: TANPA satu pun pemanggilan `rng()`.
  *
  * Berkas ini punya dua generator cerita dengan sengaja. Yang pertama
  * (`bangkitkanCerita`) berjalan DI DALAM rangkaian acak dan karenanya tidak boleh
  * bertambah panjang: setiap naskah tambahan di sana menarik dua bilangan acak tepat
  * sebelum buku besar poin dibangkitkan, dan total poin komunitas ikut bergeser.
- * Yang kedua — fungsi ini — berjalan DI LUAR rangkaian itu, dipanggil setelah
+ * Yang kedua: fungsi ini: berjalan DI LUAR rangkaian itu, dipanggil setelah
  * seluruh perhitungan poin selesai, sehingga naskah boleh ditambah kapan saja tanpa
  * menyentuh satu angka pun.
  *
  * Konsekuensinya yang perlu diketahui: naskah di sini TIDAK menjadi rujukan aksi
- * `STORY_SUBMIT` pada buku besar poin. Itu memang bukan perannya — ia mengisi
+ * `STORY_SUBMIT` pada buku besar poin. Itu memang bukan perannya: ia mengisi
  * antrean editorial, bukan riwayat kontribusi berpoin.
  *
  * @param {Record<string, any>[]} profiles
@@ -2383,7 +2429,7 @@ function bangkitkanCeritaAlurEditorial(profiles, nomorAwal) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
- * 11. PEMBANGKIT — BUKU BESAR POIN
+ * 11. PEMBANGKIT: BUKU BESAR POIN
  * ──────────────────────────────────────────────────────────────────────────── */
 
 /**
@@ -2451,7 +2497,7 @@ function cariHariAksi(rng, hariPalingAwal, type, kuotaHarian) {
  *
  * Inilah bagian yang menjamin konsistensi poin. Aksi ditarik satu per satu sampai
  * jumlahnya jatuh di rentang tier yang direncanakan, dan yang dikembalikan adalah
- * daftar aksi itu — total poin awardee dihitung darinya, bukan sebaliknya.
+ * daftar aksi itu: total poin awardee dihitung darinya, bukan sebaliknya.
  *
  * @param {import('./rng.js').Rng} rng
  * @param {Record<string, any>} profil
@@ -2462,7 +2508,7 @@ function bangkitkanAktivitasAwardee(rng, profil, konteks) {
 	const band = konteks.rentang.get(profil.plannedTier);
 	if (!band) throw new RangeError(`Rentang tier tidak dikenal: "${profil.plannedTier}".`);
 
-	// Sebagian Newcomer memang belum pernah beraksi sama sekali — awardee yang baru
+	// Sebagian Newcomer memang belum pernah beraksi sama sekali: awardee yang baru
 	// mendaftar dan belum sempat apa-apa adalah keadaan paling lazim di komunitas
 	// mana pun, dan menghapusnya dari data demo akan menyembunyikan justru kelompok
 	// yang paling perlu disasar program aktivasi.
@@ -2515,7 +2561,7 @@ function bangkitkanAktivitasAwardee(rng, profil, konteks) {
 		let refLabel = '';
 
 		if (type === ActivityType.SESSION_ATTEND || type === ActivityType.SPEAKER_MENTOR) {
-			// Kehadiran menempel pada tanggal kegiatannya — awardee tidak dapat hadir
+			// Kehadiran menempel pada tanggal kegiatannya: awardee tidak dapat hadir
 			// pada hari yang berbeda dari hari acara itu digelar.
 			const pilihan = kegiatanSelesai.filter((e) => !kegiatanDihadiri.has(e.id));
 			if (pilihan.length === 0) continue;
@@ -2671,7 +2717,7 @@ function bangkitkanAktivitasAwardee(rng, profil, konteks) {
  * sebagian besar amplifikasi di bulan-bulan lampau, sehingga dasbor menampilkan
  * angka yang tidak menggambarkan komunitas yang sedang aktif hari ini.
  *
- * Yang dipindahkan hanya TANGGAL, tidak pernah jumlah poinnya — konsistensi total
+ * Yang dipindahkan hanya TANGGAL, tidak pernah jumlah poinnya: konsistensi total
  * poin terhadap buku besar tetap utuh setelah pemindahan ini.
  *
  * @param {import('./rng.js').Rng} rng
@@ -2701,7 +2747,7 @@ function ratakanAmplifikasiBulanIni(rng, profiles, activities) {
 	const belum = shuffle(rng, [...perAwardee.keys()].filter((id) => !sudahBulanIni.has(id)));
 
 	// Sasaran: sedikit di atas ambang KPI-04 supaya kartu dasbor menunjukkan capaian
-	// yang tercapai namun tidak dibuat sempurna — angka yang terlalu bulat justru
+	// yang tercapai namun tidak dibuat sempurna: angka yang terlalu bulat justru
 	// membuat pemirsa curiga datanya tidak nyata.
 	const sasaran = Math.round(idAktif.size * 0.56);
 	const perlu = Math.max(0, sasaran - sudahBulanIni.size);
@@ -2718,7 +2764,7 @@ function ratakanAmplifikasiBulanIni(rng, profiles, activities) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
- * 12. PENYELESAIAN — LENCANA, KOIN, DAN ENTITAS AWARDEE
+ * 12. PENYELESAIAN: LENCANA, KOIN, DAN ENTITAS AWARDEE
  * ──────────────────────────────────────────────────────────────────────────── */
 
 /**
@@ -2769,7 +2815,7 @@ function tentukanLencana(entries, streak, tierLevel, community) {
 /**
  * Menyusun profil akhir awardee beserta poin, koin, streak, dan lencananya.
  *
- * `points` diisi dari penjumlahan buku besar — inilah baris yang menegakkan aturan
+ * `points` diisi dari penjumlahan buku besar: inilah baris yang menegakkan aturan
  * pokok berkas ini. `seasonPoints` dihitung dari entri sejak awal musim, dan karena
  * ia selalu merupakan himpunan bagian, invarian "poin musim tidak melebihi total"
  * terpenuhi dengan sendirinya tanpa perlu dijaga terpisah.
@@ -2798,14 +2844,14 @@ function finalisasiAwardee(rng, profiles, activities) {
 
 		const hariAktivitas = entries.map((entry) => entry.day);
 		const streak = hitungStreak(hariAktivitas);
-		// Tier dibaca lewat fungsi kanonik, tidak dihitung ulang di sini — ambang
+		// Tier dibaca lewat fungsi kanonik, tidak dihitung ulang di sini: ambang
 		// 25/50/100/150 hanya boleh hidup di satu berkas (kontrak §2).
 		const tier = tierUntukPoin(points);
 		const badgeCodes = tentukanLencana(entries, streak, tier.level, profil.community);
 
 		// Koin Tukar diperoleh sejalan dengan Poin Kontribusi lalu ditambah bonus
 		// lencana, dan BERKURANG ketika ditukar. Poin Kontribusi tidak pernah
-		// berkurang — pemisahan itulah yang menjaga tier tetap bermakna sebagai
+		// berkurang: pemisahan itulah yang menjaga tier tetap bermakna sebagai
 		// pengakuan, bukan sebagai saldo belanja.
 		const bonusLencana = badgeCodes.reduce((jumlah, code) => {
 			const badge = KATALOG_LENCANA.find((b) => b.code === code);
@@ -2823,7 +2869,7 @@ function finalisasiAwardee(rng, profiles, activities) {
 			);
 		});
 		const jumlahTukar = points > 0 && chance(rng, 0.6) ? intBetween(rng, 1, 2) : 0;
-		// Awardee menyisakan sebagian saldonya, tidak pernah membelanjakan habis —
+		// Awardee menyisakan sebagian saldonya, tidak pernah membelanjakan habis :
 		// katalog yang selalu terkuras habis membuat halaman penghargaan kehilangan
 		// fungsinya sebagai tujuan yang masih ingin dikejar.
 		for (const item of sample(rng, layak, jumlahTukar)) {
@@ -3051,7 +3097,7 @@ function tanpaFieldKerja(rows, fields) {
  *
  * DUA SUMBU WAKTU. Parameter `seed` mengunci seluruh data HISTORIS pada kalender
  * beku 20 Juli 2026; parameter `pada` hanya menentukan dua hal yang memang wajib
- * mengikuti waktu nyata — agenda bergulir kalender publik dan bulan yang dibebani
+ * mengikuti waktu nyata: agenda bergulir kalender publik dan bulan yang dibebani
  * kuota penukaran. Tidak satu pun angka poin, tier, atau aktivitas bergantung pada
  * `pada`, dan itu disengaja: `buildSeed()` dipanggil dua kali berturut-turut oleh
  * gerbang seed dan wajib menghasilkan statistik yang identik.
@@ -3128,7 +3174,7 @@ export function buildSeed(seed = SEED, pada = new Date()) {
 		// Tanpa bulan acuan, `redeemedThisMonth` adalah bilangan tanpa arti: pencacah
 		// yang tidak tahu bulannya tidak akan pernah tahu kapan harus kembali ke nol,
 		// dan RWD-09 yang memang sengaja diperagakan berkuota habis akan tetap habis
-		// selamanya — termasuk pada demo yang digelar tahun depan.
+		// selamanya: termasuk pada demo yang digelar tahun depan.
 		quotaMonthKey: kunciBulanKuota(pada),
 		requiresApproval: item.requiresApproval === true,
 		community: item.community ?? '',
@@ -3186,7 +3232,7 @@ export function buildSeed(seed = SEED, pada = new Date()) {
 }
 
 /**
- * Ringkasan statistik seed — dipakai skrip verifikasi dan panel data demo admin.
+ * Ringkasan statistik seed: dipakai skrip verifikasi dan panel data demo admin.
  * @param {SeedBundle} [bundle]
  * @returns {Record<string, any>}
  */

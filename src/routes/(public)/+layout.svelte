@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * LAYOUT ZONA PUBLIK — masthead terbitan, bukan bilah aplikasi.
+	 * LAYOUT ZONA PUBLIK: masthead terbitan, bukan bilah aplikasi.
 	 *
 	 * Zona ini tidak pernah menuntut sesi. Hal 4 dokumen sumber menempatkan
 	 * microsite sebagai "rumah" komunitas yang dibuka dari kotak biru
@@ -13,8 +13,8 @@
 	 * 1. **`Header.svelte` sengaja TIDAK dipakai di sini.** Header bersama adalah
 	 *    bilah aplikasi: satu baris, pil nav ber-tint, latar putih semitransparan
 	 *    berpenapis buram, lonceng notifikasi, avatar. Zona publik memakai masthead
-	 *    dua baris berlatar kanvas solid — tanpa penapis buram sama sekali
-	 *    (`docs/11` §6 E0 dan prinsip P-4) — sehingga memaksakan keduanya menjadi satu
+	 *    dua baris berlatar kanvas solid: tanpa penapis buram sama sekali
+	 *    (`docs/11` §6 E0 dan prinsip P-4): sehingga memaksakan keduanya menjadi satu
 	 *    komponen berarti satu berkas dengan dua kepribadian yang saling menahan.
 	 *    Header tetap dipakai apa adanya oleh tiga zona ter-login.
 	 *
@@ -31,19 +31,20 @@
 	 *    tujuh halaman publik membaca potret yang sama. Memuatnya per halaman
 	 *    membuat setiap perpindahan menampilkan kerangka kosong lebih dulu.
 	 *
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E0 masthead dua baris, three-band tick
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-04
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E0 masthead dua baris, three-band tick
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-04
 	 */
 	import { page } from '$app/state';
-	import { Footer, Icon, ICONS } from '$lib/components';
+	import { DummyRouteNotice, Footer, Icon, ICONS } from '$lib/components';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
 	import { impact } from '$lib/stores/impact.svelte.js';
+	import { publicContent } from '$lib/stores/publicContent.svelte.js';
 	import { navForZone, isNavActive } from '$lib/data/navigation.js';
 	import { Zone } from '$lib/domain/policies/AccessPolicy.js';
 
 	let { children } = $props();
 
-	/** Enam destinasi microsite — satu sumber kebenaran, lihat keputusan 2. */
+	/** Enam destinasi microsite: satu sumber kebenaran, lihat keputusan 2. */
 	const NAV = navForZone(Zone.PUBLIC);
 
 	let menuTerbuka = $state(false);
@@ -66,28 +67,29 @@
 	$effect(() => {
 		catalog.load();
 		impact.load();
+		publicContent.load({ force: true });
 	});
 </script>
 
 <div class="flex min-h-dvh flex-col bg-canvas">
-	<!-- E0 — SATU bilah teal, bukan dua.
+	<!-- E0: SATU bilah teal, bukan dua.
 	     Pita institusi dan bilah wordmark digabung: logo Pertamina Foundation versi
 	     PUTIH menuntut latar gelap, dan dua bilah bertumpuk hanya memakan tinggi
 	     layar tanpa menambah informasi. Logo dibuat putih lewat `brightness(0)
-	     invert(1)` — berkasnya PNG berwarna dengan latar transparan, dan filter
+	     invert(1)`: berkasnya PNG berwarna dengan latar transparan, dan filter
 	     menghindari menyimpan aset kedua hanya demi satu perbedaan warna. -->
 	<header class="bg-pertamina-blue">
 		<div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3.5 sm:px-6 lg:px-8">
-			<a href="/" class="flex min-w-0 shrink-0 items-center gap-3" aria-label="PFfriends — beranda">
+			<a href="/" class="flex min-w-0 shrink-0 items-center gap-3" aria-label="PFriends: beranda">
 				<img
 					src="/img/pf-logo.png"
-					alt=""
+					alt="Pertamina Foundation"
 					class="h-8 w-auto shrink-0"
 					style="filter: brightness(0) invert(1);"
 				/>
 				<span class="h-7 w-px shrink-0 bg-white/30" aria-hidden="true"></span>
 				<span class="display-editorial block truncate text-[24px] leading-none text-white">
-					PFfriends
+					PFriends
 				</span>
 			</a>
 
@@ -136,7 +138,7 @@
 
 			<div class="relative ml-auto flex h-full w-72 max-w-[85vw] flex-col bg-canvas shadow-xl">
 				<div class="flex h-16 shrink-0 items-center justify-between border-b border-ink-200 px-4">
-					<span class="display-editorial text-[20px] text-heading">PFfriends</span>
+					<span class="display-editorial text-[20px] text-heading">PFriends</span>
 					<button
 						type="button"
 						class="inline-flex h-11 w-11 items-center justify-center rounded-control text-ink-700 transition-colors hover:bg-ink-100"
@@ -181,6 +183,7 @@
 	{/if}
 
 	<main class="flex-1">
+		<DummyRouteNotice outerClass="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8" />
 		{@render children()}
 	</main>
 

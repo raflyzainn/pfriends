@@ -1,18 +1,18 @@
 /**
- * ENTITY — Gerakan Bersama.
+ * ENTITY: Gerakan Bersama.
  *
  * Tanggung jawab: merepresentasikan satu gerakan kolektif pada pilar 03 Hal 5
- * (Movement-Based Program) — aksi lingkungan, edukasi masyarakat, atau
+ * (Movement-Based Program): aksi lingkungan, edukasi masyarakat, atau
  * pemberdayaan ekonomi.
  *
  * Keputusan arsitektural yang dijaga di sini: gerakan WAJIB membawa tag ESG dan
  * SDG sebelum boleh berjalan, dan tag itu diwariskan ke setiap laporan aksi
  * turunannya. Dengan begitu gerbang ketiga bukti ESG Hal 12 ("ESG/SDG tag")
- * terpenuhi secara struktural — bukan bergantung pada kedisiplinan anggota
+ * terpenuhi secara struktural: bukan bergantung pada kedisiplinan anggota
  * lapangan mengisi formulir sepulang aksi.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 5 pilar 03, Hal 11 aksi LEAD_ACTION 50 pts
- * @see docs/04-ESG-GOVERNANCE.md — §2 pemetaan aktivitas ke tag ESG dan SDG
+ * @see docs/00-SOURCE-BRIEF.md: Hal 5 pilar 03, Hal 11 aksi LEAD_ACTION 50 pts
+ * @see docs/04-ESG-GOVERNANCE.md: §2 pemetaan aktivitas ke tag ESG dan SDG
  */
 
 import { EsgTag } from '../value-objects/EsgTag.js';
@@ -180,7 +180,7 @@ export class Movement {
 		const sudahDisetujui = status === MovementStatus.BERJALAN || status === MovementStatus.SELESAI;
 		if (sudahDisetujui && tags.length === 0) {
 			throw new RangeError(
-				`Gerakan "${id}" tidak boleh berjalan tanpa tag ESG/SDG — tag diwariskan ke seluruh laporan aksinya.`
+				`Gerakan "${id}" tidak boleh berjalan tanpa tag ESG/SDG: tag diwariskan ke seluruh laporan aksinya.`
 			);
 		}
 
@@ -357,7 +357,7 @@ export class Movement {
 	}
 
 	/**
-	 * Apakah seorang anggota memimpin gerakan ini — pemimpinlah yang berhak atas
+	 * Apakah seorang anggota memimpin gerakan ini: pemimpinlah yang berhak atas
 	 * aksi `LEAD_ACTION` (50 poin, Hal 11).
 	 * @param {string} awardeeId
 	 * @returns {boolean}

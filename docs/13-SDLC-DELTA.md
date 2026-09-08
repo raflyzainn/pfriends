@@ -1,4 +1,4 @@
-# 13 — SDLC Delta: Jejak Revisi V2
+# 13: SDLC Delta: Jejak Revisi V2
 
 > Dokumen ini adalah **catatan proses**, bukan spesifikasi. Ia menjawab satu pertanyaan:
 > *apa yang terjadi antara versi pertama Pfriends dan versi yang diserahkan sekarang, dan mengapa
@@ -19,9 +19,9 @@ memicu revisi ini, dan keduanya berasal dari orang yang berbeda.
 
 | # | Keputusan | Masalah pada V1 |
 |---|---|---|
-| **PO-1** | Landing publik memuat dampak & angka agregat, blog terpublikasi, kalender komunitas + daftar event, gerakan + profil dua komunitas | Landing V1 memajang tangga jenjang dan sembilan cara memperoleh poin — mekanik internal, bukan cerita program |
+| **PO-1** | Landing publik memuat dampak & angka agregat, blog terpublikasi, kalender komunitas + daftar event, gerakan + profil dua komunitas | Landing V1 memajang tangga jenjang dan sembilan cara memperoleh poin: mekanik internal, bukan cerita program |
 | **PO-2** | Poin, tabel skor, jenjang, papan peringkat, lencana **dilarang** di zona publik; semuanya pindah ke area ter-login Awardee, agregatnya di dasbor Admin | Tidak ada garis pemisah. Pengunjung yang belum pernah dengar Pfriends disuguhi aturan permainannya lebih dulu |
-| **PO-3** | Tiga peran — AWARDEE, VERIFIKATOR, ADMIN — dengan login surel + kata sandi dan route guard per zona | V1 memakai **pemilih peran**: satu klik "Masuk sebagai Admin" tanpa kredensial apa pun |
+| **PO-3** | Tiga peran: AWARDEE, VERIFIKATOR, ADMIN: dengan login surel + kata sandi dan route guard per zona | V1 memakai **pemilih peran**: satu klik "Masuk sebagai Admin" tanpa kredensial apa pun |
 | **PO-4** | Awardee menulis → Verifikator meninjau → baru terbit ke publik. Event boleh digalakkan awardee maupun verifikator. Panel daftar event ada di sisi halaman blog | V1 punya status cerita, tetapi tidak punya aktor yang memindahkannya. Moderasi hanya panel baca di zona admin |
 | **PO-5** | Dasbor statistik Admin memakai Apache ECharts | V1 memakai bar CSS dan angka besar; sulit dibaca sebagai dasbor |
 | **PO-6** | Kritik "webnya terlalu AI" dijawab dengan foto asli + redesign editorial | Nol foto; seluruh visual berupa kartu, gradien, dan ikon |
@@ -37,11 +37,11 @@ Kritik atasan ini tidak menyebut satu pun elemen konkret, jadi langkah pertama r
 | D-01 | Nol foto manusia | Program tentang orang, dipajang tanpa satu pun wajah |
 | D-04 | Setiap seksi punya ritme sama: `py-12`, judul `text-2xl md:text-3xl`, tiga kartu | Halaman terasa dihasilkan generator, bukan disusun editor |
 | D-06 | Gradien dan blur dekoratif sebagai pengganti materi | Kosmetik menutupi ketiadaan konten |
-| D-10 | Grid simetris 3×3 di mana-mana | Tidak ada hierarki — semua hal sama pentingnya, artinya tidak ada yang penting |
+| D-10 | Grid simetris 3×3 di mana-mana | Tidak ada hierarki: semua hal sama pentingnya, artinya tidak ada yang penting |
 
 Penting: kritik itu **bukan** kritik terhadap teknologi, melainkan terhadap *keseragaman*. Karena
 itu jawabannya bukan "kurangi otomatisasi", melainkan foto asli, ritme seksi yang berbeda-beda,
-tipografi editorial, dan grid asimetris — semuanya dapat diperiksa, dan tiga di antaranya
+tipografi editorial, dan grid asimetris: semuanya dapat diperiksa, dan tiga di antaranya
 benar-benar dijadikan gerbang otomatis di `scripts/verify/public-purity.mjs`.
 
 ---
@@ -64,7 +64,7 @@ berjalan paralel tanpa saling menunggu.
 | **G4 · WP-09** | Dokumentasi SDLC, matriks ketertelusuran, gerbang verifikasi yang benar-benar menguji aturan baru | Dokumen ini, `docs/14`, `scripts/verify/**`, `README.md` |
 
 Yang **tidak** dijalankan, dan itu disengaja: tidak ada tahap UAT dengan pengguna sungguhan, tidak
-ada uji beban, tidak ada penetration test. Ketiganya tidak bermakna untuk mockup tanpa backend —
+ada uji beban, tidak ada penetration test. Ketiganya tidak bermakna untuk mockup tanpa backend :
 lihat §6.
 
 ---
@@ -81,10 +81,10 @@ kali ada anggota tim baru.
 
 **Alasan.** Invarian `Awardee` mustahil dipenuhi akun staf: `community`, `chapterId`, dan `joinedAt`
 wajib terisi, sedangkan Verifikator dan Admin bukan penerima manfaat. Lebih buruk lagi, tiga
-perhitungan langsung salah bila staf menjadi baris `Awardee` — cakupan KPI memakai cacah awardee
+perhitungan langsung salah bila staf menjadi baris `Awardee`: cakupan KPI memakai cacah awardee
 sebagai penyebut, papan peringkat menyaring lewat `visibleOnLeaderboard`, dan distribusi jenjang
 akan menghitung staf sebagai jenjang terendah. Menambal ketiganya dengan filter peran menyebarkan
-pengetahuan peran ke tiga tempat — persis yang hendak dicegah.
+pengetahuan peran ke tiga tempat: persis yang hendak dicegah.
 
 **Konsekuensi yang diterima:** relasi `UserAccount 1..0/1 Awardee`. Akun non-AWARDEE **wajib**
 `awardeeId === null`, dan invarian itulah yang membuat pemeriksaan konflik kepentingan bermakna.
@@ -96,7 +96,7 @@ Diuji: `domain-test.mjs` §10.
 
 **Alasan.** Pada V1 aturan yang sama sudah ditulis ulang di beberapa berkas. Dua salinan aturan
 akses selalu berakhir berselisih, dan yang tertinggal justru yang longgar. `AccessPolicy` murni dan
-sinkron — tanpa `await`, tanpa penyimpanan, tanpa `$app/*` — sehingga matriks perilaku guard dapat
+sinkron: tanpa `await`, tanpa penyimpanan, tanpa `$app/*`: sehingga matriks perilaku guard dapat
 diuji di `node` polos untuk zona yang halamannya bahkan belum dibuat. Itu jauh lebih murah daripada
 membuktikannya lewat peramban, dan ia tetap benar saat halamannya berubah.
 
@@ -124,7 +124,7 @@ pada bulan keenam.
 
 **Alternatif ditolak:** menentukan legalitas transisi dari tombol mana yang muncul di layar.
 
-**Alasan.** Tombol yang tidak dirender tetap dapat dipanggil — itu bukan kontrol. `content-workflow.js`
+**Alasan.** Tombol yang tidak dirender tetap dapat dipanggil: itu bukan kontrol. `content-workflow.js`
 menyatakan transisi sebagai peta `{from: [{to, by}]}` yang murni: tidak tahu siapa aktornya, tidak
 menyentuh basis data. `allowedStoryTransitions()` dipakai untuk **merender** tombol sekaligus untuk
 **memvalidasi**-nya, sehingga daftar tombol tidak pernah berbeda dari daftar transisi.
@@ -149,14 +149,14 @@ Diuji: `seed-test.mjs` §H (`≥2 akun berperan VERIFIER`) dan `domain-test.mjs`
 verifikasi, sedangkan `crypto.subtle` asinkron dan hanya tersedia di peramban. Menjadikan seed
 asinkron demi hash yang **tetap saja tiruan** adalah pertukaran yang buruk.
 
-**Ini bukan mekanisme keamanan** dan tidak pernah diklaim sebagai mekanisme keamanan — lihat
+**Ini bukan mekanisme keamanan** dan tidak pernah diklaim sebagai mekanisme keamanan: lihat
 peringatan di kepala `src/lib/domain/value-objects/PasswordHash.js` dan §6 dokumen ini.
 
 ### K-9 · Satu sumbu status untuk kegiatan, bukan status + sumbu publikasi terpisah
 
 **Alasan.** `DIUSULKAN`/`DITOLAK` hidup di `EventStatus` yang sama dengan `TERJADWAL`/`SELESAI`.
 Dua sumbu menuntut dua peta metadata dan dua helper yang harus dijaga sinkron oleh banyak paket
-sekaligus — biaya yang tidak sebanding dengan satu kasus tepi yang tidak muncul di data mana pun.
+sekaligus: biaya yang tidak sebanding dengan satu kasus tepi yang tidak muncul di data mana pun.
 `DIUSULKAN → TERJADWAL` **berarti** "terbit ke kalender publik".
 
 ---
@@ -166,7 +166,7 @@ sekaligus — biaya yang tidak sebanding dengan satu kasus tepi yang tidak muncu
 Arah ketergantungan tidak berubah: **Presentation → Application → Domain ← Infrastructure**.
 Yang berubah adalah isinya.
 
-### 4.1 Domain (`src/lib/domain/**`) — murni, tanpa framework
+### 4.1 Domain (`src/lib/domain/**`): murni, tanpa framework
 
 | Berkas | Status | Isi |
 |---|---|---|
@@ -182,31 +182,31 @@ Yang berubah adalah isinya.
 | `services/ProgramImpactService.js` | BARU | Potret angka publik, kelas angka A/B/C, `BENCHMARK_RUJUKAN` |
 
 Aturan lama tetap berlaku dan kini **diuji**: nol impor `svelte`/`dexie`/`$app`/`$lib/stores`/
-`$lib/infrastructure` di seluruh lapisan domain — `domain-test.mjs` §11 memindai berkasnya, bukan
+`$lib/infrastructure` di seluruh lapisan domain: `domain-test.mjs` §11 memindai berkasnya, bukan
 memercayai konvensi.
 
 ### 4.2 Infrastructure (`src/lib/infrastructure/**`)
 
 - Tabel `accounts` ditambahkan lewat `SCHEMA_V2` **append**, bukan menyunting `SCHEMA_V1` di
-  tempat — rantai warisan Dexie tidak boleh putus.
+  tempat: rantai warisan Dexie tidak boleh putus.
 - `DB_VERSION` **dan** `SEED_VERSION` dinaikkan dalam satu langkah. Menaikkan salah satu saja
   menghasilkan kegagalan paling jahat di proyek ini: tabel `accounts` ada tetapi kosong selamanya,
   login mustahil, dan **tanpa pesan galat** karena `query()` hanya mengembalikan array kosong.
-- `seed/accounts.js` [BARU] — 63 akun, nol pemanggilan `rng()`, `createdAt` diturunkan dari
+- `seed/accounts.js` [BARU]: 63 akun, nol pemanggilan `rng()`, `createdAt` diturunkan dari
   `joinedAt` awardee. Satu draw acak tambahan akan menggeser 60 profil, 639 entri buku besar, dan
   seluruh distribusi jenjang sekaligus.
-- `AccountRepository` [BARU] — `findByEmail()` beserta `demoAccounts()` yang **tidak** mengembalikan
+- `AccountRepository` [BARU]: `findByEmail()` beserta `demoAccounts()` yang **tidak** mengembalikan
   kata sandi.
 
 ### 4.3 Store (`src/lib/stores/**`)
 
 - `session.svelte.js` **ditulis ulang**: dari pemilih peran menjadi sesi berbasis akun dengan
   `login()`, `logout()`, `restore()`, `hydrate()`, dan pendelegasian otorisasi ke `AccessPolicy`.
-- `catalog.svelte.js` mendapat `publishedEvents` dan `upcomingEvents` — halaman publik dilarang
+- `catalog.svelte.js` mendapat `publishedEvents` dan `upcomingEvents`: halaman publik dilarang
   menyaring sendiri dari daftar mentah.
-- `editorial.svelte.js` [BARU] — pembungkus `ContentReviewService` untuk zona verifikator.
-- `impact.svelte.js` [BARU] — satu-satunya jalur angka publik.
-- `gamification.svelte.js` — **perbaikan balapan hidrasi** (lihat §5, Pelajaran 3).
+- `editorial.svelte.js` [BARU]: pembungkus `ContentReviewService` untuk zona verifikator.
+- `impact.svelte.js` [BARU]: satu-satunya jalur angka publik.
+- `gamification.svelte.js`: **perbaikan balapan hidrasi** (lihat §5, Pelajaran 3).
 
 ### 4.4 Presentasi (`src/routes/**`, `src/lib/components/**`)
 
@@ -222,7 +222,7 @@ memercayai konvensi.
 
 ---
 
-## 5. Sebelum & sesudah — tabel jujur
+## 5. Sebelum & sesudah: tabel jujur
 
 Angka di kolom "sesudah" berasal dari perintah yang benar-benar dijalankan
 (`npm run verify`, `npm run verify:e2e`, `npm run verify:gamification`), bukan dari perkiraan.
@@ -233,7 +233,7 @@ Angka di kolom "sesudah" berasal dari perintah yang benar-benar dijalankan
 | Komponen `.svelte` dikompilasi | 69 | 112 | `verify:compile`, 0 gagal, 0 warning |
 | Peran | 1 pemilih peran demo | 3 peran berbasis akun | Kewenangan didaftarkan eksplisit; peran BUKAN hierarki |
 | Akun | 0 | 63 | 60 AWARDEE · 2 VERIFIER · 1 ADMIN |
-| Autentikasi | klik "Masuk sebagai …" | surel + kata sandi | Hash **tiruan** — lihat §6 |
+| Autentikasi | klik "Masuk sebagai …" | surel + kata sandi | Hash **tiruan**: lihat §6 |
 | Mekanik gamifikasi di zona publik | ada (tangga jenjang di landing) | nol | Dibuktikan `public-purity.mjs`, 6 aturan, 14 berkas dipindai |
 | Foto asli | 0 | 28 | Lisensi tercatat di `static/img/CREDITS.md` |
 | Font | dari CDN | 5 woff2 lokal | Tanpa permintaan pihak ketiga saat memuat |
@@ -254,7 +254,7 @@ Angka di kolom "sesudah" berasal dari perintah yang benar-benar dijalankan
 | `view-model.js` zona publik | chunk build 350 KB | Sebagian besar adalah teks editorial, bukan logika; belum dipecah per-halaman |
 | Uji E2E | berbasis jeda waktu (`tidur`) | Tanpa dependensi tambahan tidak tersedia penantian berbasis kondisi; jedanya dilebihkan supaya stabil, dengan biaya durasi |
 | Aksesibilitas | belum diaudit menyeluruh | `verify:compile` menahan warning a11y compiler pada nol, tetapi itu bukan audit WCAG |
-| Tombol merah ukuran kecil | memakai merah lebih gelap | Putih di atas `#ED1C24` hanya 4,38 — belum lolos AA untuk teks kecil |
+| Tombol merah ukuran kecil | memakai merah lebih gelap | Putih di atas `#ED1C24` hanya 4,38: belum lolos AA untuk teks kecil |
 
 ---
 
@@ -271,7 +271,7 @@ Ditulis di sini supaya tidak perlu ditanyakan saat demo.
 3. **Route guard adalah pengalaman pengguna, bukan keamanan.** Tanpa server, tidak ada otorisasi
    yang tidak dapat dilewati. `ZoneGuard` mencegah kekeliruan, bukan penyerang.
 4. **Data sintetis.** 60 nama awardee, 29 cerita, 20 kegiatan, dan 639 entri aktivitas dibangkitkan
-   deterministik untuk keperluan demo — bukan data penerima manfaat sungguhan.
+   deterministik untuk keperluan demo: bukan data penerima manfaat sungguhan.
 5. **Foto adalah stok berlisensi bebas**, bukan dokumentasi kegiatan Pertamina Foundation. Kredit
    dan lisensinya tercatat di `static/img/CREDITS.md`.
 6. **Angka kelas B dan C bukan hasil ukur.** Jangkauan organik adalah estimasi berparameter yang
@@ -287,7 +287,7 @@ Detektor guard versi lama mencocokkan kalimat `/Pilih peran|Masuk ke Pfriends|Ko
 pengelola/`. Ketiga kalimat itu lenyap saat `/masuk` ditulis ulang menjadi formulir dan
 `admin/+layout.svelte` diganti `ZoneGuard`. Efeknya: detektor tidak akan pernah menyala lagi, dan
 skrip akan melaporkan 36 route hijau **bahkan bila seluruh zona ter-login menampilkan panel "bukan
-peran Anda"**. Penggantinya `[data-zone-denied]` dan `[data-zone-splash]` — **atribut, bukan teks**,
+peran Anda"**. Penggantinya `[data-zone-denied]` dan `[data-zone-splash]`: **atribut, bukan teks**,
 karena atribut adalah kontrak sedangkan salinan teks adalah pilihan editorial yang boleh berubah.
 
 **2 · Menguji zona tanpa sesi hanya menguji guardnya.**
@@ -300,11 +300,11 @@ dan penolakan lintas zona (peran salah wajib melihat panel).
 **3 · Bug yang paling mahal adalah yang tidak menimbulkan galat.**
 `session.restore()` mengembalikan `awardeeId` dari localStorage seketika, sedangkan
 `session.awardee` baru terisi oleh `hydrate()` yang asinkron. `gamification.refresh()` yang tiba di
-antara dua saat itu melihat `awardee === null` padahal orangnya jelas masih masuk — lalu memanggil
+antara dua saat itu melihat `awardee === null` padahal orangnya jelas masih masuk: lalu memanggil
 `reset()`. Akibatnya poin, jenjang, dan lencana terkunci pada **nol** setelah muat ulang keras.
 Halaman tetap merender, tidak ada galat konsol, hanya angkanya yang salah. Perbaikannya satu
 kondisi; pencegah regresinya adalah tiga asersi × tiga putaran muat ulang keras di
-`e2e-gamification.mjs`, memakai anggota yang saldo seed-nya **bukan nol** — menguji "poin tidak nol"
+`e2e-gamification.mjs`, memakai anggota yang saldo seed-nya **bukan nol**: menguji "poin tidak nol"
 pada anggota bersaldo nol akan hijau selamanya tanpa membuktikan apa pun.
 
 **4 · Larangan butuh jalan keluar, atau ia akan dilanggar.**
@@ -314,7 +314,7 @@ seed membuat larangan itu dapat ditegakkan tanpa pengecualian.
 
 **5 · Kontrak export sebelum kode membuat paralelisme mungkin.**
 Lima paket G3-B berjalan bersamaan tanpa bentrok karena `docs/12` §3.7 memetakan setiap berkas ke
-tepat satu pemilik dan menyatakan sisanya beku. Proyek ini bukan repositori git — tidak ada undo,
+tepat satu pemilik dan menyatakan sisanya beku. Proyek ini bukan repositori git: tidak ada undo,
 dan tidak ada `git diff` untuk membuktikan siapa mengubah apa. Kepemilikan berkas menggantikan
 keduanya.
 
@@ -326,7 +326,7 @@ kali di landing. Kritik selera yang berhasil diubah menjadi asersi tidak akan ke
 
 **7 · Angka yang tidak dapat dipertahankan lebih buruk daripada tidak ada angka.**
 Klasifikasi A/B/C memaksa setiap angka publik menyatakan asal-usulnya: terhitung, estimasi
-berparameter, atau benchmark eksternal. Jangkauan organik **wajib** rentang — satu angka tunggal
+berparameter, atau benchmark eksternal. Jangkauan organik **wajib** rentang: satu angka tunggal
 akan terbaca sebagai hasil ukur, dan klaim itu runtuh pada pertanyaan pertama: "diukur bagaimana?"
 
 ---

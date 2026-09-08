@@ -1,8 +1,8 @@
 /**
- * REPOSITORY — Gerakan Bersama (Hal 5 pilar 03).
+ * REPOSITORY: Gerakan Bersama (Hal 5 pilar 03).
  *
- * Tanggung jawab: akses data gerakan kolektif — aksi lingkungan, edukasi
- * masyarakat, dan pemberdayaan ekonomi — beserta progres partisipasinya.
+ * Tanggung jawab: akses data gerakan kolektif: aksi lingkungan, edukasi
+ * masyarakat, dan pemberdayaan ekonomi: beserta progres partisipasinya.
  *
  * @see src/lib/domain/entities/Movement.js
  */
@@ -21,7 +21,7 @@ export class MovementRepository extends DexieRepository {
 	}
 
 	/**
-	 * Gerakan berdasarkan slug — jalur baca halaman detail gerakan.
+	 * Gerakan berdasarkan slug: jalur baca halaman detail gerakan.
 	 * @param {string} slug
 	 * @returns {Promise<Movement|null>}
 	 */

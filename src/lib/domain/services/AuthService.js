@@ -1,5 +1,5 @@
 /**
- * SERVICE — Autentikasi.
+ * SERVICE: Autentikasi.
  *
  * Tanggung jawab: memeriksa kredensial, menolak akun yang tidak berhak masuk, dan
  * menyatukan akun dengan entitas awardee-nya menjadi satu jawaban tunggal yang
@@ -9,7 +9,7 @@
  *
  * 1. **Repository disuntik lewat konstruktor tanpa nilai bawaan.** Memasang
  *    `accountRepository` sebagai default akan menyeret Dexie ke lapisan domain
- *    lewat pintu belakang — dan justru arah ketergantungan itulah yang sedang
+ *    lewat pintu belakang: dan justru arah ketergantungan itulah yang sedang
  *    dijaga kelas ini. Perakitan terjadi satu tingkat di atas, di store.
  * 2. **Satu pesan untuk surel salah dan sandi salah.** Membedakan keduanya
  *    memberi tahu penyerang bahwa sebuah surel terdaftar. Perbedaan itu tidak
@@ -19,10 +19,10 @@
  *    akun kepada siapa pun yang menebak surel.
  * 4. **Kelas ini tidak menyentuh basis data selain lewat repository, dan tidak
  *    tahu apa pun tentang penyimpanan sesi.** localStorage, bootstrap basis data,
- *    dan pengalihan halaman adalah urusan store — bukan urusan domain.
+ *    dan pengalihan halaman adalah urusan store: bukan urusan domain.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.8 kontrak export, §5.4 arah ketergantungan D-2/D-3
- * @see docs/10-REVISION-SPEC.md — §3.6 aturan penyimpanan sesi
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.8 kontrak export, §5.4 arah ketergantungan D-2/D-3
+ * @see docs/10-REVISION-SPEC.md: §3.6 aturan penyimpanan sesi
  */
 
 import { Awardee } from '../entities/Awardee.js';
@@ -42,7 +42,7 @@ export const AuthFailure = Object.freeze({
 /**
  * Pesan Bahasa Indonesia tiap sebab kegagalan.
  *
- * `KREDENSIAL_SALAH` sengaja tidak menyebut mana yang keliru — lihat butir 2 pada
+ * `KREDENSIAL_SALAH` sengaja tidak menyebut mana yang keliru: lihat butir 2 pada
  * catatan berkas.
  * @type {Readonly<Record<string, string>>}
  */
@@ -119,7 +119,7 @@ export class AuthService {
 	/**
 	 * Akun berdasarkan surel.
 	 *
-	 * Surel dinormalkan lebih dulu — indeks tabel menyimpan bentuk huruf kecil tanpa
+	 * Surel dinormalkan lebih dulu: indeks tabel menyimpan bentuk huruf kecil tanpa
 	 * spasi tepi, dan kueri yang tidak dinormalkan mengembalikan `null` untuk
 	 * kredensial yang sebenarnya benar.
 	 *
@@ -138,7 +138,7 @@ export class AuthService {
 	 * Entitas awardee milik sebuah akun.
 	 *
 	 * @param {UserAccount|null} account
-	 * @returns {Promise<Awardee|null>} `null` untuk akun verifikator dan admin —
+	 * @returns {Promise<Awardee|null>} `null` untuk akun verifikator dan admin :
 	 *   keduanya bukan penerima manfaat, jadi ketiadaan awardee di sini normal.
 	 */
 	async awardeeOf(account) {

@@ -1,5 +1,5 @@
 /**
- * KONSTANTA KOMUNITAS — Hal 2, Hal 4, dan Hal 5 dokumen sumber.
+ * KONSTANTA KOMUNITAS: Hal 2, Hal 4, dan Hal 5 dokumen sumber.
  *
  * Tanggung jawab: mendefinisikan dua komunitas utama Pfriends, pembagian chapter,
  * serta enum siklus hidup yang dipakai lintas modul (status cerita, status
@@ -7,13 +7,13 @@
  *
  * Dua komunitas ini bukan sekadar label filter. Hal 4 menyebut alumni Sobat Bumi
  * sebagai "mitra muda/mentor" dan PFpreneur sebagai "mitra sekaligus entitas
- * bisnis binaan" — hubungan mentor–mentee itulah alasan keduanya dipertemukan di
+ * bisnis binaan": hubungan mentor–mentee itulah alasan keduanya dipertemukan di
  * satu platform. Field `peran` dan `kebutuhan` menyimpan alasan tersebut agar
  * halaman publik dapat menjelaskannya tanpa mengarang narasi baru.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 2 Background, Hal 4 Strategic Initiative, Hal 5 Aktivitas
- * @see docs/04-ESG-GOVERNANCE.md — §3 state machine cerita
- * @see docs/12-BUILD-CONTRACT-V2.md — §4.1 L3 rename AWARDEE_STATUS dan penambahan peranAktor
+ * @see docs/00-SOURCE-BRIEF.md: Hal 2 Background, Hal 4 Strategic Initiative, Hal 5 Aktivitas
+ * @see docs/04-ESG-GOVERNANCE.md: §3 state machine cerita
+ * @see docs/12-BUILD-CONTRACT-V2.md: §4.1 L3 rename AWARDEE_STATUS dan penambahan peranAktor
  */
 
 import { UserRole } from './roles.js';
@@ -52,7 +52,7 @@ export const COMMUNITIES = Object.freeze([
 		id: CommunityType.SOBI,
 		nama: 'Sobat Bumi Indonesia',
 		akronim: 'SOBI',
-		programAsal: 'Beasiswa Sobat Bumi — PFprestasi',
+		programAsal: 'Beasiswa Sobat Bumi: PFprestasi',
 		peran: 'Mitra muda dan mentor bagi ekosistem Pertamina Foundation',
 		deskripsi:
 			'Ribuan penerima Beasiswa Sobat Bumi yang telah menyelesaikan studi dan kini tersebar di berbagai kampus, kota, dan sektor pekerjaan. Mereka adalah sumber daya manusia unggul yang paling siap berperan sebagai duta energi dan mentor bagi komunitas binaan lain.',
@@ -71,7 +71,7 @@ export const COMMUNITIES = Object.freeze([
 		id: CommunityType.WOMENPRENEUR,
 		nama: 'Womenpreneur Pertamina Foundation',
 		akronim: 'Womenpreneur',
-		programAsal: 'PFpreneur — UMKM binaan Pertamina Foundation',
+		programAsal: 'PFpreneur: UMKM binaan Pertamina Foundation',
 		peran: 'Mitra sekaligus entitas bisnis binaan Pertamina Foundation',
 		deskripsi:
 			'Pelaku UMKM alumni PFpreneur yang masuk daftar unggulan UMKM binaan PT Pertamina (Persero). Usaha mereka sudah berjalan, namun pertumbuhannya tertahan oleh keterbatasan jaringan dan akses keahlian.',
@@ -101,11 +101,11 @@ export const COMMUNITIES = Object.freeze([
 /**
  * Chapter komunitas. Hal 4 menyebut WA Komunitas utama berisi kumpulan WAG
  * masing-masing batch (PF 10, PF 11, PF 12, dst) dan Hal 5 menyebut "pembagian
- * chapter komunitas" — keduanya dirujuk ke satu konsep yang sama di sini, yaitu
+ * chapter komunitas": keduanya dirujuk ke satu konsep yang sama di sini, yaitu
  * chapter berbasis batch. Memisahkan batch dan chapter menjadi dua entitas akan
  * menduplikasi keanggotaan tanpa menambah informasi.
  *
- * Deskripsi angkatan bersifat [RANCANGAN] — Hal 4 menyebut nama batch tetapi tidak
+ * Deskripsi angkatan bersifat [RANCANGAN]: Hal 4 menyebut nama batch tetapi tidak
  * menyebut tahunnya, sehingga penamaan periode di sini perlu dikonfirmasi Corsec.
  *
  * @type {readonly ChapterDef[]}
@@ -141,7 +141,7 @@ export const CHAPTERS = Object.freeze([
 ]);
 
 /**
- * Status siklus hidup cerita — state machine moderasi docs/04 §3.2.
+ * Status siklus hidup cerita: state machine moderasi docs/04 §3.2.
  *
  * Penolakan permanen sengaja TIDAK dibuat sebagai status tersendiri. Cerita yang
  * ditolak, yang kedaluwarsa, dan yang ditarik karena consent dicabut mendapat
@@ -175,7 +175,7 @@ export const STORY_STATUS = Object.freeze({
  * - `aktor` adalah LABEL antarmuka Bahasa Indonesia. Kartu naskah menampilkannya
  *   apa adanya ("Bola ada di ..."), jadi ia tidak boleh dihapus.
  * - `peranAktor` adalah ENUM `UserRole`. Guard dan tombol keputusan membaca yang
- *   ini — prosa tidak dapat dibandingkan dengan peran sesi.
+ *   ini: prosa tidak dapat dibandingkan dengan peran sesi.
  *
  * `peranAktor` bernilai `null` pada status yang tidak menunggu tindakan siapa pun:
  * `TERPUBLIKASI` (naskah sudah tayang; arsip adalah tindakan baru, bukan antrean)
@@ -273,7 +273,7 @@ export const STORY_ARCHIVE_REASON = Object.freeze({
  * PENYIMPANAN: kolom `status` adalah indeks tabel `awardees`, dan setiap baris
  * seed serta setiap basis data peramban yang sudah terisi menyimpan nilai lama itu.
  * Mengganti nilainya akan membuat seluruh kueri berbasis status mengembalikan
- * daftar kosong — tanpa satu pun galat, karena Dexie hanya menemukan nol baris.
+ * daftar kosong: tanpa satu pun galat, karena Dexie hanya menemukan nol baris.
  *
  * Jangan bingungkan dengan `AccountStatus` (`entities/UserAccount.js`): yang ini
  * status penerima manfaat, yang itu status akses login.

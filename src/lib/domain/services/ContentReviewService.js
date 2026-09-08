@@ -1,5 +1,5 @@
 /**
- * SERVICE — Alur Editorial Konten.
+ * SERVICE: Alur Editorial Konten.
  *
  * Tanggung jawab: mengeksekusi transisi status cerita dan kegiatan beserta efek
  * sampingnya (jejak keputusan, cap waktu, penyimpanan), sesudah memastikan
@@ -9,7 +9,7 @@
  *
  * 1. **Legalitas transisi TIDAK ditulis ulang di sini.** Setiap method bertanya
  *    kepada `canTransitionStory`/`canTransitionEvent`. Sebelum peta itu ada,
- *    aturannya hidup sebagai tombol yang dirender atau tidak dirender — dan
+ *    aturannya hidup sebagai tombol yang dirender atau tidak dirender: dan
  *    tombol yang tidak dirender tetap dapat dipanggil lewat konsol peramban.
  * 2. **Urutan pemeriksaan dikunci:** (a) legalitas transisi, (b) konflik
  *    kepentingan, (c) gerbang entity, (d) argumen wajib. Urutan ini membuat pesan
@@ -28,19 +28,19 @@
  * 5. **`pipeline()` dan `slaCompliance()` adalah method kelas ini**, bukan service
  *    metrik keempat: agregasinya bertumpu pada repository yang sudah disuntik ke
  *    sini, dan kelas terpisah hanya akan melahirkan sumber kebenaran kedua atas
- *    antrean yang sama. Rumusnya sendiri tinggal di `_editorial-metrics.js` —
+ *    antrean yang sama. Rumusnya sendiri tinggal di `_editorial-metrics.js` :
  *    pemecahan berkas karena batas ukuran modul, bukan pemecahan tanggung jawab.
  * 6. **Consent penulis adalah gerbang yang HIDUP, dan sumber kebenarannya satu.**
  *    Sumbernya adalah rekaman consent milik penulis; `Story.consentActive` hanyalah
  *    proyeksinya, dan `withdrawOnConsentRevoked()` satu-satunya yang menulis
- *    proyeksi itu. Setiap keputusan yang membuat naskah terlihat publik —
- *    `approveStory` dan `publishStory` — membaca ULANG penulisnya lewat
+ *    proyeksi itu. Setiap keputusan yang membuat naskah terlihat publik :
+ *    `approveStory` dan `publishStory`: membaca ULANG penulisnya lewat
  *    `awardeeRepo` sebelum memutuskan. Persetujuan yang sah pekan lalu bukan
  *    persetujuan yang sah hari ini, dan pencabutan tidak pernah lewat meja
  *    verifikator.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.9 kontrak export, §2.2 peta transisi wajib
- * @see docs/10-REVISION-SPEC.md — §5.3 tabel transisi cerita, §5.5 konflik kepentingan, §5.6 SLA
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.9 kontrak export, §2.2 peta transisi wajib
+ * @see docs/10-REVISION-SPEC.md: §5.3 tabel transisi cerita, §5.5 konflik kepentingan, §5.6 SLA
  */
 
 import { canTransitionEvent, canTransitionStory } from '../constants/content-workflow.js';
@@ -79,7 +79,7 @@ export const REVIEW_FAILURE_MESSAGE = Object.freeze({
 		'Perpindahan status ini tidak tersedia dari keadaan naskah saat ini.',
 	[ReviewFailure.PERAN_TIDAK_BERWENANG]: 'Peran Anda tidak berwenang melakukan tindakan ini.',
 	[ReviewFailure.KONFLIK_KEPENTINGAN]:
-		'Anda pengusul konten ini — keputusannya harus diambil verifikator lain.',
+		'Anda pengusul konten ini: keputusannya harus diambil verifikator lain.',
 	[ReviewFailure.BELUM_LAYAK_KIRIM]:
 		'Naskah belum memenuhi syarat pengiriman: panjang minimum, lampiran dokumentasi, dan tag ESG wajib terisi.',
 	[ReviewFailure.BELUM_LAYAK_TERBIT]:
@@ -111,7 +111,7 @@ export const CATATAN_PENARIKAN_CONSENT =
  * Hasil kaskade pencabutan consent. Bentuknya sengaja BERBEDA dari `ReviewResult`:
  * ini bukan satu keputusan atas satu entity, melainkan satu operasi atas sekumpulan
  * naskah, dan memaksakan bentuk `entity` tunggal akan menyembunyikan berapa naskah
- * yang sebenarnya tersentuh — justru angka itulah yang harus dilaporkan ke penulis.
+ * yang sebenarnya tersentuh: justru angka itulah yang harus dilaporkan ke penulis.
  *
  * @typedef {object} ConsentCascadeResult
  * @property {boolean} ok
@@ -151,7 +151,7 @@ export class ContentReviewService {
 	 *   pernah menyetujui maupun menerbitkan naskah (mis. konsol arsip admin) tidak
 	 *   perlu memikulnya. Tanpa repo ini gerbang consent TIDAK melemah: ia jatuh ke
 	 *   proyeksi `Story.consentActive` yang dijaga `withdrawOnConsentRevoked()`,
-	 *   sehingga hasilnya tetap menolak — yang hilang hanyalah pembacaan ulang
+	 *   sehingga hasilnya tetap menolak: yang hilang hanyalah pembacaan ulang
 	 *   lapis kedua.
 	 * @param {() => Date} [deps.clock] Sumber waktu; disuntik agar uji bersifat deterministik.
 	 * @throws {TypeError} bila ada repository wajib yang tidak diberikan.
@@ -169,7 +169,7 @@ export class ContentReviewService {
 	// ---------------------------------------------------------------- cerita
 
 	/**
-	 * T-01 & T-04 — penulis mengajukan naskahnya untuk ditinjau.
+	 * T-01 & T-04: penulis mengajukan naskahnya untuk ditinjau.
 	 *
 	 * Pengajuan ulang dari `PERLU_REVISI` menaikkan `revisionCount`: angka itu
 	 * adalah sinyal naskah yang berputar-putar, dan ia hanya bermakna bila dihitung
@@ -205,7 +205,7 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * T-02 — verifikator mengambil naskah dari antrean.
+	 * T-02: verifikator mengambil naskah dari antrean.
 	 *
 	 * @param {Story|object} story
 	 * @param {import('../entities/UserAccount.js').UserAccount} actor
@@ -226,7 +226,7 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * T-05 — verifikator menyetujui naskah.
+	 * T-05: verifikator menyetujui naskah.
 	 *
 	 * `sensitivityConfirmed` wajib dinyatakan `true` secara eksplisit. Tiadanya
 	 * tanda bahaya bukan pernyataan aman: checklist data sensitif harus dijalankan
@@ -268,7 +268,7 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * T-03 — verifikator mengembalikan naskah untuk diperbaiki.
+	 * T-03: verifikator mengembalikan naskah untuk diperbaiki.
 	 *
 	 * @param {Story|object} story
 	 * @param {import('../entities/UserAccount.js').UserAccount} actor
@@ -293,11 +293,11 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * T-06 — verifikator menerbitkan naskah ke ruang publik.
+	 * T-06: verifikator menerbitkan naskah ke ruang publik.
 	 *
 	 * Gerbang `isPublishable` diperiksa ULANG di sini, bukan dipercayakan pada hasil
 	 * saat persetujuan. Consent dapat dicabut penulisnya, atau kedaluwarsa sendiri,
-	 * di antara persetujuan dan penerbitan — dan keduanya terjadi tanpa satu pun
+	 * di antara persetujuan dan penerbitan: dan keduanya terjadi tanpa satu pun
 	 * peristiwa yang melewati verifikator.
 	 *
 	 * Consent diperiksa TERPISAH dari `isPublishable` meski `isPublishable` juga
@@ -331,7 +331,7 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * T-07 & T-08 — penarikan naskah dari publik atau penolakan permanen.
+	 * T-07 & T-08: penarikan naskah dari publik atau penolakan permanen.
 	 *
 	 * Alasan wajib dipilih dari `STORY_ARCHIVE_REASON`, bukan teks bebas: arsip
 	 * adalah catatan tata kelola yang dibaca kembali saat audit, dan alasan berupa
@@ -361,7 +361,7 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * T-09 — KASKADE PENCABUTAN CONSENT.
+	 * T-09: KASKADE PENCABUTAN CONSENT.
 	 *
 	 * Menarik seluruh naskah seorang penulis dari ruang publik dan menghentikan
 	 * naskahnya yang masih di antrean, karena penulis mencabut persetujuan
@@ -374,7 +374,7 @@ export class ContentReviewService {
 	 *    kebenarannya adalah rekaman consent penulis; naskah hanya memantulkannya.
 	 *    Satu penulis berarti proyeksi tidak dapat menyimpang dari sumbernya.
 	 * 2. **Peran aktor sengaja TIDAK diperiksa terhadap peta transisi.** Penarikan
-	 *    ini bukan keputusan editorial — ia konsekuensi otomatis dari hak subjek
+	 *    ini bukan keputusan editorial: ia konsekuensi otomatis dari hak subjek
 	 *    data atas datanya sendiri. Menundukkannya pada `TERPUBLIKASI → DIARSIPKAN
 	 *    oleh VERIFIER` berarti awardee harus menunggu verifikator sebelum haknya
 	 *    berlaku, dan penundaan itu persis yang dilarang docs/04 §4.5. Yang tetap
@@ -387,7 +387,7 @@ export class ContentReviewService {
 	 * 4. **Naskah di antrean tidak diarsipkan, hanya dimatikan consent-nya.** Draf
 	 *    dan naskah yang sedang ditinjau belum pernah terlihat publik, jadi tidak ada
 	 *    yang perlu ditarik. Yang perlu dijamin hanyalah bahwa ia tidak dapat
-	 *    disetujui maupun diterbitkan — dan itu dijamin `approveStory`/`publishStory`.
+	 *    disetujui maupun diterbitkan: dan itu dijamin `approveStory`/`publishStory`.
 	 *    Mengarsipkannya akan menghanguskan naskah yang penulisnya mungkin ingin
 	 *    ajukan lagi setelah memberikan persetujuan kembali.
 	 *
@@ -396,7 +396,7 @@ export class ContentReviewService {
 	 * @param {import('../entities/UserAccount.js').UserAccount} actor Akun yang
 	 *   mengeksekusi pencabutan; tercatat pada catatan peninjauan naskah.
 	 * @returns {Promise<ConsentCascadeResult>}
-	 * @throws {TypeError} bila id penulis tidak dapat ditentukan — itu kesalahan
+	 * @throws {TypeError} bila id penulis tidak dapat ditentukan: itu kesalahan
 	 *   pemrograman, bukan penolakan kebijakan.
 	 */
 	async withdrawOnConsentRevoked(author, actor) {
@@ -448,7 +448,7 @@ export class ContentReviewService {
 	// -------------------------------------------------------------- kegiatan
 
 	/**
-	 * E-01 — mengusulkan kegiatan ke antrean verifikator.
+	 * E-01: mengusulkan kegiatan ke antrean verifikator.
 	 *
 	 * Pengusul dicatat dari aktor, bukan dari masukan pemanggil: `proposedBy` adalah
 	 * dasar pemeriksaan konflik kepentingan pada persetujuan, dan nilai yang boleh
@@ -481,10 +481,10 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * E-02 — menyetujui usulan sehingga terbit ke kalender publik.
+	 * E-02: menyetujui usulan sehingga terbit ke kalender publik.
 	 *
 	 * Pengusul dilarang menyetujui usulannya sendiri. Larangan ini tidak pernah
-	 * memblokir agenda internal karena dua akun verifikator wajib ada sejak seed —
+	 * memblokir agenda internal karena dua akun verifikator wajib ada sejak seed :
 	 * dan justru karena jalan keluarnya selalu tersedia, larangan ini dapat
 	 * ditegakkan tanpa pengecualian.
 	 *
@@ -509,7 +509,7 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * E-03 — menolak usulan kegiatan.
+	 * E-03: menolak usulan kegiatan.
 	 *
 	 * @param {CommunityEvent|object} event
 	 * @param {import('../entities/UserAccount.js').UserAccount} actor
@@ -533,7 +533,7 @@ export class ContentReviewService {
 	}
 
 	/**
-	 * E-05 — membatalkan kegiatan yang sudah terjadwal atau sedang berlangsung.
+	 * E-05: membatalkan kegiatan yang sudah terjadwal atau sedang berlangsung.
 	 *
 	 * Pembatalan sengaja TIDAK diperiksa terhadap konflik kepentingan: membatalkan
 	 * kegiatan sendiri bukan menguntungkan diri sendiri, dan agenda yang batal harus
@@ -568,7 +568,7 @@ export class ContentReviewService {
 	 * Antrean naskah yang menunggu tindakan verifikator, tertua lebih dulu.
 	 *
 	 * Urutan tertua-dulu disengaja: antrean yang menampilkan naskah terbaru di
-	 * puncak membuat naskah yang paling lama menunggu tidak pernah tersentuh — dan
+	 * puncak membuat naskah yang paling lama menunggu tidak pernah tersentuh: dan
 	 * justru itulah yang paling dekat melewati SLA.
 	 * @returns {Promise<Story[]>}
 	 */
@@ -598,7 +598,7 @@ export class ContentReviewService {
 	 * Status SLA sebuah entity pada waktu tertentu.
 	 *
 	 * Statis dan murni supaya kartu antrean dapat memanggilnya tanpa menyentuh
-	 * repository — sebuah daftar dua puluh baris tidak boleh berarti dua puluh
+	 * repository: sebuah daftar dua puluh baris tidak boleh berarti dua puluh
 	 * pembacaan basis data.
 	 *
 	 * @param {Story|CommunityEvent|object} entity
@@ -661,7 +661,7 @@ export class ContentReviewService {
 		if (!canTransitionStory(story.status, tujuan, actor.role)) return ReviewFailure.TRANSISI_TERLARANG;
 		// Pertahanan berlapis: akun verifikator wajib ber-`awardeeId` null, sehingga
 		// perbandingan ini tidak dapat menyala pada data yang sah. Ia dipasang untuk
-		// menangkap data yang TIDAK sah — akun yang lolos invarian karena kekeliruan
+		// menangkap data yang TIDAK sah: akun yang lolos invarian karena kekeliruan
 		// migrasi kelak.
 		if (AccessPolicy.isSelfReview(actor.awardeeId, story.authorId)) {
 			return ReviewFailure.KONFLIK_KEPENTINGAN;
@@ -692,9 +692,9 @@ export class ContentReviewService {
 	 *
 	 * Konjungtif atas dua pembacaan yang berbeda tingkatannya, dan keduanya wajib
 	 * setuju:
-	 * - `awardeeRepo` — keadaan penulis yang dibaca ulang detik ini juga. Inilah
+	 * - `awardeeRepo`: keadaan penulis yang dibaca ulang detik ini juga. Inilah
 	 *   pembacaan yang membuat gerbang ini hidup, bukan potret beku.
-	 * - `story.hasActiveConsent` — proyeksi pada naskah itu sendiri, yang juga
+	 * - `story.hasActiveConsent`: proyeksi pada naskah itu sendiri, yang juga
 	 *   menjawab pertanyaan berbeda: apakah naskah INI ditulis di atas sebuah
 	 *   rekaman consent (`consentId`), atau tidak pernah punya dasar sama sekali.
 	 *

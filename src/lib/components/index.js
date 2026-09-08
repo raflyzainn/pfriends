@@ -1,5 +1,5 @@
 /**
- * BARREL KOMPONEN — satu titik impor untuk seluruh komponen bersama.
+ * BARREL KOMPONEN: satu titik impor untuk seluruh komponen bersama.
  *
  * Halaman cukup menulis:
  *   import { PageHeader, Card, TierBadge } from '$lib/components';
@@ -13,8 +13,8 @@
  * direktori ini, BUKAN di `editorial/`, karena tiga dari lima pemakainya adalah
  * zona ter-login.
  *
- * @see docs/09-BUILD-CONTRACT.md — §4 WP-5, §5 kontrak komponen
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak export komponen FINAL
+ * @see docs/09-BUILD-CONTRACT.md: §4 WP-5, §5 kontrak komponen
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak export komponen FINAL
  */
 
 // ── Primitif ─────────────────────────────────────────────────────────────
@@ -48,6 +48,15 @@ export { default as FilterChips } from './FilterChips.svelte';
 export { default as DataTable } from './DataTable.svelte';
 export { default as Timeline } from './Timeline.svelte';
 export { default as Tabs } from './Tabs.svelte';
+export { default as RegistrationForm } from './RegistrationForm.svelte';
+export { default as ProofPreview } from './ProofPreview.svelte';
+export { default as RedemptionAdminPanel } from './RedemptionAdminPanel.svelte';
+export { default as RewardManagementPanel } from './RewardManagementPanel.svelte';
+export { default as PointActionManagementPanel } from './PointActionManagementPanel.svelte';
+export { default as AdminGamificationNav } from './AdminGamificationNav.svelte';
+export { default as WhatsappLink } from './WhatsappLink.svelte';
+export { default as DummyBadge } from './DummyBadge.svelte';
+export { default as DummyRouteNotice } from './DummyRouteNotice.svelte';
 
 // ── Umpan balik ──────────────────────────────────────────────────────────
 export { default as Modal } from './Modal.svelte';

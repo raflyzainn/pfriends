@@ -1,30 +1,30 @@
 <script>
 	/**
-	 * EventCard — kartu kegiatan komunitas.
+	 * EventCard: kartu kegiatan komunitas.
 	 *
 	 * Props:
 	 * @prop {{id:string,title:string,startAt:string,endAt?:string,mode?:'ONLINE'|'OFFLINE'|'HYBRID',
 	 *         location?:string,chapter?:string,quota?:number,registered?:number,
 	 *         pointsReward?:number,status?:'UPCOMING'|'ONGOING'|'DONE'}} event
-	 * @prop {boolean} showPoints            Baku `false` — lihat catatan di bawah.
+	 * @prop {boolean} showPoints            Baku `false`: lihat catatan di bawah.
 	 * @prop {(event:any)=>void} onAttend    Kontrak 09 §5.
 	 * @prop {(event:any)=>void} onRegister  Alias `onAttend` (penamaan 08 §5.2).
 	 * @prop {'grid'|'list'} variant
 	 * @prop {boolean} isRegistered
 	 * @prop {string} href
 	 *
-	 * Kuota penuh mengubah tombol menjadi "Daftar Tunggu", bukan mematikannya —
+	 * Kuota penuh mengubah tombol menjadi "Daftar Tunggu", bukan mematikannya :
 	 * jalan buntu tanpa alternatif adalah kegagalan desain, bukan penegakan aturan.
 	 *
 	 * `showPoints` BAKU `false` dan itu keputusan kepatuhan, bukan preferensi.
 	 * Keputusan Pemilik Produk #2 melarang nilai poin muncul di zona publik, dan
 	 * baku `true` berarti setiap pemakaian baru bocor sampai ada yang ingat
-	 * mematikannya. Zona publik memang tidak memakai komponen ini sama sekali —
-	 * ia digantikan `EventListPanel` yang secara struktural tidak menerima poin —
+	 * mematikannya. Zona publik memang tidak memakai komponen ini sama sekali :
+	 * ia digantikan `EventListPanel` yang secara struktural tidak menerima poin :
 	 * tetapi baku aman membuat kepatuhan tidak bergantung pada ingatan siapa pun.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 EventCard { event, showPoints, … }
-	 * @see docs/11-VISUAL-DIRECTION.md — §6 E4 tabel "yang TIDAK boleh tampil publik"
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 EventCard { event, showPoints, … }
+	 * @see docs/11-VISUAL-DIRECTION.md: §6 E4 tabel "yang TIDAK boleh tampil publik"
 	 */
 	import Button from './Button.svelte';
 	import StatusBadge from './StatusBadge.svelte';

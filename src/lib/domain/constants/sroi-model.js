@@ -1,12 +1,12 @@
 /**
- * MODEL SROI — parameter kanonik perhitungan Social Return on Investment.
+ * MODEL SROI: parameter kanonik perhitungan Social Return on Investment.
  *
  * Tanggung jawab: menjadi SATU-SATUNYA tempat angka penyesuaian SROI, nilai proxy
  * rupiah, dan ambang kelengkapan bukti boleh dituliskan.
  *
  * Berkas ini lahir dari satu temuan yang pantas membuat siapa pun berhenti sejenak:
- * seluruh model SROI — termasuk investasi program Rp450 juta dan rasio yang akan
- * dikutip ke luar organisasi — sebelumnya hidup sebagai konstanta lokal di dalam
+ * seluruh model SROI: termasuk investasi program Rp450 juta dan rasio yang akan
+ * dikutip ke luar organisasi: sebelumnya hidup sebagai konstanta lokal di dalam
  * satu komponen Svelte. Angka paling politis di aplikasi ini adalah satu-satunya
  * angka yang tidak dijaga oleh satu pun uji domain. Memindahkannya ke sini bukan
  * kerapian gaya; ini yang membuat angkanya dapat diuji, ditelusuri, dan diubah di
@@ -14,13 +14,13 @@
  *
  * PROVENANCE. Konvensi docs/02 dipertahankan: setiap nilai di bawah berstatus
  * **[ASUMSI]** sampai Corsec menetapkan sumber rujukannya. Tidak satu pun berasal
- * dari dokumen sumber Hal 3/Hal 6 sebagai angka jadi — yang berasal dari sana
+ * dari dokumen sumber Hal 3/Hal 6 sebagai angka jadi: yang berasal dari sana
  * hanyalah KUANTITAS-nya (jam kegiatan, peserta aksi, jangkauan), bukan nilai
  * rupiah yang dilekatkan padanya. Perbedaan itu wajib tetap terlihat.
  *
- * @see docs/00-SOURCE-BRIEF.md — Hal 3 SROI, Hal 6 dampak inisiatif, Hal 9 pipeline bukti
- * @see docs/02-KPI-MODEL.md — §7.1 empat penyesuaian, §7.2 nilai proxy
- * @see src/lib/domain/services/SroiCalculator.js — eksekusi perhitungannya
+ * @see docs/00-SOURCE-BRIEF.md: Hal 3 SROI, Hal 6 dampak inisiatif, Hal 9 pipeline bukti
+ * @see docs/02-KPI-MODEL.md: §7.1 empat penyesuaian, §7.2 nilai proxy
+ * @see src/lib/domain/services/SroiCalculator.js: eksekusi perhitungannya
  */
 
 /**
@@ -28,10 +28,10 @@
  *
  * Hal 9 menuntut pipeline bukti berdiri lebih dulu sebelum dasbor dampak dipakai
  * sebagai klaim. Selama kelengkapan bukti belum mencapai ambang ini, rasio tetap
- * dihitung dan tetap ditampilkan — tetapi berlabel estimasi internal. Menyembunyikan
+ * dihitung dan tetap ditampilkan: tetapi berlabel estimasi internal. Menyembunyikan
  * angkanya sama sekali justru mendorong orang mengarang angka sendiri di slide.
  *
- * [ASUMSI] docs/04 §8.3 — menunggu penetapan Corsec.
+ * [ASUMSI] docs/04 §8.3: menunggu penetapan Corsec.
  * @type {number}
  */
 export const AMBANG_KELENGKAPAN_BUKTI = 85;
@@ -49,7 +49,7 @@ export const AMBANG_KELENGKAPAN_BUKTI = 85;
  *
  * Urutan larik ini bermakna: tiap penyesuaian memotong SISA dari penyesuaian
  * sebelumnya, bukan nilai kotor awal. Menerapkannya paralel (menjumlahkan keempat
- * faktor lalu memotong sekali) menghasilkan angka yang berbeda dan lebih rendah —
+ * faktor lalu memotong sekali) menghasilkan angka yang berbeda dan lebih rendah :
  * 0,2+0,3+0,25+0,1 = 85% terpotong, dibanding 62,2% pada penerapan berurutan.
  * Karena itu larik ini dibekukan dan kalkulator wajib menghormati urutannya.
  *
@@ -87,7 +87,7 @@ export const SROI_ADJUSTMENTS = Object.freeze([
 ]);
 
 /**
- * Nilai proxy dan input eksternal model SROI. SELURUHNYA [ASUMSI] — docs/02 §7.2.
+ * Nilai proxy dan input eksternal model SROI. SELURUHNYA [ASUMSI]: docs/02 §7.2.
  *
  * Dikumpulkan dalam satu objek beku supaya derajat kepastiannya tetap terlihat
  * sebagai satu blok, dan supaya tabel asumsi di halaman laporan dapat dibangun dari
@@ -115,7 +115,7 @@ export const SROI_PROXY = Object.freeze({
  * @property {string} id          Kunci stabil outcome.
  * @property {string} label       Nama outcome pada laporan.
  * @property {string} satuan      Satuan kuantitasnya.
- * @property {string} sumber      Asal-usul KUANTITAS — wajib menunjuk data nyata.
+ * @property {string} sumber      Asal-usul KUANTITAS: wajib menunjuk data nyata.
  * @property {string} proxyKey    Kunci pada `SROI_PROXY` yang menjadi nilai rupiah satuannya.
  * @property {string} satuanProxy Satuan nilai proxy, mis. 'per engagement'.
  */
@@ -124,8 +124,8 @@ export const SROI_PROXY = Object.freeze({
  * Tiga outcome berproxy yang membentuk nilai sosial kotor.
  *
  * Pemisahan `sumber` (kuantitas) dari `proxyKey` (nilai) adalah inti kejujuran
- * model ini: kuantitasnya berasal dari catatan yang benar-benar ada — daftar hadir,
- * durasi kegiatan, cerita yang lolos empat gerbang bukti — sedangkan nilai rupiah
+ * model ini: kuantitasnya berasal dari catatan yang benar-benar ada: daftar hadir,
+ * durasi kegiatan, cerita yang lolos empat gerbang bukti: sedangkan nilai rupiah
  * per satuannya adalah asumsi. Menyatukan keduanya menjadi satu angka jadi akan
  * menghapus perbedaan itu, dan pembaca laporan akan memperlakukan seluruhnya
  * sebagai terukur.

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * TierProgress — rel perjalanan tier. Komponen paling penting di produk ini.
+	 * TierProgress: rel perjalanan tier. Komponen paling penting di produk ini.
 	 *
 	 * Props:
 	 * @prop {number} points        Poin aktif (kontrak 09 §5).
@@ -33,8 +33,8 @@
 	import Icon from './Icon.svelte';
 	import { ICONS } from '$lib/data/icons.js';
 	import { formatAngka } from '$lib/utils/format.js';
-	import { tierUntukPoin, tierBerikutnya } from '$lib/domain/constants/tier-table.js';
-	import { gayaTier, kelas, AMBANG_TERTINGGI, TIER_BERAMBANG } from './_visual.js';
+	import { tierUntukPoin, tierBerikutnya, TIER_TABLE } from '$lib/domain/constants/tier-table.js';
+	import { gayaTier, kelas } from './_visual.js';
 
 	let {
 		points = 0,
@@ -43,10 +43,15 @@
 		currentTier = null,
 		nextTier = null,
 		nextThreshold = null,
+		tiers = [],
 		requirements = [],
 		locked = false,
 		class: className = ''
 	} = $props();
+
+	const tierEntries = $derived(tiers.length ? [...tiers].sort((a, b) => a.threshold - b.threshold).map((entry) => ({ ...(TIER_TABLE.find((item) => item.level === entry.level) ?? {}), ...entry })) : TIER_TABLE);
+	const tierMarkers = $derived(tierEntries.filter((entry) => entry.level !== 'NEWCOMER'));
+	const highestThreshold = $derived(tierEntries.at(-1)?.threshold ?? 0);
 
 	/** Poin negatif atau tidak sah tidak boleh menjatuhkan render kartu dasbor. */
 	const poin = $derived(
@@ -56,25 +61,25 @@
 		})()
 	);
 
-	const entriSekarang = $derived(currentTier ?? tierUntukPoin(poin));
-	const entriBerikut = $derived(nextTier ?? tierBerikutnya(poin));
+	const entriSekarang = $derived(currentTier ?? (tiers.length ? [...tierEntries].reverse().find((entry) => poin >= entry.threshold) : tierUntukPoin(poin)));
+	const entriBerikut = $derived(nextTier ?? (tiers.length ? tierEntries.find((entry) => entry.threshold > poin) : tierBerikutnya(poin)));
 
 	const visualSekarang = $derived(gayaTier(entriSekarang));
 	const visualBerikut = $derived(gayaTier(entriBerikut));
 
 	const ambangBerikut = $derived(
-		nextThreshold ?? (entriBerikut ? gayaTier(entriBerikut)?.threshold : null)
+		nextThreshold ?? (entriBerikut ? entriBerikut.threshold : null)
 	);
 
 	const sisaPoin = $derived(
 		ambangBerikut === null || ambangBerikut === undefined ? 0 : Math.max(0, ambangBerikut - poin)
 	);
 
-	/** Panjang isian rel — dipetakan ke ambang tertinggi agar sebanding dengan penanda. */
-	const persenRel = $derived(Math.min(100, (poin / AMBANG_TERTINGGI) * 100));
+	/** Panjang isian rel: dipetakan ke ambang tertinggi agar sebanding dengan penanda. */
+	const persenRel = $derived(highestThreshold > 0 ? Math.min(100, (poin / highestThreshold) * 100) : 0);
 
 	/** @param {number} ambang */
-	const posisi = (ambang) => (ambang / AMBANG_TERTINGGI) * 100;
+	const posisi = (ambang) => highestThreshold > 0 ? (ambang / highestThreshold) * 100 : 0;
 
 	const warnaIsian = $derived(visualSekarang ? visualSekarang.color : 'var(--color-ink-400)');
 </script>
@@ -92,9 +97,9 @@
 			role="progressbar"
 			aria-valuenow={poin}
 			aria-valuemin="0"
-			aria-valuemax={AMBANG_TERTINGGI}
+			aria-valuemax={highestThreshold}
 			aria-label="Perjalanan tier: {formatAngka(poin)} dari {formatAngka(
-				AMBANG_TERTINGGI
+				highestThreshold
 			)} poin kontribusi"
 		>
 			<div
@@ -102,21 +107,21 @@
 				style="width:{persenRel}%;background:{warnaIsian};box-shadow: inset 0 0 0 1px color-mix(in srgb, {warnaIsian} 62%, var(--color-ink-900));"
 			></div>
 
-			{#each TIER_BERAMBANG as entri (entri.level)}
+			{#each tierMarkers as entri (entri.level)}
 				{@const tercapai = poin >= entri.threshold}
 				<span
 					class="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white"
 					style="left:{posisi(entri.threshold)}%;background:{tercapai
 						? entri.color
 						: 'var(--color-ink-300)'};"
-					title="{entri.label} · {formatAngka(entri.threshold)} PK — {entri.benefit}"
+					title="{entri.label} · {formatAngka(entri.threshold)} PK: {entri.benefit}"
 				></span>
 			{/each}
 		</div>
 
 		{#if showLabels}
 			<div class="relative mt-2 h-8">
-				{#each TIER_BERAMBANG as entri (entri.level)}
+				{#each tierMarkers as entri (entri.level)}
 					{@const tercapai = poin >= entri.threshold}
 					<span
 						class="absolute -translate-x-1/2 text-center leading-tight"

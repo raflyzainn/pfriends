@@ -1,8 +1,8 @@
 <script>
 	/**
-	 * HALAMAN — Beranda Awardee.
+	 * HALAMAN: Beranda Awardee.
 	 *
-	 * Tanggung jawab: MENYAMBUT, lalu menjawab dua pertanyaan berurutan — *"apa
+	 * Tanggung jawab: MENYAMBUT, lalu menjawab dua pertanyaan berurutan: *"apa
 	 * yang perlu saya ikuti?"* dan *"apa yang perlu saya ketahui?"*. Ringkasan
 	 * pencapaian menyusul sesudahnya sebagai penutup yang menyemangati, bukan
 	 * sebagai pembuka yang menagih.
@@ -30,11 +30,11 @@
 	 *    ajakan yang berlaku kapan pun.
 	 *
 	 * 4. **Chart-nya satu seri dan tanpa pembanding.** `AwardeePointTrend` memang
-	 *    tidak mampu menampung seri kedua — garis "rata-rata komunitas" di
+	 *    tidak mampu menampung seri kedua: garis "rata-rata komunitas" di
 	 *    sebelahnya akan menjadi papan peringkat yang menyamar.
 	 *
-	 * @see docs/00-SOURCE-BRIEF.md — Hal 11 tabel skor, Hal 12 tier
-	 * @see docs/07-UX-SITEMAP.md — §5.2 wireframe dasbor awardee
+	 * @see docs/00-SOURCE-BRIEF.md: Hal 11 tabel skor, Hal 12 tier
+	 * @see docs/07-UX-SITEMAP.md: §5.2 wireframe dasbor awardee
 	 */
 	import { onMount } from 'svelte';
 	import {
@@ -50,8 +50,7 @@
 	} from '$lib/components';
 	import AwardeePointTrend from '$lib/charts/AwardeePointTrend.svelte';
 	import { ActivityType } from '$lib/domain/constants/scoring-table.js';
-	import { catalog } from '$lib/stores/catalog.svelte.js';
-	import { editorial } from '$lib/stores/editorial.svelte.js';
+	import { awardeeDashboard } from '$lib/stores/awardee-dashboard.svelte.js';
 	import { gamification } from '$lib/stores/gamification.svelte.js';
 	import { session } from '$lib/stores/session.svelte.js';
 	import { selisihHari, tambahHari } from '$lib/utils/date.js';
@@ -80,7 +79,7 @@
 
 	const awardee = $derived(session.awardee);
 
-	/** Nama panggilan — kata pertama saja. Sapaan yang menyebut nama lengkap terasa formal. */
+	/** Nama panggilan: kata pertama saja. Sapaan yang menyebut nama lengkap terasa formal. */
 	const namaPanggilan = $derived(awardee ? awardee.fullName.split(' ')[0] : '');
 
 	/**
@@ -107,16 +106,27 @@
 		)
 	);
 
-	const kabarTerbaru = $derived(catalog.sentBroadcasts.slice(0, JUMLAH_KABAR));
+	const kabarTerkirim = $derived(
+		awardeeDashboard.broadcasts
+			.filter((kabar) => kabar.isSent)
+			.sort((a, b) => (b.sentAt?.getTime() ?? 0) - (a.sentAt?.getTime() ?? 0))
+	);
+
+	const kabarTerbaru = $derived(kabarTerkirim.slice(0, JUMLAH_KABAR));
 
 	const kabarBelumDibaca = $derived(
-		catalog.sentBroadcasts.filter((kabar) => !kabarSudahDiklaim.has(kabar.id)).length
+		kabarTerkirim.filter((kabar) => !kabarSudahDiklaim.has(kabar.id)).length
 	);
 
 	/** Kegiatan terdekat yang masih akan datang. */
-	const kegiatanTerdekat = $derived(catalog.upcomingEvents(new Date(), JUMLAH_KEGIATAN));
+	const kegiatanTerdekat = $derived(
+		awardeeDashboard.events
+			.filter((kegiatan) => kegiatan.isPubliclyVisible && kegiatan.isUpcoming(new Date()))
+			.sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+			.slice(0, JUMLAH_KEGIATAN)
+	);
 
-	/** Kegiatan yang jatuh dalam tujuh hari ke depan — satu-satunya yang layak disebut mendesak. */
+	/** Kegiatan yang jatuh dalam tujuh hari ke depan: satu-satunya yang layak disebut mendesak. */
 	const kegiatanPekanIni = $derived(
 		kegiatanTerdekat.filter(
 			(kegiatan) => selisihHari(new Date(), kegiatan.startsAt) <= AMBANG_PEKAN_INI
@@ -124,10 +134,7 @@
 	);
 
 	/** Naskah milik penulis yang sedang masuk. */
-	const naskahSaya = $derived.by(() => {
-		if (editorial.myStories.length > 0) return editorial.myStories;
-		return awardee ? catalog.storiesByAwardee(awardee.id) : [];
-	});
+	const naskahSaya = $derived(awardeeDashboard.stories);
 
 	const naskahPerluRevisi = $derived(naskahSaya.filter((cerita) => cerita.needsRevision));
 	const naskahTerbit = $derived(naskahSaya.filter((cerita) => cerita.isPublished));
@@ -177,7 +184,7 @@
 				jenis: 'Tenggat',
 				warna: 'navy',
 				iconPath: ICONS.calendar,
-				judul: `${kegiatan.title} — ${formatRelatif(kegiatan.startsAt)}`,
+				judul: `${kegiatan.title}: ${formatRelatif(kegiatan.startsAt)}`,
 				isi: `${kegiatan.typeMeta?.label ?? 'Kegiatan komunitas'} · ${kegiatan.isOnline ? 'Daring' : kegiatan.location || 'Luring'}. Pastikan kamu sudah mencatat jadwalnya.`,
 				href: '/awardee/kalender',
 				aksi: 'Lihat jadwal'
@@ -204,13 +211,13 @@
 				warna: 'slate',
 				iconPath: ICONS.book,
 				judul: 'Kamu belum menulis Blog pertama',
-				isi: 'Satu aksi kecil bulan ini sudah cukup menjadi tulisan. Naskah yang lolos tinjauan tayang di ruang publik PFfriends.',
+				isi: 'Satu aksi kecil bulan ini sudah cukup menjadi tulisan. Naskah yang lolos tinjauan tayang di ruang publik PFriends.',
 				href: '/awardee/cerita/tulis',
 				aksi: 'Mulai menulis'
 			});
 		}
 
-		// Butir tetap — menjaga daftar tidak pernah kosong. Lihat keputusan 3.
+		// Butir tetap: menjaga daftar tidak pernah kosong. Lihat keputusan 3.
 		daftar.push({
 			id: 'forum',
 			jenis: 'Info',
@@ -254,16 +261,13 @@
 		};
 	});
 
-	// Antrean editorial dimuat di sini, bukan di layout: hanya dasbor dan dua
-	// halaman yang membutuhkannya, dan store menahan pemanggilan serentak pada satu
-	// janji yang sama sehingga pemanggilan ganda tidak berarti dua pembacaan.
 	onMount(async () => {
-		await editorial.load();
+		await awardeeDashboard.load({ force: true });
 	});
 </script>
 
 <svelte:head>
-	<title>Beranda — PFfriends</title>
+	<title>Beranda: PFriends</title>
 </svelte:head>
 
 {#if !awardee}
@@ -292,26 +296,40 @@
 					Kamu terdaftar sebagai anggota <span class="font-semibold text-brand-700"
 						>{awardee.communityDef.akronim}</span
 					>
-					di {awardee.chapterDef.label}{#if awardee.city}, {awardee.city}{/if}. Senang kamu kembali —
+					di {awardee.chapterDef.label}{#if awardee.city}, {awardee.city}{/if}. Senang kamu kembali :
 					di bawah ini kegiatan terdekat dan hal-hal yang perlu kamu ketahui hari ini.
 				</p>
 			</div>
 
 			<div class="flex shrink-0 flex-wrap items-center gap-2">
 				<TierBadge tier={gamification.tier.level} size="md" />
-				{#if gamification.streakWeeks > 0}
-					<span
-						class="inline-flex items-center gap-1.5 rounded-chip border border-accent-300 bg-accent-100 px-2.5 py-1 text-xs font-semibold text-accent-700"
-					>
-						<Icon path={ICONS.fire} size={14} />
-						Aktif {frasaHitung(gamification.streakWeeks, 'minggu')} berturut-turut
-					</span>
-				{/if}
+				<span
+					class={`inline-flex items-center gap-1.5 rounded-chip border px-2.5 py-1 text-xs font-semibold ${gamification.activeToday ? 'border-accent-300 bg-accent-100 text-accent-700' : 'border-ink-200 bg-surface text-ink-600'}`}
+					title="Dihitung dari hari ketika poin sah masuk, berdasarkan waktu Indonesia Barat."
+				>
+					<Icon path={ICONS.fire} size={14} />
+					{#if gamification.activeToday}
+						Aktif {frasaHitung(gamification.streakDays, 'hari')} berturut-turut
+					{:else if gamification.streakDays > 0}
+						Streak {frasaHitung(gamification.streakDays, 'hari')}, raih poin hari ini
+					{:else}
+						Belum aktif hari ini
+					{/if}
+				</span>
 			</div>
 		</div>
 	</section>
 
 	<!-- ══ S2 · Kegiatan terdekat ════════════════════════════════════════════ -->
+	{#if awardeeDashboard.error}
+		<div class="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-control border border-red-200 bg-red-50 px-4 py-3">
+			<p class="text-sm text-red-900">{awardeeDashboard.error} Data lokal tidak digunakan sebagai pengganti.</p>
+			<Button variant="outline" size="sm" loading={awardeeDashboard.loading} onclick={() => awardeeDashboard.load({ force: true })}>
+				Coba muat ulang
+			</Button>
+		</div>
+	{/if}
+
 	<section class="mt-7" aria-labelledby="judul-kegiatan">
 		<div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
 			<h2 id="judul-kegiatan" class="text-lg font-bold text-heading">
@@ -329,7 +347,7 @@
 		{#if kegiatanTerdekat.length === 0}
 			<EmptyState
 				title="Belum ada kegiatan terjadwal"
-				message="Kegiatan baru diumumkan tiap awal bulan — dan kamu boleh mengusulkan sendiri lewat tab “Usulan saya” di Calendar of Event."
+				message="Kegiatan baru diumumkan tiap awal bulan: dan kamu boleh mengusulkan sendiri lewat tab “Usulan saya” di Calendar of Event."
 				iconPath={ICONS.calendar}
 				size="sm"
 				actionLabel="Buka Calendar of Event"
@@ -478,7 +496,7 @@
 				</div>
 
 				<div class="mt-5 border-t border-ink-100 pt-5">
-					<TierProgress points={gamification.points} />
+					<TierProgress points={gamification.points} tiers={gamification.tiers} />
 				</div>
 
 				<div class="mt-5 border-t border-ink-100 pt-4">
@@ -500,7 +518,7 @@
 
 				{#if lencanaTerkumpul.length === 0}
 					<p class="mt-3 rounded-xl bg-surface-soft p-3 text-[13px] leading-relaxed text-ink-600">
-						Belum ada lencana yang terbuka — dan itu wajar bagi anggota baru. Lencana pertama
+						Belum ada lencana yang terbuka: dan itu wajar bagi anggota baru. Lencana pertama
 						biasanya datang dari kabar yang disimak dan kegiatan pertama yang dihadiri.
 					</p>
 				{:else}
@@ -546,7 +564,7 @@
 			{#if kabarTerbaru.length === 0}
 				<EmptyState
 					title="Belum ada kabar baru"
-					message="Kabar mingguan PFfriends terbit setiap Selasa pagi."
+					message="Kabar akan muncul di sini segera."
 					iconPath={ICONS.megaphone}
 					size="sm"
 				/>
@@ -616,7 +634,7 @@
 	     tetapi routenya tetap hidup dan isinya tetap berguna. Baris kecil di kaki
 	     dasbor menjaga keduanya tetap dapat dijangkau tanpa mengetik alamat. -->
 	<section class="mt-8 border-t border-ink-100 pt-5" aria-labelledby="judul-ruang-lain">
-		<h2 id="judul-ruang-lain" class="label-micro">Ruang lain di PFfriends</h2>
+		<h2 id="judul-ruang-lain" class="label-micro">Ruang lain di PFriends</h2>
 		<ul class="mt-2.5 flex flex-wrap gap-x-5 gap-y-2">
 			<li>
 				<a

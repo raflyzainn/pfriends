@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * SensitivityGate — gerbang data sensitif 21 butir, dengan konfirmasi manusia.
+	 * SensitivityGate: gerbang data sensitif 21 butir, dengan konfirmasi manusia.
 	 *
 	 * @prop {string} kicker
 	 * @prop {Set<number>} confirmed  Nomor butir yang sudah dikonfirmasi; dapat di-`bind`.

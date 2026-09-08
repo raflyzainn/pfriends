@@ -1,4 +1,4 @@
-# 03 — Spesifikasi Gamifikasi Pfriends
+# 03: Spesifikasi Gamifikasi Pfriends
 
 > **Turunan langsung dari** `00-SOURCE-BRIEF.md` (Hal 5 pilar 05, Hal 9, Hal 10, **Hal 11**, **Hal 12**).
 > **Aturan emas:** seluruh angka poin (1/2/5/8/10/15/15/30/50) dan seluruh ambang tier (25/50/100/150)
@@ -12,36 +12,36 @@
 
 | § | Bagian | Sumber |
 |---|---|---|
-| 1 | Filosofi Desain — Octalysis & Self-Determination Theory | [RANCANGAN] |
-| 2 | Model Skoring Inti | **Hal 11 — kanonik** |
-| 3 | Tier, Ambang, dan Benefit | **Hal 12 — kanonik** |
-| 4 | Gate Kelayakan (Public Feature & ESG Evidence) | **Hal 12 — kanonik** |
+| 1 | Filosofi Desain: Octalysis & Self-Determination Theory | [RANCANGAN] |
+| 2 | Model Skoring Inti | **Hal 11: kanonik** |
+| 3 | Tier, Ambang, dan Benefit | **Hal 12: kanonik** |
+| 4 | Gate Kelayakan (Public Feature & ESG Evidence) | **Hal 12: kanonik** |
 | 5 | Anti-Gaming & Anti-Spam | [RANCANGAN] |
 | 6 | Sistem Badge / Lencana | [RANCANGAN] |
-| 7 | Streak & Habit Loop Mingguan | [RANCANGAN] — selaras Hal 9 "broadcast-first" |
-| 8 | Quest / Challenge Musiman | [RANCANGAN] — selaras Hal 5 pilar 03 & 06 |
+| 7 | Streak & Habit Loop Mingguan | [RANCANGAN]: selaras Hal 9 "broadcast-first" |
+| 8 | Quest / Challenge Musiman | [RANCANGAN]: selaras Hal 5 pilar 03 & 06 |
 | 9 | Leaderboard | [RANCANGAN] |
-| 10 | Katalog Penukaran Poin | [RANCANGAN] — mandat Hal 5 pilar 05 |
-| 11 | Recognition — TOP Contribution & TOP Awardee | **Hal 5 pilar 05** + [RANCANGAN] mekanisme |
+| 10 | Katalog Penukaran Poin | [RANCANGAN]: mandat Hal 5 pilar 05 |
+| 11 | Recognition: TOP Contribution & TOP Awardee | **Hal 5 pilar 05** + [RANCANGAN] mekanisme |
 | 12 | State Machine Progresi Member | [RANCANGAN] |
 | 13 | Arsitektur Domain & Pseudocode `GamificationEngine` | [RANCANGAN] |
 | 14 | Skema Persistensi Dexie | [RANCANGAN] |
 | 15 | Acceptance Criteria & Kasus Uji Deterministik | [RANCANGAN] |
-| 16 | Matriks Ketertelusuran ke Dokumen Sumber | — |
+| 16 | Matriks Ketertelusuran ke Dokumen Sumber |: |
 
 ---
 
 ## 1. Filosofi Desain
 
-Konteks Pfriends bukan aplikasi konsumen komersial. Ini komunitas **penerima manfaat program TJSL** —
+Konteks Pfriends bukan aplikasi konsumen komersial. Ini komunitas **penerima manfaat program TJSL** :
 alumni beasiswa Sobat Bumi (SOBI) dan UMKM binaan (PFpreneur/Womenpreneur). Implikasinya:
 
 1. **White-hat mendominasi.** Mekanik yang menekan (rasa takut kehilangan, kelangkaan agresif, judi) harus
    dipakai sangat tipis dan selalu diberi katup pengaman. Komunitas beneficiary yang merasa "diperah"
-   untuk KPI amplifikasi akan menghasilkan kepatuhan semu, bukan *sense of belonging* — padahal
+   untuk KPI amplifikasi akan menghasilkan kepatuhan semu, bukan *sense of belonging*: padahal
    *Sense of Community Theory* (McMillan & Chavis, 1986) adalah landasan yang dikutip Hal 5.
-2. **Poin mengukur kontribusi, bukan kehadiran.** Kalimat kunci Hal 11 — *"Points should reward meaningful
-   contribution, not spammy activity"* — dijadikan **kendala desain formal**, bukan slogan. Diterjemahkan
+2. **Poin mengukur kontribusi, bukan kehadiran.** Kalimat kunci Hal 11: *"Points should reward meaningful
+   contribution, not spammy activity"*: dijadikan **kendala desain formal**, bukan slogan. Diterjemahkan
    menjadi §5 (cap/cooldown/verifikasi) dan §3.3 (syarat komposisi tier).
 3. **Ekstrinsik tidak boleh mematikan intrinsik.** Efek *over-justification*: memberi hadiah pada perilaku
    yang sudah bermakna secara intrinsik (berbagi kisah hidup, mentoring adik tingkat) dapat menurunkan
@@ -52,13 +52,13 @@ alumni beasiswa Sobat Bumi (SOBI) dan UMKM binaan (PFpreneur/Womenpreneur). Impl
 
 | # | Core Drive | Warna | Implementasi di Pfriends | Katup pengaman |
 |---|---|---|---|---|
-| 1 | Epic Meaning & Calling | White | Narasi "duta energi & Sobat Bumi", Movement-Based Quest, konversi Koin Tukar → penanaman pohon atas nama anggota | — |
+| 1 | Epic Meaning & Calling | White | Narasi "duta energi & Sobat Bumi", Movement-Based Quest, konversi Koin Tukar → penanaman pohon atas nama anggota |: |
 | 2 | Development & Accomplishment | White | Tier 25/50/100/150, badge, progress bar, checklist syarat komposisi | Checklist selalu menampilkan *apa* yang kurang, bukan sekadar "belum memenuhi syarat" |
 | 3 | Empowerment of Creativity & Feedback | White | Story bank, Community Journalism, kebebasan memilih quest, verifikasi selalu disertai alasan tertulis | Banding 1× untuk setiap penolakan |
 | 4 | Ownership & Possession | Netral | Saldo Koin Tukar, koleksi badge, bingkai profil, identitas chapter (PF10/PF11/PF12) | Saldo tidak pernah hangus tanpa 3× notifikasi |
 | 5 | Social Influence & Relatedness | Netral | Leaderboard chapter, Duet Quest SOBI × Womenpreneur, mentoring, nominasi antar-anggota | Opt-out tampil anonim (governance, Hal 10) |
 | 6 | Scarcity & Impatience | Black | Badge musiman terbatas, kuota reward bulanan, kursi event | Tidak ada mekanik "bayar untuk lewati antrean" |
-| 7 | Unpredictability & Curiosity | Black | "Kartu Kejutan" pada broadcast mingguan (bonus Koin Tukar acak kecil), quest misteri | Bonus acak **hanya** dalam Koin Tukar, **tidak pernah** Poin Kontribusi — agar tier tetap murni hasil kontribusi |
+| 7 | Unpredictability & Curiosity | Black | "Kartu Kejutan" pada broadcast mingguan (bonus Koin Tukar acak kecil), quest misteri | Bonus acak **hanya** dalam Koin Tukar, **tidak pernah** Poin Kontribusi: agar tier tetap murni hasil kontribusi |
 | 8 | Loss & Avoidance | Black | Streak, kedaluwarsa Koin Tukar, decay carry-over musiman | Token *Jeda Aman* (§7.3), decay maksimal 50%, tier kehormatan tidak pernah turun |
 
 ### 1.2 Pemetaan Self-Determination Theory
@@ -71,7 +71,7 @@ alumni beasiswa Sobat Bumi (SOBI) dan UMKM binaan (PFpreneur/Womenpreneur). Impl
 
 ---
 
-## 2. Model Skoring Inti — **KANONIK (Hal 11)**
+## 2. Model Skoring Inti: **KANONIK (Hal 11)**
 
 Tabel di bawah adalah **salinan persis** Hal 11. Kolom `Kode`, `Kelas`, dan `Kunci Idempotensi`
 adalah metadata implementasi dan **tidak mengubah nilai poin**.
@@ -88,7 +88,7 @@ adalah metadata implementasi dan **tidak mengubah nilai poin**.
 | `SPEAKER_MENTOR` | Become speaker / mentor / facilitator | **30 pts** | D | `memberId + sessionId` |
 | `LEAD_ACTION` | Lead local action / campaign | **50 pts** | D | `memberId + campaignId` |
 
-> *"Points should reward meaningful contribution, not spammy activity."* — Hal 11
+> *"Points should reward meaningful contribution, not spammy activity."*: Hal 11
 
 ### 2.1 Kelas Aksi [RANCANGAN]
 
@@ -99,12 +99,12 @@ Klasifikasi ini murni operasional: menentukan jalur verifikasi dan cap. Nilai po
 | **A** | Ringan / *self-serve* | Mudah dilakukan, mudah di-spam, nilai rendah | Otomatis oleh sistem | Ya |
 | **B** | Amplifikasi | Butuh bukti tautan/tangkapan layar | Otomatis (link-check) + moderator chapter | Ya |
 | **C** | Kontribusi | Butuh penilaian manusia atas substansi | Admin Komunitas Corsec | Ya |
-| **D** | Kepemimpinan | Langka, bernilai tinggi, butuh validasi PF | Admin Corsec + Validator PF (dual-control) | **Tidak** — dikecualikan (lihat §5.3) |
+| **D** | Kepemimpinan | Langka, bernilai tinggi, butuh validasi PF | Admin Corsec + Validator PF (dual-control) | **Tidak**: dikecualikan (lihat §5.3) |
 
 ### 2.2 Dua Mata Uang [RANCANGAN]
 
 Keputusan arsitektural penting: **membelanjakan poin tidak boleh menurunkan tier.** Jika tidak dipisah,
-seorang Champion yang menukar poin akan turun menjadi Contributor — merusak makna "recognition" Hal 12.
+seorang Champion yang menukar poin akan turun menjadi Contributor: merusak makna "recognition" Hal 12.
 
 | Mata uang | Simbol | Sumber | Bisa dibelanjakan? | Menentukan tier? |
 |---|---|---|---|---|
@@ -112,11 +112,11 @@ seorang Champion yang menukar poin akan turun menjadi Contributor — merusak ma
 | **Koin Tukar** | **KT** | Otomatis 1 KT untuk setiap 1 PK yang berstatus `AWARDED`, ditambah bonus badge & quest | **Ya** (§10) | **Tidak** |
 
 Bonus badge/quest/kartu kejutan **hanya** menambah KT. Ini menjaga agar tabel Hal 11 tetap satu-satunya
-sumber PK — tidak ada inflasi tersembunyi pada angka yang diberikan Corsec.
+sumber PK: tidak ada inflasi tersembunyi pada angka yang diberikan Corsec.
 
 ---
 
-## 3. Tier, Ambang, dan Benefit — **KANONIK (Hal 12)**
+## 3. Tier, Ambang, dan Benefit: **KANONIK (Hal 12)**
 
 | Ambang | Tier | Warna slide | **Benefit (persis Hal 12)** |
 |---|---|---|---|
@@ -129,7 +129,7 @@ sumber PK — tidak ada inflasi tersembunyi pada angka yang diberikan Corsec.
 
 | Besaran | Definisi | Dipakai untuk |
 |---|---|---|
-| **PK Seumur Hidup** (`lifetimePk`) | Jumlah seluruh PK berstatus `AWARDED` sepanjang keanggotaan, dikurangi yang `REVOKED` | Badge, Papan Sepanjang Masa, **Gelar Kehormatan** (tier tertinggi yang pernah dicapai — tidak pernah turun) |
+| **PK Seumur Hidup** (`lifetimePk`) | Jumlah seluruh PK berstatus `AWARDED` sepanjang keanggotaan, dikurangi yang `REVOKED` | Badge, Papan Sepanjang Masa, **Gelar Kehormatan** (tier tertinggi yang pernah dicapai: tidak pernah turun) |
 | **PK Musim** (`seasonPk`) | PK `AWARDED` di musim berjalan | Leaderboard musiman, quest |
 | **Poin Aktif** (`activePk`) | `seasonPk + floor(0.5 × seasonPk_musim_sebelumnya)` | **Penentu tier aktif** terhadap ambang 25/50/100/150 |
 
@@ -137,10 +137,10 @@ Konsekuensi yang disengaja: seseorang yang berhenti berkontribusi selama satu mu
 maksimal **satu langkah** (carry-over 50%), bukan jatuh ke nol. Ini menjaga tier tetap bermakna sebagai
 sinyal "orang ini bisa diundang jadi pembicara **sekarang**" tanpa terasa menghukum.
 
-### 3.2 Ambang tidak diubah — yang ditambah adalah **syarat komposisi** [RANCANGAN]
+### 3.2 Ambang tidak diubah: yang ditambah adalah **syarat komposisi** [RANCANGAN]
 
 Masalah nyata: dengan tabel Hal 11 apa adanya, seseorang bisa mencapai **150 poin murni dari membagikan
-tautan** dalam ~7 minggu. Tapi benefit Champion adalah *"mentor / speaker / regional champion invitation"* —
+tautan** dalam ~7 minggu. Tapi benefit Champion adalah *"mentor / speaker / regional champion invitation"* :
 tidak koheren jika diberikan kepada orang yang belum pernah melakukan apa pun selain menyebar tautan.
 Ini persis yang diperingatkan Hal 11.
 
@@ -148,13 +148,13 @@ Solusi: **ambang poin tetap persis**, ditambah syarat komposisi kontribusi.
 
 | Tier | Ambang PK (kanonik) | **Syarat komposisi tambahan [RANCANGAN]** |
 |---|---|---|
-| Active Member | **25** | — (tanpa syarat tambahan) |
+| Active Member | **25** |: (tanpa syarat tambahan) |
 | Contributor | **50** | ≥ 1 aksi **Kelas C** terverifikasi |
 | Featured Candidate | **100** | ≥ 3 aksi **Kelas C** terverifikasi, termasuk ≥ 1 `STORY_SUBMIT` terverifikasi |
 | Champion | **150** | ≥ 1 aksi **Kelas D** terverifikasi, ≥ 5 aksi **Kelas C**, dan rasio verifikasi ≥ 90% |
 
 **Perilaku UI saat poin cukup tapi komposisi belum:** status `TIER_LOCKED`. Kartu tier menampilkan tier
-berikutnya dalam keadaan terkunci beserta **checklist eksplisit** ("Kurang 1 aksi kepemimpinan — ajukan
+berikutnya dalam keadaan terkunci beserta **checklist eksplisit** ("Kurang 1 aksi kepemimpinan: ajukan
 memimpin aksi lokal atau menjadi pembicara"). Ini bukan hukuman melainkan *quest* implisit dan justru
 memperkuat Core Drive #2.
 
@@ -166,9 +166,9 @@ Dihitung dengan cap §5.2 dan asumsi 2 broadcast per bulan (KPI Hal 6: "disemina
 
 | Persona | Perilaku mingguan | PK/minggu | → 25 | → 50 | → 100 | → 150 | Tier tercapai |
 |---|---|---|---|---|---|---|---|
-| **Pengamat** | Baca broadcast saja | 2 | 13 mgg | — | — | — | Active Member |
+| **Pengamat** | Baca broadcast saja | 2 | 13 mgg |: |: |: | Active Member |
 | **Penyimak** | Baca + 2 reaksi + 1 share privat | 10 | 3 mgg | 5 mgg | 10 mgg | 15 mgg | Active Member (terkunci di Contributor) |
-| **Amplifier** | Penyimak + 2 share publik | 24 | 2 mgg | 3 mgg | 5 mgg | 7 mgg | **Terkunci di Active Member** — belum ada Kelas C |
+| **Amplifier** | Penyimak + 2 share publik | 24 | 2 mgg | 3 mgg | 5 mgg | 7 mgg | **Terkunci di Active Member**: belum ada Kelas C |
 | **Kontributor** | Amplifier + 1 story + 1 sesi online | 49 | 1 mgg | 2 mgg | 3 mgg | 4 mgg | Featured Candidate |
 | **Penggerak** | Kontributor + Kelas D berkala (rata-rata +20) | ~69 | 1 mgg | 1 mgg | 2 mgg | 3 mgg | Champion |
 
@@ -178,7 +178,7 @@ gelar Champion.
 
 ---
 
-## 4. Gate Kelayakan — **KANONIK (Hal 12)**
+## 4. Gate Kelayakan: **KANONIK (Hal 12)**
 
 ### 4.1 Minimum for public feature
 
@@ -190,7 +190,7 @@ Lima syarat bersifat **konjungtif** (semua harus terpenuhi), dievaluasi sebagai 
 |---|---|---|---|
 | 1 | 100 points | `activePk` | `activePk >= 100` (tier Featured Candidate) |
 | 2 | verified story | `stories` | Ada ≥ 1 story dengan `status = VERIFIED` milik anggota |
-| 3 | consent | `consents` | Ada rekaman consent aktif, belum dicabut, mencakup ruang lingkup `PUBLIC_FEATURE`, dengan timestamp & versi teks consent (jejak audit — Hal 10 Governance) |
+| 3 | consent | `consents` | Ada rekaman consent aktif, belum dicabut, mencakup ruang lingkup `PUBLIC_FEATURE`, dengan timestamp & versi teks consent (jejak audit: Hal 10 Governance) |
 | 4 | PF validation | `validations` | Ada persetujuan oleh peran `PF_VALIDATOR`, belum kedaluwarsa (masa berlaku 90 hari) |
 | 5 | no sensitive-data concern | `sensitivityScan` | Hasil pindai = `CLEAR`. Pemicu `FLAGGED`: NIK, nomor rekening, alamat rumah lengkap, data kesehatan, wajah anak di bawah umur tanpa consent wali, nama pihak ketiga tanpa izin |
 
@@ -239,12 +239,12 @@ Bagian ini adalah terjemahan teknis dari kalimat Hal 11: *"reward meaningful con
 
 | Lapis | Mekanisme | Menangkal |
 |---|---|---|
-| L1 | **Idempotensi** — kunci unik per aksi (§2) | Klaim ganda atas objek yang sama |
-| L2 | **Cooldown** — jeda minimum antar aksi sejenis | Burst / bot |
-| L3 | **Cap** — batas harian, mingguan, bulanan (per aksi, per kelas, global) | Grinding volume |
-| L4 | **Diminishing returns** — poin menurun untuk pengulangan di hari yang sama | Grinding volume tanpa nilai tambah |
-| L5 | **Verifikasi bukti** — manusia meninjau Kelas B/C/D | Klaim palsu |
-| L6 | **Audit & clawback** — skor risiko, sampling, penarikan poin | Kecurangan terstruktur / kolusi |
+| L1 | **Idempotensi**: kunci unik per aksi (§2) | Klaim ganda atas objek yang sama |
+| L2 | **Cooldown**: jeda minimum antar aksi sejenis | Burst / bot |
+| L3 | **Cap**: batas harian, mingguan, bulanan (per aksi, per kelas, global) | Grinding volume |
+| L4 | **Diminishing returns**: poin menurun untuk pengulangan di hari yang sama | Grinding volume tanpa nilai tambah |
+| L5 | **Verifikasi bukti**: manusia meninjau Kelas B/C/D | Klaim palsu |
+| L6 | **Audit & clawback**: skor risiko, sampling, penarikan poin | Kecurangan terstruktur / kolusi |
 
 ### 5.2 Tabel cap eksplisit
 
@@ -252,12 +252,12 @@ Nilai **Maks poin/hari** sudah memperhitungkan *diminishing returns* (§5.4).
 
 | Kode | Poin | Kelas | Maks aksi/hari | **Maks poin/hari** | **Maks poin/minggu** | **Maks poin/bulan** | Cooldown | Bukti wajib | Verifikator |
 |---|---|---|---|---|---|---|---|---|---|
-| `BROADCAST_VIEW` | 1 | A | 3 | **3** | 8 | 30 | — | Dwell time ≥ 15 detik; 1× per `broadcastId` seumur hidup | Sistem |
+| `BROADCAST_VIEW` | 1 | A | 3 | **3** | 8 | 30 |: | Dwell time ≥ 15 detik; 1× per `broadcastId` seumur hidup | Sistem |
 | `CTA_REACT` | 2 | A | 3 | **4** | 14 | 50 | 5 menit | Balasan ≥ 20 karakter bermakna (bukan emoji/1 kata) | Sistem + sampling moderator |
 | `SHARE_PRIVATE` | 5 | B | 2 | **8** | 20 | 70 | 60 menit | Tangkapan layar + nama grup/kanal tujuan | Moderator Chapter |
 | `SHARE_PUBLIC` | 8 | B | 2 | **14** | 32 | 110 | 60 menit | URL publik; tautan harus tetap hidup ≥ 72 jam (dicek ulang otomatis) | Moderator Chapter + link-checker |
 | `STORY_SUBMIT` | 10 | C | 1 | **10** | 30 | 80 | 12 jam | Naskah ≥ 300 kata + ≥ 1 foto + tag ESG | Admin Komunitas Corsec |
-| `SESSION_ATTEND` | 15 | C | 1 | **15** | 30 | 60 | — | Kode kehadiran/QR + durasi hadir ≥ 70% | Panitia Event |
+| `SESSION_ATTEND` | 15 | C | 1 | **15** | 30 | 60 |: | Kode kehadiran/QR + durasi hadir ≥ 70% | Panitia Event |
 | `KNOWLEDGE_QA` | 15 | C | 1 | **15** | 30 | 60 | 6 jam | Ditandai *useful* oleh moderator **atau** ≥ 3 tanda *useful* dari anggota berbeda chapter | Moderator Chapter |
 | `SPEAKER_MENTOR` | 30 | D | 1 | **30** | 60 | 60 | 7 hari | Undangan/rundown + bukti pelaksanaan + konfirmasi penyelenggara | Admin Corsec + Validator PF |
 | `LEAD_ACTION` | 50 | D | 1 | **50** | 50 | 50 | 30 hari | Proposal + laporan aksi + foto + *outcome note* + lokasi + jumlah peserta | Admin Corsec + Validator PF |
@@ -280,7 +280,7 @@ menghukum perilaku yang paling ingin didorong dokumen sumber. Kelas D tetap tund
 
 > **Konsekuensi yang disengaja:** lintasan tercepat yang mungkin secara teoretis adalah 200 PK/minggu
 > (120 global + 80 Kelas D). Itu hanya tercapai jika seorang anggota memimpin kampanye lokal **dan**
-> menjadi pembicara **dan** memaksimalkan seluruh aksi ringan — semuanya dengan bukti terverifikasi.
+> menjadi pembicara **dan** memaksimalkan seluruh aksi ringan: semuanya dengan bukti terverifikasi.
 > Ini bukan celah; ini persis profil orang yang layak diundang sebagai *regional champion*.
 
 ### 5.4 Diminishing returns
@@ -291,20 +291,20 @@ Untuk aksi sejenis dalam **hari kalender yang sama** (zona waktu WIB):
 |---|---|---|---|---|---|
 | 1 | 100% | 1 | 2 | 5 | 8 |
 | 2 | 75% | 1 | 1 | 3 | 6 |
-| 3 | 50% | 1 | 1 | — *(cap 2)* | — *(cap 2)* |
+| 3 | 50% | 1 | 1 |: *(cap 2)* |: *(cap 2)* |
 | 4+ | 0% | 0 | 0 | 0 | 0 |
 
 Rumus: `poin = base === 0 ? 0 : max(1, floor(base × pengali))` untuk pengali > 0, dan `0` untuk pengali = 0.
 Kelas C dan D **tidak** dikenai diminishing returns (maks 1 aksi/hari, jadi tidak relevan).
 
-### 5.5 Perilaku saat cap terlampaui — **aksi tetap dicatat**
+### 5.5 Perilaku saat cap terlampaui: **aksi tetap dicatat**
 
 Ini keputusan penting. Ketika cap terlampaui, sistem **tidak menolak aksinya**, melainkan membukukan
 entri dengan `pointsAwarded = 0` dan `status = AWARDED`, `capReason = 'DAILY_CAP'`.
 
 Alasan: KPI Hal 6 ("50% anggota melakukan amplifikasi", "1–2 konten terdiseminasi per bulan") dihitung dari
 **jumlah aksi**, bukan dari poin. Menolak aksi akan merusak pelaporan KPI dan ESG evidence. UI menampilkan
-pesan jujur: *"Aksi tercatat. Batas poin harian sudah tercapai — poin berikutnya kembali besok."*
+pesan jujur: *"Aksi tercatat. Batas poin harian sudah tercapai: poin berikutnya kembali besok."*
 
 ### 5.6 State machine entri poin
 
@@ -329,14 +329,14 @@ stateDiagram-v2
 
 | Status | Arti | PK bertambah? | KT bertambah? | Tampil di riwayat anggota? |
 |---|---|---|---|---|
-| `PENDING` | Baru masuk antrean | Tidak | Tidak | Ya — label "Menunggu" |
-| `AUTO_CHECK` | Sedang diperiksa mesin | Tidak | Tidak | Ya — label "Diperiksa" |
-| `UNDER_REVIEW` | Menunggu verifikator manusia | Tidak | Tidak | Ya — label "Ditinjau" + SLA |
-| `VERIFIED` | Bukti sah, menunggu pembukuan | Tidak | Tidak | Ya — label "Disetujui" |
-| `AWARDED` | Poin dibukukan (final) | **Ya** | **Ya** | Ya — label "Diberikan" |
-| `REJECTED` | Ditolak, wajib disertai alasan | Tidak | Tidak | Ya — label "Ditolak" + alasan + tombol Banding |
-| `EXPIRED` | Bukti tidak dilengkapi 14 hari | Tidak | Tidak | Ya — label "Kedaluwarsa" |
-| `REVOKED` | Poin ditarik setelah audit | **Dikurangi** | **Dikurangi** | Ya — label "Ditarik" + alasan |
+| `PENDING` | Baru masuk antrean | Tidak | Tidak | Ya: label "Menunggu" |
+| `AUTO_CHECK` | Sedang diperiksa mesin | Tidak | Tidak | Ya: label "Diperiksa" |
+| `UNDER_REVIEW` | Menunggu verifikator manusia | Tidak | Tidak | Ya: label "Ditinjau" + SLA |
+| `VERIFIED` | Bukti sah, menunggu pembukuan | Tidak | Tidak | Ya: label "Disetujui" |
+| `AWARDED` | Poin dibukukan (final) | **Ya** | **Ya** | Ya: label "Diberikan" |
+| `REJECTED` | Ditolak, wajib disertai alasan | Tidak | Tidak | Ya: label "Ditolak" + alasan + tombol Banding |
+| `EXPIRED` | Bukti tidak dilengkapi 14 hari | Tidak | Tidak | Ya: label "Kedaluwarsa" |
+| `REVOKED` | Poin ditarik setelah audit | **Dikurangi** | **Dikurangi** | Ya: label "Ditarik" + alasan |
 
 ### 5.7 Pipeline pemberian poin
 
@@ -395,11 +395,11 @@ Skor 0–100, dihitung ulang pada setiap submission dari 30 hari terakhir.
 
 | Tingkat | Pemicu | Tindakan | Pemulihan |
 |---|---|---|---|
-| 1 — Peringatan lunak | 1 pelanggaran ringan | Notifikasi edukatif, poin tetap | Otomatis |
-| 2 — Penahanan | 3 pelanggaran ringan dalam 30 hari | Seluruh submission wajib review selama 7 hari | Otomatis setelah 7 hari |
-| 3 — Clawback | Bukti palsu terbukti | `REVOKED` pada entri terkait; PK & KT ditarik | — |
-| 4 — Pembekuan tier | 2× clawback | Tier dibekukan 1 musim; tidak bisa ikut recognition | Akhir musim |
-| 5 — Suspensi | Kolusi/pemalsuan sistematis | Keluar dari seluruh leaderboard 1 musim; `seasonPk` direset 0 | Panel Corsec |
+| 1: Peringatan lunak | 1 pelanggaran ringan | Notifikasi edukatif, poin tetap | Otomatis |
+| 2: Penahanan | 3 pelanggaran ringan dalam 30 hari | Seluruh submission wajib review selama 7 hari | Otomatis setelah 7 hari |
+| 3: Clawback | Bukti palsu terbukti | `REVOKED` pada entri terkait; PK & KT ditarik |: |
+| 4: Pembekuan tier | 2× clawback | Tier dibekukan 1 musim; tidak bisa ikut recognition | Akhir musim |
+| 5: Suspensi | Kolusi/pemalsuan sistematis | Keluar dari seluruh leaderboard 1 musim; `seasonPk` direset 0 | Panel Corsec |
 
 Setiap tingkat ≥ 3 **wajib** melalui peninjauan dua orang dan tercatat di *issue log* (Hal 10, Governance).
 
@@ -407,13 +407,13 @@ Setiap tingkat ≥ 3 **wajib** melalui peninjauan dua orang dan tercatat di *iss
 
 | Peran | Cakupan | Konflik kepentingan |
 |---|---|---|
-| **Sistem** | Kelas A, link-check Kelas B, skor risiko | — |
+| **Sistem** | Kelas A, link-check Kelas B, skor risiko |: |
 | **Moderator Chapter** | Kelas B, penandaan *useful* Kelas C | Tidak boleh memverifikasi submission miliknya sendiri |
 | **Admin Komunitas Corsec** | Kelas C, banding, sanksi tingkat 1–3 | Tidak boleh menjadi peserta recognition pada periode yang sama |
 | **Validator PF** | Kelas D, gate Public Feature, sanksi tingkat 4–5 | Wajib dual-control untuk setiap aksi bernilai ≥ 30 poin |
 
 **SLA verifikasi:** Kelas B ≤ 2 hari kerja; Kelas C ≤ 3 hari kerja; Kelas D ≤ 5 hari kerja.
-Jika SLA terlampaui, entri naik ke antrean prioritas dan anggota mendapat notifikasi — transparansi
+Jika SLA terlampaui, entri naik ke antrean prioritas dan anggota mendapat notifikasi: transparansi
 mencegah persepsi "poin saya hilang".
 
 ---
@@ -422,7 +422,7 @@ mencegah persepsi "poin saya hilang".
 
 ### 6.1 Prinsip
 
-- Kriteria **deterministik** — dapat dihitung ulang dari ledger kapan saja; tidak ada penilaian subjektif.
+- Kriteria **deterministik**: dapat dihitung ulang dari ledger kapan saja; tidak ada penilaian subjektif.
 - Badge **tidak memberi PK** (menjaga integritas tabel Hal 11); memberi **KT** dan hak kosmetik.
 - Badge **tidak pernah dicabut** kecuali diperoleh dari entri yang kemudian `REVOKED`.
 - Nama berbahasa Indonesia dan relevan dengan identitas Sobat Bumi / Pertamina Foundation.
@@ -441,7 +441,7 @@ mencegah persepsi "poin saya hilang".
 | # | Kode | Nama | Keluarga | Rarity | Kriteria unlock (deterministik) |
 |---|---|---|---|---|---|
 | 1 | `BDG_SALAM_KENAL` | **Salam Kenal** | Onboarding | Umum | Profil terisi 100% + consent dasar terekam + status keanggotaan `TERVERIFIKASI` |
-| 2 | `BDG_PERINTIS` | **Perintis Pfriends** | Onboarding | Langka | Bergabung **dan** mencapai 25 PK di dalam Musim 01. *Terbatas waktu — tidak dapat diperoleh lagi setelah Musim 01 berakhir* |
+| 2 | `BDG_PERINTIS` | **Perintis Pfriends** | Onboarding | Langka | Bergabung **dan** mencapai 25 PK di dalam Musim 01. *Terbatas waktu: tidak dapat diperoleh lagi setelah Musim 01 berakhir* |
 | 3 | `BDG_CORONG_PERTAMA` | **Corong Pertama** | Amplifikasi | Umum | 1 `SHARE_PRIVATE` berstatus `AWARDED` |
 | 4 | `BDG_PENGERAS_SUARA` | **Pengeras Suara** | Amplifikasi | Langka | 15 `SHARE_PUBLIC` berstatus `AWARDED` (kumulatif seumur hidup) |
 | 5 | `BDG_GEMA_NUSANTARA` | **Gema Nusantara** | Amplifikasi | Epik | 30 `SHARE_PUBLIC` `AWARDED` tersebar di ≥ 3 platform berbeda **dan** ≥ 5 di antaranya berasal dari ≥ 5 konten PF berbeda |
@@ -457,8 +457,8 @@ mencegah persepsi "poin saya hilang".
 | 15 | `BDG_JURU_WARTA` | **Juru Warta** | Jurnalisme | Umum | 3 `STORY_SUBMIT` `AWARDED` |
 | 16 | `BDG_KISAH_TERPILIH` | **Kisah Terpilih** | Jurnalisme | Epik | ≥ 1 story lolos **seluruh 5 syarat** gate Public Feature (§4.1) **dan** telah tayang |
 | 17 | `BDG_PENGGERAK_LOKAL` | **Penggerak Lokal** | Kepemimpinan | Epik | 1 `LEAD_ACTION` `AWARDED` yang sekaligus lolos gate ESG Evidence (§4.2) |
-| 18 | `BDG_NAIK_KELAS` | **Naik Kelas** | Ekonomi | Langka | *Khusus Womenpreneur* — 2 laporan progres usaha terverifikasi + 2 `SESSION_ATTEND` bertema upskilling |
-| 19 | `BDG_JEJARING_PASAR` | **Jejaring Pasar** | Ekonomi | Epik | *Khusus Womenpreneur* — memfasilitasi ≥ 3 koneksi pasar/B2B yang tercatat dan dikonfirmasi kedua pihak |
+| 18 | `BDG_NAIK_KELAS` | **Naik Kelas** | Ekonomi | Langka | *Khusus Womenpreneur*: 2 laporan progres usaha terverifikasi + 2 `SESSION_ATTEND` bertema upskilling |
+| 19 | `BDG_JEJARING_PASAR` | **Jejaring Pasar** | Ekonomi | Epik | *Khusus Womenpreneur*: memfasilitasi ≥ 3 koneksi pasar/B2B yang tercatat dan dikonfirmasi kedua pihak |
 | 20 | `BDG_PENJAGA_NYALA` | **Penjaga Nyala** | Kehormatan | **Legendaris** | Mencapai Champion (150 PK + syarat komposisi) **dan** memiliki ≥ 1 badge Epik keluarga Lingkungan **dan** ≥ 1 badge Epik keluarga Mentoring/Jurnalisme/Kepemimpinan **dan** rasio verifikasi ≥ 95% selama 1 musim penuh |
 
 ### 6.4 Aturan evaluasi
@@ -482,20 +482,20 @@ menindas untuk komunitas alumni yang bekerja/berwirausaha penuh waktu.
 - **Minggu Pfriends** = Selasa 00:00 WIB → Senin 23:59 WIB.
 - **Broadcast mingguan** dikirim setiap **Selasa 09:00 WIB** (konsisten dengan KPI Hal 6: minimal 2×/bulan).
 - **Streak bertambah 1** jika dalam satu Minggu Pfriends anggota memiliki ≥ 1 entri berstatus `AWARDED`
-  dengan poin > 0 — aksi apa pun, termasuk sekadar `BROADCAST_VIEW`. Ambang sengaja dibuat sangat rendah:
+  dengan poin > 0: aksi apa pun, termasuk sekadar `BROADCAST_VIEW`. Ambang sengaja dibuat sangat rendah:
   streak mengukur **kehadiran**, bukan intensitas.
 
 ### 7.2 Pengali streak
 
 | Panjang streak | Pengali | Berlaku untuk |
 |---|---|---|
-| 1–3 minggu | 1.00× | — |
+| 1–3 minggu | 1.00× |: |
 | 4–7 minggu | 1.10× | **Kelas A & B saja** |
 | 8–11 minggu | 1.15× | **Kelas A & B saja** |
 | ≥ 12 minggu | 1.20× | **Kelas A & B saja** |
 
 **Kelas C dan D tidak dikenai pengali.** Alasan: aksi bernilai tinggi harus bernilai sama bagi anggota
-baru maupun lama — jika tidak, anggota baru yang memimpin kampanye pertamanya akan mendapat poin lebih
+baru maupun lama: jika tidak, anggota baru yang memimpin kampanye pertamanya akan mendapat poin lebih
 kecil daripada veteran untuk kerja yang sama. Itu tidak adil dan merusak *relatedness*.
 
 Pengali diterapkan **sebelum** cap. Hasilnya tetap dipotong oleh cap harian/mingguan, sehingga streak
@@ -524,13 +524,13 @@ flowchart LR
     I --> C
 ```
 
-**Momen notifikasi yang dirancang** (maksimal 3/minggu — di atas itu terasa spam):
+**Momen notifikasi yang dirancang** (maksimal 3/minggu: di atas itu terasa spam):
 
 | Waktu | Isi | Tujuan |
 |---|---|---|
 | Selasa 09:00 | Broadcast baru + CTA ringan | Cue utama |
-| Jumat 16:00 | Hanya jika belum ada aksi minggu ini — "Streak N minggumu masih aman sampai Senin" | Penyelamat streak, nada tidak menghakimi |
-| Senin 19:00 | Hanya jika streak akan putus dan token tersedia — "Jeda Aman akan dipakai otomatis" | Transparansi, bukan tekanan |
+| Jumat 16:00 | Hanya jika belum ada aksi minggu ini: "Streak N minggumu masih aman sampai Senin" | Penyelamat streak, nada tidak menghakimi |
+| Senin 19:00 | Hanya jika streak akan putus dan token tersedia: "Jeda Aman akan dipakai otomatis" | Transparansi, bukan tekanan |
 
 ---
 
@@ -545,28 +545,28 @@ masyarakat)**.
 | Aturan | Nilai | Alasan |
 |---|---|---|
 | Panjang musim | 3 bulan (kuartal kalender) | Selaras siklus pelaporan TJSL |
-| Musim perdana | **Musim 01 — Juli s.d. September 2026** | Hal 7: gamifikasi diaktifkan Juni–Juli 2026 |
+| Musim perdana | **Musim 01: Juli s.d. September 2026** | Hal 7: gamifikasi diaktifkan Juni–Juli 2026 |
 | Quest solo aktif bersamaan | Maksimal **2** | Mencegah *spread-thin* dan pengumpulan dangkal |
-| **Hadiah quest** | **KT + badge saja — tidak pernah PK** | Menjaga tabel Hal 11 sebagai satu-satunya sumber PK |
+| **Hadiah quest** | **KT + badge saja: tidak pernah PK** | Menjaga tabel Hal 11 sebagai satu-satunya sumber PK |
 | Sumber progres | Hanya entri berstatus `AWARDED` | Tidak ada jalur pintas |
-| Double counting | Aksi tetap memberi PK normal **dan** menggerakkan quest — bukan penggandaan PK | Satu aksi, satu nilai PK |
+| Double counting | Aksi tetap memberi PK normal **dan** menggerakkan quest: bukan penggandaan PK | Satu aksi, satu nilai PK |
 
 ### 8.2 Katalog quest Musim 01
 
 | Kode | Nama | Tipe | Pilar sumber | Syarat penyelesaian | Durasi | Hadiah |
 |---|---|---|---|---|---|---|
-| `Q_JEJAK_HIJAU` | **Jejak Hijau** | Solo | 03 — aksi lingkungan | 1 aksi lingkungan lokal terverifikasi + 1 `STORY_SUBMIT` bertag `ENVIRONMENTAL` + 2 `SHARE_PUBLIC` | 4 minggu | 200 KT + progres `BDG_SOBAT_BUMI_SEJATI` |
-| `Q_NOL_SAMPAH` | **Nol Sampah Sebulan** | Chapter | 06 — pengurangan sampah | Chapter mengumpulkan 30 laporan aksi bertag `waste-reduction` | 30 hari | 600 KT dibagi rata ke kontributor + 1 sesi upskilling gratis untuk chapter |
-| `Q_TERANG_TANPA_ASAP` | **Terang Tanpa Asap** | Solo | 06 — kampanye energi bersih | 3 konten edukasi energi bersih tayang publik + 1 `SESSION_ATTEND` bertema energi | 6 minggu | 250 KT + prioritas antrean Public Feature |
-| `Q_KELAS_RAKYAT` | **Kelas Rakyat** | Solo | 03 — edukasi masyarakat | Menjadi fasilitator 1 sesi edukasi dengan ≥ 10 peserta + laporan *outcome note* | 8 minggu | 300 KT + progres `BDG_GURU_SEJAWAT` |
-| `Q_NAIK_KELAS_BERSAMA` | **Naik Kelas Bersama** | **Duet** SOBI × Womenpreneur | 03 — pemberdayaan ekonomi | 1 alumni SOBI mendampingi 1 UMKM: 4 sesi tercatat + 1 laporan pertumbuhan usaha | 10 minggu | 350 KT **untuk masing-masing** + nominasi otomatis TOP Contribution + `BDG_PENYALUR_PELUANG` |
-| `Q_WARTA_PFRIENDS` | **Warta Pfriends** | Solo | 06 — Community Journalism | 3 liputan warga (foto + ≥ 300 kata + tag ESG) dalam satu musim | 1 musim | 280 KT + masuk **story bank** (Hal 9) |
+| `Q_JEJAK_HIJAU` | **Jejak Hijau** | Solo | 03: aksi lingkungan | 1 aksi lingkungan lokal terverifikasi + 1 `STORY_SUBMIT` bertag `ENVIRONMENTAL` + 2 `SHARE_PUBLIC` | 4 minggu | 200 KT + progres `BDG_SOBAT_BUMI_SEJATI` |
+| `Q_NOL_SAMPAH` | **Nol Sampah Sebulan** | Chapter | 06: pengurangan sampah | Chapter mengumpulkan 30 laporan aksi bertag `waste-reduction` | 30 hari | 600 KT dibagi rata ke kontributor + 1 sesi upskilling gratis untuk chapter |
+| `Q_TERANG_TANPA_ASAP` | **Terang Tanpa Asap** | Solo | 06: kampanye energi bersih | 3 konten edukasi energi bersih tayang publik + 1 `SESSION_ATTEND` bertema energi | 6 minggu | 250 KT + prioritas antrean Public Feature |
+| `Q_KELAS_RAKYAT` | **Kelas Rakyat** | Solo | 03: edukasi masyarakat | Menjadi fasilitator 1 sesi edukasi dengan ≥ 10 peserta + laporan *outcome note* | 8 minggu | 300 KT + progres `BDG_GURU_SEJAWAT` |
+| `Q_NAIK_KELAS_BERSAMA` | **Naik Kelas Bersama** | **Duet** SOBI × Womenpreneur | 03: pemberdayaan ekonomi | 1 alumni SOBI mendampingi 1 UMKM: 4 sesi tercatat + 1 laporan pertumbuhan usaha | 10 minggu | 350 KT **untuk masing-masing** + nominasi otomatis TOP Contribution + `BDG_PENYALUR_PELUANG` |
+| `Q_WARTA_PFRIENDS` | **Warta Pfriends** | Solo | 06: Community Journalism | 3 liputan warga (foto + ≥ 300 kata + tag ESG) dalam satu musim | 1 musim | 280 KT + masuk **story bank** (Hal 9) |
 
 ### 8.3 Struktur quest yang membuka jalan ke gate
 
 Quest sengaja dirancang agar **penyelesaiannya secara otomatis memenuhi syarat gate ESG Evidence** (§4.2):
 setiap quest mewajibkan *outcome note*, tag ESG/SDG, dan lampiran bukti. Dengan begitu, "mengerjakan quest"
-= "memproduksi bukti ESG" — persis mandat Hal 9 (*"Bukti pipeline before dashboard"*) dan Hal 10.
+= "memproduksi bukti ESG": persis mandat Hal 9 (*"Bukti pipeline before dashboard"*) dan Hal 10.
 
 ---
 
@@ -576,11 +576,11 @@ setiap quest mewajibkan *outcome note*, tag ESG/SDG, dan lampiran bukti. Dengan 
 
 | # | Papan | Basis | Periode | Kepada siapa ditampilkan |
 |---|---|---|---|---|
-| 1 | **Papan Musim** | `seasonPk` | Musim berjalan | Semua — tampilan default |
+| 1 | **Papan Musim** | `seasonPk` | Musim berjalan | Semua: tampilan default |
 | 2 | **Papan Chapter/Batch** | `seasonPk` dalam chapter (PF10, PF11, PF12, dst) | Musim | Anggota chapter tersebut |
 | 3 | **Papan Komunitas** | `seasonPk`, **SOBI dan Womenpreneur dipisah** | Musim | Semua |
 | 4 | **Papan Bulanan** | PK bulan berjalan | Bulan, reset tiap tanggal 1 | Semua |
-| 5 | **Papan Sepanjang Masa** | `lifetimePk` | Kumulatif | Semua — hanya-baca, "Balai Kehormatan" |
+| 5 | **Papan Sepanjang Masa** | `lifetimePk` | Kumulatif | Semua: hanya-baca, "Balai Kehormatan" |
 | 6 | **Liga Naik-Turun** | `seasonPk` dalam grup 25 anggota berkemampuan setara | Mingguan | Anggota liga tersebut |
 | 7 | **Papan Bintang Baru** | `seasonPk` anggota bergabung < 60 hari | Bergulir | Anggota baru |
 | 8 | **Papan Chapter Kolektif** | **Rata-rata PK per anggota aktif** (bukan total) | Musim | Semua |
@@ -590,35 +590,35 @@ Womenpreneur (pelaku UMKM, banyak `SESSION_ATTEND`/laporan usaha) berbeda secara
 keduanya dalam satu papan bukan kompetisi yang adil.
 
 **Papan 8 memakai rata-rata**, bukan total, agar chapter kecil (PF12 yang baru) tidak otomatis kalah dari
-chapter besar (PF10) — masalah klasik leaderboard tim.
+chapter besar (PF10): masalah klasik leaderboard tim.
 
 ### 9.2 Delapan mekanisme anti-demotivasi
 
 | # | Mekanisme | Masalah yang diatasi |
 |---|---|---|
-| 1 | **Liga tersegmentasi** (papan 6) — anggota hanya melihat 25 peer setara, dengan promosi/degradasi 5 teratas/5 terbawah tiap minggu | Anggota baru tidak pernah melihat dirinya berada di peringkat 847 dari 900 |
+| 1 | **Liga tersegmentasi** (papan 6): anggota hanya melihat 25 peer setara, dengan promosi/degradasi 5 teratas/5 terbawah tiap minggu | Anggota baru tidak pernah melihat dirinya berada di peringkat 847 dari 900 |
 | 2 | **Papan Bintang Baru** 60 hari (papan 7) | Masa perlindungan agar pendatang baru merasakan kemenangan pertama |
-| 3 | **Posisi relatif, bukan peringkat absolut** — anggota di bawah persentil 50 melihat "Kamu di 35% teratas chapter PF11", bukan "#412" | Angka peringkat besar bersifat demotivasi murni |
-| 4 | **Tidak ada papan peringkat terbawah** — publik hanya melihat 20 teratas + posisi dirinya sendiri | Menghindari rasa malu publik |
-| 5 | **Sorotan Lonjakan Terbesar** — papan terpisah untuk kenaikan PK terbesar minggu ini | Memberi jalur menang bagi non-top; pemula justru paling mungkin menang di sini |
-| 6 | **Reset musiman lunak** — semua kembali ke garis start tiap kuartal | Mencegah dominasi permanen kohort awal |
-| 7 | **Opt-out anonim** — tampil sebagai "K.M. — PF11" alih-alih nama lengkap | Governance & consent (Hal 10); sebagian alumni tidak nyaman tampil |
-| 8 | **Papan kolektif chapter** (papan 8) — mengubah sebagian kompetisi menjadi kolaborasi | Menumbuhkan *sense of belonging* (McMillan & Chavis, Hal 5) alih-alih rivalitas |
+| 3 | **Posisi relatif, bukan peringkat absolut**: anggota di bawah persentil 50 melihat "Kamu di 35% teratas chapter PF11", bukan "#412" | Angka peringkat besar bersifat demotivasi murni |
+| 4 | **Tidak ada papan peringkat terbawah**: publik hanya melihat 20 teratas + posisi dirinya sendiri | Menghindari rasa malu publik |
+| 5 | **Sorotan Lonjakan Terbesar**: papan terpisah untuk kenaikan PK terbesar minggu ini | Memberi jalur menang bagi non-top; pemula justru paling mungkin menang di sini |
+| 6 | **Reset musiman lunak**: semua kembali ke garis start tiap kuartal | Mencegah dominasi permanen kohort awal |
+| 7 | **Opt-out anonim**: tampil sebagai "K.M.: PF11" alih-alih nama lengkap | Governance & consent (Hal 10); sebagian alumni tidak nyaman tampil |
+| 8 | **Papan kolektif chapter** (papan 8): mengubah sebagian kompetisi menjadi kolaborasi | Menumbuhkan *sense of belonging* (McMillan & Chavis, Hal 5) alih-alih rivalitas |
 
 ### 9.3 Aturan tampilan
 
 - Anggota berstatus `DITANGGUHKAN` atau `DORMAN` tidak muncul di papan mana pun.
-- Entri `PENDING`/`UNDER_REVIEW` **tidak** dihitung — peringkat hanya dari PK `AWARDED`, agar peringkat
+- Entri `PENDING`/`UNDER_REVIEW` **tidak** dihitung: peringkat hanya dari PK `AWARDED`, agar peringkat
   tidak berubah-ubah setelah verifikasi.
 - Papan disegarkan setiap 15 menit (mockup: dihitung ulang saat halaman dibuka).
-- Setiap papan menampilkan kapan terakhir diperbarui — transparansi.
+- Setiap papan menampilkan kapan terakhir diperbarui: transparansi.
 
 ---
 
 ## 10. Katalog Penukaran Poin [RANCANGAN]
 
 Mandat langsung **Hal 5 pilar 05**: *"Peningkatan poin yang dapat ditukar"*.
-Ditukar menggunakan **Koin Tukar (KT)**, bukan PK — sehingga menukar tidak pernah menurunkan tier (§2.2).
+Ditukar menggunakan **Koin Tukar (KT)**, bukan PK: sehingga menukar tidak pernah menurunkan tier (§2.2).
 
 ### 10.1 Katalog
 
@@ -655,13 +655,13 @@ Sobat Bumi, kategori ini diperkirakan menjadi penukaran paling bermakna dan pali
 
 | Aturan | Ketentuan |
 |---|---|
-| Efek terhadap PK | **Nol** — PK tidak pernah berkurang karena penukaran |
+| Efek terhadap PK | **Nol**: PK tidak pernah berkurang karena penukaran |
 | Verifikasi tier | Tier diperiksa **saat penukaran**; tier harus aktif, bukan Gelar Kehormatan |
 | Persetujuan | Item > 1.000 KT wajib disetujui Admin Corsec; > 2.000 KT wajib Validator PF |
 | Pemenuhan | 14 hari kerja; status pesanan terlihat oleh anggota |
 | Pembatalan | Anggota dapat membatalkan selama status masih `DIAJUKAN`; KT dikembalikan penuh |
 | Kedaluwarsa KT | 12 bulan sejak diperoleh (FIFO), dengan notifikasi pada H-60, H-30, H-7 |
-| Konversi tunai | **Tidak ada** — mencegah persepsi pembayaran atas amplifikasi dan menjaga motivasi intrinsik |
+| Konversi tunai | **Tidak ada**: mencegah persepsi pembayaran atas amplifikasi dan menjaga motivasi intrinsik |
 | Pengembalian | Jika sumber KT berasal dari entri yang kemudian `REVOKED`, saldo KT dikoreksi; pesanan yang sudah dipenuhi tidak ditarik, saldo menjadi negatif dan dipulihkan dari perolehan berikutnya |
 
 ---
@@ -671,7 +671,7 @@ Sobat Bumi, kategori ini diperkirakan menjadi penukaran paling bermakna dan pali
 Hal 5 pilar 05 menyebut dua bentuk penghargaan: **TOP Contribution** dan **TOP awardee dengan karir bagus**.
 Keduanya berbeda sifat dan karenanya diberi mekanisme berbeda.
 
-### 11.1 TOP Contribution — berbasis skor, otomatis + kurasi
+### 11.1 TOP Contribution: berbasis skor, otomatis + kurasi
 
 Menghargai **kontribusi di dalam komunitas** pada periode tertentu.
 
@@ -687,29 +687,29 @@ Normalisasi per komunitas mencegah satu komunitas mendominasi karena bauran aksi
 
 | Siklus | Mekanisme | Kuota | Penghargaan |
 |---|---|---|---|
-| **Bulanan** | Otomatis dari skor komposit; syarat minimum tier **Contributor (50)** — sesuai benefit Hal 12 *"eligible for community recognition"* | 3 SOBI + 3 Womenpreneur | Disebut di *monthly digest*, bingkai profil "TOP Bulan Ini", 300 KT |
+| **Bulanan** | Otomatis dari skor komposit; syarat minimum tier **Contributor (50)**: sesuai benefit Hal 12 *"eligible for community recognition"* | 3 SOBI + 3 Womenpreneur | Disebut di *monthly digest*, bingkai profil "TOP Bulan Ini", 300 KT |
 | **Musiman** | Panel Corsec memilih 3 dari 10 kandidat teratas skor komposit; **wajib lolos gate Public Feature (§4.1)** | 3 | Diprofilkan di website/sosmed PF, 1.500 KT, undangan townhall |
 
-Konsistensi dengan Hal 12: Active Member (25) hanya *"eligible for monthly digest mention"* — karena itu
+Konsistensi dengan Hal 12: Active Member (25) hanya *"eligible for monthly digest mention"*: karena itu
 penyebutan di digest tersedia mulai 25 poin, sedangkan **TOP Contribution** (bentuk *community recognition*)
 baru mulai tier Contributor (50), dan **feature publik** baru mulai 100 poin.
 
-### 11.2 TOP Awardee dengan Karir Bagus — berbasis kurasi, bukan poin
+### 11.2 TOP Awardee dengan Karir Bagus: berbasis kurasi, bukan poin
 
-Menghargai **capaian di luar komunitas** — perjalanan karir alumni SOBI atau pertumbuhan usaha Womenpreneur.
+Menghargai **capaian di luar komunitas**: perjalanan karir alumni SOBI atau pertumbuhan usaha Womenpreneur.
 Ini menjawab langsung masalah Hal 2: *"Potensi SDM unggul ini belum terutilisasi sebagai duta energi atau mentor"*.
 
-Poin **tidak boleh** menjadi penentu utama — seorang alumni dengan karir cemerlang mungkin baru aktif di
+Poin **tidak boleh** menjadi penentu utama: seorang alumni dengan karir cemerlang mungkin baru aktif di
 Pfriends. Namun tier tetap dipakai sebagai syarat minimum, sebagai bukti bahwa yang bersangkutan memang
 masih terhubung dengan komunitas.
 
 | Aspek | Ketentuan |
 |---|---|
 | **Syarat minimum** | Tier **Contributor (50)** + `verified story` + `consent` + `PF validation` (mengikuti kerangka gate Hal 12) |
-| **Jalur nominasi** | (a) **Nominasi diri** — `STORY_SUBMIT` bertipe `career-milestone` (**10 pt**, sesuai tabel Hal 11); (b) **Nominasi oleh sesama anggota** — juga `STORY_SUBMIT` bertipe `nomination` (**10 pt** untuk pengusul) |
+| **Jalur nominasi** | (a) **Nominasi diri**: `STORY_SUBMIT` bertipe `career-milestone` (**10 pt**, sesuai tabel Hal 11); (b) **Nominasi oleh sesama anggota**: juga `STORY_SUBMIT` bertipe `nomination` (**10 pt** untuk pengusul) |
 | **Verifikasi capaian** | Dokumen pendukung: SK/kontrak kerja, profil LinkedIn, NIB/izin usaha, laporan omzet, atau liputan media. Diverifikasi Admin Corsec + Validator PF |
 | **Kriteria penilaian panel** | Lompatan karir/usaha; keterkaitan dengan misi keberlanjutan; kesediaan menjadi mentor/pembicara; kelayakan cerita untuk publikasi |
-| **Kuota** | **2 per bulan — 1 SOBI + 1 Womenpreneur** (menjaga keadilan lintas komunitas) |
+| **Kuota** | **2 per bulan: 1 SOBI + 1 Womenpreneur** (menjaga keadilan lintas komunitas) |
 | **Penghargaan** | Profil "Sorotan Alumni" di website & sosmed PF; masuk **story bank** (Hal 9); undangan menjadi pembicara; 1.000 KT; badge `BDG_KISAH_TERPILIH` |
 | **Umpan balik loop** | Setiap Sorotan Alumni yang tayang menjadi konten yang diamplifikasi komunitas → memenuhi KPI Hal 6 (*1–2 konten PF terdiseminasi per bulan*). Recognition memberi makan mesin diseminasi. |
 
@@ -718,8 +718,8 @@ masih terhubung dengan komunitas.
 | Waktu | Kegiatan |
 |---|---|
 | Tanggal 1 | Papan Bulanan reset; pengumuman TOP Contribution bulan sebelumnya di *monthly digest* |
-| Tanggal 15 | Publikasi Sorotan Alumni (TOP Awardee) — 1 SOBI |
-| Tanggal 25 | Publikasi Sorotan Alumni (TOP Awardee) — 1 Womenpreneur |
+| Tanggal 15 | Publikasi Sorotan Alumni (TOP Awardee): 1 SOBI |
+| Tanggal 25 | Publikasi Sorotan Alumni (TOP Awardee): 1 Womenpreneur |
 | Akhir musim | Pengumuman TOP Contribution musiman + Champion baru + pembagian badge musiman |
 
 ---
@@ -766,7 +766,7 @@ stateDiagram-v2
 | `CHAMPION` | Poin Aktif ≥ 150 **dan** ≥ 1 Kelas D **dan** ≥ 5 Kelas C **dan** rasio verifikasi ≥ 90% | idem | = tier **Champion** |
 | `DORMAN` | 90 hari tanpa entri `AWARDED` | Ada entri `AWARDED` | Keluar dari leaderboard; **tier dibekukan, tidak diturunkan** |
 | `DITANGGUHKAN` | Sanksi tingkat 5 | Masa sanksi selesai | `seasonPk` direset 0; `lifetimePk` tetap tercatat untuk audit |
-| `KELUAR` | Permintaan sendiri / consent dicabut | — | Data dianonimkan sesuai kebijakan Governance (Hal 10) |
+| `KELUAR` | Permintaan sendiri / consent dicabut |: | Data dianonimkan sesuai kebijakan Governance (Hal 10) |
 
 ### 12.3 Aturan musim dan decay
 
@@ -775,7 +775,7 @@ stateDiagram-v2
 | Panjang musim | 3 bulan (kuartal kalender) |
 | Pada pergantian musim | `seasonPk` sebelumnya disimpan sebagai `previousSeasonPk`, lalu `seasonPk` direset 0 |
 | Poin Aktif musim baru | `seasonPk + floor(0.5 × previousSeasonPk)` |
-| **Decay maksimum** | **50% per musim** — tidak pernah lebih; tidak ada pengurangan harian |
+| **Decay maksimum** | **50% per musim**: tidak pernah lebih; tidak ada pengurangan harian |
 | **Grace period Champion** | Champion mempertahankan tier selama **1 musim penuh** setelah pencapaian, meski Poin Aktif turun. Melindungi undangan pembicara/mentor yang sudah terlanjur dijadwalkan |
 | **Gelar Kehormatan** | Tier tertinggi sepanjang masa (dari `lifetimePk`) ditampilkan permanen sebagai "Pernah mencapai: Champion" dan **tidak pernah turun** |
 | Badge | **Tidak pernah** terkena decay |
@@ -813,7 +813,7 @@ src/lib/domain/gamification/
 │   ├── Streak.js
 │   └── RedemptionOrder.js
 ├── policies/                        // murni, tanpa I/O, mudah diuji
-│   ├── ScoringPolicy.js             // TABEL HAL 11 — Object.freeze
+│   ├── ScoringPolicy.js             // TABEL HAL 11: Object.freeze
 │   ├── CapPolicy.js                 // §5.2 & §5.3
 │   ├── CooldownPolicy.js
 │   ├── DiminishingReturnsPolicy.js  // §5.4
@@ -834,19 +834,19 @@ src/lib/domain/gamification/
     ├── MemberRepository.js
     └── BadgeRepository.js
 
-src/lib/infrastructure/gamification/  // implementasi Dexie — mudah ditukar ke HTTP nanti
+src/lib/infrastructure/gamification/  // implementasi Dexie: mudah ditukar ke HTTP nanti
 ├── DexieLedgerRepository.js
 ├── DexieMemberRepository.js
 └── DexieBadgeRepository.js
 
 src/lib/stores/
-└── gamification.svelte.js            // class runes singleton, TIPIS — hanya delegasi ke engine
+└── gamification.svelte.js            // class runes singleton, TIPIS: hanya delegasi ke engine
 ```
 
 ### 13.2 Value Objects
 
 ```js
-/** Poin — immutable, tidak pernah negatif. */
+/** Poin: immutable, tidak pernah negatif. */
 export class Points {
 	#value;
 
@@ -879,7 +879,7 @@ export class Points {
 	static zero() { return new Points(0); }
 }
 
-/** Tier — ambang & benefit PERSIS Hal 12. Jangan diubah. */
+/** Tier: ambang & benefit PERSIS Hal 12. Jangan diubah. */
 export class Tier {
 	static ACTIVE_MEMBER     = new Tier('ACTIVE_MEMBER',     'Active Member',     25,  '#2E7CD6', 'eligible for monthly digest mention');
 	static CONTRIBUTOR       = new Tier('CONTRIBUTOR',       'Contributor',       50,  '#7CB342', 'eligible for community recognition');
@@ -887,7 +887,7 @@ export class Tier {
 	static CHAMPION          = new Tier('CHAMPION',          'Champion',          150, '#F0B429', 'eligible for mentor / speaker / regional champion invitation');
 	static NONE              = new Tier('NONE',              'Belum bertier',     0,   '#9AA5B1', '-');
 
-	/** Urut menaik — dipakai TierPolicy. */
+	/** Urut menaik: dipakai TierPolicy. */
 	static ORDERED = Object.freeze([
 		Tier.ACTIVE_MEMBER, Tier.CONTRIBUTOR, Tier.FEATURED_CANDIDATE, Tier.CHAMPION
 	]);
@@ -903,7 +903,7 @@ export class Tier {
 }
 ```
 
-### 13.3 ScoringPolicy — sumber tunggal tabel Hal 11
+### 13.3 ScoringPolicy: sumber tunggal tabel Hal 11
 
 ```js
 import { ActionClass } from '../value-objects/ActionClass.js';
@@ -947,7 +947,7 @@ export class ScoringPolicy {
 ### 13.4 CapPolicy
 
 ```js
-/** Cap §5.2 dan §5.3. Tidak melakukan I/O — menerima ringkasan penggunaan. */
+/** Cap §5.2 dan §5.3. Tidak melakukan I/O: menerima ringkasan penggunaan. */
 export class CapPolicy {
 	static PER_ACTION = Object.freeze({
 		BROADCAST_VIEW: { maxActionsDay: 3, day: 3,  week: 8,  month: 30  },
@@ -1062,18 +1062,18 @@ export class TierPolicy {
 		return { tier: earned, locked, missing };
 	}
 
-	/** Gelar Kehormatan — dari lifetimePk, tidak pernah turun (§12.3). */
+	/** Gelar Kehormatan: dari lifetimePk, tidak pernah turun (§12.3). */
 	honoraryTier(lifetimePk) {
 		return [...Tier.ORDERED].reverse().find((t) => lifetimePk >= t.threshold) ?? Tier.NONE;
 	}
 }
 ```
 
-### 13.6 EligibilityPolicy — gate Hal 12
+### 13.6 EligibilityPolicy: gate Hal 12
 
 ```js
 export class EligibilityPolicy {
-	/** Minimum for public feature — Hal 12. Lima syarat konjungtif. */
+	/** Minimum for public feature: Hal 12. Lima syarat konjungtif. */
 	forPublicFeature({ activePk, verifiedStoryCount, consent, pfValidation, sensitivityScan }) {
 		const checks = [
 			{ key: 'points',    label: '100 points',              passed: activePk >= 100 },
@@ -1085,7 +1085,7 @@ export class EligibilityPolicy {
 		return this.#verdict(checks);
 	}
 
-	/** Minimum for ESG evidence — Hal 12. */
+	/** Minimum for ESG evidence: Hal 12. */
 	forEsgEvidence(activity) {
 		const checks = [
 			{ key: 'documented', label: 'documented activity', passed: Boolean(activity.title && activity.date && activity.location && activity.participantCount > 0) },
@@ -1105,7 +1105,7 @@ export class EligibilityPolicy {
 }
 ```
 
-### 13.7 `GamificationEngine` — orkestrator
+### 13.7 `GamificationEngine`: orkestrator
 
 ```js
 /**
@@ -1135,8 +1135,8 @@ export class GamificationEngine {
 
 	// ── 1. SUBMIT ────────────────────────────────────────────────────────────
 	/**
-	 * Mengajukan satu aksi. Selalu menghasilkan satu PointLedgerEntry —
-	 * bahkan saat ditolak — demi jejak audit (Hal 10 Governance).
+	 * Mengajukan satu aksi. Selalu menghasilkan satu PointLedgerEntry :
+	 * bahkan saat ditolak: demi jejak audit (Hal 10 Governance).
 	 */
 	async submit(memberId, actionCode, payload = {}) {
 		const at = this.#clock.now();
@@ -1146,13 +1146,13 @@ export class GamificationEngine {
 			return this.#reject(memberId, actionCode, payload, at, 'MEMBER_NOT_ELIGIBLE');
 		}
 
-		// L1 — Idempotensi
+		// L1: Idempotensi
 		const key = this.#scoring.idempotencyKey(memberId, actionCode, payload);
 		if (await this.#ledgerRepo.existsByIdempotencyKey(key)) {
 			return this.#reject(memberId, actionCode, payload, at, 'DUPLICATE');
 		}
 
-		// L2 — Cooldown
+		// L2: Cooldown
 		const last = await this.#ledgerRepo.lastAccepted(memberId, actionCode);
 		if (!this.#cooldown.isSatisfied(actionCode, last?.createdAt, at)) {
 			return this.#reject(memberId, actionCode, payload, at, 'COOLDOWN');
@@ -1174,7 +1174,7 @@ export class GamificationEngine {
 
 		// Rute status (§5.7)
 		if (risk.score > 80)                     entry.rejectAuto('RISK_TOO_HIGH', risk.signals);
-		else if (award.grantable.isZero())       entry.awardZero(award.reason);   // §5.5 — aksi tetap tercatat untuk KPI
+		else if (award.grantable.isZero())       entry.awardZero(award.reason);   // §5.5: aksi tetap tercatat untuk KPI
 		else if (this.#verification.needsHumanReview(actionCode, risk.score)) entry.toUnderReview();
 		else                                     entry.awardAuto();
 
@@ -1186,12 +1186,12 @@ export class GamificationEngine {
 
 	// ── 2. PERHITUNGAN POIN ──────────────────────────────────────────────────
 	async #calculateAward(member, actionCode, at) {
-		const base  = this.#scoring.basePointsFor(actionCode);         // Hal 11 — tidak pernah diubah
+		const base  = this.#scoring.basePointsFor(actionCode);         // Hal 11: tidak pernah diubah
 		const klass = this.#scoring.classOf(actionCode);
 
 		const occurrence = await this.#ledgerRepo.countAcceptedToday(member.id, actionCode, at);
 		const drMul      = this.#dr.multiplierFor(klass, occurrence);  // §5.4
-		const streakMul  = this.#streak.multiplierFor(member.streakWeeks, klass); // §7.2 — A & B saja
+		const streakMul  = this.#streak.multiplierFor(member.streakWeeks, klass); // §7.2: A & B saja
 
 		const requested = base.scaledBy(drMul).scaledBy(streakMul);
 		const usage     = await this.#ledgerRepo.usageSnapshot(member.id, actionCode, klass, at);
@@ -1267,7 +1267,7 @@ export class GamificationEngine {
 		if (questUpdates.completed.length) this.#bus?.emit('quest.completed', { memberId: member.id, quests: questUpdates.completed });
 	}
 
-	/** Clawback — §5.9 tingkat 3. */
+	/** Clawback: §5.9 tingkat 3. */
 	async revoke(entryId, reason, actorId) {
 		const entry = await this.#ledgerRepo.findById(entryId);
 		if (!entry.isAwarded()) throw new Error('Hanya entri AWARDED yang dapat ditarik');
@@ -1332,13 +1332,13 @@ export class GamificationEngine {
 }
 ```
 
-### 13.8 Store Svelte — tipis, hanya delegasi
+### 13.8 Store Svelte: tipis, hanya delegasi
 
 ```js
 // src/lib/stores/gamification.svelte.js
 import { engine } from '$lib/infrastructure/gamification/container.js';
 
-/** Store runes. TIDAK berisi logika domain — hanya state UI + delegasi. */
+/** Store runes. TIDAK berisi logika domain: hanya state UI + delegasi. */
 class GamificationStore {
 	snapshot   = $state(null);
 	submitting = $state(false);
@@ -1390,7 +1390,7 @@ db.version(1).stores({
 ```
 
 Indeks majemuk `[memberId+actionCode+createdAt]` adalah yang menopang seluruh pemeriksaan cap dan
-cooldown — tanpa itu, `usageSnapshot()` akan memindai seluruh tabel.
+cooldown: tanpa itu, `usageSnapshot()` akan memindai seluruh tabel.
 `&idempotencyKey` (unique) menegakkan L1 di level penyimpanan, bukan hanya di level aplikasi.
 
 ---
@@ -1407,7 +1407,7 @@ cooldown — tanpa itu, `usageSnapshot()` akan memindai seluruh tabel.
 | AC-06 | Pengali streak hanya A/B | Streak 12, `SHARE_PUBLIC` pertama hari itu | `floor(8 × 1.20)` = **9 PK** |
 | AC-07 | Kelas D tanpa pengali | Streak 12, `LEAD_ACTION` | Tetap **50 PK** |
 | AC-08 | Cap global harian | Kelas A+B+C mencapai 40 PK hari itu, lalu `STORY_SUBMIT` | 0 PK, `capReason = GLOBAL_CAP_DAY` |
-| AC-09 | Kelas D lolos cap harian | Kondisi AC-08, lalu `LEAD_ACTION` | **50 PK** — Kelas D dikecualikan |
+| AC-09 | Kelas D lolos cap harian | Kondisi AC-08, lalu `LEAD_ACTION` | **50 PK**: Kelas D dikecualikan |
 | AC-10 | Ambang tier persis | Poin Aktif = 25 | Tier `ACTIVE_MEMBER` |
 | AC-11 | Syarat komposisi | Poin Aktif 150, Kelas D = 0 | Tier `FEATURED_CANDIDATE`, `lockedTier = CHAMPION`, `missing = ['Butuh 1 aksi kepemimpinan (Kelas D) lagi']` |
 | AC-12 | Gate public feature | 100 PK + story verified + consent + PF validation, pindai `FLAGGED` | `eligible = false`, `missing = ['no sensitive-data concern']` |
@@ -1426,23 +1426,23 @@ cooldown — tanpa itu, `usageSnapshot()` akan memindai seluruh tabel.
 
 | Elemen spesifikasi | Sumber | Sifat |
 |---|---|---|
-| 9 aksi + nilai poin (1/2/5/8/10/15/15/30/50) | **Hal 11** | Kanonik — disalin persis |
-| Kalimat "reward meaningful contribution, not spammy activity" | **Hal 11** | Kanonik — menjadi kendala desain §5 & §3.2 |
-| 4 tier + ambang 25/50/100/150 + benefit | **Hal 12** | Kanonik — disalin persis |
-| Gate Minimum for public feature (5 syarat) | **Hal 12** | Kanonik — §4.1 |
-| Gate Minimum for ESG evidence (4 syarat) | **Hal 12** | Kanonik — §4.2 |
-| "TOP Contribution", "TOP awardee dengan karir bagus", "poin yang dapat ditukar" | **Hal 5 pilar 05** | Mandat — mekanisme dirancang di §10 & §11 |
-| Quest lingkungan / edukasi masyarakat / pemberdayaan ekonomi | **Hal 5 pilar 03** | Mandat — §8.2 |
-| Quest pengurangan sampah / kampanye energi bersih | **Hal 5 pilar 06** | Mandat — §8.2 |
-| Chapter PF10 / PF11 / PF12 | **Hal 4** | Mandat — papan leaderboard §9.1 |
-| Dua komunitas: SOBI & Womenpreneur | **Hal 4** | Mandat — papan terpisah §9.1, kuota recognition §11.2 |
-| Broadcast-first channel, story bank | **Hal 9** | Mandat — irama streak §7, quest `Q_WARTA_PFRIENDS` |
-| "Stage-Based Activation and contribution scoring" | **Hal 9** | Mandat — state machine §12 |
-| "Bukti pipeline before dashboard" | **Hal 9** | Mandat — quest dirancang memproduksi bukti ESG §8.3 |
-| Consent, audit trail, issue log, evidence integrity | **Hal 10** | Mandat — §4.1, §5.6, §5.9, §14 |
-| Sense of Community Theory (McMillan & Chavis) | **Hal 5** | Landasan — §1, §9.2 |
-| Warna tier `#2E7CD6` / `#7CB342` / `#E53935` / `#F0B429` | Catatan visual | Kanonik — `Tier` VO §13.2 |
-| Anti-gaming, badge, streak, quest, leaderboard, katalog, engine | — | **[RANCANGAN]** — inovasi, dibangun agar tidak mengubah angka sumber |
+| 9 aksi + nilai poin (1/2/5/8/10/15/15/30/50) | **Hal 11** | Kanonik: disalin persis |
+| Kalimat "reward meaningful contribution, not spammy activity" | **Hal 11** | Kanonik: menjadi kendala desain §5 & §3.2 |
+| 4 tier + ambang 25/50/100/150 + benefit | **Hal 12** | Kanonik: disalin persis |
+| Gate Minimum for public feature (5 syarat) | **Hal 12** | Kanonik: §4.1 |
+| Gate Minimum for ESG evidence (4 syarat) | **Hal 12** | Kanonik: §4.2 |
+| "TOP Contribution", "TOP awardee dengan karir bagus", "poin yang dapat ditukar" | **Hal 5 pilar 05** | Mandat: mekanisme dirancang di §10 & §11 |
+| Quest lingkungan / edukasi masyarakat / pemberdayaan ekonomi | **Hal 5 pilar 03** | Mandat: §8.2 |
+| Quest pengurangan sampah / kampanye energi bersih | **Hal 5 pilar 06** | Mandat: §8.2 |
+| Chapter PF10 / PF11 / PF12 | **Hal 4** | Mandat: papan leaderboard §9.1 |
+| Dua komunitas: SOBI & Womenpreneur | **Hal 4** | Mandat: papan terpisah §9.1, kuota recognition §11.2 |
+| Broadcast-first channel, story bank | **Hal 9** | Mandat: irama streak §7, quest `Q_WARTA_PFRIENDS` |
+| "Stage-Based Activation and contribution scoring" | **Hal 9** | Mandat: state machine §12 |
+| "Bukti pipeline before dashboard" | **Hal 9** | Mandat: quest dirancang memproduksi bukti ESG §8.3 |
+| Consent, audit trail, issue log, evidence integrity | **Hal 10** | Mandat: §4.1, §5.6, §5.9, §14 |
+| Sense of Community Theory (McMillan & Chavis) | **Hal 5** | Landasan: §1, §9.2 |
+| Warna tier `#2E7CD6` / `#7CB342` / `#E53935` / `#F0B429` | Catatan visual | Kanonik: `Tier` VO §13.2 |
+| Anti-gaming, badge, streak, quest, leaderboard, katalog, engine |: | **[RANCANGAN]**: inovasi, dibangun agar tidak mengubah angka sumber |
 
 ---
 

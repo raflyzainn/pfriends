@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * StatTile — ubin statistik ringkas untuk baris ringkasan dasbor.
+	 * StatTile: ubin statistik ringkas untuk baris ringkasan dasbor.
 	 *
 	 * Props:
 	 * @prop {string} label
@@ -16,7 +16,7 @@
 	 * @prop {string} class
 	 *
 	 * Lebih ringan daripada `KpiCard`: dipakai 4–6 buah sebaris di puncak halaman,
-	 * untuk angka yang menjelaskan konteks — bukan untuk metrik yang dinilai.
+	 * untuk angka yang menjelaskan konteks: bukan untuk metrik yang dinilai.
 	 */
 	import Icon from './Icon.svelte';
 	import { formatAngka, formatBertanda } from '$lib/utils/format.js';

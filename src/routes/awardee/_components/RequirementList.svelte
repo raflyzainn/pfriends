@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * RequirementList — daftar syarat beserta status terpenuhi/belum.
+	 * RequirementList: daftar syarat beserta status terpenuhi/belum.
 	 *
 	 * Komponen lokal zona Awardee (KP-5). Dipakai dua formulir yang sama-sama
 	 * bergerbang: komposer cerita `/awardee/cerita/tulis` dan pengusulan kegiatan
@@ -15,10 +15,10 @@
 	 *    gerbang pertama.
 	 * 2. **Syarat yang BELUM terpenuhi selalu membawa `hint`.** Sebuah tanda silang
 	 *    tanpa penjelasan hanya memberi tahu penulis bahwa ia gagal, bukan apa yang
-	 *    harus ia perbaiki — dan itulah persis kegagalan pesan galat umum yang
+	 *    harus ia perbaiki: dan itulah persis kegagalan pesan galat umum yang
 	 *    dilarang §3.5 WP-05 butir 1.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-05 kriteria selesai butir 1
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-05 kriteria selesai butir 1
 	 */
 	import { Icon, ICONS } from '$lib/components';
 
@@ -67,7 +67,7 @@
 				<span class="min-w-0 text-[13px] leading-relaxed text-ink-700">
 					<span class="font-medium text-ink-800">{syarat.label}</span>
 					{#if !syarat.terpenuhi && syarat.hint}
-						<span class="text-ink-600"> — {syarat.hint}</span>
+						<span class="text-ink-600">: {syarat.hint}</span>
 					{/if}
 					<span class="sr-only">{syarat.terpenuhi ? 'Terpenuhi' : 'Belum terpenuhi'}</span>
 				</span>

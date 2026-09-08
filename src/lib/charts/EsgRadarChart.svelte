@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * EsgRadarChart — profil kesiapan bukti tiga pilar ESG.
+	 * EsgRadarChart: profil kesiapan bukti tiga pilar ESG.
 	 *
 	 * Props:
 	 * @prop {{name:string,values:number[],color?:string}[]} series
@@ -39,7 +39,7 @@
 	 * `sumbu` jatuh ke `ESG_PILLARS` dan `series` biasanya dirakit dari ketiga
 	 * pilar itu juga, sehingga keduanya tetap berisi walau belum ada satu pun
 	 * bukti ESG tersimpan. Radar bersumbu penuh dengan seluruh titik di pusat
-	 * adalah grafik nol (CH-4) — penjagaannya harus pada nilai, bukan panjang.
+	 * adalah grafik nol (CH-4): penjagaannya harus pada nilai, bukan panjang.
 	 */
 	const adaData = $derived(
 		sumbu.length > 0 &&
@@ -107,7 +107,7 @@
 		<ul class="mt-2 space-y-1">
 			{#each ringkasan as baris (baris.name)}
 				<li class="text-xs text-ink-600">
-					<span class="font-semibold text-ink-800">{baris.name}</span> — {baris.detail}
+					<span class="font-semibold text-ink-800">{baris.name}</span>: {baris.detail}
 				</li>
 			{/each}
 		</ul>

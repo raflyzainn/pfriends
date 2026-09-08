@@ -1,5 +1,5 @@
 /**
- * STORE — Antrean Notifikasi.
+ * STORE: Antrean Notifikasi.
  *
  * Tanggung jawab: menampung notifikasi yang menunggu dibaca, dan menutupnya
  * sendiri ketika waktunya habis.
@@ -14,8 +14,8 @@
  * notifikasi terbaru, bukan tumpukan yang menutupi layarnya sendiri. Yang terdorong
  * keluar selalu yang tertua dan tidak menetap.
  *
- * @see src/lib/components/ToastHost.svelte — komponen penampil
- * @see docs/09-BUILD-CONTRACT.md — §5 toast.push({type,title,message,points})
+ * @see src/lib/components/ToastHost.svelte: komponen penampil
+ * @see docs/09-BUILD-CONTRACT.md: §5 toast.push({type,title,message,points})
  */
 
 import { browser } from '$app/environment';
@@ -75,7 +75,7 @@ class ToastStore {
 	 */
 	items = $state([]);
 
-	/** @type {number} Penghitung id — bukan acak, agar keluaran tetap dapat ditelusuri. */
+	/** @type {number} Penghitung id: bukan acak, agar keluaran tetap dapat ditelusuri. */
 	#urutan = 0;
 
 	/** @type {Map<string, ReturnType<typeof setTimeout>>} */
@@ -95,7 +95,7 @@ class ToastStore {
 	 * Menambahkan notifikasi ke antrean.
 	 *
 	 * @param {ToastInput} input
-	 * @returns {string} Id notifikasi — dipakai bila pemanggil ingin menutupnya lebih awal.
+	 * @returns {string} Id notifikasi: dipakai bila pemanggil ingin menutupnya lebih awal.
 	 */
 	push(input = {}) {
 		this.#urutan += 1;
@@ -144,7 +144,7 @@ class ToastStore {
 	}
 
 	/**
-	 * Notifikasi peringatan — sesuatu belum lengkap, tetapi belum gagal.
+	 * Notifikasi peringatan: sesuatu belum lengkap, tetapi belum gagal.
 	 * @param {string} title
 	 * @param {string} [message]
 	 * @returns {string}
@@ -164,7 +164,7 @@ class ToastStore {
 	}
 
 	/**
-	 * Menutup satu notifikasi. Aman dipanggil berulang untuk id yang sama —
+	 * Menutup satu notifikasi. Aman dipanggil berulang untuk id yang sama :
 	 * `ToastHost` juga memiliki pewaktunya sendiri, sehingga keduanya dapat menutup
 	 * item yang sama tanpa saling merusak keadaan.
 	 * @param {string} id
@@ -187,7 +187,7 @@ class ToastStore {
 
 	/**
 	 * Menjadwalkan penutupan otomatis.
-	 * Dijalankan hanya di peramban — `setTimeout` yang tertinggal di server akan
+	 * Dijalankan hanya di peramban: `setTimeout` yang tertinggal di server akan
 	 * menahan proses render tetap hidup tanpa ada yang membacanya.
 	 * @param {ToastItem} item
 	 * @returns {void}
@@ -209,7 +209,7 @@ class ToastStore {
 	}
 
 	/**
-	 * Menjaga antrean tetap sependek batas tampil. Item menetap dipertahankan —
+	 * Menjaga antrean tetap sependek batas tampil. Item menetap dipertahankan :
 	 * ia menunggu dibaca, bukan menunggu kedaluwarsa.
 	 * @returns {void}
 	 */

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * EmptyState — keadaan kosong sebagai peluang aktivasi.
+	 * EmptyState: keadaan kosong sebagai peluang aktivasi.
 	 *
 	 * Props (kontrak 09 §5 + turunan 08 §9.1; seluruhnya opsional):
 	 * @prop {string} title
@@ -16,7 +16,7 @@
 	 *
 	 * Aturan yang dijaga di sini: judul menyatakan keadaan tanpa menyalahkan, dan
 	 * penjelas selalu menyebut langkah termudah berikutnya. Pada produk
-	 * bergamifikasi, layar kosong adalah kesempatan mengaktifkan — bukan sekadar
+	 * bergamifikasi, layar kosong adalah kesempatan mengaktifkan: bukan sekadar
 	 * pemberitahuan bahwa data nihil.
 	 */
 	import Icon from './Icon.svelte';

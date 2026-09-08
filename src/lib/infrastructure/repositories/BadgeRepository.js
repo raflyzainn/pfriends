@@ -1,10 +1,10 @@
 /**
- * REPOSITORY — Katalog Lencana Pengakuan.
+ * REPOSITORY: Katalog Lencana Pengakuan.
  *
  * Tanggung jawab: akses definisi lencana untuk halaman penghargaan awardee.
  *
  * Tabel ini menyimpan KATALOG, bukan kepemilikan. Siapa memiliki lencana apa
- * tercatat pada `badgeCodes` milik awardee — sengaja begitu, karena kepemilikan
+ * tercatat pada `badgeCodes` milik awardee: sengaja begitu, karena kepemilikan
  * selalu dibaca bersamaan dengan data awardee-nya dan memisahkannya menjadi tabel
  * relasi hanya menambah satu kueri untuk setiap kali profil dibuka.
  *
@@ -38,7 +38,7 @@ export class BadgeRepository extends DexieRepository {
 
 	/**
 	 * Katalog lencana bagi seorang awardee, menandai mana yang sudah terkumpul.
-	 * Lencana yang belum terbuka tetap ditampilkan beserta kriterianya — daftar
+	 * Lencana yang belum terbuka tetap ditampilkan beserta kriterianya: daftar
 	 * yang hanya memuat lencana terkumpul menghilangkan justru bagian yang memberi
 	 * arah, yaitu apa yang perlu dilakukan untuk mendapat yang berikutnya.
 	 * @param {import('$lib/domain/entities/Awardee.js').Awardee} awardee

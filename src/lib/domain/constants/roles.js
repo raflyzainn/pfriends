@@ -1,10 +1,10 @@
 /**
- * KONSTANTA PERAN — tiga peran Pfriends dan matriks kewenangannya.
+ * KONSTANTA PERAN: tiga peran Pfriends dan matriks kewenangannya.
  *
  * Tanggung jawab: menjadi satu-satunya sumber kebenaran atas (a) daftar peran yang
  * sah, (b) metadata tampilannya, dan (c) kapabilitas apa yang melekat pada tiap
  * peran. Guard route, tombol keputusan, dan service editorial semuanya membaca
- * berkas ini — bukan menulis ulang daftar `if (role === ...)` masing-masing.
+ * berkas ini: bukan menulis ulang daftar `if (role === ...)` masing-masing.
  *
  * Tiga keputusan desain yang tidak terbaca dari kode:
  *
@@ -14,20 +14,20 @@
  *    menyetujui cerita, dan Verifikator tidak melihat KPI program.
  * 2. **`WRITE_CONTENT` dicabut dari VERIFIER.** Kepengarangan cerita hanya milik
  *    Awardee. `Story.authorId` menunjuk seorang `Awardee`, sedangkan
- *    `UserAccount.awardeeId` wajib `null` untuk peran selain AWARDEE — verifikator
+ *    `UserAccount.awardeeId` wajib `null` untuk peran selain AWARDEE: verifikator
  *    karenanya tidak punya identitas kepengarangan yang sah, dan pemeriksaan
  *    konflik kepentingan pada jalur cerita tidak akan pernah dapat menyala.
  *    Kontrol governance yang tidak dapat menyala bukan kontrol.
  * 3. **Identitas peran hidup di akun, bukan di penerima manfaat.** Tidak ada
  *    field peran pada `Awardee`; lihat JSDoc `entities/UserAccount.js`.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.1 kontrak export dan matriks kewenangan
- * @see docs/10-REVISION-SPEC.md — §2 matriks RBAC, §2.5 larangan eksplisit Verifikator
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.1 kontrak export dan matriks kewenangan
+ * @see docs/10-REVISION-SPEC.md: §2 matriks RBAC, §2.5 larangan eksplisit Verifikator
  */
 
 /**
  * Tiga peran Pfriends. Identifier Inggris; label Indonesia dipakai antarmuka.
- * Tamu tanpa sesi diwakili `null`, bukan anggota enum ini — supaya "tidak punya
+ * Tamu tanpa sesi diwakili `null`, bukan anggota enum ini: supaya "tidak punya
  * peran" tidak dapat tersamar sebagai "punya peran bernama tamu".
  * @readonly
  * @enum {string}
@@ -48,7 +48,7 @@ export const UserRole = Object.freeze({
  */
 
 /**
- * Metadata tiap peran. `homePath` tinggal di sini — bukan di store sesi — supaya
+ * Metadata tiap peran. `homePath` tinggal di sini: bukan di store sesi: supaya
  * guard, menu, dan pengalihan sesudah masuk membaca jalur yang sama persis.
  * @type {Readonly<Record<string, UserRoleDef>>}
  */
@@ -57,7 +57,7 @@ export const USER_ROLE_META = Object.freeze({
 		code: UserRole.AWARDEE,
 		label: 'Awardee',
 		deskripsi:
-			'Penerima manfaat Pertamina Foundation — alumni Beasiswa Sobat Bumi atau UMKM binaan PFpreneur. Penulis cerita, pengusul kegiatan, dan pemilik consent atas datanya sendiri.',
+			'Penerima manfaat Pertamina Foundation: alumni Beasiswa Sobat Bumi atau UMKM binaan PFpreneur. Penulis cerita, pengusul kegiatan, dan pemilik consent atas datanya sendiri.',
 		badgeColor: 'blue',
 		homePath: '/awardee'
 	}),
@@ -85,7 +85,7 @@ export const USER_ROLE_META = Object.freeze({
  * Daftar ini sengaja kasar (sembilan butir), bukan salinan 52 baris matriks
  * `docs/10` §2.3. Kapabilitas di sini adalah kewenangan yang benar-benar dipakai
  * sebagai gerbang di kode; sisanya adalah turunan yang dijawab entitas, kebijakan
- * zona, atau kepemilikan record — bukan oleh peran semata.
+ * zona, atau kepemilikan record: bukan oleh peran semata.
  * @readonly
  * @enum {string}
  */
@@ -105,7 +105,7 @@ export const RolePermission = Object.freeze({
  * Matriks kewenangan peran × kapabilitas.
  *
  * Catatan yang wajib dibaca sebelum menambah baris:
- * - `VIEW_SCORING` dimiliki AWARDEE dan ADMIN dengan arti berbeda — Awardee
+ * - `VIEW_SCORING` dimiliki AWARDEE dan ADMIN dengan arti berbeda: Awardee
  *   melihat poin miliknya sendiri, Admin melihat agregat. Pembedaan "milik siapa"
  *   bukan urusan peran, melainkan kepemilikan record.
  * - `VIEW_LEADERBOARD` hanya AWARDEE. Papan peringkat bernama tidak pernah tampil
@@ -137,7 +137,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
 /**
  * Metadata sebuah peran.
  *
- * Mengembalikan `null` — bukan melempar — karena pemanggil terbesarnya adalah
+ * Mengembalikan `null`: bukan melempar: karena pemanggil terbesarnya adalah
  * antarmuka yang juga melayani tamu tanpa sesi. Melempar di sini akan mengubah
  * "belum masuk" menjadi galat yang merobohkan halaman.
  *

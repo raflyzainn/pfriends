@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * QueueRow — satu baris antrean FIFO.
+	 * QueueRow: satu baris antrean FIFO.
 	 *
 	 * @prop {number} position     Nomor antrean satu-basis; 1 berarti paling lama menunggu.
 	 * @prop {string} title
@@ -18,7 +18,7 @@
 	 *    tidak menunjukkan posisinya sulit dibedakan dari daftar biasa, dan
 	 *    verifikator kehilangan satu-satunya alasan untuk tidak melompati baris.
 	 * 2. **Baris tetap terbaca tanpa warna.** Status ditulis sebagai kata, usia
-	 *    antrean sebagai kalimat — bukan hanya sebagai latar merah.
+	 *    antrean sebagai kalimat: bukan hanya sebagai latar merah.
 	 * 3. **Tautan membungkus judul, bukan seluruh baris.** Baris yang seluruhnya
 	 *    dapat diklik akan menelan tombol keputusan di dalamnya, dan tombol yang
 	 *    tertelan tautan berpindah halaman alih-alih membuka dialog.

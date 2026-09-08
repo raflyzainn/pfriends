@@ -1,19 +1,19 @@
-# BRD & SRS — Pfriends
-### Microsite Community Connect Initiative — Divisi Corporate Secretary, Pertamina Foundation
+# BRD & SRS: Pfriends
+### Microsite Community Connect Initiative: Divisi Corporate Secretary, Pertamina Foundation
 
 | Atribut | Keterangan |
 |---|---|
-| Nama Produk | **Pfriends** — Microsite Komunitas Community Connect Initiative |
-| Pemilik Produk | Divisi Corporate Secretary (Corsec) — Pertamina Foundation |
+| Nama Produk | **Pfriends**: Microsite Komunitas Community Connect Initiative |
+| Pemilik Produk | Divisi Corporate Secretary (Corsec): Pertamina Foundation |
 | Co-brand | Danantara Indonesia · PERTAMINA |
 | Dokumen | Business Requirements Document (BRD) + Software Requirements Specification (SRS) |
 | Versi | 1.0 |
 | Tanggal | 20 Juli 2026 |
 | Status | Draft untuk review Divisi Corsec |
 | Sumber Kebenaran | `docs/00-SOURCE-BRIEF.md` (ekstraksi 12 halaman `2026 Community Connect Initiative update as 29052026.pdf`) |
-| Sifat Rilis | **Mockup / Prototipe fungsional** — tanpa backend produksi, arsitektur siap disambung API |
+| Sifat Rilis | **Mockup / Prototipe fungsional**: tanpa backend produksi, arsitektur siap disambung API |
 
-> **Catatan metodologis.** Seluruh angka pada dokumen ini (skor gamifikasi, ambang tier, persentase KPI) diambil **persis** dari dokumen sumber. Setiap pernyataan yang merupakan turunan analisis Business Analyst — dan bukan kutipan langsung dokumen sumber — ditandai dengan label *(turunan analisis)*.
+> **Catatan metodologis.** Seluruh angka pada dokumen ini (skor gamifikasi, ambang tier, persentase KPI) diambil **persis** dari dokumen sumber. Setiap pernyataan yang merupakan turunan analisis Business Analyst: dan bukan kutipan langsung dokumen sumber: ditandai dengan label *(turunan analisis)*.
 
 ---
 
@@ -39,13 +39,13 @@
 
 **Community Connect Initiative** adalah inisiatif strategis Divisi Corporate Secretary Pertamina Foundation untuk membangun **platform ekosistem** yang menghubungkan **alumni Beasiswa Sobat Bumi (SOBI) sebagai mitra muda/mentor** dengan **PFpreneur/Womenpreneur sebagai mitra sekaligus entitas bisnis binaan** Pertamina Foundation.
 
-**Pfriends** adalah microsite yang menjadi "rumah digital" komunitas tersebut — diakses melalui *kotak biru* pada situs `pertaminafoundation.org`, dan berfungsi sebagai **instrumen kontrol Pertamina Foundation** atas komunitas yang dibangun. Kontrol yang dimaksud mencakup tiga hal spesifik sesuai dokumen sumber:
+**Pfriends** adalah microsite yang menjadi "rumah digital" komunitas tersebut: diakses melalui *kotak biru* pada situs `pertaminafoundation.org`, dan berfungsi sebagai **instrumen kontrol Pertamina Foundation** atas komunitas yang dibangun. Kontrol yang dimaksud mencakup tiga hal spesifik sesuai dokumen sumber:
 
 1. **Penyebaran informasi** (diseminasi terarah, bukan tercecer di grup WhatsApp);
 2. **Tracking amplifikasi konten** (mengukur siapa membagikan apa, ke mana);
 3. **Pengerjaan gamifikasi** (skor kontribusi, tier, dan recognition).
 
-Landasan konseptual aktivitas komunitas adalah **Sense of Community Theory** (McMillan & Chavis, 1986): komunitas yang kuat terbentuk ketika anggota merasakan ikatan psikologis dan rasa memiliki terhadap komunitas. Gamifikasi pada Pfriends karenanya **bukan sekadar leaderboard**, melainkan mekanisme untuk mengubah *keanggotaan pasif* menjadi *kontribusi bermakna* — sejalan dengan prinsip eksplisit dokumen sumber: *"Points should reward meaningful contribution, not spammy activity."*
+Landasan konseptual aktivitas komunitas adalah **Sense of Community Theory** (McMillan & Chavis, 1986): komunitas yang kuat terbentuk ketika anggota merasakan ikatan psikologis dan rasa memiliki terhadap komunitas. Gamifikasi pada Pfriends karenanya **bukan sekadar leaderboard**, melainkan mekanisme untuk mengubah *keanggotaan pasif* menjadi *kontribusi bermakna*: sejalan dengan prinsip eksplisit dokumen sumber: *"Points should reward meaningful contribution, not spammy activity."*
 
 Ruang lingkup dokumen ini menghasilkan **46 user story** yang dikelompokkan ke dalam 6 pilar aktivitas + 1 kelompok fondasi lintas pilar, **12 use case utama**, **92 functional requirement** (FR-001 … FR-092), dan **32 non-functional requirement** (NFR-001 … NFR-032), seluruhnya tertelusur ke 5 KPI aktivitas, 3 KPI dampak, dan 3 KPI ESG pada halaman 6 dan 10 dokumen sumber.
 
@@ -55,13 +55,13 @@ Ruang lingkup dokumen ini menghasilkan **46 user story** yang dikelompokkan ke d
 
 ### 2.1 Konteks
 
-Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui program beasiswa (PFprestasi/Sobat Bumi) dan pemberdayaan UMKM (PFpreneur/Womenpreneur). Namun nilai dari relasi tersebut **berhenti pada saat program berakhir**. Aset relasional terbesar Pertamina Foundation — yaitu manusia yang pernah dibantunya — tidak dikelola sebagai ekosistem berkelanjutan.
+Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui program beasiswa (PFprestasi/Sobat Bumi) dan pemberdayaan UMKM (PFpreneur/Womenpreneur). Namun nilai dari relasi tersebut **berhenti pada saat program berakhir**. Aset relasional terbesar Pertamina Foundation: yaitu manusia yang pernah dibantunya: tidak dikelola sebagai ekosistem berkelanjutan.
 
 ### 2.2 Empat Problem Statement
 
-#### PS-01 — Fragmentasi Alumni
+#### PS-01: Fragmentasi Alumni
 
-> *"Ribuan penerima Beasiswa Sobat Bumi yang telah lulus, namun interaksi pasca program cenderung menurun. Potensi SDM unggul ini belum terutilisasi sebagai duta energi atau mentor di ekosistem Pertamina."* — Hal. 2
+> *"Ribuan penerima Beasiswa Sobat Bumi yang telah lulus, namun interaksi pasca program cenderung menurun. Potensi SDM unggul ini belum terutilisasi sebagai duta energi atau mentor di ekosistem Pertamina."*: Hal. 2
 
 **Dampak bisnis:** hilangnya kanal advokasi organik, hilangnya pipeline mentor internal, dan hilangnya bukti dampak sosial jangka panjang (SROI) karena jejak alumni tidak terekam.
 
@@ -71,9 +71,9 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | Status utilisasi | Belum jadi duta energi / mentor | Aset SDM menganggur |
 | Rekam jejak | Tidak terpusat | Tidak ada dasar untuk *TOP awardee dengan karir bagus* |
 
-#### PS-02 — Isolasi Womenpreneur
+#### PS-02: Isolasi Womenpreneur
 
-> *"Alumni PFpreneur merupakan UMKM yang masuk unggulan UMKM binaan PT Pertamina (Persero). Sering menghadapi kendala skalabilitas bisnis karena terbatasnya jaringan pemasaran, riset pasar, dan akses terhadap tenaga kerja ahli/digital."* — Hal. 2
+> *"Alumni PFpreneur merupakan UMKM yang masuk unggulan UMKM binaan PT Pertamina (Persero). Sering menghadapi kendala skalabilitas bisnis karena terbatasnya jaringan pemasaran, riset pasar, dan akses terhadap tenaga kerja ahli/digital."*: Hal. 2
 
 **Dampak bisnis:** UMKM binaan berhenti tumbuh setelah pendampingan formal selesai; padahal di sisi lain terdapat alumni SOBI dengan kapabilitas digital/riset yang **belum dipertemukan** dengan kebutuhan itu. Inilah *supply–demand gap* internal yang menjadi justifikasi utama mempertemukan dua komunitas dalam satu platform.
 
@@ -83,27 +83,27 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | Riset pasar | Latar belakang akademik & riset |
 | Tenaga kerja ahli/digital | Kompetensi digital lulusan muda |
 
-#### PS-03 — Silo Antar Pilar Program
+#### PS-03: Silo Antar Pilar Program
 
-> *"Program masih berjalan secara silo (terpisah secara fungsional) → target: Integrasi lintas pilar (PFprestasi × PFmuda × PFsains × PFlestari)"* — Hal. 3
+> *"Program masih berjalan secara silo (terpisah secara fungsional) → target: Integrasi lintas pilar (PFprestasi × PFmuda × PFsains × PFlestari)"*: Hal. 3
 
 **Dampak bisnis:** duplikasi aktivitas, biaya aktivasi berulang, dan ketidakmampuan menyusun narasi dampak terintegrasi. Penerima manfaat mengalami PF sebagai empat lembaga terpisah, bukan satu identitas.
 
-#### PS-04 — Platform Masih Berbasis WhatsApp & Media Sosial Umum
+#### PS-04: Platform Masih Berbasis WhatsApp & Media Sosial Umum
 
-> *"Sebagian besar masih berbasis grup WhatsApp & sosial media umum"* — Hal. 3
-> *"Aktivasi terbatas pada seremonial program berjalan."* — Hal. 3
+> *"Sebagian besar masih berbasis grup WhatsApp & sosial media umum"*: Hal. 3
+> *"Aktivasi terbatas pada seremonial program berjalan."*: Hal. 3
 
 **Dampak bisnis:** grup WhatsApp tidak menyediakan tiga hal yang justru menjadi tujuan inisiatif ini:
 
 | Kebutuhan Kontrol PF | Tersedia di WA? | Konsekuensi |
 |---|---|---|
-| Penyebaran informasi terukur | Tidak — pesan tenggelam, tanpa metrik baca | Diseminasi tidak dapat dibuktikan |
-| Tracking amplifikasi konten | Tidak — tidak ada jejak siapa membagikan ke mana | KPI amplifikasi 50% tidak terukur |
-| Pengerjaan gamifikasi | Tidak — tidak ada sistem skor/tier | Tidak ada mekanisme recognition |
-| Database terstruktur | Tidak — nomor telepon tanpa profil | KPI pendataan 75% tidak terverifikasi |
+| Penyebaran informasi terukur | Tidak: pesan tenggelam, tanpa metrik baca | Diseminasi tidak dapat dibuktikan |
+| Tracking amplifikasi konten | Tidak: tidak ada jejak siapa membagikan ke mana | KPI amplifikasi 50% tidak terukur |
+| Pengerjaan gamifikasi | Tidak: tidak ada sistem skor/tier | Tidak ada mekanisme recognition |
+| Database terstruktur | Tidak: nomor telepon tanpa profil | KPI pendataan 75% tidak terverifikasi |
 
-**Ringkasan problem statement:** Pertamina Foundation memiliki komunitas penerima manfaat yang besar namun **tidak terdata, tidak terhubung lintas pilar, tidak teraktivasi di luar seremoni, dan tidak terukur kontribusinya** — karena kanal yang digunakan (grup WhatsApp) secara struktural tidak mampu menyediakan pendataan, pelacakan amplifikasi, maupun gamifikasi.
+**Ringkasan problem statement:** Pertamina Foundation memiliki komunitas penerima manfaat yang besar namun **tidak terdata, tidak terhubung lintas pilar, tidak teraktivasi di luar seremoni, dan tidak terukur kontribusinya**: karena kanal yang digunakan (grup WhatsApp) secara struktural tidak mampu menyediakan pendataan, pelacakan amplifikasi, maupun gamifikasi.
 
 ### 2.3 Posisi Pfriends terhadap Problem
 
@@ -137,7 +137,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | BG-05 | Kontribusi anggota terukur dan diapresiasi | Menerapkan *stage-based activation and contribution scoring* (Hal. 9) | KPI-04, KPI-05 |
 | BG-06 | Program terbukti menciptakan nilai, bukan sekadar berjalan | Menghasilkan ESG evidence yang terdokumentasi dan dapat diaudit | KPI-ESG-01/02/03 |
 
-### 3.3 Definisi KPI (Hal. 6 — Key Objectives)
+### 3.3 Definisi KPI (Hal. 6: Key Objectives)
 
 | ID KPI | Pernyataan KPI (persis dokumen sumber) | Satuan | Target | Periode | Sumber Data di Pfriends |
 |---|---|---|---|---|---|
@@ -147,7 +147,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | **KPI-04** | 50% anggota komunitas ikut melakukan amplifikasi informasi Pertamina dan/atau PF | % | **50%** | Bulanan | Anggota dengan ≥1 aksi amplifikasi terverifikasi ÷ total anggota aktif |
 | **KPI-05** | 2 aktivitas engagement komunitas terlaksana | aktivitas | **2** | Per periode | Event/movement berstatus *completed* |
 
-### 3.4 Definisi KPI Dampak (Hal. 6 — Dampak Inisiatif)
+### 3.4 Definisi KPI Dampak (Hal. 6: Dampak Inisiatif)
 
 | ID KPI | Pernyataan | Angka Referensi | Implikasi Sistem |
 |---|---|---|---|
@@ -188,16 +188,16 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 | ID | Stakeholder | Kategori | Peran terhadap Pfriends | Kepentingan Utama |
 |---|---|---|---|---|
-| SH-01 | **Divisi Corporate Secretary (Corsec) PF** | Internal — Pemilik | Pemilik inisiatif, penentu arah konten & kebijakan komunitas, penerima laporan KPI | Kontrol narasi, pencapaian KPI, bukti reputasi |
-| SH-02 | **Manajemen / Direksi Pertamina Foundation** | Internal — Sponsor | Penyetuju anggaran & arah strategis, konsumen dashboard SROI/ESG | Bukti dampak, efisiensi biaya komunikasi |
-| SH-03 | **Fungsi IT Pertamina Foundation** | Internal — Pelaksana teknis | Integrasi microsite ke `pertaminafoundation.org`, hosting, keamanan, integrasi data | Kelayakan teknis, keamanan, maintainability |
-| SH-04 | **Admin / PIC Komunitas PF** | Internal — Operator harian | Kurasi konten, verifikasi bukti amplifikasi, moderasi story, validasi member | Beban kerja operasional wajar, alat kerja jelas |
-| SH-05 | **Alumni Beasiswa Sobat Bumi (SOBI)** | Eksternal — Member inti | Konsumen & amplifier konten, calon mentor/speaker, kontributor story | Manfaat nyata, jejaring, pengakuan, karir |
-| SH-06 | **PFpreneur / Womenpreneur** | Eksternal — Member inti | Pelaku UMKM binaan, penerima manfaat jejaring & mentoring | Akses pasar, riset, tenaga ahli digital |
+| SH-01 | **Divisi Corporate Secretary (Corsec) PF** | Internal: Pemilik | Pemilik inisiatif, penentu arah konten & kebijakan komunitas, penerima laporan KPI | Kontrol narasi, pencapaian KPI, bukti reputasi |
+| SH-02 | **Manajemen / Direksi Pertamina Foundation** | Internal: Sponsor | Penyetuju anggaran & arah strategis, konsumen dashboard SROI/ESG | Bukti dampak, efisiensi biaya komunikasi |
+| SH-03 | **Fungsi IT Pertamina Foundation** | Internal: Pelaksana teknis | Integrasi microsite ke `pertaminafoundation.org`, hosting, keamanan, integrasi data | Kelayakan teknis, keamanan, maintainability |
+| SH-04 | **Admin / PIC Komunitas PF** | Internal: Operator harian | Kurasi konten, verifikasi bukti amplifikasi, moderasi story, validasi member | Beban kerja operasional wajar, alat kerja jelas |
+| SH-05 | **Alumni Beasiswa Sobat Bumi (SOBI)** | Eksternal: Member inti | Konsumen & amplifier konten, calon mentor/speaker, kontributor story | Manfaat nyata, jejaring, pengakuan, karir |
+| SH-06 | **PFpreneur / Womenpreneur** | Eksternal: Member inti | Pelaku UMKM binaan, penerima manfaat jejaring & mentoring | Akses pasar, riset, tenaga ahli digital |
 | SH-07 | **Mentor / Fasilitator / Narasumber** | Eksternal & Internal | Pengisi sharing session, upskilling, pendamping movement | Kemudahan penjadwalan, apresiasi, dampak |
 | SH-08 | **Publik / Calon Member / Media** | Eksternal | Pembaca konten publik, calon pendaftar, penerima amplifikasi | Informasi kredibel dan mudah diakses |
-| SH-09 | **PT Pertamina (Persero) — Fungsi Komunikasi & TJSL** | Eksternal Grup | Pemilik agenda korporat yang diamplifikasi, pengguna UMKM binaan | Konsistensi pesan korporat, ESG korporat |
-| SH-10 | **Danantara Indonesia** | Eksternal — Co-brand | Co-branding inisiatif | Visibilitas dan kesesuaian identitas |
+| SH-09 | **PT Pertamina (Persero): Fungsi Komunikasi & TJSL** | Eksternal Grup | Pemilik agenda korporat yang diamplifikasi, pengguna UMKM binaan | Konsistensi pesan korporat, ESG korporat |
+| SH-10 | **Danantara Indonesia** | Eksternal: Co-brand | Co-branding inisiatif | Visibilitas dan kesesuaian identitas |
 
 ### 4.2 Matriks Power–Interest
 
@@ -221,7 +221,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ## 5. Persona
 
-### Persona 1 — Alumni Beasiswa Sobat Bumi yang Sudah Bekerja
+### Persona 1: Alumni Beasiswa Sobat Bumi yang Sudah Bekerja
 
 | Atribut | Detail |
 |---|---|
@@ -232,7 +232,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | **Latar Belakang** | Penerima Beasiswa Sobat Bumi angkatan PF-10, lulus S1 Teknik Kimia. Selama kuliah aktif di komunitas lingkungan kampus dan pernah menjadi ketua panitia aksi bersih pantai. Setelah lulus, kontak dengan PF praktis terputus kecuali sesekali muncul di grup WhatsApp angkatan yang kini sepi. |
 | **Perangkat & Kebiasaan Digital** | Android kelas menengah, kuota data terbatas di jam kerja. Aktif LinkedIn dan Instagram. Membuka WhatsApp puluhan kali sehari, membuka email pribadi 2–3 kali seminggu. |
 | **Goal** | 1) Tetap terhubung dengan jaringan alumni untuk peluang profesional. 2) Berkontribusi balik kepada adik tingkat sebagai mentor. 3) Mendapat pengakuan formal yang dapat dicantumkan di profil profesional. |
-| **Frustration** | • Grup WhatsApp angkatan hanya ramai saat ada kabar duka atau undangan seremoni. • Tidak tahu ada kebutuhan mentor di PF — tidak pernah ditawari. • Merasa "sudah lulus, sudah selesai" karena tidak ada peran yang jelas untuk alumni. • Waktu sangat terbatas; tidak sanggup komitmen besar. |
+| **Frustration** | • Grup WhatsApp angkatan hanya ramai saat ada kabar duka atau undangan seremoni. • Tidak tahu ada kebutuhan mentor di PF: tidak pernah ditawari. • Merasa "sudah lulus, sudah selesai" karena tidak ada peran yang jelas untuk alumni. • Waktu sangat terbatas; tidak sanggup komitmen besar. |
 | **Trigger Keterlibatan** | Undangan personal yang menyebut namanya dan pencapaiannya; kesempatan menjadi *speaker* pada sharing session yang menambah kredibilitas profesional; badge/tier yang terlihat oleh sesama alumni; komitmen ringan berdurasi jelas (misalnya sesi 60 menit daring). |
 | **Kontribusi yang Diharapkan** | Amplifikasi konten ke LinkedIn (**8 pts**), menjadi *speaker/mentor* (**30 pts**), menjawab pertanyaan bermanfaat (**15 pts**) |
 | **Skenario Sukses** | Raka mencapai **150 pts (Champion)** dan menerima undangan sebagai *regional champion* untuk chapter Jabodetabek. |
@@ -240,7 +240,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ---
 
-### Persona 2 — Fresh Graduate Alumni Beasiswa
+### Persona 2: Fresh Graduate Alumni Beasiswa
 
 | Atribut | Detail |
 |---|---|
@@ -254,23 +254,23 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | **Frustration** | • Merasa kehilangan identitas dan komunitas setelah wisuda. • Tidak tahu harus ke mana untuk tetap terlibat. • Informasi program tersebar di banyak grup dan mudah terlewat. • Merasa terlalu junior untuk dianggap berkontribusi. |
 | **Trigger Keterlibatan** | Progres yang terlihat (poin naik, tier berubah warna); tantangan berdurasi pendek yang menyenangkan; kesempatan tampil di kanal resmi PF (*featured*); pelatihan gratis yang relevan dengan pencarian kerja; notifikasi ringan melalui WhatsApp. |
 | **Kontribusi yang Diharapkan** | Membaca broadcast (**1 pt**), reaksi/balasan CTA (**2 pts**), amplifikasi ke media sosial publik (**8 pts**), submit story (**10 pts**), hadir sesi daring (**15 pts**) |
-| **Skenario Sukses** | Salsabila mencapai **100 pts (Featured Candidate)**, story-nya lolos validasi PF dan tayang di kanal resmi — menjadi bahan portofolio pencarian kerja. |
+| **Skenario Sukses** | Salsabila mencapai **100 pts (Featured Candidate)**, story-nya lolos validasi PF dan tayang di kanal resmi: menjadi bahan portofolio pencarian kerja. |
 | **Kutipan** | *"Aku masih ngerasa anak PF, cuma sekarang enggak tahu harus ngapain. Kasih aku sesuatu buat dikerjain."* |
 
 ---
 
-### Persona 3 — Pelaku UMKM PFpreneur / Womenpreneur
+### Persona 3: Pelaku UMKM PFpreneur / Womenpreneur
 
 | Atribut | Detail |
 |---|---|
 | **Nama** | **Ibu Nurhayati Simanjuntak** |
 | **Umur** | 42 tahun |
 | **Domisili** | Medan, Sumatera Utara |
-| **Usaha** | "Dapur Nurhayati" — produksi bumbu masak kemasan & rendang siap saji. 6 karyawan perempuan, omzet ± Rp 45 juta/bulan |
+| **Usaha** | "Dapur Nurhayati": produksi bumbu masak kemasan & rendang siap saji. 6 karyawan perempuan, omzet ± Rp 45 juta/bulan |
 | **Latar Belakang** | Alumni program PFpreneur/Womenpreneur, termasuk UMKM unggulan binaan PT Pertamina (Persero). Telah mengikuti pelatihan pembukuan dan sertifikasi halal melalui program PF. Pendampingan formal berakhir 1 tahun lalu. |
 | **Perangkat & Kebiasaan Digital** | Satu ponsel Android untuk usaha dan pribadi. WhatsApp Business adalah pusat operasional (pesanan, pembayaran, koordinasi karyawan). Instagram usaha dikelola seadanya. Kurang nyaman dengan aplikasi baru yang banyak menu. |
 | **Goal** | 1) Menaikkan skala penjualan ke luar Sumatera Utara. 2) Memahami preferensi pasar dan kemasan yang menjual. 3) Mendapat bantuan tenaga digital untuk konten dan marketplace. 4) Masuk ke rantai pengadaan Pertamina (contoh: pengadaan souvenir). |
-| **Frustration** | • Jaringan pemasaran mentok di lingkaran lokal. • Tidak mampu membayar konsultan riset pasar atau *digital marketer*. • Setelah pendampingan selesai, tidak ada tempat bertanya. • Takut teknologi baru — khawatir salah pencet dan data usaha hilang. |
+| **Frustration** | • Jaringan pemasaran mentok di lingkaran lokal. • Tidak mampu membayar konsultan riset pasar atau *digital marketer*. • Setelah pendampingan selesai, tidak ada tempat bertanya. • Takut teknologi baru: khawatir salah pencet dan data usaha hilang. |
 | **Trigger Keterlibatan** | Bukti nyata bahwa platform mendatangkan pesanan atau eksposur; alur sesederhana WhatsApp; ajakan personal dari admin/PIC yang sudah dikenal; kesempatan produknya dipajang di kanal resmi PF; adanya alumni SOBI yang bersedia membantu digitalisasi. |
 | **Kontribusi yang Diharapkan** | Melengkapi profil usaha & etalase produk, submit story pertumbuhan usaha (**10 pts**), hadir sesi upskilling (**15 pts**), amplifikasi konten ke jaringan WA (**5 pts**) |
 | **Skenario Sukses** | Ibu Nurhayati terhubung dengan alumni SOBI yang membantu menata etalase digital; profil usahanya menjadi bahan ESG evidence pilar *Social* (business growth). |
@@ -278,18 +278,18 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ---
 
-### Persona 4 — Admin / PIC Komunitas Pertamina Foundation
+### Persona 4: Admin / PIC Komunitas Pertamina Foundation
 
 | Atribut | Detail |
 |---|---|
 | **Nama** | **Fajar Hidayatullah** |
 | **Umur** | 31 tahun |
 | **Domisili** | Jakarta Pusat |
-| **Jabatan** | Staf Divisi Corporate Secretary — PIC Community Connect Initiative |
+| **Jabatan** | Staf Divisi Corporate Secretary: PIC Community Connect Initiative |
 | **Latar Belakang** | Bertanggung jawab atas operasional harian komunitas: memasukkan anggota ke WA Komunitas secara bertahap, menyiapkan konten diseminasi, dan menyusun laporan pencapaian KPI untuk manajemen. Saat ini bekerja dengan kombinasi spreadsheet, grup WhatsApp, dan folder cloud. |
 | **Perangkat & Kebiasaan Digital** | Laptop kantor sebagai alat kerja utama; ponsel untuk moderasi cepat di luar jam kerja. Mahir spreadsheet, bukan teknisi. |
 | **Goal** | 1) Membuktikan pencapaian 5 KPI dengan data, bukan estimasi. 2) Mengurangi kerja manual rekapitulasi. 3) Menjaga agar tidak ada konten/story bermasalah tayang atas nama PF. 4) Menyusun laporan bulanan dengan cepat. |
-| **Frustration** | • Menghitung "50% anggota melakukan amplifikasi" secara manual nyaris mustahil — bukti hanya berupa tangkapan layar berserakan. • Data penerima manfaat tersebar di beberapa file dan tidak konsisten. • Tidak ada jejak audit ketika manajemen menanyakan dasar sebuah publikasi. • Beban moderasi meningkat seiring jumlah anggota, tanpa tambahan orang. |
+| **Frustration** | • Menghitung "50% anggota melakukan amplifikasi" secara manual nyaris mustahil: bukti hanya berupa tangkapan layar berserakan. • Data penerima manfaat tersebar di beberapa file dan tidak konsisten. • Tidak ada jejak audit ketika manajemen menanyakan dasar sebuah publikasi. • Beban moderasi meningkat seiring jumlah anggota, tanpa tambahan orang. |
 | **Trigger Keterlibatan** | Dashboard yang langsung menjawab pertanyaan manajemen; antrean verifikasi yang terstruktur dan dapat diselesaikan dalam batch; ekspor laporan satu klik; jejak audit otomatis. |
 | **Kebutuhan Sistem Utama** | Konsol admin, antrean verifikasi bukti amplifikasi, moderasi story dengan checklist consent, dashboard KPI real-time, ekspor ESG evidence |
 | **Skenario Sukses** | Fajar menutup laporan bulanan dalam 30 menit dengan angka KPI yang tertelusur ke bukti individual. |
@@ -302,10 +302,10 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | Kebutuhan | Raka | Salsabila | Nurhayati | Fajar |
 |---|:--:|:--:|:--:|:--:|
 | Mobile-first, ringan | ● | ●●● | ●●● | ● |
-| Progres & pengakuan terlihat | ●● | ●●● | ● | — |
-| Komitmen berdurasi jelas | ●●● | ● | ●● | — |
-| Manfaat ekonomi langsung | ● | ●● | ●●● | — |
-| Bukti & jejak audit | — | — | — | ●●● |
+| Progres & pengakuan terlihat | ●● | ●●● | ● |: |
+| Komitmen berdurasi jelas | ●●● | ● | ●● |: |
+| Manfaat ekonomi langsung | ● | ●● | ●●● |: |
+| Bukti & jejak audit |: |: |: | ●●● |
 | Notifikasi via WhatsApp | ●● | ●●● | ●●● | ● |
 
 ---
@@ -314,27 +314,27 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 **Format:** `Sebagai <peran>, saya ingin <kebutuhan>, agar <manfaat>.`
 **Acceptance Criteria:** format Given / When / Then.
-**Prioritas:** MoSCoW — **M** (Must), **S** (Should), **C** (Could), **W** (Won't/Future).
+**Prioritas:** MoSCoW: **M** (Must), **S** (Should), **C** (Could), **W** (Won't/Future).
 
 **Rekapitulasi:**
 
 | Pilar | Rentang ID | Jumlah |
 |---|---|---:|
-| 01 — Open Community Ecosystem | US-001 … US-007 | 7 |
-| 02 — Kalender Komunitas | US-008 … US-013 | 6 |
-| 03 — Movement-Based Program | US-014 … US-019 | 6 |
-| 04 — Diseminasi & Amplifikasi Informasi | US-020 … US-026 | 7 |
-| 05 — Recognition & Gamifikasi | US-027 … US-034 | 8 |
-| 06 — Community Journalism | US-035 … US-040 | 6 |
-| 00 — Fondasi Lintas Pilar (Governance & Admin) | US-041 … US-046 | 6 |
+| 01: Open Community Ecosystem | US-001 … US-007 | 7 |
+| 02: Kalender Komunitas | US-008 … US-013 | 6 |
+| 03: Movement-Based Program | US-014 … US-019 | 6 |
+| 04: Diseminasi & Amplifikasi Informasi | US-020 … US-026 | 7 |
+| 05: Recognition & Gamifikasi | US-027 … US-034 | 8 |
+| 06: Community Journalism | US-035 … US-040 | 6 |
+| 00: Fondasi Lintas Pilar (Governance & Admin) | US-041 … US-046 | 6 |
 | **Total** | | **46** |
 
 ---
 
-### Pilar 01 — Open Community Ecosystem
+### Pilar 01: Open Community Ecosystem
 > *Kanal komunikasi melalui microsite; Pendaftaran; Rules keanggotaan dan manfaat* (Hal. 5)
 
-#### US-001 — Landing Page Microsite Pfriends `M`
+#### US-001: Landing Page Microsite Pfriends `M`
 **Sebagai** pengunjung publik / penerima manfaat PF,
 **saya ingin** membuka microsite Pfriends dari kotak biru di `pertaminafoundation.org`,
 **agar** saya memahami apa itu komunitas Pfriends dan bagaimana bergabung.
@@ -345,7 +345,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya membuka dari ponsel, **When** halaman dimuat, **Then** seluruh konten terbaca tanpa *horizontal scroll* pada lebar layar 360 px. |
 | AC-3 | **Given** halaman utama tampil, **When** saya menggulir, **Then** saya melihat ringkasan 6 pilar aktivitas komunitas. |
 
-#### US-002 — Pendaftaran Anggota Baru `M`
+#### US-002: Pendaftaran Anggota Baru `M`
 **Sebagai** penerima manfaat PF (alumni SOBI atau PFpreneur),
 **saya ingin** mendaftar menjadi anggota Pfriends melalui formulir daring,
 **agar** saya resmi terdata dalam komunitas.
@@ -357,7 +357,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-3 | **Given** nomor WhatsApp saya sudah terdaftar, **When** saya mengirim formulir, **Then** sistem menolak dengan pesan bahwa akun sudah ada beserta arahan masuk. |
 | AC-4 | **Given** pendaftaran berhasil, **When** proses selesai, **Then** sistem menampilkan halaman konfirmasi berisi langkah berikutnya dan tautan bergabung ke WA Komunitas. |
 
-#### US-003 — Verifikasi Keanggotaan oleh Admin `M`
+#### US-003: Verifikasi Keanggotaan oleh Admin `M`
 **Sebagai** admin komunitas PF,
 **saya ingin** memverifikasi pendaftar terhadap master data penerima manfaat,
 **agar** hanya penerima manfaat sah yang menjadi anggota dan angka KPI-01 dapat dipercaya.
@@ -368,7 +368,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** data pendaftar cocok, **When** saya menekan Setujui, **Then** status berubah menjadi `AKTIF` dan anggota tercatat dalam perhitungan KPI-01. |
 | AC-3 | **Given** data tidak cocok, **When** saya menekan Tolak dengan alasan, **Then** status berubah menjadi `DITOLAK` dan alasan tersimpan pada jejak audit. |
 
-#### US-004 — Halaman Rules Keanggotaan & Manfaat `M`
+#### US-004: Halaman Rules Keanggotaan & Manfaat `M`
 **Sebagai** anggota komunitas,
 **saya ingin** membaca aturan keanggotaan dan daftar manfaat,
 **agar** saya memahami hak, kewajiban, dan apa yang saya peroleh.
@@ -378,7 +378,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-1 | **Given** saya anggota aktif, **When** saya membuka halaman Rules & Manfaat, **Then** sistem menampilkan aturan keanggotaan, kode etik, dan tabel manfaat per tier. |
 | AC-2 | **Given** halaman tampil, **When** saya membaca bagian manfaat, **Then** benefit tiap tier ditampilkan sesuai ketentuan: 25 pts Active Member, 50 pts Contributor, 100 pts Featured Candidate, 150 pts Champion. |
 
-#### US-005 — Profil Anggota `M`
+#### US-005: Profil Anggota `M`
 **Sebagai** anggota komunitas,
 **saya ingin** memiliki dan mengelola halaman profil,
 **agar** identitas, pilar program, dan kontribusi saya terekam.
@@ -389,7 +389,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya menyunting profil, **When** saya menyimpan perubahan, **Then** data tersimpan dan tercatat pada jejak audit. |
 | AC-3 | **Given** saya mengatur visibilitas profil, **When** saya memilih *privat*, **Then** profil saya tidak muncul di direktori publik. |
 
-#### US-006 — Profil Usaha untuk PFpreneur `M`
+#### US-006: Profil Usaha untuk PFpreneur `M`
 **Sebagai** pelaku UMKM PFpreneur/Womenpreneur,
 **saya ingin** melengkapi profil usaha dan etalase produk,
 **agar** usaha saya dikenal dan berpeluang masuk jaringan pemasaran serta pengadaan Pertamina.
@@ -400,7 +400,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** profil usaha lengkap, **When** anggota lain membuka direktori UMKM, **Then** usaha saya tampil beserta kategori dan lokasi. |
 | AC-3 | **Given** saya mengunggah foto produk, **When** ukuran berkas melebihi batas, **Then** sistem menolak dengan pesan jelas dan menyarankan kompresi. |
 
-#### US-007 — Direktori Anggota & Pencarian Lintas Pilar `S`
+#### US-007: Direktori Anggota & Pencarian Lintas Pilar `S`
 **Sebagai** anggota komunitas,
 **saya ingin** mencari anggota lain berdasarkan pilar, keahlian, atau lokasi,
 **agar** silo antar pilar terpecah dan kolaborasi lintas program terjadi.
@@ -413,10 +413,10 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ---
 
-### Pilar 02 — Kalender Komunitas
+### Pilar 02: Kalender Komunitas
 > *Kalender kegiatan: upskilling, pertemuan komunitas, sharing session; Pembagian chapter komunitas* (Hal. 5)
 
-#### US-008 — Melihat Kalender Kegiatan `M`
+#### US-008: Melihat Kalender Kegiatan `M`
 **Sebagai** anggota komunitas,
 **saya ingin** melihat kalender kegiatan komunitas,
 **agar** saya tidak melewatkan upskilling, pertemuan, dan sharing session.
@@ -427,7 +427,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** kalender tampil, **When** saya memfilter berdasarkan jenis (upskilling / pertemuan komunitas / sharing session), **Then** hanya kegiatan sesuai jenis yang tampil. |
 | AC-3 | **Given** saya membuka dari ponsel, **When** kalender dimuat, **Then** tampilan beralih ke daftar vertikal yang dapat digulir. |
 
-#### US-009 — Detail & Pendaftaran Kegiatan `M`
+#### US-009: Detail & Pendaftaran Kegiatan `M`
 **Sebagai** anggota komunitas,
 **saya ingin** mendaftar pada sebuah kegiatan,
 **agar** tempat saya terjamin dan panitia mengetahui jumlah peserta.
@@ -438,7 +438,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** kuota kegiatan penuh, **When** saya menekan Daftar, **Then** sistem menawarkan daftar tunggu. |
 | AC-3 | **Given** saya sudah terdaftar, **When** saya membuka detail kegiatan, **Then** tersedia opsi membatalkan pendaftaran sebelum tenggat. |
 
-#### US-010 — Pencatatan Kehadiran Sesi Daring `M`
+#### US-010: Pencatatan Kehadiran Sesi Daring `M`
 **Sebagai** anggota komunitas,
 **saya ingin** kehadiran saya pada sesi daring tercatat,
 **agar** saya memperoleh 15 poin sesuai skema kontribusi.
@@ -449,7 +449,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya sudah mengonfirmasi kehadiran pada sesi tersebut, **When** saya mencoba lagi, **Then** sistem menolak dan poin tidak bertambah. |
 | AC-3 | **Given** sesi telah berakhir lebih dari batas waktu klaim, **When** saya mencoba konfirmasi, **Then** sistem menolak dengan pesan bahwa masa klaim telah lewat. |
 
-#### US-011 — Bergabung ke Chapter Komunitas `M`
+#### US-011: Bergabung ke Chapter Komunitas `M`
 **Sebagai** anggota komunitas,
 **saya ingin** bergabung ke chapter sesuai wilayah atau minat,
 **agar** saya berinteraksi dalam lingkup yang lebih relevan dan terasa dekat.
@@ -460,7 +460,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya memilih sebuah chapter, **When** saya menekan Gabung, **Then** keanggotaan chapter tercatat pada profil saya. |
 | AC-3 | **Given** saya telah tergabung, **When** saya membuka Kalender, **Then** kegiatan chapter saya ditandai secara khusus. |
 
-#### US-012 — Admin Mengelola Kegiatan `M`
+#### US-012: Admin Mengelola Kegiatan `M`
 **Sebagai** admin komunitas PF,
 **saya ingin** membuat dan mengelola kegiatan pada kalender,
 **agar** target 2 aktivitas engagement komunitas terlaksana dapat dipenuhi dan dibuktikan.
@@ -471,7 +471,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** kegiatan telah berlangsung, **When** saya menandai `SELESAI` dan mengisi jumlah peserta serta catatan hasil, **Then** kegiatan dihitung sebagai aktivitas engagement pada KPI-05. |
 | AC-3 | **Given** kegiatan berstatus `SELESAI`, **When** saya membuka detailnya, **Then** tersedia opsi melampirkan bukti (foto/laporan) untuk ESG evidence. |
 
-#### US-013 — Pengingat Kegiatan `S`
+#### US-013: Pengingat Kegiatan `S`
 **Sebagai** anggota komunitas,
 **saya ingin** menerima pengingat menjelang kegiatan yang saya ikuti,
 **agar** saya tidak lupa hadir.
@@ -483,10 +483,10 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ---
 
-### Pilar 03 — Movement-Based Program
+### Pilar 03: Movement-Based Program
 > *Menginisiasi gerakan bersama selaras fokus keberlanjutan Pertamina: aksi lingkungan, edukasi masyarakat, pemberdayaan ekonomi* (Hal. 5)
 
-#### US-014 — Katalog Gerakan Bersama `M`
+#### US-014: Katalog Gerakan Bersama `M`
 **Sebagai** anggota komunitas,
 **saya ingin** melihat daftar gerakan bersama yang sedang berjalan,
 **agar** saya dapat memilih gerakan yang sesuai minat dan lokasi saya.
@@ -497,7 +497,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** daftar tampil, **When** saya memfilter berdasarkan kategori atau wilayah, **Then** hanya gerakan sesuai kriteria yang tampil. |
 | AC-3 | **Given** saya membuka detail gerakan, **When** halaman dimuat, **Then** sistem menampilkan tujuan, periode, penanggung jawab, jumlah partisipan, dan tag ESG/SDG. |
 
-#### US-015 — Bergabung dalam Gerakan `M`
+#### US-015: Bergabung dalam Gerakan `M`
 **Sebagai** anggota komunitas,
 **saya ingin** mendaftarkan diri pada sebuah gerakan,
 **agar** partisipasi saya tercatat sebagai kontribusi.
@@ -507,7 +507,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-1 | **Given** gerakan berstatus `BERJALAN`, **When** saya menekan Ikut Serta, **Then** partisipasi tercatat dan gerakan muncul pada dasbor saya. |
 | AC-2 | **Given** saya telah bergabung, **When** saya membuka gerakan tersebut, **Then** tersedia tombol untuk melaporkan aksi yang telah saya lakukan. |
 
-#### US-016 — Mengusulkan Gerakan Baru `S`
+#### US-016: Mengusulkan Gerakan Baru `S`
 **Sebagai** anggota komunitas,
 **saya ingin** mengusulkan gerakan baru di wilayah saya,
 **agar** inisiatif tumbuh dari anggota, bukan hanya dari pusat.
@@ -518,7 +518,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** usulan saya disetujui admin, **When** gerakan dipublikasikan, **Then** saya ditetapkan sebagai penggerak dan memperoleh **50 pts** *(lead local action / campaign)*. |
 | AC-3 | **Given** usulan ditolak, **When** saya membuka usulan tersebut, **Then** alasan penolakan ditampilkan. |
 
-#### US-017 — Melaporkan Aksi Lapangan `M`
+#### US-017: Melaporkan Aksi Lapangan `M`
 **Sebagai** anggota yang menjalankan aksi lokal,
 **saya ingin** melaporkan pelaksanaan aksi beserta bukti,
 **agar** aksi tersebut menjadi bukti dampak yang sah.
@@ -529,7 +529,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** laporan tidak menyertakan catatan hasil, **When** saya mencoba mengirim, **Then** sistem menolak karena *outcome note* wajib untuk ESG evidence. |
 | AC-3 | **Given** laporan divalidasi admin, **When** validasi selesai, **Then** laporan memenuhi syarat ESG evidence: *documented activity + outcome note + ESG/SDG tag + evidence source*. |
 
-#### US-018 — Penandaan ESG/SDG pada Gerakan `M`
+#### US-018: Penandaan ESG/SDG pada Gerakan `M`
 **Sebagai** admin komunitas PF,
 **saya ingin** menandai gerakan dan laporan dengan pilar ESG dan nomor SDG,
 **agar** kontribusi komunitas dapat diagregasi menjadi KPI ESG.
@@ -539,7 +539,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-1 | **Given** saya admin membuka sebuah gerakan, **When** saya menetapkan pilar ESG (Environmental/Social/Governance) dan tag SDG, **Then** penandaan tersimpan dan diwariskan ke laporan turunannya. |
 | AC-2 | **Given** laporan telah bertanda ESG, **When** saya membuka dashboard ESG, **Then** laporan tersebut terhitung pada pilar yang sesuai. |
 
-#### US-019 — Papan Dampak Gerakan `C`
+#### US-019: Papan Dampak Gerakan `C`
 **Sebagai** anggota komunitas,
 **saya ingin** melihat rekapitulasi dampak seluruh gerakan,
 **agar** saya merasa menjadi bagian dari sesuatu yang berarti.
@@ -551,10 +551,10 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ---
 
-### Pilar 04 — Diseminasi dan Amplifikasi Informasi
+### Pilar 04: Diseminasi dan Amplifikasi Informasi
 > *Penyebarluasan informasi terkait Pertamina dan/atau Pertamina Foundation* (Hal. 5)
 
-#### US-020 — Membaca Broadcast Mingguan `M`
+#### US-020: Membaca Broadcast Mingguan `M`
 **Sebagai** anggota komunitas,
 **saya ingin** membaca broadcast mingguan berisi informasi Pertamina/PF,
 **agar** saya selalu memperoleh informasi terbaru dan memperoleh 1 poin.
@@ -565,7 +565,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya telah membaca broadcast tersebut, **When** saya membukanya kembali, **Then** poin tidak bertambah lagi. |
 | AC-3 | **Given** saya anggota aktif, **When** saya membuka daftar broadcast, **Then** broadcast yang belum dibaca ditandai jelas. |
 
-#### US-021 — Merespons Light CTA `M`
+#### US-021: Merespons Light CTA `M`
 **Sebagai** anggota komunitas,
 **saya ingin** memberi reaksi atau balasan singkat pada ajakan ringan di sebuah konten,
 **agar** saya terlibat tanpa beban dan memperoleh 2 poin.
@@ -576,7 +576,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya sudah merespons CTA tersebut, **When** saya merespons ulang, **Then** poin tidak bertambah. |
 | AC-3 | **Given** balasan saya terindikasi spam, **When** admin menandainya, **Then** poin dibatalkan dan tercatat pada jejak audit. |
 
-#### US-022 — Amplifikasi ke Jaringan WhatsApp / Privat `M`
+#### US-022: Amplifikasi ke Jaringan WhatsApp / Privat `M`
 **Sebagai** anggota komunitas,
 **saya ingin** membagikan konten PF ke WhatsApp atau jaringan pribadi saya,
 **agar** informasi menyebar dan saya memperoleh 5 poin.
@@ -587,7 +587,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya telah membagikan, **When** saya mengonfirmasi pembagian, **Then** sistem mencatat aksi amplifikasi jenis *private network* dan memberikan **5 pts**. |
 | AC-3 | **Given** aksi tercatat, **When** admin meninjau, **Then** aksi tampil pada antrean verifikasi amplifikasi. |
 
-#### US-023 — Amplifikasi ke Media Sosial Publik `M`
+#### US-023: Amplifikasi ke Media Sosial Publik `M`
 **Sebagai** anggota komunitas,
 **saya ingin** membagikan konten PF ke media sosial publik dan melampirkan buktinya,
 **agar** jangkauan organik meningkat dan saya memperoleh 8 poin.
@@ -599,7 +599,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-3 | **Given** bukti ditolak, **When** saya membuka riwayat kontribusi, **Then** alasan penolakan ditampilkan dan poin tidak diberikan. |
 | AC-4 | **Given** saya mengirim bukti untuk konten yang sama dua kali, **When** sistem memeriksa, **Then** pengiriman kedua ditolak sebagai duplikat. |
 
-#### US-024 — Verifikasi Bukti Amplifikasi oleh Admin `M`
+#### US-024: Verifikasi Bukti Amplifikasi oleh Admin `M`
 **Sebagai** admin komunitas PF,
 **saya ingin** memverifikasi bukti amplifikasi anggota secara batch,
 **agar** KPI 50% anggota melakukan amplifikasi terukur dan sah.
@@ -611,7 +611,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-3 | **Given** saya menolak sebuah aksi, **When** saya mengisi alasan, **Then** alasan tersimpan dan dapat dilihat anggota bersangkutan. |
 | AC-4 | **Given** verifikasi selesai, **When** saya membuka dashboard KPI, **Then** persentase anggota yang beramplifikasi diperbarui. |
 
-#### US-025 — Admin Menerbitkan Konten Diseminasi `M`
+#### US-025: Admin Menerbitkan Konten Diseminasi `M`
 **Sebagai** admin komunitas PF,
 **saya ingin** menyusun dan menerbitkan konten diseminasi terjadwal,
 **agar** target 1–2 konten per bulan dan minimal 2 kali diseminasi per bulan tercapai.
@@ -623,7 +623,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-3 | **Given** saya menjalankan kampanye diseminasi, **When** kampanye dikirim, **Then** sistem mencatat satu peristiwa diseminasi untuk KPI-03. |
 | AC-4 | **Given** bulan berjalan, **When** saya membuka dashboard, **Then** sistem menampilkan jumlah konten terbit dan jumlah diseminasi bulan tersebut terhadap targetnya. |
 
-#### US-026 — Materi Siap Bagikan (Share Kit) `S`
+#### US-026: Materi Siap Bagikan (Share Kit) `S`
 **Sebagai** anggota komunitas,
 **saya ingin** memperoleh materi siap bagikan berupa gambar dan teks yang sudah disiapkan,
 **agar** saya dapat beramplifikasi dengan cepat tanpa menyusun sendiri.
@@ -636,12 +636,12 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ---
 
-### Pilar 05 — Recognition & Gamifikasi
+### Pilar 05: Recognition & Gamifikasi
 > *Penghargaan bagi member: TOP Contribution; TOP awardee dengan karir bagus; Peningkatan poin yang dapat ditukar* (Hal. 5)
 
-> **Referensi skor (Hal. 11) dan tier (Hal. 12) bersifat mengikat — nilai tidak boleh diubah.**
+> **Referensi skor (Hal. 11) dan tier (Hal. 12) bersifat mengikat: nilai tidak boleh diubah.**
 
-#### US-027 — Melihat Poin & Tier Saya `M`
+#### US-027: Melihat Poin & Tier Saya `M`
 **Sebagai** anggota komunitas,
 **saya ingin** melihat total poin dan tier saya saat ini,
 **agar** saya mengetahui posisi kontribusi saya.
@@ -655,7 +655,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-5 | **Given** total poin saya ≥ 150, **When** tier dihitung, **Then** tier saya **Champion** (kuning). |
 | AC-6 | **Given** total poin saya < 25, **When** tier dihitung, **Then** saya belum mencapai tier dan sistem menampilkan sisa poin menuju Active Member. |
 
-#### US-028 — Progres Menuju Tier Berikutnya `M`
+#### US-028: Progres Menuju Tier Berikutnya `M`
 **Sebagai** anggota komunitas,
 **saya ingin** melihat berapa poin lagi yang saya butuhkan untuk naik tier,
 **agar** saya termotivasi menambah kontribusi.
@@ -666,7 +666,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya telah mencapai Champion, **When** saya membuka dasbor, **Then** sistem menampilkan status tier tertinggi dan tidak menampilkan indikator progres. |
 | AC-3 | **Given** progres ditampilkan, **When** saya menekannya, **Then** sistem menampilkan daftar aksi beserta nilai poin yang dapat saya lakukan. |
 
-#### US-029 — Katalog Aksi & Nilai Poin `M`
+#### US-029: Katalog Aksi & Nilai Poin `M`
 **Sebagai** anggota komunitas,
 **saya ingin** melihat daftar seluruh aksi yang menghasilkan poin beserta nilainya,
 **agar** saya memahami cara berkontribusi secara transparan.
@@ -676,7 +676,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-1 | **Given** saya membuka halaman Cara Mendapat Poin, **When** halaman dimuat, **Then** sistem menampilkan seluruh aksi dengan nilai persis: view/read weekly broadcast **1**, react/reply light CTA **2**, share ke WA/jaringan privat **5**, share ke media sosial publik **8**, submit story/nomination/survey **10**, attend online session **15**, ask useful question/share useful answer **15**, become speaker/mentor/facilitator **30**, lead local action/campaign **50**. |
 | AC-2 | **Given** halaman tampil, **When** saya membacanya, **Then** sistem menyertakan prinsip bahwa poin menghargai kontribusi bermakna, bukan aktivitas spam. |
 
-#### US-030 — Riwayat Perolehan Poin `M`
+#### US-030: Riwayat Perolehan Poin `M`
 **Sebagai** anggota komunitas,
 **saya ingin** melihat riwayat setiap perolehan poin saya,
 **agar** perhitungan poin transparan dan dapat saya periksa.
@@ -687,7 +687,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** sebuah aksi masih menunggu verifikasi, **When** riwayat tampil, **Then** aksi tersebut ditandai `MENUNGGU_VERIFIKASI` dan poinnya belum dihitung ke total. |
 | AC-3 | **Given** sebuah aksi dibatalkan admin, **When** riwayat tampil, **Then** aksi ditandai `DIBATALKAN` beserta alasannya. |
 
-#### US-031 — Leaderboard TOP Contribution `M`
+#### US-031: Leaderboard TOP Contribution `M`
 **Sebagai** anggota komunitas,
 **saya ingin** melihat peringkat kontributor teratas,
 **agar** tumbuh apresiasi dan dorongan berkontribusi.
@@ -699,7 +699,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-3 | **Given** saya tidak berada di 10 besar, **When** leaderboard tampil, **Then** sistem tetap menampilkan posisi saya secara terpisah. |
 | AC-4 | **Given** seorang anggota memilih profil privat, **When** leaderboard tampil, **Then** namanya disamarkan namun peringkatnya tetap dihitung. |
 
-#### US-032 — Penghargaan TOP Awardee dengan Karir Bagus `S`
+#### US-032: Penghargaan TOP Awardee dengan Karir Bagus `S`
 **Sebagai** admin komunitas PF,
 **saya ingin** menetapkan penghargaan bagi alumni dengan pencapaian karir menonjol,
 **agar** teladan alumni terlihat dan menjadi bahan agenda setting.
@@ -710,7 +710,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** nominasi disetujui Corsec, **When** penghargaan diterbitkan, **Then** lencana penghargaan tampil pada profil alumni dan halaman recognition. |
 | AC-3 | **Given** alumni belum memberikan persetujuan publikasi, **When** admin mencoba menerbitkan, **Then** sistem menolak sampai consent terekam. |
 
-#### US-033 — Penukaran Poin `S`
+#### US-033: Penukaran Poin `S`
 **Sebagai** anggota komunitas,
 **saya ingin** menukarkan poin saya dengan penghargaan yang tersedia,
 **agar** kontribusi saya memberikan manfaat nyata.
@@ -722,7 +722,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-3 | **Given** poin saya tidak mencukupi, **When** saya mencoba menukar, **Then** sistem menolak dan menampilkan kekurangan poin. |
 | AC-4 | **Given** penukaran tercatat, **When** admin memprosesnya, **Then** status berubah menjadi `SELESAI` dan tercatat pada jejak audit. |
 
-#### US-034 — Kelayakan Fitur Berdasarkan Tier `M`
+#### US-034: Kelayakan Fitur Berdasarkan Tier `M`
 **Sebagai** anggota komunitas,
 **saya ingin** mengetahui manfaat apa yang terbuka pada tier saya,
 **agar** saya memahami nilai dari kenaikan tier.
@@ -737,10 +737,10 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ---
 
-### Pilar 06 — Community Journalism
+### Pilar 06: Community Journalism
 > *Tantangan seperti gerakan pengurangan sampah; kampanye energi bersih; program edukasi di masyarakat* (Hal. 5)
 
-#### US-035 — Mengikuti Tantangan Komunitas `M`
+#### US-035: Mengikuti Tantangan Komunitas `M`
 **Sebagai** anggota komunitas,
 **saya ingin** mengikuti tantangan komunitas yang sedang berjalan,
 **agar** kontribusi saya terarah pada tema yang sedang dikampanyekan.
@@ -751,7 +751,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya memilih sebuah tantangan, **When** saya menekan Ikuti, **Then** partisipasi tercatat dan tantangan muncul pada dasbor saya. |
 | AC-3 | **Given** periode tantangan telah berakhir, **When** saya membuka halaman tersebut, **Then** tantangan ditandai `SELESAI` dan tidak dapat diikuti lagi. |
 
-#### US-036 — Mengirim Story / Liputan Komunitas `M`
+#### US-036: Mengirim Story / Liputan Komunitas `M`
 **Sebagai** anggota komunitas,
 **saya ingin** mengirimkan story atau liputan kegiatan saya,
 **agar** cerita saya terdokumentasi dan saya memperoleh 10 poin.
@@ -762,7 +762,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya belum mencentang persetujuan publikasi (*consent*), **When** saya mencoba mengirim, **Then** sistem menolak pengiriman. |
 | AC-3 | **Given** foto yang saya unggah memuat wajah pihak ketiga, **When** formulir tampil, **Then** sistem menampilkan pernyataan tanggung jawab persetujuan pihak ketiga yang harus disetujui. |
 
-#### US-037 — Kurasi Story oleh Admin `M`
+#### US-037: Kurasi Story oleh Admin `M`
 **Sebagai** admin komunitas PF,
 **saya ingin** mengurasi story yang masuk,
 **agar** hanya cerita layak dan aman yang masuk ke story bank.
@@ -773,7 +773,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** saya menyetujui story, **When** kurasi selesai, **Then** status menjadi `TERVERIFIKASI` dan story masuk story bank. |
 | AC-3 | **Given** story mengandung data sensitif, **When** saya menandainya, **Then** story ditolak dengan alasan *sensitive-data concern* dan tidak dapat dipublikasikan. |
 
-#### US-038 — Publikasi Featured Story `M`
+#### US-038: Publikasi Featured Story `M`
 **Sebagai** Corsec PF,
 **saya ingin** memublikasikan story pilihan ke kanal publik,
 **agar** narasi baik Pertamina/PF tersebar dengan kendali penuh.
@@ -784,7 +784,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** salah satu syarat belum terpenuhi, **When** saya mencoba memublikasikan, **Then** sistem menolak dan menampilkan syarat yang belum terpenuhi. |
 | AC-3 | **Given** story dipublikasikan, **When** halaman publik dimuat, **Then** story tampil beserta atribusi penulis sesuai preferensi consent-nya. |
 
-#### US-039 — Story Bank & Pencarian `S`
+#### US-039: Story Bank & Pencarian `S`
 **Sebagai** admin komunitas PF,
 **saya ingin** menelusuri story bank berdasarkan tema, pilar ESG, dan wilayah,
 **agar** saya cepat menemukan bahan untuk kebutuhan komunikasi dan pelaporan.
@@ -794,7 +794,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-1 | **Given** saya admin, **When** saya membuka story bank dan memfilter berdasarkan tema/pilar ESG/wilayah/periode, **Then** sistem menampilkan story yang sesuai. |
 | AC-2 | **Given** hasil pencarian tampil, **When** saya memilih beberapa story, **Then** saya dapat mengekspornya sebagai bahan laporan. |
 
-#### US-040 — Tanya Jawab Bermanfaat `S`
+#### US-040: Tanya Jawab Bermanfaat `S`
 **Sebagai** anggota komunitas,
 **saya ingin** mengajukan pertanyaan atau membagikan jawaban bermanfaat,
 **agar** pengetahuan mengalir antar anggota dan saya memperoleh 15 poin.
@@ -807,10 +807,10 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 ---
 
-### Pilar 00 — Fondasi Lintas Pilar (Governance & Admin)
+### Pilar 00: Fondasi Lintas Pilar (Governance & Admin)
 > Kelompok pendukung yang menopang keenam pilar. *(turunan analisis)*
 
-#### US-041 — Masuk ke Microsite `M`
+#### US-041: Masuk ke Microsite `M`
 **Sebagai** anggota komunitas,
 **saya ingin** masuk ke microsite dengan cara sederhana,
 **agar** saya dapat mengakses fitur anggota tanpa hambatan.
@@ -821,7 +821,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** akun saya belum diverifikasi, **When** saya mencoba masuk, **Then** sistem menampilkan status pendaftaran saya. |
 | AC-3 | **Given** saya sudah pernah masuk di perangkat ini, **When** saya membuka kembali microsite, **Then** sesi saya dipulihkan tanpa memasukkan ulang identitas. |
 
-#### US-042 — Dasbor Anggota `M`
+#### US-042: Dasbor Anggota `M`
 **Sebagai** anggota komunitas,
 **saya ingin** memiliki satu dasbor ringkas setelah masuk,
 **agar** saya langsung tahu apa yang perlu saya lakukan.
@@ -831,7 +831,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-1 | **Given** saya anggota aktif, **When** saya membuka dasbor, **Then** sistem menampilkan poin & tier, broadcast belum dibaca, kegiatan mendatang, tantangan berjalan, dan aksi yang disarankan. |
 | AC-2 | **Given** saya membuka dari ponsel, **When** dasbor dimuat, **Then** informasi tersusun satu kolom dengan aksi utama terjangkau ibu jari. |
 
-#### US-043 — Persetujuan Data Pribadi & Consent `M`
+#### US-043: Persetujuan Data Pribadi & Consent `M`
 **Sebagai** anggota komunitas,
 **saya ingin** mengetahui dan mengendalikan persetujuan penggunaan data serta publikasi cerita saya,
 **agar** privasi saya terlindungi.
@@ -843,7 +843,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-3 | **Given** saya mencabut consent publikasi, **When** perubahan tersimpan, **Then** konten publik yang bergantung pada consent tersebut ditarik dari tampilan publik. |
 | AC-4 | **Given** consent berubah, **When** perubahan tersimpan, **Then** sistem mencatat waktu, jenis, dan versi kebijakan pada catatan consent. |
 
-#### US-044 — Dashboard KPI Aktivitas `M`
+#### US-044: Dashboard KPI Aktivitas `M`
 **Sebagai** Corsec PF,
 **saya ingin** melihat dashboard pencapaian KPI aktivitas,
 **agar** saya dapat melaporkan kemajuan inisiatif dengan data.
@@ -855,7 +855,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-3 | **Given** saya memilih sebuah KPI, **When** saya menelusurinya, **Then** sistem menampilkan data pendukung hingga tingkat kontribusi individual. |
 | AC-4 | **Given** saya mengubah periode, **When** dashboard dimuat ulang, **Then** seluruh angka menyesuaikan periode terpilih. |
 
-#### US-045 — Dashboard ESG Evidence `S`
+#### US-045: Dashboard ESG Evidence `S`
 **Sebagai** Corsec PF,
 **saya ingin** melihat rekapitulasi bukti ESG dari aktivitas komunitas,
 **agar** saya dapat membuktikan bahwa program menciptakan nilai, bukan sekadar berjalan.
@@ -866,7 +866,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | AC-2 | **Given** sebuah bukti belum memenuhi ambang minimum, **When** dashboard tampil, **Then** bukti tersebut tidak dihitung dan tercantum pada daftar bukti belum lengkap. |
 | AC-3 | **Given** saya menekan Ekspor, **When** proses selesai, **Then** sistem menghasilkan berkas rekapitulasi bukti beserta sumbernya. |
 
-#### US-046 — Jejak Audit `S`
+#### US-046: Jejak Audit `S`
 **Sebagai** Corsec PF,
 **saya ingin** menelusuri jejak audit atas keputusan verifikasi dan publikasi,
 **agar** integritas bukti dan tata kelola terjaga.
@@ -875,20 +875,20 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 |---|---|
 | AC-1 | **Given** terjadi aksi administratif (verifikasi, penolakan, publikasi, pembatalan poin), **When** aksi tersimpan, **Then** sistem mencatat aktor, waktu, objek, aksi, dan alasan. |
 | AC-2 | **Given** saya membuka jejak audit, **When** saya memfilter berdasarkan aktor/objek/periode, **Then** sistem menampilkan catatan yang sesuai. |
-| AC-3 | **Given** sebuah catatan audit telah tersimpan, **When** siapa pun mencoba mengubahnya, **Then** sistem menolak — catatan bersifat *append-only*. |
+| AC-3 | **Given** sebuah catatan audit telah tersimpan, **When** siapa pun mencoba mengubahnya, **Then** sistem menolak: catatan bersifat *append-only*. |
 
 ---
 
 ## 7. Use Case Utama
 
-### UC-01 — Registrasi & Onboarding Anggota Baru
+### UC-01: Registrasi & Onboarding Anggota Baru
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-01 |
 | **Aktor Utama** | Penerima manfaat PF (calon anggota) |
 | **Aktor Sekunder** | Admin Komunitas PF |
-| **Pilar** | 01 — Open Community Ecosystem |
+| **Pilar** | 01: Open Community Ecosystem |
 | **Prekondisi** | Calon anggota memiliki nomor WhatsApp aktif; master data penerima manfaat tersedia; microsite dapat diakses |
 | **Postkondisi** | Anggota berstatus `AKTIF` dan terhitung pada KPI-01 |
 | **Pemicu** | Calon anggota membuka kotak biru Pfriends di `pertaminafoundation.org` atau menerima tautan undangan dari WA Komunitas |
@@ -907,20 +907,20 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 11. Sistem mengubah status menjadi `AKTIF` dan membuka akses fitur anggota.
 
 **Alternate Flow**
-- **A1 — Nomor sudah terdaftar (langkah 6).** Sistem menolak dan mengarahkan ke alur masuk. Use case berakhir.
-- **A2 — Consent tidak diberikan (langkah 5).** Tombol kirim tetap nonaktif; sistem menjelaskan bahwa consent wajib. Use case tertahan.
-- **A3 — Data tidak cocok master data (langkah 9).** Admin menandai `PERLU_KLARIFIKASI`, sistem menampilkan permintaan dokumen pendukung kepada calon anggota; alur kembali ke langkah 9 setelah dokumen diterima.
-- **A4 — Pendaftar bukan penerima manfaat (langkah 10).** Admin menolak dengan alasan; status menjadi `DITOLAK` dan tercatat pada jejak audit.
+- **A1: Nomor sudah terdaftar (langkah 6).** Sistem menolak dan mengarahkan ke alur masuk. Use case berakhir.
+- **A2: Consent tidak diberikan (langkah 5).** Tombol kirim tetap nonaktif; sistem menjelaskan bahwa consent wajib. Use case tertahan.
+- **A3: Data tidak cocok master data (langkah 9).** Admin menandai `PERLU_KLARIFIKASI`, sistem menampilkan permintaan dokumen pendukung kepada calon anggota; alur kembali ke langkah 9 setelah dokumen diterima.
+- **A4: Pendaftar bukan penerima manfaat (langkah 10).** Admin menolak dengan alasan; status menjadi `DITOLAK` dan tercatat pada jejak audit.
 
 ---
 
-### UC-02 — Masuk & Mengakses Dasbor Anggota
+### UC-02: Masuk & Mengakses Dasbor Anggota
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-02 |
 | **Aktor Utama** | Anggota komunitas |
-| **Pilar** | 00 — Fondasi |
+| **Pilar** | 00: Fondasi |
 | **Prekondisi** | Anggota berstatus `AKTIF` |
 | **Postkondisi** | Sesi anggota aktif; dasbor personal tampil |
 | **Pemicu** | Anggota membuka microsite dari tautan di WA Komunitas |
@@ -928,28 +928,28 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 **Main Flow**
 1. Anggota membuka microsite Pfriends.
 2. Sistem memeriksa sesi tersimpan pada perangkat.
-3. Sesi tidak ditemukan — sistem menampilkan halaman masuk.
+3. Sesi tidak ditemukan: sistem menampilkan halaman masuk.
 4. Anggota memasukkan nomor WhatsApp atau email terdaftar.
 5. Sistem memverifikasi identitas dan peran anggota.
 6. Sistem membuat sesi dan mengarahkan ke dasbor.
 7. Dasbor menampilkan poin & tier, broadcast belum dibaca, kegiatan mendatang, dan aksi yang disarankan.
 
 **Alternate Flow**
-- **A1 — Sesi ditemukan (langkah 2).** Sistem langsung mengarahkan ke dasbor; lanjut ke langkah 7.
-- **A2 — Identitas tidak terdaftar (langkah 5).** Sistem menawarkan alur pendaftaran (UC-01).
-- **A3 — Status masih `MENUNGGU_VERIFIKASI` (langkah 5).** Sistem menampilkan halaman status pendaftaran, akses fitur anggota belum diberikan.
-- **A4 — Status `DITOLAK`/`NONAKTIF` (langkah 5).** Sistem menampilkan pemberitahuan dan kanal bantuan.
+- **A1: Sesi ditemukan (langkah 2).** Sistem langsung mengarahkan ke dasbor; lanjut ke langkah 7.
+- **A2: Identitas tidak terdaftar (langkah 5).** Sistem menawarkan alur pendaftaran (UC-01).
+- **A3: Status masih `MENUNGGU_VERIFIKASI` (langkah 5).** Sistem menampilkan halaman status pendaftaran, akses fitur anggota belum diberikan.
+- **A4: Status `DITOLAK`/`NONAKTIF` (langkah 5).** Sistem menampilkan pemberitahuan dan kanal bantuan.
 
 ---
 
-### UC-03 — Diseminasi Konten oleh Admin
+### UC-03: Diseminasi Konten oleh Admin
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-03 |
 | **Aktor Utama** | Admin Komunitas PF |
 | **Aktor Sekunder** | Corsec PF (penyetuju), anggota komunitas (penerima) |
-| **Pilar** | 04 — Diseminasi & Amplifikasi |
+| **Pilar** | 04: Diseminasi & Amplifikasi |
 | **Prekondisi** | Admin memiliki materi konten Pertamina/PF; terdapat anggota aktif |
 | **Postkondisi** | Konten berstatus `TERBIT`; peristiwa diseminasi tercatat untuk KPI-02 dan KPI-03 |
 | **Pemicu** | Jadwal diseminasi bulanan atau instruksi Corsec |
@@ -966,19 +966,19 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 9. Konten tampil pada daftar broadcast anggota.
 
 **Alternate Flow**
-- **A1 — Corsec meminta revisi (langkah 6).** Status kembali `DRAF` beserta catatan revisi; alur kembali ke langkah 2.
-- **A2 — Konten dijadwalkan (langkah 7).** Admin menetapkan waktu terbit; sistem menerbitkan otomatis pada waktu tersebut.
-- **A3 — Kuota KPI bulan berjalan telah terpenuhi (langkah 8).** Sistem tetap menerbitkan dan menampilkan indikator pencapaian melebihi target.
+- **A1: Corsec meminta revisi (langkah 6).** Status kembali `DRAF` beserta catatan revisi; alur kembali ke langkah 2.
+- **A2: Konten dijadwalkan (langkah 7).** Admin menetapkan waktu terbit; sistem menerbitkan otomatis pada waktu tersebut.
+- **A3: Kuota KPI bulan berjalan telah terpenuhi (langkah 8).** Sistem tetap menerbitkan dan menampilkan indikator pencapaian melebihi target.
 
 ---
 
-### UC-04 — Amplifikasi Konten oleh Anggota
+### UC-04: Amplifikasi Konten oleh Anggota
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-04 |
 | **Aktor Utama** | Anggota komunitas |
-| **Pilar** | 04 — Diseminasi & Amplifikasi |
+| **Pilar** | 04: Diseminasi & Amplifikasi |
 | **Prekondisi** | Terdapat konten berstatus `TERBIT`; anggota berstatus `AKTIF` |
 | **Postkondisi** | Aksi amplifikasi tercatat; poin diberikan (5 pts privat / 8 pts publik setelah verifikasi) |
 | **Pemicu** | Anggota membuka konten dan ingin membagikannya |
@@ -986,7 +986,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 **Main Flow**
 1. Anggota membuka detail konten.
 2. Sistem menampilkan share kit dan pilihan kanal berbagi.
-3. Anggota memilih kanal — WhatsApp/jaringan privat atau media sosial publik.
+3. Anggota memilih kanal: WhatsApp/jaringan privat atau media sosial publik.
 4. Sistem menyiapkan materi bagikan beserta tautan berpenanda.
 5. Anggota membagikan konten di kanal terpilih.
 6. Anggota kembali ke microsite dan mengonfirmasi pembagian; untuk kanal publik anggota melampirkan tautan unggahan atau tangkapan layar.
@@ -994,20 +994,20 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 8. Sistem memperbarui riwayat kontribusi anggota.
 
 **Alternate Flow**
-- **A1 — Bukti duplikat (langkah 7).** Sistem menolak karena anggota telah beramplifikasi untuk konten yang sama.
-- **A2 — Anggota tidak mengonfirmasi (langkah 6).** Aksi tidak tercatat dan poin tidak diberikan.
-- **A3 — Berkas bukti melebihi batas ukuran (langkah 6).** Sistem menolak unggahan dan menyarankan kompresi.
-- **A4 — Verifikasi ditolak admin (lanjutan langkah 7).** Aksi menjadi `DITOLAK`, poin batal, alasan tampil pada riwayat anggota.
+- **A1: Bukti duplikat (langkah 7).** Sistem menolak karena anggota telah beramplifikasi untuk konten yang sama.
+- **A2: Anggota tidak mengonfirmasi (langkah 6).** Aksi tidak tercatat dan poin tidak diberikan.
+- **A3: Berkas bukti melebihi batas ukuran (langkah 6).** Sistem menolak unggahan dan menyarankan kompresi.
+- **A4: Verifikasi ditolak admin (lanjutan langkah 7).** Aksi menjadi `DITOLAK`, poin batal, alasan tampil pada riwayat anggota.
 
 ---
 
-### UC-05 — Verifikasi Bukti Amplifikasi
+### UC-05: Verifikasi Bukti Amplifikasi
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-05 |
 | **Aktor Utama** | Admin Komunitas PF |
-| **Pilar** | 04 — Diseminasi & Amplifikasi |
+| **Pilar** | 04: Diseminasi & Amplifikasi |
 | **Prekondisi** | Terdapat aksi amplifikasi berstatus `MENUNGGU_VERIFIKASI` |
 | **Postkondisi** | Poin dikreditkan/dibatalkan; KPI-04 diperbarui; jejak audit tercatat |
 | **Pemicu** | Admin membuka antrean verifikasi (rutin harian/mingguan) |
@@ -1022,21 +1022,21 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 7. Sistem mencatat keputusan pada jejak audit.
 
 **Alternate Flow**
-- **A1 — Bukti tidak sah/tidak relevan (langkah 4).** Admin menolak dengan alasan; poin tidak dikreditkan; alasan tampil pada riwayat anggota.
-- **A2 — Bukti terindikasi spam berulang (langkah 3).** Admin menandai anggota untuk peninjauan; sistem menahan pemberian poin sesuai prinsip *reward meaningful contribution, not spammy activity*.
-- **A3 — Bukti perlu klarifikasi (langkah 3).** Admin mengembalikan aksi berstatus `PERLU_KLARIFIKASI` beserta catatan; anggota dapat mengunggah ulang bukti.
-- **A4 — Kenaikan tier terjadi (langkah 5).** Sistem menandai anggota telah melewati ambang (25/50/100/150) dan membuka manfaat tier terkait.
+- **A1: Bukti tidak sah/tidak relevan (langkah 4).** Admin menolak dengan alasan; poin tidak dikreditkan; alasan tampil pada riwayat anggota.
+- **A2: Bukti terindikasi spam berulang (langkah 3).** Admin menandai anggota untuk peninjauan; sistem menahan pemberian poin sesuai prinsip *reward meaningful contribution, not spammy activity*.
+- **A3: Bukti perlu klarifikasi (langkah 3).** Admin mengembalikan aksi berstatus `PERLU_KLARIFIKASI` beserta catatan; anggota dapat mengunggah ulang bukti.
+- **A4: Kenaikan tier terjadi (langkah 5).** Sistem menandai anggota telah melewati ambang (25/50/100/150) dan membuka manfaat tier terkait.
 
 ---
 
-### UC-06 — Penyelenggaraan Kegiatan & Pencatatan Kehadiran
+### UC-06: Penyelenggaraan Kegiatan & Pencatatan Kehadiran
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-06 |
 | **Aktor Utama** | Admin Komunitas PF |
 | **Aktor Sekunder** | Anggota komunitas, Mentor/Narasumber |
-| **Pilar** | 02 — Kalender Komunitas |
+| **Pilar** | 02: Kalender Komunitas |
 | **Prekondisi** | Admin memiliki rencana kegiatan; chapter komunitas telah terbentuk |
 | **Postkondisi** | Kegiatan berstatus `SELESAI`; kehadiran tercatat; KPI-05 diperbarui |
 | **Pemicu** | Rencana kegiatan bulanan (upskilling / pertemuan komunitas / sharing session) |
@@ -1054,20 +1054,20 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 10. Sistem menghitung kegiatan tersebut pada KPI-05 dan menyiapkan bahan ESG evidence.
 
 **Alternate Flow**
-- **A1 — Kuota penuh (langkah 3).** Sistem menawarkan daftar tunggu; peserta dipromosikan otomatis bila ada pembatalan.
-- **A2 — Peserta terdaftar namun tidak hadir (langkah 6).** Kehadiran tidak tercatat; poin tidak diberikan.
-- **A3 — Kegiatan dibatalkan (langkah 5).** Admin menandai `DIBATALKAN` beserta alasan; seluruh pendaftar diberi tahu; kegiatan tidak dihitung pada KPI-05.
-- **A4 — Kode sesi digunakan di luar masa klaim (langkah 6).** Sistem menolak konfirmasi kehadiran.
+- **A1: Kuota penuh (langkah 3).** Sistem menawarkan daftar tunggu; peserta dipromosikan otomatis bila ada pembatalan.
+- **A2: Peserta terdaftar namun tidak hadir (langkah 6).** Kehadiran tidak tercatat; poin tidak diberikan.
+- **A3: Kegiatan dibatalkan (langkah 5).** Admin menandai `DIBATALKAN` beserta alasan; seluruh pendaftar diberi tahu; kegiatan tidak dihitung pada KPI-05.
+- **A4: Kode sesi digunakan di luar masa klaim (langkah 6).** Sistem menolak konfirmasi kehadiran.
 
 ---
 
-### UC-07 — Pengiriman Story Community Journalism
+### UC-07: Pengiriman Story Community Journalism
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-07 |
 | **Aktor Utama** | Anggota komunitas |
-| **Pilar** | 06 — Community Journalism |
+| **Pilar** | 06: Community Journalism |
 | **Prekondisi** | Anggota berstatus `AKTIF`; terdapat tantangan atau gerakan yang dapat dirujuk |
 | **Postkondisi** | Story tersimpan berstatus `MENUNGGU_KURASI`; anggota memperoleh **10 pts** |
 | **Pemicu** | Anggota menyelesaikan aksi dan ingin melaporkannya sebagai cerita |
@@ -1083,21 +1083,21 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 8. Sistem memberikan **10 pts** kepada anggota.
 
 **Alternate Flow**
-- **A1 — Consent tidak diberikan (langkah 5).** Sistem menolak pengiriman story.
-- **A2 — Berkas foto melebihi batas (langkah 6).** Sistem menolak dan menyarankan kompresi; anggota mengunggah ulang.
-- **A3 — Anggota menyimpan sebagai draf (langkah 7).** Story berstatus `DRAF`; poin belum diberikan sampai dikirim.
-- **A4 — Story tidak merujuk tantangan/gerakan (langkah 3).** Sistem tetap menerima namun menandainya sebagai story umum tanpa tag ESG otomatis.
+- **A1: Consent tidak diberikan (langkah 5).** Sistem menolak pengiriman story.
+- **A2: Berkas foto melebihi batas (langkah 6).** Sistem menolak dan menyarankan kompresi; anggota mengunggah ulang.
+- **A3: Anggota menyimpan sebagai draf (langkah 7).** Story berstatus `DRAF`; poin belum diberikan sampai dikirim.
+- **A4: Story tidak merujuk tantangan/gerakan (langkah 3).** Sistem tetap menerima namun menandainya sebagai story umum tanpa tag ESG otomatis.
 
 ---
 
-### UC-08 — Kurasi & Publikasi Featured Story
+### UC-08: Kurasi & Publikasi Featured Story
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-08 |
 | **Aktor Utama** | Admin Komunitas PF |
 | **Aktor Sekunder** | Corsec PF (penyetuju akhir), anggota penulis story |
-| **Pilar** | 06 — Community Journalism |
+| **Pilar** | 06: Community Journalism |
 | **Prekondisi** | Terdapat story berstatus `MENUNGGU_KURASI` |
 | **Postkondisi** | Story `TERVERIFIKASI` masuk story bank; story terpilih berstatus `TERPUBLIKASI` |
 | **Pemicu** | Antrean kurasi terisi atau kebutuhan bahan publikasi |
@@ -1107,7 +1107,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 2. Sistem menampilkan story beserta checklist kelayakan.
 3. Admin memeriksa kualitas narasi, keaslian foto, dan kelengkapan consent.
 4. Admin memeriksa tidak adanya *sensitive-data concern*.
-5. Admin menyetujui story — status menjadi `TERVERIFIKASI` dan masuk story bank.
+5. Admin menyetujui story: status menjadi `TERVERIFIKASI` dan masuk story bank.
 6. Admin mengusulkan story sebagai *featured*.
 7. Sistem memeriksa syarat publikasi publik: **100 poin + verified story + consent + validasi PF + tidak ada masalah data sensitif**.
 8. Corsec memberikan validasi PF.
@@ -1115,22 +1115,22 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 10. Sistem mencatat keputusan pada jejak audit.
 
 **Alternate Flow**
-- **A1 — Consent belum lengkap (langkah 3).** Sistem menahan kurasi; admin meminta anggota melengkapi consent.
-- **A2 — Terdapat data sensitif (langkah 4).** Story ditolak dengan alasan *sensitive-data concern*; tidak dapat dipublikasikan meski poin mencukupi.
-- **A3 — Poin penulis di bawah 100 (langkah 7).** Publikasi ditolak; story tetap tersimpan di story bank sebagai bahan internal.
-- **A4 — Corsec menolak validasi (langkah 8).** Status kembali `TERVERIFIKASI` beserta catatan; story tidak dipublikasikan.
-- **A5 — Anggota mencabut consent setelah publikasi (setelah langkah 9).** Sistem menarik story dari tampilan publik dan mencatat penarikan pada jejak audit.
+- **A1: Consent belum lengkap (langkah 3).** Sistem menahan kurasi; admin meminta anggota melengkapi consent.
+- **A2: Terdapat data sensitif (langkah 4).** Story ditolak dengan alasan *sensitive-data concern*; tidak dapat dipublikasikan meski poin mencukupi.
+- **A3: Poin penulis di bawah 100 (langkah 7).** Publikasi ditolak; story tetap tersimpan di story bank sebagai bahan internal.
+- **A4: Corsec menolak validasi (langkah 8).** Status kembali `TERVERIFIKASI` beserta catatan; story tidak dipublikasikan.
+- **A5: Anggota mencabut consent setelah publikasi (setelah langkah 9).** Sistem menarik story dari tampilan publik dan mencatat penarikan pada jejak audit.
 
 ---
 
-### UC-09 — Perhitungan Poin & Kenaikan Tier
+### UC-09: Perhitungan Poin & Kenaikan Tier
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-09 |
 | **Aktor Utama** | Sistem (proses terotomasi) |
 | **Aktor Sekunder** | Anggota komunitas, Admin Komunitas PF |
-| **Pilar** | 05 — Recognition & Gamifikasi |
+| **Pilar** | 05: Recognition & Gamifikasi |
 | **Prekondisi** | Terdapat kontribusi berstatus `TERVERIFIKASI` |
 | **Postkondisi** | Total poin dan tier anggota mutakhir; manfaat tier terbuka |
 | **Pemicu** | Sebuah kontribusi berpindah status menjadi `TERVERIFIKASI` |
@@ -1146,21 +1146,21 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 8. Sistem memperbarui tampilan dasbor, leaderboard, dan profil anggota.
 
 **Alternate Flow**
-- **A1 — Aksi duplikat (langkah 3).** Transaksi ditolak; total poin tidak berubah.
-- **A2 — Kontribusi dibatalkan admin (setelah langkah 4).** Sistem mencatat transaksi pembalik, menghitung ulang total, dan menurunkan tier bila perlu.
-- **A3 — Tier tidak berubah (langkah 7).** Sistem hanya memperbarui total poin dan indikator progres.
-- **A4 — Anggota menukarkan poin (paralel).** Saldo poin berkurang namun **poin kumulatif untuk penentuan tier tidak berkurang**.
+- **A1: Aksi duplikat (langkah 3).** Transaksi ditolak; total poin tidak berubah.
+- **A2: Kontribusi dibatalkan admin (setelah langkah 4).** Sistem mencatat transaksi pembalik, menghitung ulang total, dan menurunkan tier bila perlu.
+- **A3: Tier tidak berubah (langkah 7).** Sistem hanya memperbarui total poin dan indikator progres.
+- **A4: Anggota menukarkan poin (paralel).** Saldo poin berkurang namun **poin kumulatif untuk penentuan tier tidak berkurang**.
 
 ---
 
-### UC-10 — Penukaran Poin dengan Reward
+### UC-10: Penukaran Poin dengan Reward
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-10 |
 | **Aktor Utama** | Anggota komunitas |
 | **Aktor Sekunder** | Admin Komunitas PF |
-| **Pilar** | 05 — Recognition & Gamifikasi |
+| **Pilar** | 05: Recognition & Gamifikasi |
 | **Prekondisi** | Anggota memiliki saldo poin; katalog penukaran tersedia |
 | **Postkondisi** | Saldo poin berkurang; permintaan penukaran tercatat |
 | **Pemicu** | Anggota membuka katalog penukaran |
@@ -1176,20 +1176,20 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 8. Sistem mencatat seluruh langkah pada jejak audit.
 
 **Alternate Flow**
-- **A1 — Saldo tidak mencukupi (langkah 3).** Sistem menolak dan menampilkan kekurangan poin.
-- **A2 — Stok item habis (langkah 3).** Item ditandai tidak tersedia dan tidak dapat dipilih.
-- **A3 — Admin membatalkan penukaran (langkah 7).** Sistem mengembalikan poin ke saldo anggota dan mencatat alasan pembatalan.
+- **A1: Saldo tidak mencukupi (langkah 3).** Sistem menolak dan menampilkan kekurangan poin.
+- **A2: Stok item habis (langkah 3).** Item ditandai tidak tersedia dan tidak dapat dipilih.
+- **A3: Admin membatalkan penukaran (langkah 7).** Sistem mengembalikan poin ke saldo anggota dan mencatat alasan pembatalan.
 
 ---
 
-### UC-11 — Inisiasi & Pelaporan Movement-Based Program
+### UC-11: Inisiasi & Pelaporan Movement-Based Program
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-11 |
 | **Aktor Utama** | Anggota komunitas (penggerak) |
 | **Aktor Sekunder** | Admin Komunitas PF, anggota peserta |
-| **Pilar** | 03 — Movement-Based Program |
+| **Pilar** | 03: Movement-Based Program |
 | **Prekondisi** | Anggota berstatus `AKTIF`; kategori gerakan tersedia |
 | **Postkondisi** | Gerakan berjalan; laporan aksi tervalidasi menjadi ESG evidence; penggerak memperoleh **50 pts** |
 | **Pemicu** | Anggota mengusulkan gerakan atau bergabung pada gerakan yang berjalan |
@@ -1198,7 +1198,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 1. Anggota mengusulkan gerakan baru berisi judul, kategori (aksi lingkungan / edukasi masyarakat / pemberdayaan ekonomi), tujuan, lokasi, dan rencana.
 2. Sistem menyimpan usulan berstatus `MENUNGGU_PERSETUJUAN`.
 3. Admin meninjau usulan dan menetapkan tag ESG/SDG.
-4. Admin menyetujui — gerakan dipublikasikan berstatus `BERJALAN` dan pengusul ditetapkan sebagai penggerak.
+4. Admin menyetujui: gerakan dipublikasikan berstatus `BERJALAN` dan pengusul ditetapkan sebagai penggerak.
 5. Sistem memberikan **50 pts** kepada penggerak.
 6. Anggota lain melihat dan bergabung ke gerakan.
 7. Penggerak melaksanakan aksi lapangan.
@@ -1207,21 +1207,21 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 10. Sistem menandai laporan memenuhi syarat ESG evidence dan mengagregasinya pada dashboard ESG.
 
 **Alternate Flow**
-- **A1 — Usulan ditolak (langkah 4).** Alasan ditampilkan kepada pengusul; poin tidak diberikan.
-- **A2 — Laporan tanpa catatan hasil (langkah 8).** Sistem menolak pengiriman karena *outcome note* wajib.
-- **A3 — Gerakan diinisiasi pusat (alternatif langkah 1).** Admin membuat gerakan langsung berstatus `BERJALAN`; poin penggerak tidak berlaku.
-- **A4 — Laporan ditolak validasi (langkah 9).** Laporan berstatus `PERLU_PERBAIKAN` beserta catatan; penggerak dapat memperbaiki dan mengirim ulang.
+- **A1: Usulan ditolak (langkah 4).** Alasan ditampilkan kepada pengusul; poin tidak diberikan.
+- **A2: Laporan tanpa catatan hasil (langkah 8).** Sistem menolak pengiriman karena *outcome note* wajib.
+- **A3: Gerakan diinisiasi pusat (alternatif langkah 1).** Admin membuat gerakan langsung berstatus `BERJALAN`; poin penggerak tidak berlaku.
+- **A4: Laporan ditolak validasi (langkah 9).** Laporan berstatus `PERLU_PERBAIKAN` beserta catatan; penggerak dapat memperbaiki dan mengirim ulang.
 
 ---
 
-### UC-12 — Monitoring KPI & Ekspor ESG Evidence
+### UC-12: Monitoring KPI & Ekspor ESG Evidence
 
 | Atribut | Isi |
 |---|---|
 | **ID** | UC-12 |
 | **Aktor Utama** | Corsec PF (CORSEC_MANAGER) |
 | **Aktor Sekunder** | Admin Komunitas PF |
-| **Pilar** | 00 — Fondasi / Lintas Pilar |
+| **Pilar** | 00: Fondasi / Lintas Pilar |
 | **Prekondisi** | Terdapat data kontribusi, konten, kegiatan, dan story pada periode terpilih |
 | **Postkondisi** | Laporan KPI dan berkas ESG evidence tersedia |
 | **Pemicu** | Siklus pelaporan bulanan atau permintaan manajemen |
@@ -1237,10 +1237,10 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 8. Sistem menghasilkan berkas rekapitulasi berisi angka KPI, daftar bukti, dan sumber bukti.
 
 **Alternate Flow**
-- **A1 — Data periode kosong (langkah 3).** Sistem menampilkan keadaan kosong beserta penjelasan, bukan angka nol tanpa konteks.
-- **A2 — Terdapat bukti belum lengkap (langkah 6).** Sistem menampilkan daftar bukti yang belum memenuhi ambang minimum ESG beserta unsur yang kurang.
-- **A3 — KPI di bawah target (langkah 3).** Sistem menandai KPI tersebut dan menampilkan rekomendasi aksi *(turunan analisis)*.
-- **A4 — Ekspor gagal (langkah 8).** Sistem menampilkan pesan kegagalan dan mempertahankan tampilan dashboard.
+- **A1: Data periode kosong (langkah 3).** Sistem menampilkan keadaan kosong beserta penjelasan, bukan angka nol tanpa konteks.
+- **A2: Terdapat bukti belum lengkap (langkah 6).** Sistem menampilkan daftar bukti yang belum memenuhi ambang minimum ESG beserta unsur yang kurang.
+- **A3: KPI di bawah target (langkah 3).** Sistem menandai KPI tersebut dan menampilkan rekomendasi aksi *(turunan analisis)*.
+- **A4: Ekspor gagal (langkah 8).** Sistem menampilkan pesan kegagalan dan mempertahankan tampilan dashboard.
 
 ---
 
@@ -1248,7 +1248,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 **Konvensi prioritas:** **M** = Must (MVP), **S** = Should (MVP bila memungkinkan), **C** = Could (opsional), **F** = Future (di luar mockup).
 
-### 8.1 Modul A — Identitas, Keanggotaan & Ekosistem Terbuka
+### 8.1 Modul A: Identitas, Keanggotaan & Ekosistem Terbuka
 
 | ID | Requirement | Prioritas | US Terkait |
 |---|---|:--:|---|
@@ -1268,7 +1268,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | FR-014 | Sistem menerapkan kontrol akses berbasis peran: `PUBLIC`, `MEMBER_SOBI`, `MEMBER_PRENEUR`, `MENTOR`, `ADMIN_KOMUNITAS`, `CORSEC_MANAGER`. | M | US-041, US-044 |
 | FR-015 | Sistem menyediakan dasbor anggota berisi poin & tier, broadcast belum dibaca, kegiatan mendatang, tantangan berjalan, dan aksi yang disarankan. | M | US-042 |
 
-### 8.2 Modul B — Kalender Komunitas & Chapter
+### 8.2 Modul B: Kalender Komunitas & Chapter
 
 | ID | Requirement | Prioritas | US Terkait |
 |---|---|:--:|---|
@@ -1285,7 +1285,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | FR-026 | Sistem memungkinkan admin menandai kegiatan `SELESAI` beserta jumlah peserta, catatan hasil, dan lampiran bukti. | M | US-012 |
 | FR-027 | Sistem menampilkan pengingat kegiatan pada dasbor anggota mulai H-1 dan menyediakan unduhan berkas kalender (.ics). | S | US-013 |
 
-### 8.3 Modul C — Movement-Based Program
+### 8.3 Modul C: Movement-Based Program
 
 | ID | Requirement | Prioritas | US Terkait |
 |---|---|:--:|---|
@@ -1301,7 +1301,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | FR-037 | Sistem memungkinkan penandaan pilar ESG (Environmental/Social/Governance) dan tag SDG pada gerakan, yang diwariskan ke laporan turunannya. | M | US-018 |
 | FR-038 | Sistem menyediakan papan dampak berisi agregasi total gerakan, partisipan, lokasi, dan sebaran kategori. | C | US-019 |
 
-### 8.4 Modul D — Diseminasi & Amplifikasi Informasi
+### 8.4 Modul D: Diseminasi & Amplifikasi Informasi
 
 | ID | Requirement | Prioritas | US Terkait |
 |---|---|:--:|---|
@@ -1320,7 +1320,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | FR-051 | Sistem menyediakan share kit per konten berisi teks siap salin dan gambar siap unduh. | S | US-026 |
 | FR-052 | Sistem menyediakan segmentasi penerima kampanye diseminasi berdasarkan komunitas, pilar, chapter, dan tier. | S | US-025 |
 
-### 8.5 Modul E — Gamifikasi, Tier & Recognition
+### 8.5 Modul E: Gamifikasi, Tier & Recognition
 
 | ID | Requirement | Prioritas | US Terkait |
 |---|---|:--:|---|
@@ -1341,7 +1341,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | FR-067 | Sistem memisahkan **saldo poin** (berkurang saat penukaran) dari **poin kumulatif** (dasar penentuan tier, tidak berkurang). | S | US-033 |
 | FR-068 | Sistem mencatat siklus penukaran: `DIPROSES` → `SELESAI` / `DIBATALKAN` dengan pengembalian poin pada pembatalan. | S | US-033 |
 
-### 8.6 Modul F — Community Journalism & Story Bank
+### 8.6 Modul F: Community Journalism & Story Bank
 
 | ID | Requirement | Prioritas | US Terkait |
 |---|---|:--:|---|
@@ -1357,7 +1357,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | FR-078 | Sistem menyediakan story bank dengan pencarian berdasarkan tema, pilar ESG, wilayah, dan periode, serta ekspor terpilih. | S | US-039 |
 | FR-079 | Sistem menyediakan modul tanya jawab bermanfaat dengan penandaan admin sebagai dasar pemberian **15 pts**. | S | US-040 |
 
-### 8.7 Modul G — Governance, KPI & ESG Evidence
+### 8.7 Modul G: Governance, KPI & ESG Evidence
 
 | ID | Requirement | Prioritas | US Terkait |
 |---|---|:--:|---|
@@ -1421,7 +1421,7 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 | NFR-021 | Antarmuka dirancang **mobile-first**, mengingat mayoritas anggota mengakses melalui tautan WhatsApp di ponsel. | Tata letak utuh mulai lebar 320 px; tanpa *horizontal scroll* pada seluruh titik henti |
 | NFR-022 | Konten lebar (tabel, grafik, kalender) tidak merusak tata letak halaman. | Elemen lebar digulir di dalam wadahnya sendiri |
 | NFR-023 | Antarmuka berfungsi pada peramban dalam aplikasi WhatsApp. | Uji pada WebView Android dan iOS; tanpa ketergantungan fitur peramban eksperimental |
-| NFR-024 | Sistem mendukung dua versi terakhir peramban utama. | Chrome, Safari, Firefox, Edge — desktop dan mobile |
+| NFR-024 | Sistem mendukung dua versi terakhir peramban utama. | Chrome, Safari, Firefox, Edge: desktop dan mobile |
 
 ### 9.5 Kegunaan & Bahasa
 
@@ -1449,29 +1449,29 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 
 | KPI | Target | Functional Requirement Pendukung | User Story Pendukung |
 |---|---|---|---|
-| **KPI-01** — 75% penerima manfaat terdata | 75% | FR-002, FR-003, FR-004, FR-005, FR-006, FR-008, FR-010, FR-013, FR-083, FR-085 | US-001, US-002, US-003, US-005, US-006, US-041, US-044 |
-| **KPI-02** — 1–2 konten terdiseminasi/bulan | 1–2 | FR-039, FR-040, FR-041, FR-043, FR-052, FR-083, FR-086 | US-020, US-025, US-044 |
-| **KPI-03** — Diseminasi ≥ 2 kali/bulan | ≥ 2 | FR-039, FR-042, FR-052, FR-083, FR-086 | US-025, US-044 |
-| **KPI-04** — 50% anggota beramplifikasi | 50% | FR-044, FR-045, FR-046, FR-047, FR-048, FR-049, FR-050, FR-051, FR-053, FR-054, FR-055, FR-056, FR-083, FR-085 | US-020, US-021, US-022, US-023, US-024, US-026, US-029, US-030, US-044 |
-| **KPI-05** — 2 aktivitas engagement terlaksana | 2 | FR-016, FR-017, FR-019, FR-020, FR-022, FR-025, FR-026, FR-028, FR-031, FR-034, FR-036, FR-069, FR-070, FR-083 | US-008, US-009, US-010, US-012, US-014, US-015, US-017, US-035, US-044 |
-| **KPI-06** — 25–500 jaringan sosial/anggota | 25–500 | FR-090, FR-091 | US-044 |
-| **KPI-07** — Penurunan paid media 5–20% | 5–20% | FR-092, FR-047, FR-049 | US-023, US-024, US-044 |
-| **KPI-08** — Engagement rate 2–3× | 2–3× | FR-092, FR-046, FR-047 | US-022, US-023, US-044 |
-| **KPI-ESG-01** — Environmental | — | FR-028, FR-030, FR-034, FR-035, FR-037, FR-069, FR-087, FR-088, FR-089 | US-014, US-017, US-018, US-035, US-036, US-045 |
-| **KPI-ESG-02** — Social | — | FR-010, FR-011, FR-022, FR-026, FR-060, FR-065, FR-071, FR-087, FR-088 | US-006, US-010, US-012, US-032, US-034, US-036, US-045 |
-| **KPI-ESG-03** — Governance | — | FR-004, FR-072, FR-074, FR-075, FR-077, FR-080, FR-081, FR-082, FR-087, FR-088 | US-037, US-038, US-043, US-046, US-045 |
+| **KPI-01**: 75% penerima manfaat terdata | 75% | FR-002, FR-003, FR-004, FR-005, FR-006, FR-008, FR-010, FR-013, FR-083, FR-085 | US-001, US-002, US-003, US-005, US-006, US-041, US-044 |
+| **KPI-02**: 1–2 konten terdiseminasi/bulan | 1–2 | FR-039, FR-040, FR-041, FR-043, FR-052, FR-083, FR-086 | US-020, US-025, US-044 |
+| **KPI-03**: Diseminasi ≥ 2 kali/bulan | ≥ 2 | FR-039, FR-042, FR-052, FR-083, FR-086 | US-025, US-044 |
+| **KPI-04**: 50% anggota beramplifikasi | 50% | FR-044, FR-045, FR-046, FR-047, FR-048, FR-049, FR-050, FR-051, FR-053, FR-054, FR-055, FR-056, FR-083, FR-085 | US-020, US-021, US-022, US-023, US-024, US-026, US-029, US-030, US-044 |
+| **KPI-05**: 2 aktivitas engagement terlaksana | 2 | FR-016, FR-017, FR-019, FR-020, FR-022, FR-025, FR-026, FR-028, FR-031, FR-034, FR-036, FR-069, FR-070, FR-083 | US-008, US-009, US-010, US-012, US-014, US-015, US-017, US-035, US-044 |
+| **KPI-06**: 25–500 jaringan sosial/anggota | 25–500 | FR-090, FR-091 | US-044 |
+| **KPI-07**: Penurunan paid media 5–20% | 5–20% | FR-092, FR-047, FR-049 | US-023, US-024, US-044 |
+| **KPI-08**: Engagement rate 2–3× | 2–3× | FR-092, FR-046, FR-047 | US-022, US-023, US-044 |
+| **KPI-ESG-01**: Environmental |: | FR-028, FR-030, FR-034, FR-035, FR-037, FR-069, FR-087, FR-088, FR-089 | US-014, US-017, US-018, US-035, US-036, US-045 |
+| **KPI-ESG-02**: Social |: | FR-010, FR-011, FR-022, FR-026, FR-060, FR-065, FR-071, FR-087, FR-088 | US-006, US-010, US-012, US-032, US-034, US-036, US-045 |
+| **KPI-ESG-03**: Governance |: | FR-004, FR-072, FR-074, FR-075, FR-077, FR-080, FR-081, FR-082, FR-087, FR-088 | US-037, US-038, US-043, US-046, US-045 |
 
 ### 10.2 Pilar Aktivitas → Functional Requirement → User Story
 
 | Pilar | Functional Requirement | User Story | Jumlah US |
 |---|---|---|---:|
-| 01 — Open Community Ecosystem | FR-001 … FR-012 | US-001 … US-007 | 7 |
-| 02 — Kalender Komunitas | FR-016 … FR-027 | US-008 … US-013 | 6 |
-| 03 — Movement-Based Program | FR-028 … FR-038 | US-014 … US-019 | 6 |
-| 04 — Diseminasi & Amplifikasi | FR-039 … FR-052 | US-020 … US-026 | 7 |
-| 05 — Recognition & Gamifikasi | FR-053 … FR-068 | US-027 … US-034 | 8 |
-| 06 — Community Journalism | FR-069 … FR-079 | US-035 … US-040 | 6 |
-| 00 — Fondasi Lintas Pilar | FR-013 … FR-015, FR-080 … FR-092 | US-041 … US-046 | 6 |
+| 01: Open Community Ecosystem | FR-001 … FR-012 | US-001 … US-007 | 7 |
+| 02: Kalender Komunitas | FR-016 … FR-027 | US-008 … US-013 | 6 |
+| 03: Movement-Based Program | FR-028 … FR-038 | US-014 … US-019 | 6 |
+| 04: Diseminasi & Amplifikasi | FR-039 … FR-052 | US-020 … US-026 | 7 |
+| 05: Recognition & Gamifikasi | FR-053 … FR-068 | US-027 … US-034 | 8 |
+| 06: Community Journalism | FR-069 … FR-079 | US-035 … US-040 | 6 |
+| 00: Fondasi Lintas Pilar | FR-013 … FR-015, FR-080 … FR-092 | US-041 … US-046 | 6 |
 | **Total** | **92 FR** | **46 US** | **46** |
 
 ### 10.3 Use Case → User Story → Functional Requirement
@@ -1507,9 +1507,9 @@ Pertamina Foundation telah menyalurkan manfaat kepada ribuan penerima melalui pr
 ### 11.1 Prinsip Penentuan Scope
 
 *(turunan analisis)*
-Sesuai arahan **Strategic Enhancement** halaman 9 — *"Bukti pipeline before dashboard"* — MVP memprioritaskan **pembangunan pipeline bukti** (pendataan, kontribusi, verifikasi, consent, audit) sebelum lapisan analitik lanjutan. Fitur yang tidak berkontribusi langsung pada 5 KPI aktivitas ditunda.
+Sesuai arahan **Strategic Enhancement** halaman 9: *"Bukti pipeline before dashboard"*: MVP memprioritaskan **pembangunan pipeline bukti** (pendataan, kontribusi, verifikasi, consent, audit) sebelum lapisan analitik lanjutan. Fitur yang tidak berkontribusi langsung pada 5 KPI aktivitas ditunda.
 
-### 11.2 In Scope — MVP Mockup
+### 11.2 In Scope: MVP Mockup
 
 | Modul | Cakupan MVP | FR Terkait |
 |---|---|---|
@@ -1526,14 +1526,14 @@ Sesuai arahan **Strategic Enhancement** halaman 9 — *"Bukti pipeline before da
 
 | Aspek | Ketentuan |
 |---|---|
-| Backend | Tidak ada — data dari seed + persistensi lokal peramban |
+| Backend | Tidak ada: data dari seed + persistensi lokal peramban |
 | Autentikasi | Simulasi berbasis identitas terdaftar, tanpa kata sandi produksi |
-| Integrasi WhatsApp | Simulasi — tautan `wa.me` dan konfirmasi manual oleh anggota |
+| Integrasi WhatsApp | Simulasi: tautan `wa.me` dan konfirmasi manual oleh anggota |
 | Verifikasi bukti | Manual oleh admin melalui antrean, tanpa pemeriksaan otomatis media sosial |
 | Notifikasi | Dalam aplikasi (dasbor), bukan *push* atau pesan WhatsApp otomatis |
 | Data | Seluruhnya fiktif; tidak memuat data pribadi nyata |
 
-### 11.3 Out of Scope — Future
+### 11.3 Out of Scope: Future
 
 | ID | Kapabilitas | Alasan Penundaan | Fase |
 |---|---|---|---|
@@ -1550,7 +1550,7 @@ Sesuai arahan **Strategic Enhancement** halaman 9 — *"Bukti pipeline before da
 | FUT-11 | Dukungan multibahasa | Basis anggota berbahasa Indonesia | Fase 3 |
 | FUT-12 | Single Sign-On dengan akun korporat Pertamina | Membutuhkan keputusan arsitektur identitas Fungsi IT | Fase 2 |
 
-### 11.4 Definition of Done — MVP Mockup
+### 11.4 Definition of Done: MVP Mockup
 
 | # | Kriteria |
 |---|---|
@@ -1582,9 +1582,9 @@ Sesuai arahan **Strategic Enhancement** halaman 9 — *"Bukti pipeline before da
 
 | ID | Batasan |
 |---|---|
-| BT-01 | Rilis ini adalah **mockup** — tidak terhubung ke backend, basis data korporat, maupun sistem PF lainnya |
+| BT-01 | Rilis ini adalah **mockup**: tidak terhubung ke backend, basis data korporat, maupun sistem PF lainnya |
 | BT-02 | Seluruh angka gamifikasi dan KPI mengikuti dokumen sumber dan tidak boleh diubah tanpa persetujuan Corsec |
-| BT-03 | Verifikasi bukti amplifikasi dilakukan manual — kapasitas verifikasi membatasi skala komunitas aktif |
+| BT-03 | Verifikasi bukti amplifikasi dilakukan manual: kapasitas verifikasi membatasi skala komunitas aktif |
 | BT-04 | Persistensi data mockup bersifat lokal per peramban dan per perangkat; data tidak tersinkronisasi antar pengguna |
 | BT-05 | Bahasa antarmuka tunggal: Bahasa Indonesia |
 
@@ -1623,13 +1623,13 @@ Sesuai arahan **Strategic Enhancement** halaman 9 — *"Bukti pipeline before da
 | **Saldo Poin** | Poin yang tersedia untuk ditukarkan; berkurang saat penukaran |
 | **Outcome Note** | Catatan hasil yang wajib menyertai laporan aksi sebagai syarat ESG evidence |
 | **ESG Evidence** | Bukti dampak yang memenuhi ambang: documented activity + outcome note + ESG/SDG tag + evidence source |
-| **SROI** | Social Return on Investment — pengukuran nilai sosial atas investasi program |
+| **SROI** | Social Return on Investment: pengukuran nilai sosial atas investasi program |
 | **Sense of Community Theory** | Teori McMillan & Chavis (1986) yang menjadi landasan konseptual aktivitas komunitas |
 | **Organic Brand Amplifier** | Peran komunitas sebagai penguat pesan merek tanpa biaya iklan berbayar |
 
 ---
 
-## Lampiran A — Ringkasan Nilai Mengikat dari Dokumen Sumber
+## Lampiran A: Ringkasan Nilai Mengikat dari Dokumen Sumber
 
 > Nilai-nilai berikut **tidak boleh diubah** dalam implementasi. Setiap perubahan memerlukan persetujuan tertulis Divisi Corsec.
 

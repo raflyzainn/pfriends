@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * CommunityPieChart — komposisi anggota antara dua komunitas.
+	 * CommunityPieChart: komposisi anggota antara dua komunitas.
 	 *
 	 * Props:
 	 * @prop {{id?:string,label?:string,value:number,color?:string}[]} data
@@ -13,7 +13,7 @@
 	 * Warna diambil dari konstanta komunitas agar sama dengan penanda komunitas di
 	 * kartu anggota dan direktori.
 	 *
-	 * Tanpa data, `option` bernilai `null` — donat berjumlah nol hanya menghasilkan
+	 * Tanpa data, `option` bernilai `null`: donat berjumlah nol hanya menghasilkan
 	 * cincin kosong yang tidak mengatakan apa pun (CH-4).
 	 */
 	import EChart from '$lib/components/EChart.svelte';

@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * EditorialPipelineFunnel (C-19) — dari naskah yang masuk, berapa yang terbit.
+	 * EditorialPipelineFunnel (C-19): dari naskah yang masuk, berapa yang terbit.
 	 *
 	 * Props:
 	 * @prop {{stage:string,count:number,conversionFromPrev:number}[]} data
@@ -9,7 +9,7 @@
 	 * @prop {boolean} loading
 	 *
 	 * Komponen ini TIDAK menghitung apa pun. Corong editorial dibaca dari bukti
-	 * yang tersimpan pada tiap naskah — bukan dari status terakhirnya — dan
+	 * yang tersimpan pada tiap naskah: bukan dari status terakhirnya: dan
 	 * perhitungan itu tinggal di domain. Menghitungnya di sini akan melahirkan
 	 * sumber kebenaran kedua atas "naskah mana yang sedang menunggu", tepat cacat
 	 * yang membuat satu halaman menampilkan angka berbeda dari halaman lain.
@@ -17,8 +17,8 @@
 	 * Label tahap diambil dari `STORY_STATUS_META`, sehingga penamaan tahap di
 	 * corong dijamin sama dengan penamaan status di kartu naskah.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.9 `pipeline()`, §3.5 WP-07 butir 3
-	 * @see docs/10-REVISION-SPEC.md — §7.2 C-19, §7.5 CH-8
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.9 `pipeline()`, §3.5 WP-07 butir 3
+	 * @see docs/10-REVISION-SPEC.md: §7.2 C-19, §7.5 CH-8
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import { STORY_STATUS_META } from '$lib/domain/constants/community.js';

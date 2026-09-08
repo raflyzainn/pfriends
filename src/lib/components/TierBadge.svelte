@@ -1,13 +1,13 @@
 <script>
 	/**
-	 * TierBadge — chip identitas tier.
+	 * TierBadge: chip identitas tier.
 	 *
 	 * Props:
 	 * @prop {string|{level:string}|null} tier  Kode tier, entri TIER_TABLE, atau value object Tier.
 	 * @prop {'sm'|'md'|'lg'} size
 	 * @prop {boolean} showLabel  Lihat catatan aksesibilitas di bawah.
 	 * @prop {'soft'|'solid'|'minimal'} variant
-	 * @prop {boolean} honorary   Gelar kehormatan — tier yang pernah diraih.
+	 * @prop {boolean} honorary   Gelar kehormatan: tier yang pernah diraih.
 	 * @prop {boolean} locked     Tier terkunci; abu + gembok, tidak pernah merah.
 	 * @prop {number|null} points Bila diisi, poin tampil sebagai sufiks.
 	 *
@@ -46,7 +46,7 @@
 	const cfg = $derived(UKURAN[size] ?? UKURAN.md);
 	const visual = $derived(gayaTier(tier));
 
-	/** Tanpa tier yang dikenal, chip menyatakan keadaan netral — bukan kosong. */
+	/** Tanpa tier yang dikenal, chip menyatakan keadaan netral: bukan kosong. */
 	const label = $derived(visual ? visual.label : 'Belum Aktif');
 	const teksLengkap = $derived(`${honorary ? 'Pernah: ' : ''}${label}`);
 	const netral = $derived(locked || !visual);
@@ -60,9 +60,9 @@
 
 	const judul = $derived(
 		locked
-			? `${label} — belum terbuka`
+			? `${label}: belum terbuka`
 			: visual
-				? `${teksLengkap} — ${visual.benefit}`
+				? `${teksLengkap}: ${visual.benefit}`
 				: 'Belum mengumpulkan poin kontribusi'
 	);
 </script>

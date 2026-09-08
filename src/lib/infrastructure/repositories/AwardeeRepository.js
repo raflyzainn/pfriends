@@ -1,23 +1,60 @@
 /**
- * REPOSITORY — Awardee Pfriends.
+ * REPOSITORY: Awardee Pfriends.
  *
  * Tanggung jawab: akses data penerima manfaat untuk direktori alumni, papan
  * peringkat, konsol admin, dan zona awardee ter-login.
  *
  * Perhatikan batas yang dijaga berkas ini: tabel `awardees` memuat PENERIMA MANFAAT
- * saja. Identitas login — surel, kata sandi, peran — hidup di tabel `accounts` lewat
+ * saja. Identitas login: surel, kata sandi, peran: hidup di tabel `accounts` lewat
  * `AccountRepository`. Menaruh staf Pertamina Foundation sebagai baris awardee akan
  * merusak tiga perhitungan sekaligus: penyebut cakupan KPI, penyaring papan
  * peringkat, dan distribusi tier.
  *
- * @see src/lib/domain/entities/Awardee.js — entity yang dipetakan
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.11 kontrak export AwardeeRepository
+ * @see src/lib/domain/entities/Awardee.js: entity yang dipetakan
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.11 kontrak export AwardeeRepository
  */
 
 import { Awardee } from '$lib/domain/entities/Awardee.js';
 import { AWARDEE_STATUS } from '$lib/domain/constants/community.js';
 import { TABLE } from '../db.js';
+import { getPocketBase } from '../pocketbase/client.js';
+import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 import { DexieRepository } from './DexieRepository.js';
+
+function fromPocketBase(record) {
+	const womenpreneur = record.community === 'WOMENPRENEUR';
+	return new Awardee({
+		id: record.legacyId,
+		fullName: record.fullName,
+		email: record.email,
+		whatsapp: record.whatsapp ?? '',
+		community: record.community,
+		chapterId: record.chapterId,
+		status: record.status,
+		points: 0,
+		coins: 0,
+		seasonPoints: 0,
+		university: record.university ?? '',
+		city: record.city ?? '',
+		graduationYear: record.graduationYear || null,
+		occupation: record.occupation || '',
+		bio: record.bio || '',
+		skills: Array.isArray(record.skills) ? record.skills : [],
+		openToMentoring: Boolean(record.openToMentoring),
+		businessProfile: womenpreneur
+			? {
+					businessName: record.businessName || '-',
+					sector: record.businessSector || '-',
+					city: record.businessCity || record.city || '-',
+					employees: record.businessEmployees || 0,
+					growthPercent: record.businessGrowthPercent || 0
+				}
+			: null,
+		joinedAt: record.joinedAt,
+		lastActiveAt: record.joinedAt,
+		consentActive: true
+	});
+}
 
 export class AwardeeRepository extends DexieRepository {
 	constructor() {
@@ -26,6 +63,37 @@ export class AwardeeRepository extends DexieRepository {
 			entity: Awardee,
 			indexedFields: ['community', 'chapterId', 'status', 'points']
 		});
+	}
+
+	async getById(id) {
+		const pb = getPocketBase();
+		if (pb?.authStore?.isValid && id) try {
+			const record = await apiRequest(`/api/pfriends/awardees/${encodeURIComponent(id)}`);
+			return fromPocketBase(record);
+		} catch (error) {
+			if (error?.status !== 404 && error?.status !== 403) throw error;
+		}
+		const local = await super.getById(id);
+		if (local) return local;
+		return null;
+	}
+
+	async getAll() {
+		const local = await super.getAll();
+		const pb = getPocketBase();
+		if (!pb?.authStore?.isValid) return local;
+		// Awardee memakai endpoint direktori yang hanya mengirim profil yang sudah
+		// aman ditampilkan. Daftar penuh di endpoint ini memang khusus staf.
+		if (pb.authStore.record?.role === 'AWARDEE') return local;
+		try {
+			const remote = ((await apiRequest('/api/pfriends/awardees')).items || []).map(fromPocketBase);
+			const byId = new Map(local.map((awardee) => [awardee.id, awardee]));
+			for (const awardee of remote) byId.set(awardee.id, awardee);
+			return [...byId.values()];
+		} catch (error) {
+			if (error?.status === 403 || error?.status === 404) return local;
+			throw error;
+		}
 	}
 
 	/**

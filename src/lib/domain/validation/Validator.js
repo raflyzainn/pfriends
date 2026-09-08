@@ -1,5 +1,5 @@
 /**
- * VALIDASI — aturan formulir sebagai data yang dapat disusun ulang.
+ * VALIDASI: aturan formulir sebagai data yang dapat disusun ulang.
  *
  * Tanggung jawab: menyatakan syarat sebuah nilai sebagai objek `Rule` yang murni,
  * lalu menjalankan sekumpulan aturan atas sebuah objek nilai formulir.
@@ -9,7 +9,7 @@
  * 1. **HANYA `required` yang menolak nilai kosong.** Aturan lain LOLOS bila
  *    nilainya kosong. Tanpa konvensi ini, sebuah field opsional yang diberi
  *    `Rule.email()` akan menyalakan galat "Format surel tidak sah" pada formulir
- *    yang belum disentuh siapa pun — dan pengguna melihat halaman merah sebelum
+ *    yang belum disentuh siapa pun: dan pengguna melihat halaman merah sebelum
  *    ia sempat mengetik satu huruf pun. Kewajiban isi dan bentuk isi adalah dua
  *    pertanyaan berbeda, jadi dua aturan berbeda.
  * 2. **Pesan galat melekat pada aturan, bukan pada pemanggil.** Satu aturan
@@ -19,7 +19,7 @@
  *    formulir; satu pemanggil yang menyunting `message` akan mengubah pesan di
  *    halaman lain tanpa jejak.
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.7 kontrak export
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.7 kontrak export
  */
 
 /** Batas iterasi aman saat memeriksa panjang string yang sangat besar. */
@@ -100,7 +100,7 @@ export class Rule {
 	/**
 	 * Apakah sebuah nilai lolos aturan ini.
 	 *
-	 * Nilai kosong dilewatkan untuk seluruh aturan selain `required` — lihat butir 1
+	 * Nilai kosong dilewatkan untuk seluruh aturan selain `required`: lihat butir 1
 	 * pada catatan berkas.
 	 *
 	 * @param {unknown} value
@@ -261,7 +261,7 @@ export class Validator {
 	/**
 	 * Memeriksa seluruh field pada skema.
 	 *
-	 * Field yang tidak ada di skema diabaikan — formulir kerap membawa nilai
+	 * Field yang tidak ada di skema diabaikan: formulir kerap membawa nilai
 	 * pendamping (mis. penanda langkah wizard) yang tidak perlu divalidasi.
 	 *
 	 * @param {Record<string, unknown>} values Nilai formulir.
@@ -304,7 +304,7 @@ export class Validator {
  *
  * Dipakai formulir bertahap: tiap langkah punya `Validator` sendiri, dan tombol
  * kirim di langkah terakhir perlu satu jawaban atas seluruh langkah. Bila dua
- * hasil memuat field yang sama, pesan PERTAMA yang dipertahankan — hasil yang
+ * hasil memuat field yang sama, pesan PERTAMA yang dipertahankan: hasil yang
  * lebih dekat dengan konteks pengisian biasanya diperiksa lebih dulu.
  *
  * @param {...ValidationResult} results

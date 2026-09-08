@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * VerifierSlaBar (C-20) — berapa banyak antrean yang masih di dalam SLA.
+	 * VerifierSlaBar (C-20): berapa banyak antrean yang masih di dalam SLA.
 	 *
 	 * Props:
 	 * @prop {{queue:string,withinSla:number,breachedSla:number,medianDays:number}[]} data
@@ -13,7 +13,7 @@
 	 * berubah menjadi tiga adalah cara paling rapi untuk membuat papan SLA
 	 * berbohong tanpa satu pun angka yang salah hitung.
 	 *
-	 * SATU antrean yang sedang kosong tetap digambar sebagai baris bernilai nol —
+	 * SATU antrean yang sedang kosong tetap digambar sebagai baris bernilai nol :
 	 * bukan dihilangkan. Baris yang menghilang saat antreannya kosong membuat
 	 * chart berubah bentuk dan terbaca sebagai data yang gagal dimuat.
 	 *
@@ -22,11 +22,11 @@
 	 * `data.length` mencerminkan katalog antrean, BUKAN keberadaan keputusan.
 	 * Menguji panjang larik saja membuat papan ini menggambar empat batang nol
 	 * lengkap dengan kalimat "seluruh antrean masih di dalam SLA" pada basis data
-	 * yang belum memuat satu pun keputusan — persis grafik nol yang dilarang CH-4.
+	 * yang belum memuat satu pun keputusan: persis grafik nol yang dilarang CH-4.
 	 * Karena itu penjagaannya adalah jumlah keputusan, bukan jumlah baris.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.9 `slaCompliance()`, §3.5 WP-07 butir 3
-	 * @see docs/10-REVISION-SPEC.md — §5.6 SLA & eskalasi, §7.2 C-20
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.9 `slaCompliance()`, §3.5 WP-07 butir 3
+	 * @see docs/10-REVISION-SPEC.md: §5.6 SLA & eskalasi, §7.2 C-20
 	 */
 	import EChart from '$lib/components/EChart.svelte';
 	import { SLA_HARI_KERJA } from '$lib/domain/constants/content-workflow.js';

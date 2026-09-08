@@ -1,8 +1,8 @@
 /**
- * SERVICE — Dampak Program untuk Zona Publik.
+ * SERVICE: Dampak Program untuk Zona Publik.
  *
  * Tanggung jawab: menyusun SATU potret angka agregat level program yang boleh
- * dibaca siapa pun tanpa masuk — dan hanya itu.
+ * dibaca siapa pun tanpa masuk: dan hanya itu.
  *
  * Empat keputusan desain yang tidak terbaca dari kode:
  *
@@ -20,13 +20,13 @@
  *    dengan tipografi yang sama. Peta `IMPACT_FIGURE_CLASS` dan daftar
  *    `BENCHMARK_RUJUKAN` disediakan supaya pelabelan itu bersumber dari domain,
  *    bukan dari kesepakatan lisan antar halaman. Menyatukan angka berbeda kelas
- *    menjadi satu "skor dampak" dilarang — hasilnya tidak berarti apa pun.
+ *    menjadi satu "skor dampak" dilarang: hasilnya tidak berarti apa pun.
  * 4. **Jangkauan organik WAJIB rentang.** Ia lahir dari perkalian dengan parameter
  *    berasumsi; satu angka tunggal akan terbaca sebagai hasil ukur, dan klaim itu
  *    tidak dapat dipertahankan saat ditanya "diukur bagaimana?".
  *
- * @see docs/12-BUILD-CONTRACT-V2.md — §2.10 kontrak export dan kontrak keras PO-2
- * @see docs/10-REVISION-SPEC.md — §4.4 klasifikasi angka, §4.5 penempatan angka Hal 6, §4.6 aturan Dampak
+ * @see docs/12-BUILD-CONTRACT-V2.md: §2.10 kontrak export dan kontrak keras PO-2
+ * @see docs/10-REVISION-SPEC.md: §4.4 klasifikasi angka, §4.5 penempatan angka Hal 6, §4.6 aturan Dampak
  */
 
 import { CHAPTERS } from '../constants/community.js';
@@ -38,17 +38,17 @@ import { Movement } from '../entities/Movement.js';
 import { PointActivity } from '../entities/PointActivity.js';
 import { Story } from '../entities/Story.js';
 
-/** Aksi yang dihitung sebagai amplifikasi — sama dengan definisi M-04. */
+/** Aksi yang dihitung sebagai amplifikasi: sama dengan definisi M-04. */
 const AKSI_AMPLIFIKASI = Object.freeze([ActivityType.SHARE_PRIVATE, ActivityType.SHARE_PUBLIC]);
 
 /**
  * Kelas tiap angka potret publik menurut docs/10 §4.4.
  *
- * `A` terhitung — cacah langsung dari record, boleh disajikan sebagai angka tegas
+ * `A` terhitung: cacah langsung dari record, boleh disajikan sebagai angka tegas
  * berikut tanggal potret dan penyebutnya.
- * `B` estimasi berparameter — WAJIB rentang, berlabel estimasi, dengan tautan ke
+ * `B` estimasi berparameter: WAJIB rentang, berlabel estimasi, dengan tautan ke
  * halaman metode pengukuran.
- * `C` benchmark eksternal — bukan hasil pengukuran Pfriends; ditulis sebagai
+ * `C` benchmark eksternal: bukan hasil pengukuran Pfriends; ditulis sebagai
  * kalimat rujukan, tanpa angka besar, tanpa gauge, tanpa panah naik.
  * @type {Readonly<Record<string, string>>}
  */
@@ -69,7 +69,7 @@ export const IMPACT_FIGURE_CLASS = Object.freeze({
  * @typedef {object} BenchmarkRujukan
  * @property {string} id       Penciri rujukan.
  * @property {string} kelas    Selalu 'C'.
- * @property {string} kalimat  Kalimat rujukan siap tampil — bukan angka besar.
+ * @property {string} kalimat  Kalimat rujukan siap tampil: bukan angka besar.
  * @property {string} sumber   Asal angka rujukan.
  */
 
@@ -87,13 +87,13 @@ export const BENCHMARK_RUJUKAN = Object.freeze([
 		id: 'engagement-komunitas',
 		kelas: 'C',
 		kalimat: `Benchmark komunikasi menyebut konten komunitas memperoleh keterlibatan ${REACH_PARAMETERS.pengaliEngagementMin}–${REACH_PARAMETERS.pengaliEngagementMax} kali lebih tinggi dibanding unggahan akun merek.`,
-		sumber: 'Hal 6 — Dampak Inisiatif (benchmark komunikasi, bukan hasil ukur Pfriends).'
+		sumber: 'Hal 6: Dampak Inisiatif (benchmark komunikasi, bukan hasil ukur Pfriends).'
 	}),
 	Object.freeze({
 		id: 'penghematan-paid-media',
 		kelas: 'C',
 		kalimat: `Rujukan yang sama memperkirakan kebutuhan paid media dapat menurun hingga ${Math.round(REACH_PARAMETERS.penghematanPaidMediaMax * 100)} persen bila amplifikasi organik berjalan.`,
-		sumber: 'Hal 6 — Dampak Inisiatif (kata "hingga" menyatakan batas atas).'
+		sumber: 'Hal 6: Dampak Inisiatif (kata "hingga" menyatakan batas atas).'
 	})
 ]);
 
@@ -109,17 +109,17 @@ export function kelasAngka(key) {
 
 /**
  * @typedef {object} PublicImpactSnapshot
- * @property {Date}   capturedAt           Tanggal potret — wajib ditampilkan bersama angkanya.
+ * @property {Date}   capturedAt           Tanggal potret: wajib ditampilkan bersama angkanya.
  * @property {number} registeredAwardees   Awardee AKTIF ber-consent aktif.
  * @property {number} activeChapters       Chapter dengan minimal satu awardee aktif.
- * @property {number} totalChapters        Cacah chapter yang ada — penyebut "n dari 3".
+ * @property {number} totalChapters        Cacah chapter yang ada: penyebut "n dari 3".
  * @property {number} publishedStories     Cerita yang tampil publik.
  * @property {number} completedEvents      Hanya yang sah dihitung KPI keterlibatan.
  * @property {number} upcomingEvents       Kegiatan publik yang akan datang.
  * @property {number} runningMovements     Gerakan bersama berstatus berjalan.
- * @property {number} recordedActions      Cacah aksi tercatat — TANPA nilai poinnya.
+ * @property {number} recordedActions      Cacah aksi tercatat: TANPA nilai poinnya.
  * @property {number} amplifiersThisMonth  Orang yang mengamplifikasi bulan ini.
- * @property {{min: number, max: number, basis: number}} organicReach Kelas B — wajib rentang.
+ * @property {{min: number, max: number, basis: number}} organicReach Kelas B: wajib rentang.
  * @property {{value: number|null, source: string}} beneficiaryRegistry Penyebut populasi.
  */
 
@@ -148,7 +148,7 @@ export class ProgramImpactService {
 	 * @param {import('../repositories/Repository.js').Repository} deps.eventRepo
 	 * @param {number} [deps.registrySize] Ukuran registry penerima manfaat. Satu-satunya
 	 *   jalan mengisi `beneficiaryRegistry.value`; tanpa injeksi ini nilainya `null` dan
-	 *   komponen WAJIB memakai periode sebagai konteks — mengarang penyebut dilarang.
+	 *   komponen WAJIB memakai periode sebagai konteks: mengarang penyebut dilarang.
 	 * @param {() => Date} [deps.clock] Sumber waktu; disuntik agar potret bersifat deterministik.
 	 * @throws {TypeError} bila ada repository yang tidak diberikan.
 	 */
@@ -183,7 +183,7 @@ export class ProgramImpactService {
 	/**
 	 * Potret angka dampak level program untuk zona publik.
 	 *
-	 * Seluruh penyaringnya sama persis dengan penyaring KPI internal — "awardee
+	 * Seluruh penyaringnya sama persis dengan penyaring KPI internal: "awardee
 	 * terdata" berarti aktif DAN ber-consent, di halaman publik maupun di dasbor
 	 * admin. Dua definisi untuk satu nama angka adalah cara tercepat kehilangan
 	 * kepercayaan pembaca.
@@ -223,7 +223,7 @@ export class ProgramImpactService {
 	}
 
 	/**
-	 * Rentang jangkauan organik — angka kelas B.
+	 * Rentang jangkauan organik: angka kelas B.
 	 *
 	 * Rumusnya `pengamplifikasi × jaringan sosial × koefisien eksposur ×
 	 * (1 − tumpang tindih)`, dengan seluruh parameter berasal dari `REACH_PARAMETERS`.
@@ -256,7 +256,7 @@ export class ProgramImpactService {
 	 *
 	 * `null` adalah jawaban yang sah dan sering benar: registry penerima manfaat
 	 * Pertamina Foundation berada di luar sistem ini. Komponen yang menerimanya wajib
-	 * memakai periode potret sebagai konteks, bukan mengarang penyebut — angka yang
+	 * memakai periode potret sebagai konteks, bukan mengarang penyebut: angka yang
 	 * dibesarkan akan runtuh pada audit pertama.
 	 *
 	 * @returns {{value: number|null, source: string}}

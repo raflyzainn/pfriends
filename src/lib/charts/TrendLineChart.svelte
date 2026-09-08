@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * TrendLineChart — tren bulanan satu atau beberapa metrik.
+	 * TrendLineChart: tren bulanan satu atau beberapa metrik.
 	 *
 	 * Props:
 	 * @prop {string[]} categories  Label sumbu X (biasanya nama bulan).
@@ -13,7 +13,7 @@
 	 * Area gradien hanya dinyalakan bila seri berjumlah maksimal dua; di atas itu
 	 * area saling menutupi dan menyembunyikan data yang justru ingin dibandingkan.
 	 *
-	 * Tanpa data, `option` bernilai `null` — bukan sumbu bernilai nol. Chart yang
+	 * Tanpa data, `option` bernilai `null`: bukan sumbu bernilai nol. Chart yang
 	 * menggambar garis datar di angka nol tidak dapat dibedakan dari chart yang
 	 * datanya memang nol, dan keduanya menuntut tindakan yang berbeda (CH-4).
 	 */

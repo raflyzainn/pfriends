@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * AwardeePointTrend — perjalanan Poin Kontribusi SEORANG anggota, bukan
+	 * AwardeePointTrend: perjalanan Poin Kontribusi SEORANG anggota, bukan
 	 * perbandingan antar-anggota.
 	 *
 	 * Dipakai hanya di zona awardee. Awalan nama `Awardee` menjaga agar chart ini
@@ -16,7 +16,7 @@
 	 * @prop {boolean} loading
 	 * @prop {string} emptyMessage
 	 *
-	 * Tanpa data, `option` bernilai `null` — bukan garis datar di angka nol. Garis
+	 * Tanpa data, `option` bernilai `null`: bukan garis datar di angka nol. Garis
 	 * nol tidak dapat dibedakan dari "belum ada aksi sama sekali", padahal yang
 	 * pertama menuntut penjelasan dan yang kedua menuntut ajakan memulai (CH-4).
 	 */

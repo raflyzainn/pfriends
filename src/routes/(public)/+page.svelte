@@ -1,15 +1,15 @@
 <script>
 	/**
-	 * BERANDA PFFRIENDS — versi ringkas untuk peragaan.
+	 * BERANDA PFFRIENDS: versi ringkas untuk peragaan.
 	 *
 	 * Navigasi publik kini hanya tiga tujuan (Beranda, Blog, Calendar of Event),
 	 * sehingga beranda pun dipangkas menjadi empat seksi yang masing-masing punya
 	 * satu pekerjaan:
 	 *
-	 *   1. Hero        — menyatakan ini situs apa, satu kalimat, satu tombol.
-	 *   2. Billboard   — kegiatan terdekat sebagai papan reklame lebar penuh.
-	 *   3. Peringkat   — sepuluh peserta paling aktif beserta poinnya.
-	 *   4. Blog        — tiga cerita terbaru.
+	 *   1. Hero       : menyatakan ini situs apa, satu kalimat, satu tombol.
+	 *   2. Billboard  : kegiatan terdekat sebagai papan reklame lebar penuh.
+	 *   3. Peringkat  : sepuluh peserta paling aktif beserta poinnya.
+	 *   4. Blog       : tiga cerita terbaru.
 	 *
 	 * EMPAT KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
@@ -17,7 +17,7 @@
 	 *    mekanik skor di zona publik) dan karenanya `npm run verify:purity` akan
 	 *    gagal pada berkas ini. Pelanggarannya diminta pemilik produk secara
 	 *    tersurat: papan peringkat adalah pemikat utama microsite pada peragaan.
-	 *    Skrip pemindainya sengaja TIDAK disunting — gerbang yang dilonggarkan
+	 *    Skrip pemindainya sengaja TIDAK disunting: gerbang yang dilonggarkan
 	 *    diam-diam akan melewatkan pelanggaran berikutnya yang tidak disengaja.
 	 *
 	 * 2. **Nol foto raster.** Hero lama memuat dua berkas (273 KB + 240 KB) yang
@@ -36,68 +36,17 @@
 	 *    `/kalender`, dan tombolnya menunjuk ke sana.
 	 */
 	import { Icon, ICONS } from '$lib/components';
+	import PublicLeaderboard from '$lib/components/PublicLeaderboard.svelte';
 	import { storyVM } from '$lib/components/editorial/view-model.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
-	import { awardeeRepository } from '$lib/infrastructure/repositories/index.js';
-	import { tierUntukPoin } from '$lib/domain/constants/tier-table.js';
-	import { formatAngka, formatTanggal } from '$lib/utils/format.js';
+	import { publicContent } from '$lib/stores/publicContent.svelte.js';
+	import { formatTanggal } from '$lib/utils/format.js';
 
 	/** Banyaknya baris papan peringkat. */
 	const JUMLAH_PERINGKAT = 8;
 
 	/** Banyaknya kartu blog di beranda. */
 	const JUMLAH_BLOG = 3;
-
-	/** @type {{id:string, peringkat:number, nama:string, inisial:string, komunitas:string, chapter:string, poin:number, tier:string, tint:string, ink:string}[]} */
-	let peringkat = $state([]);
-
-	let memuatPeringkat = $state(true);
-
-	/** Penanda agar efek pemuatan tidak berjalan dua kali. */
-	let sudahMemuat = false;
-
-	$effect(() => {
-		if (sudahMemuat) return;
-		sudahMemuat = true;
-		void muatPeringkat();
-	});
-
-	/**
-	 * Memuat sepuluh besar poin kontribusi lewat repository.
-	 *
-	 * `catalog.load()` dipanggil lebih dulu karena ia yang memasang data peragaan
-	 * ke IndexedDB; tanpa itu peramban yang baru pertama membuka situs akan
-	 * menemukan tabel kosong dan papan peringkat tampil hampa selamanya.
-	 *
-	 * @returns {Promise<void>}
-	 */
-	async function muatPeringkat() {
-		try {
-			await catalog.load();
-			const daftar = await awardeeRepository.topByPoints(JUMLAH_PERINGKAT);
-			peringkat = daftar.map((awardee, index) => {
-				const tier = tierUntukPoin(awardee.points);
-				return {
-					id: awardee.id,
-					peringkat: index + 1,
-					nama: awardee.displayName,
-					inisial: awardee.initials,
-					komunitas: awardee.communityDef.akronim,
-					chapter: awardee.chapterId,
-					poin: awardee.points,
-					tier: tier.label,
-					tint: `var(--color-${tier.tint})`,
-					ink: `var(--color-${tier.ink})`
-				};
-			});
-		} catch {
-			// Papan peringkat yang gagal dimuat tampil sebagai keadaan kosong yang
-			// menjelaskan, bukan sebagai halaman yang berhenti dirender.
-			peringkat = [];
-		} finally {
-			memuatPeringkat = false;
-		}
-	}
 
 	/** Kegiatan terdekat yang sudah disetujui verifikator; `null` bila belum ada. */
 	const acara = $derived(catalog.upcomingEvents()[0] ?? null);
@@ -110,13 +59,13 @@
 	const tautanAcara = $derived(acara?.slug ? `/kalender/${acara.slug}` : '/kalender');
 
 	/** Tiga cerita terbaru yang sudah terbit. */
-	const blog = $derived(catalog.publishedStories.slice(0, JUMLAH_BLOG).map((s) => storyVM(s)));
+	const blog = $derived(publicContent.stories.slice(0, JUMLAH_BLOG).map((s) => storyVM(s)));
 
 	/**
 	 * Geometri sampul tipografis per posisi kartu.
 	 *
 	 * Tiga kartu berdampingan yang memakai gambar identik terbaca sebagai template,
-	 * bukan sebagai tiga cerita berbeda — cacat yang sama dengan memakai satu foto
+	 * bukan sebagai tiga cerita berbeda: cacat yang sama dengan memakai satu foto
 	 * stok untuk semuanya. Variasinya minimal dan deterministik: posisi lingkaran
 	 * dan lengkung garis, bukan warna, supaya ketiganya tetap satu keluarga.
 	 * @type {readonly {cx:number, cy:number, r:number, d:string}[]}
@@ -129,14 +78,14 @@
 </script>
 
 <svelte:head>
-	<title>PFfriends — Rumah Komunitas Penerima Manfaat Pertamina Foundation</title>
+	<title>PFriends: Rumah Komunitas Penerima Manfaat Pertamina Foundation</title>
 	<meta
 		name="description"
-		content="PFfriends menghubungkan alumni Beasiswa Sobat Bumi dengan pelaku UMKM binaan PFpreneur: kalender kegiatan, cerita lapangan, dan peserta paling aktif."
+		content="PFriends menghubungkan alumni Beasiswa Sobat Bumi dengan pelaku UMKM binaan PFpreneur: kalender kegiatan, cerita lapangan, dan peserta paling aktif."
 	/>
 </svelte:head>
 
-<!-- ═══ 1 · HERO — gradien teal + bentuk geometris SVG, tanpa satu pun foto ═══ -->
+<!-- ═══ 1 · HERO: gradien teal + bentuk geometris SVG, tanpa satu pun foto ═══ -->
 <section class="relative overflow-hidden bg-brand-700">
 	<div
 		class="absolute inset-0"
@@ -205,7 +154,7 @@
 	</div>
 </section>
 
-<!-- ═══ 2 · BILLBOARD EVENT — panel lebar penuh, kontras tertinggi di halaman ═══ -->
+<!-- ═══ 2 · BILLBOARD EVENT: panel lebar penuh, kontras tertinggi di halaman ═══ -->
 <section class="bg-brand-900" aria-labelledby="billboard-judul">
 	<span class="keyline bg-accent-200" aria-hidden="true"></span>
 
@@ -290,81 +239,13 @@
 	</div>
 </section>
 
-<!-- ═══ 3 · PAPAN PERINGKAT — peserta paling aktif ═══ -->
-<section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20" aria-labelledby="peringkat-judul">
-	<div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
-		<div>
-			<p class="kicker">Papan peringkat</p>
-			<h2 id="peringkat-judul" class="display-editorial mt-3 text-[clamp(26px,3vw,36px)] text-heading">
-				Peserta paling aktif
-			</h2>
-		</div>
-		<p class="max-w-[42ch] text-[15px] leading-[1.6] text-ink-600">
-			Diurut dari poin kontribusi tertinggi — hasil menulis cerita, menghadiri kegiatan, dan
-			mengamplifikasi kabar komunitas.
-		</p>
-	</div>
+<PublicLeaderboard
+	entries={publicContent.leaderboard.slice(0, JUMLAH_PERINGKAT)}
+	loading={publicContent.leaderboardLoading}
+	error={publicContent.leaderboardError}
+/>
 
-	<div class="mt-8 overflow-hidden rounded-card border border-ink-200 bg-surface">
-		{#if memuatPeringkat}
-			<p class="px-5 py-8 text-[15px] text-ink-600">Memuat papan peringkat…</p>
-		{:else if peringkat.length > 0}
-			<ul>
-				{#each peringkat as baris (baris.id)}
-					<li
-						class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-ink-100 px-4 py-4 last:border-b-0 sm:px-6"
-					>
-						<!-- Peringkat 1–3 memakai kuning aksen; sisanya netral supaya
-						     tiga teratas tetap terbaca sekilas tanpa membaca angkanya. -->
-						<span
-							class="figure-number inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px]
-								{baris.peringkat <= 3
-								? 'bg-accent-200 text-accent-800'
-								: 'bg-brand-50 text-brand-700'}"
-						>
-							{baris.peringkat}
-						</span>
-
-						<span
-							class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-[13px] font-bold text-brand-700"
-							aria-hidden="true"
-						>
-							{baris.inisial}
-						</span>
-
-						<span class="min-w-0 flex-1">
-							<span class="block truncate text-[15px] font-bold text-heading">{baris.nama}</span>
-							<span class="mt-0.5 block text-[13px] text-ink-600">
-								{baris.komunitas} · Chapter {baris.chapter}
-							</span>
-						</span>
-
-						<span
-							class="hidden shrink-0 rounded-chip px-3 py-1 text-[12px] font-semibold sm:inline-block"
-							style="background:{baris.tint}; color:{baris.ink};"
-						>
-							{baris.tier}
-						</span>
-
-						<span class="shrink-0 text-right">
-							<span class="figure-number block text-[22px] text-brand-700">
-								{formatAngka(baris.poin)}
-							</span>
-							<span class="block text-[11px] tracking-[0.06em] text-ink-500 uppercase">poin</span>
-						</span>
-					</li>
-				{/each}
-			</ul>
-		{:else}
-			<p class="px-5 py-8 text-[15px] leading-[1.6] text-ink-600">
-				Papan peringkat belum tersusun di peramban ini. Muat ulang halaman untuk menyiapkan data
-				peragaan.
-			</p>
-		{/if}
-	</div>
-</section>
-
-<!-- ═══ 4 · BLOG TERBARU — maksimum tiga kartu ═══ -->
+<!-- ═══ 4 · BLOG TERBARU: maksimum tiga kartu ═══ -->
 <section class="bg-surface" aria-labelledby="blog-judul">
 	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
 		<div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
@@ -389,18 +270,18 @@
 					{@const sampul = SAMPUL[i % SAMPUL.length]}
 					<li class="flex flex-col overflow-hidden rounded-card border border-ink-200">
 						<!-- Sampul FOTO bila cerita punya, blok tipografis bila tidak.
-						     Larangan "nol foto raster" pada berkas ini ditulis untuk HERO —
+						     Larangan "nol foto raster" pada berkas ini ditulis untuk HERO :
 						     dua berkas 273 KB + 240 KB yang dimuat sebelum satu kata pun
 						     terbaca. Kartu blog bukan kasus yang sama: fotonya 167–270 KB
 						     dan berada di bawah lipatan, jadi tidak pernah menghalangi
 						     pembacaan paragraf pertama.
 						     `loading="lazy"` sengaja TIDAK dipakai. Halaman ini hanya empat
-						     seksi — bukan umpan panjang — sehingga ketiga foto praktis selalu
+						     seksi: bukan umpan panjang: sehingga ketiga foto praktis selalu
 						     jadi terlihat, sementara pemuatan malas membuat kartu sempat
 						     memajang teks alt di atas kotak kosong. Itu terlihat sebagai
 						     gambar rusak, dan tangkapan layar penuh halaman merekamnya
 						     persis begitu.
-						     Cerita tanpa sampul TIDAK jatuh ke foto default — enam cerita
+						     Cerita tanpa sampul TIDAK jatuh ke foto default: enam cerita
 						     memang sengaja dilepas sampulnya karena foto stoknya salah fakta
 						     (alat tenun Andes untuk tenun Sumba). Blok tipografis di bawah
 						     adalah jawaban resminya, bukan tambalan. -->

@@ -2,7 +2,7 @@
 	/**
 	 * Kombinasi skala+ritme yang dipakai `SectionRule` terakhir yang di-mount.
 	 * Hidup di tingkat modul karena dua seksi bersebelahan adalah dua INSTANCE
-	 * berbeda — perbandingan mustahil dilakukan dari dalam satu instance.
+	 * berbeda: perbandingan mustahil dilakukan dari dalam satu instance.
 	 * @type {string}
 	 */
 	let kombinasiTerakhir = '';
@@ -10,7 +10,7 @@
 
 <script>
 	/**
-	 * SectionRule — kepala seksi zona publik yang MEMAKSA variasi.
+	 * SectionRule: kepala seksi zona publik yang MEMAKSA variasi.
 	 *
 	 * Tanggung jawab: garis kunci + label seksi + ritme vertikal seksi. Obat
 	 * langsung untuk D-03 (empat kepala seksi identik strukturnya), D-04 (judul
@@ -30,13 +30,13 @@
 	 *    seluruh halaman (`docs/12` §8.2).
 	 *
 	 * 3. **`children` opsional.** Dipakai sebagai pembungkus `<section>`, komponen
-	 *    ini menerapkan `padding-block` ritme ke seluruh isi seksi — itulah yang
+	 *    ini menerapkan `padding-block` ritme ke seluruh isi seksi: itulah yang
 	 *    membuat prop `rhythm` punya arti. Dipakai berdiri sendiri, ia hanya
 	 *    mencetak garis + label. Keduanya sah; kontrak §2.13 tidak melarang
 	 *    snippet karena snippet bukan prop yang bisa salah nama (R-22).
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 SectionRule { label, tone, scale, rhythm }
-	 * @see docs/11-VISUAL-DIRECTION.md — §8.2 tanggung jawab, §3.3 skala tipografi
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 SectionRule { label, tone, scale, rhythm }
+	 * @see docs/11-VISUAL-DIRECTION.md: §8.2 tanggung jawab, §3.3 skala tipografi
 	 */
 	import { gayaKeyline, kelas, ritmeSeksi } from '../_visual.js';
 	import { dev } from '$app/environment';
@@ -68,7 +68,7 @@
 	} = $props();
 
 	/**
-	 * Skala judul seksi — 44 / 30 / 24 px, lompatan sungguhan (docs/11 §3.3).
+	 * Skala judul seksi: 44 / 30 / 24 px, lompatan sungguhan (docs/11 §3.3).
 	 * Fraunces tidak pernah dipakai di bawah 24 px, jadi ketiganya aman memakai
 	 * `display-editorial`.
 	 */
@@ -91,7 +91,7 @@
 			console.warn(
 				`[SectionRule] Dua seksi berurutan memakai kombinasi skala+ritme yang sama ("${kombinasi}"). ` +
 					'Halaman akan terbaca metronomik (D-10) dan kepala seksinya seragam (D-03/D-04). ' +
-					'Ubah salah satunya — docs/11 §3.3 & §3.5.'
+					'Ubah salah satunya: docs/11 §3.3 & §3.5.'
 			);
 		}
 		kombinasiTerakhir = kombinasi;

@@ -1,9 +1,9 @@
 <script>
 	/**
-	 * CERITA KOMUNITAS — indeks blog publik, dengan panel agenda di sisinya.
+	 * CERITA KOMUNITAS: indeks blog publik, dengan panel agenda di sisinya.
 	 *
 	 * Hanya cerita berstatus terpublikasi yang boleh muncul di sini, dan
-	 * penyaringnya adalah `catalog.publishedStories` — bukan perbandingan status
+	 * penyaringnya adalah `catalog.publishedStories`: bukan perbandingan status
 	 * yang ditulis ulang di halaman ini. Aturan "apa yang boleh dibaca publik"
 	 * hanya boleh hidup di satu tempat; menyalinnya ke komponen adalah cara
 	 * tercepat membocorkan naskah yang belum disetujui penulisnya.
@@ -17,7 +17,7 @@
 	 *
 	 * 2. **Varian panel mengikuti lebar layar lewat `matchMedia`, bukan tiga
 	 *    instance yang saling disembunyikan `hidden`.** Tiga instance berarti tiga
-	 *    salinan daftar yang sama di DOM dan tiga kali pembacaan yang sama —
+	 *    salinan daftar yang sama di DOM dan tiga kali pembacaan yang sama :
 	 *    sekaligus tiga tempat yang harus diingat saat propsnya berubah.
 	 *
 	 * 3. **`EventListPanel` adalah komponen bersama, bukan salinan lokal.** Satu
@@ -27,12 +27,13 @@
 	 * 4. **Sampul kartu diisi `kartuCerita().cover`.** Tanpa itu `StoryCard` selalu
 	 *    jatuh ke fallback tipografis dan dua belas foto sampul tidak pernah tampil.
 	 *
-	 * @see docs/11-VISUAL-DIRECTION.md — §7.1 rancangan `/cerita`
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §3.5 WP-04
+	 * @see docs/11-VISUAL-DIRECTION.md: §7.1 rancangan `/cerita`
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §3.5 WP-04
 	 */
 	import { FilterChips, Icon, ICONS, SearchInput, StoryCard } from '$lib/components';
 	import EventListPanel from '$lib/components/EventListPanel.svelte';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
+	import { publicContent } from '$lib/stores/publicContent.svelte.js';
 	import { ESG_PILLARS } from '$lib/domain/constants/esg-taxonomy.js';
 	import { frasaHitung } from '$lib/utils/format.js';
 	import { agendaPublik, kartuCerita } from '../_view-model.js';
@@ -43,7 +44,7 @@
 	/** Banyaknya agenda pada panel, per titik henti tata letak. */
 	const AGENDA_LIMIT = Object.freeze({ desktop: 4, tablet: 5, mobile: 3 });
 
-	/** Varian `EventListPanel` per titik henti — lihat keputusan 2. */
+	/** Varian `EventListPanel` per titik henti: lihat keputusan 2. */
 	const AGENDA_VARIAN = Object.freeze({ desktop: 'rail', tablet: 'strip', mobile: 'panel' });
 
 	let pilarTerpilih = $state(SEMUA);
@@ -68,10 +69,10 @@
 		};
 	});
 
-	const ceritaTerbit = $derived(catalog.publishedStories);
+	const ceritaTerbit = $derived(publicContent.stories);
 	const agenda = $derived(agendaPublik(catalog.upcomingEvents()));
 
-	/** Pencocokan judul, ringkasan, lokasi, dan nama penulis — tanpa peka huruf. */
+	/** Pencocokan judul, ringkasan, lokasi, dan nama penulis: tanpa peka huruf. */
 	const hasilSaring = $derived.by(() => {
 		const kunci = kataKunci.trim().toLowerCase();
 		return ceritaTerbit.filter((story) => {
@@ -113,17 +114,17 @@
 </script>
 
 <svelte:head>
-	<title>Cerita Komunitas — PFfriends</title>
+	<title>Cerita Komunitas: PFriends</title>
 	<meta
 		name="description"
-		content="Cerita lapangan yang ditulis sendiri oleh anggota PFfriends: aksi lingkungan, pemberdayaan ekonomi, dan edukasi masyarakat di berbagai daerah."
+		content="Cerita lapangan yang ditulis sendiri oleh anggota PFriends: aksi lingkungan, pemberdayaan ekonomi, dan edukasi masyarakat di berbagai daerah."
 	/>
 </svelte:head>
 
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 	<!-- Kepala halaman lebar penuh, tanpa foto: sampul cerita yang menjadi gambarnya. -->
 	<header style="padding-block:var(--rhythm-tight) 0;">
-		<!-- Kicker menyebut "Blog" — label yang dipakai bilah navigasi — supaya
+		<!-- Kicker menyebut "Blog": label yang dipakai bilah navigasi: supaya
 		     pengunjung yang menekan menu itu langsung mengenali halaman tujuannya. -->
 		<p class="kicker">Blog komunitas</p>
 		<h1
@@ -171,7 +172,23 @@
 				</p>
 			{/if}
 
-			{#if hasilSaring.length > 0}
+			{#if publicContent.storiesLoading && ceritaTerbit.length === 0}
+				<p class="mt-10 border-t border-ink-200 pt-8 text-[15px] text-ink-600">
+					Memuat seluruh Cerita terpublikasi.
+				</p>
+			{:else if publicContent.storiesError}
+				<div class="mt-10 border-t border-ink-200 pt-8">
+					<h2 class="display-editorial text-[24px] leading-[1.20] text-heading">
+						Cerita belum dapat dimuat
+					</h2>
+					<p class="mt-3 max-w-[52ch] text-[16px] leading-[1.68] text-ink-700">
+						{publicContent.storiesError}
+					</p>
+					<button type="button" class="mt-5 text-[15px] font-semibold text-brand-700 hover:underline" onclick={() => publicContent.load({ force: true })}>
+						Coba muat kembali
+					</button>
+				</div>
+			{:else if hasilSaring.length > 0}
 				{#if unggulan}
 					{@const kartu = kartuCerita(unggulan)}
 					<div class="mt-10 border-b border-ink-200 pb-10">

@@ -3,7 +3,7 @@
 	<!--
 		Wordmark "P" Pfriends. Satu warna #ED1C24 (= --color-pertamina-red, src/app.css:16).
 		Digambar sebagai satu path ber-fill-rule evenodd supaya rongga huruf tetap tembus
-		di atas latar terang maupun gelap — favicon tidak pernah tahu warna bilah tab peramban.
+		di atas latar terang maupun gelap: favicon tidak pernah tahu warna bilah tab peramban.
 		Tanpa latar dan tanpa gradien: pada 16 px hanya siluet yang tersisa, jadi siluet itulah
 		yang harus benar. Lihat docs/11-VISUAL-DIRECTION.md §5.5 butir 28.
 	-->

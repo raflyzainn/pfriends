@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * ImpactFigure — satu angka agregat BESERTA penyebutnya.
+	 * ImpactFigure: satu angka agregat BESERTA penyebutnya.
 	 *
 	 * Tanggung jawab: menegakkan prinsip P-2 ("setiap angka membawa penyebutnya dan
 	 * tanggal potretnya") dan menyembuhkan cacat D-12 ("angka statistik tanpa
@@ -8,14 +8,14 @@
 	 *
 	 * EMPAT KEPUTUSAN YANG TIDAK TERBACA DARI KODE:
 	 *
-	 * 1. **`context` kosong TIDAK melempar — ia menjadi cacat yang TERLIHAT.**
+	 * 1. **`context` kosong TIDAK melempar: ia menjadi cacat yang TERLIHAT.**
 	 *    `docs/11` §8.3 semula mewajibkan `TypeError`. `docs/12` §8.2 MENCABUTNYA
 	 *    secara resmi: melempar dari komponen presentasi merobohkan seluruh halaman,
 	 *    bukan satu kartu, dan penyebut yang belum tersedia bukan alasan yang
 	 *    sepadan untuk itu. Penegakannya tetap ada dan tetap di kode, hanya
 	 *    bentuknya berbeda: `console.error` di mode dev DITAMBAH label pengganti
 	 *    yang tercetak di layar. Angka tanpa penyebut jadi mustahil lolos tinjauan
-	 *    visual — tanpa mempertaruhkan halaman di depan penonton.
+	 *    visual: tanpa mempertaruhkan halaman di depan penonton.
 	 *
 	 * 2. **`kind='estimated'` wajib disertai `methodology`.** Rentang estimasi tanpa
 	 *    asumsi yang dapat dibuka adalah klaim, bukan data. Diperiksa di dev.
@@ -26,12 +26,12 @@
 	 *    ditulis tangan di sini hanya akan lebih buruk.
 	 *
 	 * 4. **Sparkline adalah DEKORASI, dan itu disengaja.** Kontrasnya di atas navy
-	 *    hanya 1.87 — jauh di bawah 3.0:1 WCAG 1.4.11. Ia sah justru karena nol
+	 *    hanya 1.87: jauh di bawah 3.0:1 WCAG 1.4.11. Ia sah justru karena nol
 	 *    informasi hilang tanpanya: angkanya tercetak penuh tepat di sebelahnya
 	 *    (`docs/11` §10.4). Karena itu ia `aria-hidden` dan tanpa sumbu.
 	 *
-	 * @see docs/12-BUILD-CONTRACT-V2.md — §2.13 kontrak props FINAL, §8.2 pencabutan TypeError
-	 * @see docs/11-VISUAL-DIRECTION.md — §8.3, §3.3 skala angka, §10.2 & §10.4 kontras
+	 * @see docs/12-BUILD-CONTRACT-V2.md: §2.13 kontrak props FINAL, §8.2 pencabutan TypeError
+	 * @see docs/11-VISUAL-DIRECTION.md: §8.3, §3.3 skala angka, §10.2 & §10.4 kontras
 	 */
 	import { kelas } from '../_visual.js';
 	import { dev } from '$app/environment';
