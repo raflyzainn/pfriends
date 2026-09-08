@@ -108,20 +108,20 @@
 
 	<div class="grid gap-5 sm:grid-cols-2">
 		<label class="block sm:col-span-2">
-			<span class="text-sm font-semibold text-ink-800">Nama lengkap</span>
+			<span class="text-sm font-semibold text-ink-800">Nama lengkap <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 			<input class={fieldClass} bind:value={fullName} required minlength="3" autocomplete="name" />
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Email</span>
+			<span class="text-sm font-semibold text-ink-800">Email <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 			<input class={fieldClass} type="email" bind:value={email} required disabled={!create} autocomplete="email" />
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Nomor WhatsApp</span>
+			<span class="text-sm font-semibold text-ink-800">Nomor WhatsApp <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 			<input class={fieldClass} bind:value={whatsapp} required inputmode="tel" placeholder="08xxxxxxxxxx" />
 		</label>
 		{#if create}
 			<div class="block">
-				<label for="registration-password" class="text-sm font-semibold text-ink-800">Kata sandi</label>
+				<label for="registration-password" class="text-sm font-semibold text-ink-800">Kata sandi <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></label>
 				<div class="relative">
 					<input
 						id="registration-password"
@@ -162,7 +162,7 @@
 				</ul>
 			</div>
 			<div class="block">
-				<label for="registration-password-confirm" class="text-sm font-semibold text-ink-800">Konfirmasi kata sandi</label>
+				<label for="registration-password-confirm" class="text-sm font-semibold text-ink-800">Konfirmasi kata sandi <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></label>
 				<div class="relative">
 					<input
 						id="registration-password-confirm"
@@ -210,27 +210,27 @@
 			</div>
 		{/if}
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Komunitas</span>
-			<select class={fieldClass} bind:value={community}>
+			<span class="text-sm font-semibold text-ink-800">Komunitas <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
+			<select class={fieldClass} bind:value={community} required>
 				{#each COMMUNITIES as item}
 					<option value={item.id}>{item.akronim}: {item.nama}</option>
 				{/each}
 			</select>
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Program asal</span>
-			<select class={fieldClass} bind:value={programPillar}>
+			<span class="text-sm font-semibold text-ink-800">Program asal <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
+			<select class={fieldClass} bind:value={programPillar} required>
 				{#each PROGRAM_PILLARS as item}<option value={item.id}>{item.label}</option>{/each}
 			</select>
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Batch / chapter</span>
-			<select class={fieldClass} bind:value={batch}>
+			<span class="text-sm font-semibold text-ink-800">Batch / chapter <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
+			<select class={fieldClass} bind:value={batch} required>
 				{#each CHAPTERS as item}<option value={item.id}>{item.label}</option>{/each}
 			</select>
 		</label>
 		<label class="block">
-			<span class="text-sm font-semibold text-ink-800">Wilayah domisili</span>
+			<span class="text-sm font-semibold text-ink-800">Wilayah domisili <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 			<input class={fieldClass} bind:value={region} required />
 		</label>
 	</div>
@@ -240,24 +240,24 @@
 		<div class="mt-4 grid gap-5 sm:grid-cols-2">
 			{#if community === CommunityType.SOBI}
 				<label class="block">
-					<span class="text-sm font-semibold text-ink-800">Kampus asal</span>
+					<span class="text-sm font-semibold text-ink-800">Kampus asal <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} bind:value={university} required />
 				</label>
 				<label class="block">
-					<span class="text-sm font-semibold text-ink-800">Tahun kelulusan</span>
+					<span class="text-sm font-semibold text-ink-800">Tahun kelulusan <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} type="number" min="1980" max="2100" bind:value={graduationYear} required />
 				</label>
 			{:else}
 				<label class="block sm:col-span-2">
-					<span class="text-sm font-semibold text-ink-800">Nama usaha</span>
+					<span class="text-sm font-semibold text-ink-800">Nama usaha <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} bind:value={businessName} required />
 				</label>
 				<label class="block">
-					<span class="text-sm font-semibold text-ink-800">Sektor usaha</span>
+					<span class="text-sm font-semibold text-ink-800">Sektor usaha <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} bind:value={businessSector} required />
 				</label>
 				<label class="block">
-					<span class="text-sm font-semibold text-ink-800">Kota usaha</span>
+					<span class="text-sm font-semibold text-ink-800">Kota usaha <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span></span>
 					<input class={fieldClass} bind:value={businessCity} required />
 				</label>
 			{/if}
@@ -265,7 +265,7 @@
 	</div>
 
 	<label class="block">
-		<span class="text-sm font-semibold text-ink-800">Bukti sebagai Awardee</span>
+		<span class="text-sm font-semibold text-ink-800">Bukti sebagai Awardee {#if create}<span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span>{/if}</span>
 		<input
 			class="mt-2 block w-full rounded-control border border-ink-200 bg-white p-3 text-sm"
 			type="file"
@@ -281,7 +281,7 @@
 		<label class="flex items-start gap-3 rounded-control border border-ink-200 p-4">
 			<input class="mt-1 h-4 w-4" type="checkbox" bind:checked={consent} required />
 			<span class="text-sm leading-relaxed text-ink-700">
-				{REGISTRATION_CONSENT_STATEMENT}
+				{REGISTRATION_CONSENT_STATEMENT} <span class="text-red-600" aria-hidden="true">*</span><span class="sr-only"> (wajib)</span>
 			</span>
 		</label>
 	{/if}
