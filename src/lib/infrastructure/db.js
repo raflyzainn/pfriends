@@ -32,7 +32,7 @@
 import { browser } from '$app/environment';
 
 /** Nama basis data IndexedDB. */
-export const DB_NAME = 'PfriendsDB';
+export const DB_NAME = 'PfriendsDummyDB';
 
 /**
  * Versi skema Dexie.

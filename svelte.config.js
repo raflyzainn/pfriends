@@ -1,13 +1,11 @@
-import adapter from '@sveltejs/adapter-cloudflare';
+import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
 	kit: {
-		// UI tetap dirender di klien, sedangkan endpoint +server.js dijalankan
-		// sebagai Cloudflare Pages Functions.
-		adapter: adapter(),
+		adapter: adapter({ fallback: 'index.html', strict: false }),
 		prerender: {
 			handleMissingId: 'warn',
 			handleHttpError: 'warn',

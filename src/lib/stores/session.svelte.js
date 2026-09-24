@@ -49,8 +49,8 @@ import { isApprovedOnboarding, RegistrationStatus } from '$lib/domain/constants/
 import { apiRequest } from '$lib/infrastructure/sveltekit-api/client.js';
 
 /** Kunci penyimpanan sesi di localStorage. */
-const KUNCI_SESI = 'pfriends_session';
-const KUNCI_IMPERSONASI = 'pfriends_admin_impersonation';
+const KUNCI_SESI = 'pfriends_dummy_session';
+const KUNCI_IMPERSONASI = 'pfriends_dummy_impersonation';
 
 /** Nilai peran yang sah untuk dipulihkan dari penyimpanan. */
 const PERAN_SAH = Object.freeze(Object.values(UserRole));
@@ -347,12 +347,12 @@ class SessionStore {
 			if (principal.isAwardee && !awardee) throw new Error('Profil Awardee belum tersedia.');
 			this.#terapkan(akun, awardee, onboarding);
 			return { success: true, error: '' };
-		} catch {
+		} catch (error) {
 			// Kegagalan penyimpanan peramban (mode privat, kuota, IndexedDB diblokir)
 			// bukan kredensial yang salah, dan pesannya tidak boleh menyesatkan
 			// pengguna untuk mengetik ulang sandi yang sebenarnya sudah benar.
-			this.error = PESAN_GALAT_TAK_TERDUGA;
-			return { success: false, error: PESAN_GALAT_TAK_TERDUGA };
+			this.error = error?.message || PESAN_GALAT_TAK_TERDUGA;
+			return { success: false, error: this.error };
 		} finally {
 			this.loading = false;
 			this.ready = true;

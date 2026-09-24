@@ -1,42 +1,8 @@
 <script>
-	import { page } from '$app/state';
 	import DummyBadge from './DummyBadge.svelte';
 	let { outerClass = '' } = $props();
 
-	const path = $derived(page.url.pathname);
-	const message = $derived.by(() => {
-		if (['/masuk', '/daftar', '/pendaftaran/status'].includes(path)) return '';
-		if (path === '/' || path.startsWith('/cerita') || path.startsWith('/komunitas') || path.startsWith('/metode-pengukuran') || path.startsWith('/gerakan')) return '';
-		if (path.startsWith('/awardee/bukti-keaktifan')) return '';
-		if (path.startsWith('/awardee/aksi')) return '';
-		if (path.startsWith('/awardee/direktori')) return '';
-		if (path.startsWith('/awardee/profil')) return '';
-		if (path.startsWith('/awardee/penghargaan')) return '';
-		if (path.startsWith('/awardee/kalender')) return '';
-		if (path.startsWith('/awardee/kabar')) return '';
-		if (path.startsWith('/awardee/gerakan')) return '';
-		if (path.startsWith('/awardee/cerita')) return '';
-		if (path.startsWith('/awardee/forum') || path.startsWith('/admin/forum') || path.startsWith('/verifikator/forum')) return '';
-		if (path === '/awardee') return '';
-		if (path.startsWith('/verifikator/bukti-keaktifan') || path.startsWith('/verifikator/pendaftaran')) return '';
-		if (path.startsWith('/verifikator/gamifikasi')) return '';
-		if (path.startsWith('/verifikator/gerakan')) return '';
-		if (path.startsWith('/verifikator/cerita')) return '';
-		if (path.startsWith('/admin/pendaftaran')) return '';
-		if (path.startsWith('/admin/broadcast')) return '';
-		if (path.startsWith('/admin/gerakan')) return '';
-		if (path.startsWith('/admin/awardee')) return '';
-		if (path.startsWith('/admin/cerita')) return '';
-		if (path === '/admin') return '';
-		if (path === '/verifikator') return ''; // Ditandai per-widget karena sumbernya campuran.
-		if (path.startsWith('/verifikator/kegiatan')) return '';
-		if (path.startsWith('/verifikator/kabar')) return '';
-		if (path.startsWith('/admin/gamifikasi')) return '';
-		if (path.startsWith('/admin')) return 'Data KPI dan pengelolaan akun pada halaman ini masih memakai data lokal Dexie.';
-		if (path.startsWith('/awardee')) return 'Konten komunitas pada halaman ini masih memakai seed lokal; poin, tier, streak, badge, dan bukti keaktifan tidak termasuk label ini.';
-		if (path.startsWith('/kalender')) return '';
-		return 'Konten dan angka pada halaman publik ini masih memakai seed lokal Dexie.';
-	});
+	const message = 'Data demo lokal. Perubahan hanya tersimpan di browser ini.';
 </script>
 
 {#if message}

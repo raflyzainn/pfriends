@@ -1,12 +1,12 @@
-import { listForumChannels,listForumMessages,searchForumMessages,sendForumMessage,getForumMessageContext,setForumReaction,deleteForumMessage,canDeleteRealtimeForumMessage,heartbeatForum,listForumPresence,subscribeForum } from '$lib/infrastructure/pocketbase/forum.js';
+import { listForumChannels,listForumMessages,searchForumMessages,sendForumMessage,getForumMessageContext,setForumReaction,deleteForumMessage,canDeleteRealtimeForumMessage,heartbeatForum,listForumPresence,subscribeForum,getForumModeration,listForumModerationUsers,getForumModerationHistory,applyForumModerationAction } from '$lib/infrastructure/pocketbase/forum.js';
 
 const FALLBACK_POLL_MS=3000,RECONCILE_MS=30000,HEARTBEAT_MS=60000,MAX_RETRY_MS=30000;
 
 class ForumStore {
-	channels=$state.raw([]); messages=$state.raw({}); presence=$state.raw([]); loading=$state(false); sending=$state(false); error=$state(null); activeSlug=$state(''); connectionState=$state('connecting');
+	channels=$state.raw([]); messages=$state.raw({}); presence=$state.raw([]); moderation=$state.raw({mode:'NONE',readOnly:false,strikeLevel:0}); moderationUsers=$state.raw([]); moderationHistory=$state.raw([]); loading=$state(false); sending=$state(false); moderating=$state(false); error=$state(null); activeSlug=$state(''); connectionState=$state('connecting');
 	#channelUnsubscribe=null; #presenceUnsubscribe=null; #heartbeat=null; #poll=null; #reconcile=null; #retry=null; #retryDelay=1000; #generation=0; #lifecycleBound=false;
 
-	async load(){this.loading=true;this.error=null;this.messages={};this.presence=[];this.connectionState='connecting';try{this.channels=await listForumChannels();if(!this.activeSlug||!this.channels.some(x=>x.slug===this.activeSlug))this.activeSlug=this.channels.find(x=>x.slug==='sobi-alumni')?.slug||this.channels[0]?.slug||'';this.#bindLifecycle();if(this.activeSlug)await this.open(this.activeSlug);await this.refreshPresence();await this.#subscribePresence();this.#startHeartbeat()}catch(error){this.error=error instanceof Error?error.message:'Forum gagal dimuat.'}finally{this.loading=false}}
+	async load(){this.loading=true;this.error=null;this.messages={};this.presence=[];this.connectionState='connecting';try{const overview=await listForumChannels();this.channels=overview.items.map(channel=>({...channel,baseCanPost:channel.canPost}));this.moderation=overview.moderation;if(!this.activeSlug||!this.channels.some(x=>x.slug===this.activeSlug))this.activeSlug=this.channels.find(x=>x.slug==='sobi-alumni')?.slug||this.channels[0]?.slug||'';this.#bindLifecycle();if(this.activeSlug)await this.open(this.activeSlug);await this.refreshPresence();await this.#subscribePresence();this.#startHeartbeat()}catch(error){this.error=error instanceof Error?error.message:'Forum gagal dimuat.'}finally{this.loading=false}}
 
 	async open(slug){const channel=this.channels.find(x=>x.slug===slug);if(!channel)return;this.activeSlug=slug;if(!this.messages[slug])await this.refreshLatest(slug);await this.#connectChannel(channel,slug);await this.beat().catch(()=>{})}
 
@@ -14,19 +14,24 @@ class ForumStore {
 
 	async older(){const channel=this.channels.find(x=>x.slug===this.activeSlug);if(!channel?.hasMore)return;const page=await listForumMessages(channel.slug,{before:channel.nextCursor});this.messages={...this.messages,[channel.slug]:[...page.items,...(this.messages[channel.slug]||[])]};this.channels=this.channels.map(x=>x.slug===channel.slug?{...x,hasMore:page.hasMore,nextCursor:page.nextCursor}:x)}
 	async search(slug,term){if(!slug||term.trim().length<2)return{items:[],totalItems:0};return searchForumMessages(slug,term.trim())}
-	async send(content,replyTo=''){const slug=this.activeSlug;if(!content.trim()||this.sending)return null;this.sending=true;try{const row=await sendForumMessage(slug,content.trim(),crypto.randomUUID(),replyTo);const rows=this.messages[slug]||[],found=rows.some(x=>x.id===row.id);this.messages={...this.messages,[slug]:found?rows.map(x=>x.id===row.id?row:x):[...rows,row]};return row}catch(error){this.error=error instanceof Error?error.message:'Pesan gagal dikirim.';throw error}finally{this.sending=false}}
+	async send(content,replyTo=''){const slug=this.activeSlug;if(!content.trim()||this.sending)return null;this.sending=true;try{const row=await sendForumMessage(slug,content.trim(),crypto.randomUUID(),replyTo);const rows=this.messages[slug]||[],found=rows.some(x=>x.id===row.id);this.messages={...this.messages,[slug]:found?rows.map(x=>x.id===row.id?row:x):[...rows,row]};return row}catch(error){if(error?.data?.moderation)this.setModeration(error.data.moderation);this.error=error instanceof Error?error.message:'Pesan gagal dikirim.';throw error}finally{this.sending=false}}
 	async context(id){const data=await getForumMessageContext(id);if(data.channelSlug!==this.activeSlug)await this.open(data.channelSlug);const rows=[...(this.messages[data.channelSlug]||[]),...data.items],unique=[...new Map(rows.map(row=>[row.id,row])).values()].sort((a,b)=>a.waktu-b.waktu);this.messages={...this.messages,[data.channelSlug]:unique};return data.items.find(row=>row.id===id)||null}
-	async react(message,emoji){const slug=this.activeSlug,selected=!message.reaksi.find(x=>x.emoji===emoji)?.dipilih,reactions=await setForumReaction(message.id,emoji,selected);this.messages={...this.messages,[slug]:(this.messages[slug]||[]).map(row=>row.id===message.id?{...row,reaksi:reactions}:row)}}
-	async remove(message){const slug=this.activeSlug,id=await deleteForumMessage(message.id);this.messages={...this.messages,[slug]:(this.messages[slug]||[]).filter(item=>item.id!==id)};return id}
+	async react(message,emoji){try{const slug=this.activeSlug,selected=!message.reaksi.find(x=>x.emoji===emoji)?.dipilih,reactions=await setForumReaction(message.id,emoji,selected);this.messages={...this.messages,[slug]:(this.messages[slug]||[]).map(row=>row.id===message.id?{...row,reaksi:reactions}:row)}}catch(error){if(error?.data?.moderation)this.setModeration(error.data.moderation);throw error}}
+	async remove(message){try{const slug=this.activeSlug,id=await deleteForumMessage(message.id);this.messages={...this.messages,[slug]:(this.messages[slug]||[]).filter(item=>item.id!==id)};return id}catch(error){if(error?.data?.moderation)this.setModeration(error.data.moderation);throw error}}
 	async beat(){if(this.activeSlug)await heartbeatForum(this.activeSlug)}
 	async refreshPresence(){this.presence=await listForumPresence()}
+	setModeration(status){this.moderation=status;this.channels=this.channels.map(channel=>({...channel,canPost:!status.readOnly&&(channel.baseCanPost??channel.canPost)}))}
+	async refreshModeration(){this.setModeration(await getForumModeration())}
+	async loadModerationUsers(query='',status='',userId=''){const data=await listForumModerationUsers(query,status,userId);this.moderationUsers=data.items||[];return data}
+	async loadModerationHistory(userId){this.moderationHistory=await getForumModerationHistory(userId);return this.moderationHistory}
+	async moderate(userId,values){this.moderating=true;try{const updated=await applyForumModerationAction(userId,values);this.moderationUsers=this.moderationUsers.map(row=>row.id===updated.id?updated:row);await this.loadModerationHistory(userId);return updated}finally{this.moderating=false}}
 
 	async #connectChannel(channel,slug){const generation=++this.#generation;this.connectionState='connecting';this.#clearRetry();if(this.#channelUnsubscribe){await this.#channelUnsubscribe().catch(()=>{});this.#channelUnsubscribe=null}try{const unsubscribe=await subscribeForum(`forum:channel:${channel.id}`,(event)=>this.#event(slug,event),(status)=>{if(status==='stale')void this.refreshLatest(slug).catch(()=>{})});if(generation!==this.#generation||slug!==this.activeSlug){await unsubscribe();return}this.#channelUnsubscribe=unsubscribe;this.connectionState='live';this.#retryDelay=1000;this.#stopFallback();this.#startReconcile()}catch{if(generation!==this.#generation)return;this.connectionState='fallback';this.#startFallback(slug);this.#scheduleReconnect(channel,slug)}}
 
 	async #subscribePresence(){if(this.#presenceUnsubscribe)return;try{this.#presenceUnsubscribe=await subscribeForum('forum:presence',()=>this.refreshPresence().catch(()=>{}))}catch{this.#presenceUnsubscribe=null}}
 	#startFallback(slug){this.#stopFallback();const poll=()=>{if(document.visibilityState==='visible'&&slug===this.activeSlug)void Promise.all([this.refreshLatest(slug),this.refreshPresence()]).catch(()=>{})};poll();this.#poll=setInterval(poll,FALLBACK_POLL_MS)}
 	#stopFallback(){if(this.#poll)clearInterval(this.#poll);this.#poll=null}
-	#startReconcile(){if(this.#reconcile)clearInterval(this.#reconcile);this.#reconcile=setInterval(()=>{if(document.visibilityState==='visible')void Promise.all([this.refreshLatest(),this.refreshPresence()]).catch(()=>{})},RECONCILE_MS)}
+	#startReconcile(){if(this.#reconcile)clearInterval(this.#reconcile);this.#reconcile=setInterval(()=>{if(document.visibilityState==='visible')void Promise.all([this.refreshLatest(),this.refreshPresence(),this.refreshModeration()]).catch(()=>{})},RECONCILE_MS)}
 	#scheduleReconnect(channel,slug){this.#clearRetry();const delay=this.#retryDelay;this.#retry=setTimeout(()=>{if(slug===this.activeSlug)void this.#connectChannel(channel,slug)},delay);this.#retryDelay=Math.min(MAX_RETRY_MS,delay*2)}
 	#clearRetry(){if(this.#retry)clearTimeout(this.#retry);this.#retry=null}
 	#startHeartbeat(){if(this.#heartbeat)return;this.#heartbeat=setInterval(()=>{if(document.visibilityState==='visible')this.beat().catch(()=>{})},HEARTBEAT_MS)}
@@ -37,7 +42,7 @@ class ForumStore {
 		const data=event?.data||event;
 		if(data.type==='message.created'){
 			const row=data.message;
-			const normalized={id:row.id,channelId:row.channelId,penulis:row.authorName,peran:row.authorLabel,waktu:new Date(row.createdAt),isi:row.content,saya:false,dapatHapus:canDeleteRealtimeForumMessage(row),balasan:row.reply?{id:row.reply.id,penulis:row.reply.authorName,isi:row.reply.content}:null,reaksi:(row.reactions||[]).map(x=>({emoji:x.emoji,jumlah:x.count,dipilih:false}))};
+			const normalized={id:row.id,channelId:row.channelId,userId:row.authorId,penulis:row.authorName,peran:row.authorLabel,waktu:new Date(row.createdAt),isi:row.content,saya:false,dapatHapus:canDeleteRealtimeForumMessage(row),balasan:row.reply?{id:row.reply.id,penulis:row.reply.authorName,isi:row.reply.content}:null,reaksi:(row.reactions||[]).map(x=>({emoji:x.emoji,jumlah:x.count,dipilih:false}))};
 			const rows=this.messages[slug]||[];
 			if(!rows.some(x=>x.id===normalized.id))this.messages={...this.messages,[slug]:[...rows,normalized]};
 		}else if(data.type==='message.deleted'){

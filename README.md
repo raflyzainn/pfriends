@@ -1,5 +1,13 @@
 # PFriends: Community Connect Initiative
 
+> **Versi dummy lokal (24 September 2026).** Tampilan terbaru memakai data demo di
+> IndexedDB browser, tanpa koneksi PocketBase dan tanpa API backend. Cukup jalankan
+> `npm install` lalu `npm run dev`, buka `/masuk`, dan pilih kartu Awardee,
+> Verifikator, atau Admin. Sandi akun demo: `pfriends2026`.
+> Jangan mengikuti instruksi PocketBase historis di bawah untuk versi ini.
+> Panduan aktif: [Mode dummy lokal](docs/43-MODE-DUMMY-LOKAL.md).
+> `npm run build` berhasil pada 24 September 2026. QA browser dan tes lainnya belum dijalankan.
+
 Mockup microsite untuk **Breakthrough Project Divisi Corporate Secretary: Pertamina Foundation**.
 
 PFriends adalah wadah alumni **Beasiswa Sobat Bumi (SOBI)** dan pelaku usaha **PFpreneur /
