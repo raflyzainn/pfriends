@@ -39,7 +39,6 @@
 	import {
 		BottomNav,
 		Avatar,
-		DummyRouteNotice,
 		Icon,
 		PointsChip,
 		Sidebar,
@@ -255,7 +254,6 @@
 
 			<main class="min-w-0 flex-1 px-4 pt-5 pb-24 sm:px-6 lg:px-8 lg:pb-10">
 				<div class="mx-auto w-full max-w-6xl">
-					<DummyRouteNotice />
 					{#if siap}
 						{@render children()}
 					{:else}

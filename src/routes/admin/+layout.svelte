@@ -28,7 +28,7 @@
 	 * @see docs/04-ESG-GOVERNANCE.md: §3.1 pemisahan peran aktor
 	 */
 	import { page } from '$app/state';
-	import { Button, DummyRouteNotice, Icon, Sidebar, ToastHost, ZoneGuard, ICONS } from '$lib/components';
+	import { Button, Icon, Sidebar, ToastHost, ZoneGuard, ICONS } from '$lib/components';
 	import { navForZone } from '$lib/data/navigation.js';
 	import { Zone } from '$lib/domain/policies/AccessPolicy.js';
 	import { admin } from '$lib/stores/admin.svelte.js';
@@ -131,7 +131,6 @@
 
 			<main class="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
 				<div class="mx-auto w-full max-w-[1400px]">
-					<DummyRouteNotice />
 					{@render children()}
 				</div>
 			</main>

@@ -59,13 +59,13 @@
 	onMount(load);
 </script>
 
-<PageHeader title="Aturan & Simulasi" description="Kelola katalog aksi poin dan ambang tier berbasis PocketBase, lalu tinjau dampaknya sebelum diterapkan." />
+<PageHeader title="Aturan & Dampak" description="Kelola katalog aksi poin dan ambang tier, lalu tinjau dampaknya sebelum diterapkan." />
 <AdminGamificationNav />
 
 {#if loading}
 	<Card><p class="text-sm text-ink-600">Memuat aturan gamifikasi...</p></Card>
 {:else if !data}
-	<EmptyState title="Aturan belum tersedia" message="PocketBase belum mengembalikan konfigurasi gamifikasi." />
+	<EmptyState title="Aturan belum tersedia" message="Konfigurasi gamifikasi belum tersedia." />
 {:else}
 	<div class="grid gap-4 md:grid-cols-3">
 		<StatTile label="Profil dihitung" value={formatAngka(data.impact.totalProfiles)} helper="Semua profil gamifikasi" />

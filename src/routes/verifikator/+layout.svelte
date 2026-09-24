@@ -39,7 +39,7 @@
 	 */
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
-	import { BottomNav, Button, DummyRouteNotice, Icon, Sidebar, ToastHost, ZoneGuard, ICONS } from '$lib/components';
+	import { BottomNav, Button, Icon, Sidebar, ToastHost, ZoneGuard, ICONS } from '$lib/components';
 	import { isNavActive, navForZone, withBadges } from '$lib/data/navigation.js';
 	import { Zone } from '$lib/domain/policies/AccessPolicy.js';
 	import { catalog } from '$lib/stores/catalog.svelte.js';
@@ -167,7 +167,6 @@
 
 			<main class="min-w-0 flex-1 px-4 pt-5 pb-24 sm:px-6 lg:px-8 lg:pb-10">
 				<div class="mx-auto w-full max-w-6xl">
-					<DummyRouteNotice />
 					{@render children()}
 				</div>
 			</main>

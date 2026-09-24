@@ -13,7 +13,7 @@
 	const sections = [
 		{ title: 'Pemantauan Pesanan', description: 'Lihat Awardee yang menukar koin dan status pemenuhannya.', href: '/admin/gamifikasi/pesanan', icon: ICONS.inbox },
 		{ title: 'Katalog Hadiah', description: 'Tambah, ubah, atau nonaktifkan hadiah tukar.', href: '/admin/gamifikasi/hadiah', icon: ICONS.gift },
-		{ title: 'Aturan & Simulasi', description: 'Atur nilai poin, ambang tier, dan lihat simulasi dampak.', href: '/admin/gamifikasi/aturan', icon: ICONS.trophy }
+		{ title: 'Aturan & Dampak', description: 'Atur nilai poin, ambang tier, dan tinjau dampak perubahan.', href: '/admin/gamifikasi/aturan', icon: ICONS.trophy }
 	];
 </script>
 

@@ -55,8 +55,6 @@ export { default as RewardManagementPanel } from './RewardManagementPanel.svelte
 export { default as PointActionManagementPanel } from './PointActionManagementPanel.svelte';
 export { default as AdminGamificationNav } from './AdminGamificationNav.svelte';
 export { default as WhatsappLink } from './WhatsappLink.svelte';
-export { default as DummyBadge } from './DummyBadge.svelte';
-export { default as DummyRouteNotice } from './DummyRouteNotice.svelte';
 
 // ── Umpan balik ──────────────────────────────────────────────────────────
 export { default as Modal } from './Modal.svelte';

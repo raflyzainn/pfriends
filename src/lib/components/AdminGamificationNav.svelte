@@ -4,7 +4,7 @@
 		{ label: 'Ringkasan', href: '/admin/gamifikasi' },
 		{ label: 'Pesanan', href: '/admin/gamifikasi/pesanan' },
 		{ label: 'Katalog Hadiah', href: '/admin/gamifikasi/hadiah' },
-		{ label: 'Aturan & Simulasi', href: '/admin/gamifikasi/aturan' }
+		{ label: 'Aturan & Dampak', href: '/admin/gamifikasi/aturan' }
 	];
 	const path = $derived(page.url.pathname);
 </script>

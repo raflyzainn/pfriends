@@ -242,7 +242,7 @@
 		</h1>
 		<p class="mx-auto mt-5 max-w-[58ch] text-[16px] leading-[1.65] text-ink-700">
 			{DEMO_LOGIN
-				? 'Mode demo lokal aktif. Pilih kartu akun atau gunakan email dan kata sandi.'
+			? 'Pilih kartu akun atau gunakan email dan kata sandi.'
 				: 'Awardee dapat masuk setelah mengirim registrasi. Akun yang belum disetujui hanya membuka portal status.'}
 		</p>
 	</header>
@@ -451,7 +451,7 @@
 
 	<div class="mx-auto mt-6 max-w-xl rounded-control bg-ink-50 p-4 text-center text-sm text-ink-600">
 		<strong class="text-heading">Login Verifikator dan Admin</strong>
-		<p class="mt-1">SSO OAuth sedang dipersiapkan. Akun password staf hanya tersedia ketika mode demo lokal diaktifkan.</p>
+		<p class="mt-1">Masuk sebagai Verifikator atau Admin menggunakan akun dan kata sandi yang terdaftar.</p>
 		<!-- TODO(SSO): ganti pesan ini dengan tombol authWithOAuth2 setelah provider dan pemetaan claim disepakati. -->
 	</div>
 </div>
